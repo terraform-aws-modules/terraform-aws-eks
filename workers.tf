@@ -5,7 +5,13 @@ resource "aws_autoscaling_group" "workers" {
   max_size             = "${var.workers_asg_max_size}"
   min_size             = "${var.workers_asg_min_size}"
   vpc_zone_identifier  = ["${var.subnets}"]
-  tags                 = ["${merge(var.tags, map("Name", "${var.cluster_name}-eks_asg", "propagate_at_launch", "true"))}"]
+
+  tags = ["${concat(
+    list(
+      map("key", "Name", "value", "${var.cluster_name}-eks_asg", "propagate_at_launch", true),
+    ),
+    local.asg_tags)
+  }"]
 }
 
 resource "aws_launch_configuration" "workers" {
@@ -69,8 +75,8 @@ resource "aws_iam_instance_profile" "workers" {
   role        = "${aws_iam_role.workers.name}"
 }
 
-resource "aws_iam_role_policy_attachment" "workers_AmazonEKSworkersNodePolicy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSworkersNodePolicy"
+resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = "${aws_iam_role.workers.name}"
 }
 

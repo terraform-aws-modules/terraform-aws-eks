@@ -14,11 +14,6 @@ resource "aws_eks_cluster" "this" {
   ]
 }
 
-resource "aws_iam_role" "cluster" {
-  name_prefix        = "${var.cluster_name}"
-  assume_role_policy = "${data.aws_iam_policy_document.cluster_assume_role_policy.json}"
-}
-
 resource "aws_security_group" "cluster" {
   name_prefix = "${var.cluster_name}"
   description = "Cluster communication with workers nodes"
@@ -54,6 +49,11 @@ resource "aws_security_group_rule" "cluster_https_cidr_ingress" {
   from_port         = 443
   to_port           = 443
   type              = "ingress"
+}
+
+resource "aws_iam_role" "cluster" {
+  name_prefix        = "${var.cluster_name}"
+  assume_role_policy = "${data.aws_iam_policy_document.cluster_assume_role_policy.json}"
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {

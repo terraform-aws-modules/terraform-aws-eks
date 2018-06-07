@@ -1,9 +1,17 @@
 # See http://pre-commit.com for more information
 # See http://pre-commit.com/hooks.html for more hooks
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    sha: v0.9.2
-    hooks:
+- repo: git://github.com/antonbabenko/pre-commit-terraform
+  rev: v1.7.1
+  sha: 091f8b15d7b458e5a0aca642483deb2205e7db02
+  hooks:
+    - id: terraform_fmt
+    # - id: terraform_docs
+- repo: git://github.com/pre-commit/pre-commit-hooks
+  rev: v1.2.3
+  sha: 92e1570c282e3c69a1f8b5b8dd8d286fe27cfaa7
+  hooks:
+    - id: check-merge-conflict
     -   id: trailing-whitespace
     # -   id: end-of-file-fixer
     -   id: check-yaml

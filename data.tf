@@ -30,7 +30,19 @@ data "aws_iam_policy_document" "cluster_assume_role_policy" {
   }
 }
 
+resource "null_resource" "tags_as_list_of_maps" {
+  count = "${length(keys(var.tags))}"
+
+  triggers = "${map(
+    "key", "${element(keys(var.tags), count.index)}",
+    "value", "${element(values(var.tags), count.index)}",
+    "propagate_at_launch", "true"
+  )}"
+}
+
 locals {
+  asg_tags = ["${null_resource.tags_as_list_of_maps.*.triggers}"]
+
   # More information: https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-06-05/amazon-eks-nodegroup.yaml
   workers_userdata = <<USERDATA
 #!/bin/bash -xe

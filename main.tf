@@ -15,9 +15,6 @@
 ** You want to create a set of resources around an EKS cluster: namely an autoscaling group of workers and a security group for them.
 ** You've created a Virtual Private Cloud (VPC) and subnets where you intend to put this EKS.
 
-* It's recommended you use this module with [terraform-aws-vpc](https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws),
-* and [terraform-aws-security-group](https://registry.terraform.io/modules/terraform-aws-modules/security-group/aws).
-
 * ## Usage example
 
 * A full example leveraging other community modules is contained in the [examples/eks_test_fixture directory](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_test_fixture). Here's the gist of using it via the Terraform registry:
@@ -84,4 +81,4 @@
 * MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/LICENSE) for full details.
 */
 
-provider "http" {}
+provider "null" {}

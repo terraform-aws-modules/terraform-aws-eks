@@ -14,9 +14,6 @@ and its [source code](https://github.com/terraform-providers/terraform-provider-
 * You want to create a set of resources around an EKS cluster: namely an autoscaling group of workers and a security group for them.
 * You've created a Virtual Private Cloud (VPC) and subnets where you intend to put this EKS.
 
-It's recommended you use this module with [terraform-aws-vpc](https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws),
-and [terraform-aws-security-group](https://registry.terraform.io/modules/terraform-aws-modules/security-group/aws).
-
 ## Usage example
 
 A full example leveraging other community modules is contained in the [examples/eks_test_fixture directory](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_test_fixture). Here's the gist of using it via the Terraform registry:
@@ -104,8 +101,8 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 |------|-------------|
 | cluster_certificate_authority_data | Nested attribute containing certificate-authority-data for your cluster. Tis is the base64 encoded certificate data required to communicate with your cluster. |
 | cluster_endpoint | The endpoint for your Kubernetes API server. |
-| cluster_id | The name of the cluster. |
+| cluster_id | The name/id of the cluster. |
 | cluster_security_group_ids | description |
 | cluster_version | The Kubernetes server version for the cluster. |
-| config_map_aws_auth | description |
-| kubeconfig | description |
+| config_map_aws_auth |  |
+| kubeconfig | kubectl config file contents for this cluster. |

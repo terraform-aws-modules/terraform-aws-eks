@@ -1,15 +1,15 @@
 output "config_map_aws_auth" {
-  description = "description"
+  description = ""
   value       = "${local.config_map_aws_auth}"
 }
 
 output "kubeconfig" {
-  description = "description"
+  description = "kubectl config file contents for this cluster."
   value       = "${local.kubeconfig}"
 }
 
 output "cluster_id" {
-  description = "The name of the cluster."
+  description = "The name/id of the cluster."
   value       = "${aws_eks_cluster.this.id}"
 }
 
