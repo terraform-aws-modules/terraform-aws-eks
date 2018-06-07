@@ -1,9 +1,10 @@
 # eks_test_fixture example
 
-This set of templates serves two purposes:
+This set of templates serves a few purposes. It:
 
-1.  it shows developers how to use the module in a straightforward way as integrated with other terraform community supported modules.
-1.  serves as the test infrastructure for CI on the project.
+1.  shows developers how to use the module in a straightforward way as integrated with other terraform community supported modules.
+2.  serves as the test infrastructure for CI on the project.
+3.  provides a simple way to play with the Kubernetes cluster you create.
 
 ## IAM Permissions
 
@@ -66,8 +67,12 @@ The following IAM policy is the minimum needed to execute the module from the te
         "ec2:DetachNetworkInterface",
         "ec2:DetachVolume",
         "ec2:Disassociate*",
+        "ModifySubnetAttribute",
         "ec2:ModifyVpcAttribute",
         "ec2:ModifyVpcEndpoint",
+        "ec2:ReleaseAddress",
+        "ec2:RevokeSecurityGroupEgress",
+        "ec2:RevokeSecurityGroupIngress",
         "ec2:UpdateSecurityGroupRuleDescriptionsEgress",
         "ec2:UpdateSecurityGroupRuleDescriptionsIngress",
         "eks:CreateCluster",
@@ -92,6 +97,7 @@ The following IAM policy is the minimum needed to execute the module from the te
         "iam:GetRole",
         "iam:GetRolePolicy",
         "iam:List*",
+        "iam:PassRole",
         "iam:PutRolePolicy",
         "iam:RemoveRoleFromInstanceProfile",
         "iam:UpdateAssumeRolePolicy"
