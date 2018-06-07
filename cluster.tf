@@ -31,6 +31,16 @@ resource "aws_security_group_rule" "cluster_egress_internet" {
   type              = "egress"
 }
 
+resource "aws_security_group_rule" "cluster_egress_worker_node" {
+  description              = "Allow control plane to connect to worker node on selected port"
+  protocol                 = "tcp"
+  security_group_id        = "${aws_security_group.cluster.id}"
+  source_security_group_id = "${aws_security_group.workers.id}"
+  from_port                = "${var.cp_to_wn_from_port}"
+  to_port                  = "${var.cp_to_wn_to_port}"
+  type                     = "egress"
+}
+
 resource "aws_security_group_rule" "cluster_https_worker_ingress" {
   description              = "Allow pods to communicate with the cluster API Server."
   protocol                 = "tcp"

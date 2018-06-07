@@ -21,8 +21,15 @@ resource "aws_launch_configuration" "workers" {
   iam_instance_profile        = "${aws_iam_instance_profile.workers.name}"
   image_id                    = "${var.workers_ami_id}"
   instance_type               = "${var.workers_instance_type}"
-  security_groups             = ["${aws_security_group.workers.id}"]
-  user_data_base64            = "${base64encode(local.workers_userdata)}"
+
+  security_groups = [
+    "${distinct(concat(
+      list(aws_security_group.workers.id),
+      var.workers_additional_sgs
+    ))}",
+  ]
+
+  user_data_base64 = "${base64encode(local.workers_userdata)}"
 
   lifecycle {
     create_before_destroy = true
@@ -39,6 +46,7 @@ resource "aws_security_group" "workers" {
 
 resource "aws_security_group_rule" "workers_egress_internet" {
   description       = "Allow nodes all egress to the Internet."
+  count             = "${var.worker_node_allow_all_egress? 1 : 0}"
   protocol          = "-1"
   security_group_id = "${aws_security_group.workers.id}"
   cidr_blocks       = ["0.0.0.0/0"]
@@ -47,14 +55,35 @@ resource "aws_security_group_rule" "workers_egress_internet" {
   type              = "egress"
 }
 
-resource "aws_security_group_rule" "workers_ingress_self" {
-  description              = "Allow node to communicate with each other."
-  protocol                 = "-1"
+# As per the minimum requirement
+resource "aws_security_group_rule" "workers_egress_control_plane" {
+  description              = "Allow nodes all egress to the Internet."
+  protocol                 = "tcp"
   security_group_id        = "${aws_security_group.workers.id}"
-  source_security_group_id = "${aws_security_group.workers.id}"
-  from_port                = 0
-  to_port                  = 65535
-  type                     = "ingress"
+  source_security_group_id = "${aws_security_group.cluster.id}"
+  from_port                = 443
+  to_port                  = 443
+  type                     = "egress"
+}
+
+resource "aws_security_group_rule" "workers_egress_self" {
+  description       = "Allow node to communicate with each other."
+  protocol          = -1
+  security_group_id = "${aws_security_group.workers.id}"
+  self              = true
+  from_port         = 0
+  to_port           = 65535
+  type              = "egress"
+}
+
+resource "aws_security_group_rule" "workers_ingress_self" {
+  description       = "Allow node to communicate with each other."
+  protocol          = -1
+  security_group_id = "${aws_security_group.workers.id}"
+  self              = true
+  from_port         = 0
+  to_port           = 65535
+  type              = "ingress"
 }
 
 resource "aws_security_group_rule" "workers_ingress_cluster" {
@@ -62,8 +91,8 @@ resource "aws_security_group_rule" "workers_ingress_cluster" {
   protocol                 = "tcp"
   security_group_id        = "${aws_security_group.workers.id}"
   source_security_group_id = "${aws_security_group.cluster.id}"
-  from_port                = 1025
-  to_port                  = 65535
+  from_port                = "${var.cp_to_wn_from_port}"
+  to_port                  = "${var.cp_to_wn_to_port}"
   type                     = "ingress"
 }
 

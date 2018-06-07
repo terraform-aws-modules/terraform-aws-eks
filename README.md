@@ -71,6 +71,25 @@ Full contributing [guidelines are covered here](https://github.com/terraform-aws
 Testing and using this repo requires a minimum set of IAM permissions. Test permissions
 are listed in the [eks_test_fixture README](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_test_fixture/README.md).
 
+## Security group
+
+According to [AWS documentation on EKS security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html), you can set up the security group for worker nodes and control plane according to the minimum requirements or the recommended way.
+
+The module try to accommodate all possible settings that you might wish to have. Even including the ability to set additional security group onto the node and plane instances.
+
+*Since you will be running applications on these worker node, you will want to set additional security group(s) on them to grant the access for those application**
+
+In particular, you can control whether the worker node has egress connection everywhere or not, which port range is allowed for communication between control plane and worker node.
+
+The default setting of the module follow the recommended set up as per AWS guide, but you can always switch to other settings. As mentioned earlier, you can even add more security groups onto the instances to customize things even more according to your needs.
+
+These are done via the following variables
+`worker_node_allow_all_egress` (default `true`)
+`cp_to_wn_from_port` (default `1025`)
+`cp_to_wn_to_port` (default `65355`)
+
+Please note that if we follow **only the minimum rules for worker node**, they will only be able to communicate with the control plane on TCP:443.
+
 ## Change log
 
 The [changelog](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/CHANGELOG.md) captures all important release notes.
@@ -91,9 +110,13 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster_ingress_cidrs | The CIDRs from which we can execute kubectl commands. | list | - | yes |
 | cluster_name | Name of the EKS cluster. | string | - | yes |
 | cluster_version | Kubernetes version to use for the cluster. | string | `1.10` | no |
+| cp_to_wn_from_port | The From port for the rules connecting our control plane to worker node | string | `1025` | no |
+| cp_to_wn_to_port | The to port for the rules connecting our control plane to worker node | string | `65535` | no |
 | subnets | A list of subnets to associate with the cluster's underlying instances. | list | - | yes |
 | tags | A map of tags to add to all resources | string | `<map>` | no |
 | vpc_id | VPC id where the cluster and other resources will be deployed. | string | - | yes |
+| worker_node_allow_all_egress | Specify whether you wish to allow worker node egress everwhere on all ports | string | `true` | no |
+| workers_additional_sgs | A list of security group IDs which we want to set onto the worker nodes instances | list | `<list>` | no |
 | workers_ami_id | AMI ID for the eks workers. | string | - | yes |
 | workers_asg_desired_capacity | description | string | `1` | no |
 | workers_asg_max_size | description | string | `3` | no |
