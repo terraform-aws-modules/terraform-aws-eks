@@ -9,6 +9,7 @@ resource "aws_autoscaling_group" "workers" {
   tags = ["${concat(
     list(
       map("key", "Name", "value", "${var.cluster_name}-eks_asg", "propagate_at_launch", true),
+      map("key", "kubernetes.io/cluster/${var.cluster_name}", "value", "owned", "propagate_at_launch", true),
     ),
     local.asg_tags)
   }"]
@@ -32,7 +33,8 @@ resource "aws_security_group" "workers" {
   name_prefix = "${var.cluster_name}"
   description = "Security group for all nodes in the cluster."
   vpc_id      = "${var.vpc_id}"
-  tags        = "${merge(var.tags, map("Name", "${var.cluster_name}-eks_worker_sg"))}"
+  tags        = "${merge(var.tags, map("Name", "${var.cluster_name}-eks_worker_sg", "kubernetes.io/cluster/${var.cluster_name}", "owned"
+  ))}"
 }
 
 resource "aws_security_group_rule" "workers_egress_internet" {

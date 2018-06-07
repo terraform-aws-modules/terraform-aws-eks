@@ -31,6 +31,7 @@ data "http" "workstation_external_ip" {
 
 locals {
   workstation_external_cidr = "${chomp(data.http.workstation_external_ip.body)}/32"
+  cluster_name              = "test-eks-${random_string.suffix.result}"
 
   tags = "${map("Environment", "test",
                 "GithubRepo", "terraform-aws-eks",
@@ -54,7 +55,7 @@ module "vpc" {
   public_subnets     = ["10.0.3.0/24", "10.0.4.0/24"]
   enable_nat_gateway = true
   single_nat_gateway = true
-  tags               = "${local.tags}"
+  tags               = "${merge(local.tags, map("kubernetes.io/cluster/${local.cluster_name}", "shared"))}"
 }
 
 module "security_group" {
@@ -67,7 +68,7 @@ module "security_group" {
 
 module "eks" {
   source                = "../.."
-  cluster_name          = "test-eks-${random_string.suffix.result}"
+  cluster_name          = "${local.cluster_name}"
   subnets               = "${module.vpc.public_subnets}"
   tags                  = "${local.tags}"
   vpc_id                = "${module.vpc.vpc_id}"
