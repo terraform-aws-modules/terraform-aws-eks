@@ -26,7 +26,7 @@ script:
 - echo 'script'
 - terraform init
 - terraform fmt -check=true
-- terraform validate -var "region=${AWS_REGION}" -var "subnets=[]" -var "workers_ami_id=ami-123456" -var "cluster_ingress_cidrs=[]" -var "cluster_name=test_cluster"
+- terraform validate -var "region=${AWS_REGION}" -var "vpc_id=vpc-123456" -var "subnets=[]" -var "workers_ami_id=ami-123456" -var "cluster_ingress_cidrs=[]" -var "cluster_name=test_cluster"
 - docker run --rm -v $(pwd):/app/ --workdir=/app/ -t wata727/tflint --error-with-issues
 - cd examples/eks_test_fixture
 - terraform init

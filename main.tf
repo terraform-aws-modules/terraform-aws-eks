@@ -5,6 +5,8 @@
 * through the [Terraform registry](https://registry.terraform.io/modules/terraform-aws-modules/eks/aws).
 * Inspired by and adapted from [this doc](https://www.terraform.io/docs/providers/aws/guides/eks-getting-started.html)
 * and its [source code](https://github.com/terraform-providers/terraform-provider-aws/tree/master/examples/eks-getting-started).
+* Instructions on [this post](https://aws.amazon.com/blogs/aws/amazon-eks-now-generally-available/)
+* can help guide you through connecting to the cluster via `kubectl`.
 
 * | Branch | Build status                                                                                                                                                      |
 * | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |

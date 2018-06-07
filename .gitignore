@@ -7,3 +7,5 @@
 .kitchen.local.yml
 Gemfile.lock
 terraform.tfstate.d/
+config
+config-map-aws-auth.yaml

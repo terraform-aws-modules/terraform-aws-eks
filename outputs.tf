@@ -1,5 +1,5 @@
 output "config_map_aws_auth" {
-  description = ""
+  description = "A kubernetes configuration to authenticate to this cluster."
   value       = "${local.config_map_aws_auth}"
 }
 

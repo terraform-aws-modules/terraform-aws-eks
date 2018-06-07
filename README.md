@@ -4,6 +4,8 @@ A terraform module to create a managed Kubernetes cluster on AWS EKS. Available
 through the [Terraform registry](https://registry.terraform.io/modules/terraform-aws-modules/eks/aws).
 Inspired by and adapted from [this doc](https://www.terraform.io/docs/providers/aws/guides/eks-getting-started.html)
 and its [source code](https://github.com/terraform-providers/terraform-provider-aws/tree/master/examples/eks-getting-started).
+Instructions on [this post](https://aws.amazon.com/blogs/aws/amazon-eks-now-generally-available/)
+can help guide you through connecting to the cluster via `kubectl`.
 
 | Branch | Build status                                                                                                                                                      |
 | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -104,5 +106,5 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster_id | The name/id of the cluster. |
 | cluster_security_group_ids | description |
 | cluster_version | The Kubernetes server version for the cluster. |
-| config_map_aws_auth |  |
+| config_map_aws_auth | A kubernetes configuration to authenticate to this cluster. |
 | kubeconfig | kubectl config file contents for this cluster. |
