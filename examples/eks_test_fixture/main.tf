@@ -12,6 +12,7 @@ provider "random" {
 }
 
 provider "http" {}
+provider "local" {}
 
 data "aws_ami" "eks_worker" {
   filter {
@@ -66,14 +67,6 @@ module "vpc" {
   enable_nat_gateway = true
   single_nat_gateway = true
   tags               = "${merge(local.tags, map("kubernetes.io/cluster/${local.cluster_name}", "shared"))}"
-}
-
-module "security_group" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "1.12.0"
-  name    = "test-sg-https"
-  vpc_id  = "${module.vpc.vpc_id}"
-  tags    = "${local.tags}"
 }
 
 module "eks" {
