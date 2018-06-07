@@ -74,4 +74,5 @@ module "eks" {
   vpc_id                = "${module.vpc.vpc_id}"
   workers_ami_id        = "${data.aws_ami.eks_worker.id}"
   cluster_ingress_cidrs = ["${local.workstation_external_cidr}"]
+  workers_instance_type = "t2.micro"
 }

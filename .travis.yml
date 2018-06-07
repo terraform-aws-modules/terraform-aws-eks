@@ -13,7 +13,7 @@ install:
 - bundle install
 before_script:
 - echo 'before_script'
-- export AWS_REGION='us-west-2'
+- export AWS_REGION='us-east-1'
 - export TF_VAR_region=${AWS_REGION}
 - echo "using AWS_REGION=${AWS_REGION}"
 - export TF_WARN_OUTPUT_ERRORS=1
