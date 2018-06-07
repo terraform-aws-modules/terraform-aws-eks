@@ -48,6 +48,9 @@
 * 3. Ensure your AWS environment is configured (i.e. credentials and region) for test.
 * 4. Test using `bundle exec kitchen test` from the root of the repo.
 
+For now, connectivity to the kubernetes cluster is not tested but will be in the future.
+To test your kubectl connection manually, see the [eks_test_fixture README](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_test_fixture/README.md).
+
 * ## Doc generation
 
 * Documentation should be modified within `main.tf` and generated using [terraform-docs](https://github.com/segmentio/terraform-docs).

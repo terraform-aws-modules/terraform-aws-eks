@@ -6,6 +6,19 @@ This set of templates serves a few purposes. It:
 2.  serves as the test infrastructure for CI on the project.
 3.  provides a simple way to play with the Kubernetes cluster you create.
 
+## testing with kubectl
+
+Once converged, `kubeconfig` and `config-map-aws-auth.yml` should be in this directory.
+Ensure you have a recent version of `kubectl` on your PATH ([instructions here](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl))
+
+```bash
+curl -o heptio-authenticator-aws https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-06-05/bin/darwin/amd64/heptio-authenticator-aws
+mv heptio-authenticator-aws ~/go/bin/
+kubectl apply -f examples/eks_test_fixture/config-map-aws-auth.yaml --kubeconfig examples/eks_test_fixture/kubeconfig
+# configmap "aws-auth" created
+kubectl get nodes --watch --kubeconfig examples/eks_test_fixture/kubeconfig
+```
+
 ## IAM Permissions
 
 The following IAM policy is the minimum needed to execute the module from the test suite.

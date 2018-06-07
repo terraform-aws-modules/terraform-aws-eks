@@ -91,3 +91,13 @@ resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryRea
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = "${aws_iam_role.workers.name}"
 }
+
+resource "null_resource" "tags_as_list_of_maps" {
+  count = "${length(keys(var.tags))}"
+
+  triggers = "${map(
+    "key", "${element(keys(var.tags), count.index)}",
+    "value", "${element(values(var.tags), count.index)}",
+    "propagate_at_launch", "true"
+  )}"
+}

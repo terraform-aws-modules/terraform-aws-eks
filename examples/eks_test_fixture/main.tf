@@ -46,9 +46,9 @@ resource "random_string" "suffix" {
   special = false
 }
 
-resource "local_file" "config" {
+resource "local_file" "kubeconfig" {
   content  = "${module.eks.kubeconfig}"
-  filename = "${path.module}/config"
+  filename = "${path.module}/kubeconfig"
 }
 
 resource "local_file" "config-map-aws-auth" {
@@ -77,5 +77,5 @@ module "eks" {
   vpc_id                = "${module.vpc.vpc_id}"
   workers_ami_id        = "${data.aws_ami.eks_worker.id}"
   cluster_ingress_cidrs = ["${local.workstation_external_cidr}"]
-  workers_instance_type = "t2.micro"
+  workers_instance_type = "t2.small"
 }
