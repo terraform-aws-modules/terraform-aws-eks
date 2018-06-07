@@ -28,6 +28,7 @@ variable "vpc_id" {
 
 variable "workers_ami_id" {
   description = "AMI ID for the eks workers."
+  default     = ""
 }
 
 variable "workers_asg_desired_capacity" {
@@ -48,4 +49,14 @@ variable "workers_asg_min_size" {
 variable "workers_instance_type" {
   description = "Size of the workers instances."
   default     = "m4.large"
+}
+
+variable "workers_ami_mapping" {
+  description = "Mapping from the region to the [EKS optimized AMI](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)"
+  type        = "map"
+
+  default = {
+    us-east-1 = "ami-dea4d5a1"
+    us-west-2 = "ami-73a6e20b"
+  }
 }

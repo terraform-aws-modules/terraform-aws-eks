@@ -28,7 +28,6 @@ module "eks" {
   subnets               = ["subnet-abcde012", "subnet-bcde012a"]
   tags                  = "${map("Environment", "test")}"
   vpc_id                = "vpc-abcde012"
-  workers_ami_id        = "ami-123456"
   cluster_ingress_cidrs = ["24.18.23.91/32"]
 }
 ```
@@ -66,6 +65,14 @@ Report issues/questions/feature requests on in the [issues](https://github.com/t
 
 Full contributing [guidelines are covered here](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/CONTRIBUTING.md).
 
+## AMI
+
+According to [AWS guide](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html), we should use the EKS-optimized AMI. Unfortunately, the AMI is being rolled out quite slowly. So, we have a variable that set up the mapping between the region in which you are rolling out EKS with the AMI that we will be using for the instance.
+
+If you wish to use your own AMI, you can do so by overwriting this `mapping` action with the variable `workers_ami_id`. Otherwise, we will simply map from the region to the AMI via the map (no pun intended) in variable `workers_ami_mapping`.
+
+Please note that the maintainer of this module will try to keep the list as always up-to-date, but if for some reason you think it's out of date, please feel free to provide the correct value via that variable, and the module will look up correctly.
+
 ## IAM Permissions
 
 Testing and using this repo requires a minimum set of IAM permissions. Test permissions
@@ -94,7 +101,8 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | subnets | A list of subnets to associate with the cluster's underlying instances. | list | - | yes |
 | tags | A map of tags to add to all resources | string | `<map>` | no |
 | vpc_id | VPC id where the cluster and other resources will be deployed. | string | - | yes |
-| workers_ami_id | AMI ID for the eks workers. | string | - | yes |
+| workers_ami_id | AMI ID for the eks workers. | string | `` | no |
+| workers_ami_mapping | Mapping from the region to the [EKS optimized AMI](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html) | map | `<map>` | no |
 | workers_asg_desired_capacity | description | string | `1` | no |
 | workers_asg_max_size | description | string | `3` | no |
 | workers_asg_min_size | description | string | `1` | no |
