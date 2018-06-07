@@ -29,7 +29,6 @@
 *   subnets               = ["subnet-abcde012", "subnet-bcde012a"]
 *   tags                  = "${map("Environment", "test")}"
 *   vpc_id                = "vpc-abcde012"
-*   workers_ami_id        = "ami-123456"
 *   cluster_ingress_cidrs = ["24.18.23.91/32"]
 * }
 * ```
@@ -66,6 +65,15 @@ To test your kubectl connection manually, see the [eks_test_fixture README](http
 * Report issues/questions/feature requests on in the [issues](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/new) section.
 
 * Full contributing [guidelines are covered here](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/CONTRIBUTING.md).
+
+## AMI
+
+
+According to [AWS guide](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html), we should use the EKS-optimized AMI. Unfortunately, the AMI is being rolled out quite slowly. So, we have a variable that set up the mapping between the region in which you are rolling out EKS with the AMI that we will be using for the instance.
+
+If you wish to use your own AMI, you can do so by overwriting this `mapping` action with the variable `workers_ami_id`. Otherwise, we will simply map from the region to the AMI via the map (no pun intended) in variable `workers_ami_mapping`.
+
+Please note that the maintainer of this module will try to keep the list as always up-to-date, but if for some reason you think it's out of date, please feel free to provide the correct value via that variable, and the module will look up correctly.
 
 * ## IAM Permissions
 
