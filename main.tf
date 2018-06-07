@@ -1,7 +1,7 @@
 /**
 # terraform-aws-eks
 
-* A terraform module to create a managed Kubernetes cluster on AWS EKS. Available 
+* A terraform module to create a managed Kubernetes cluster on AWS EKS. Available
 * through the [Terraform registry](https://registry.terraform.io/modules/terraform-aws-modules/eks/aws).
 * Inspired by and adapted from [this doc](https://www.terraform.io/docs/providers/aws/guides/eks-getting-started.html)
 * and its [source code](https://github.com/terraform-providers/terraform-provider-aws/tree/master/examples/eks-getting-started).
@@ -71,6 +71,25 @@ To test your kubectl connection manually, see the [eks_test_fixture README](http
 
 * Testing and using this repo requires a minimum set of IAM permissions. Test permissions
 * are listed in the [eks_test_fixture README](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_test_fixture/README.md).
+
+## Security group
+
+According to [AWS documentation on EKS security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html), you can set up the security group for worker nodes and control plane according to the minimum requirements or the recommended way.
+
+The module try to accommodate all possible settings that you might wish to have. Even including the ability to set additional security group onto the node and plane instances.
+
+**Since you will be running applications on these worker node, you will want to set additional security group(s) on them to grant the access for those application**
+
+In particular, you can control whether the worker node has egress connection everywhere or not, which port range is allowed for communication between control plane and worker node.
+
+The default setting of the module follow the recommended set up as per AWS guide, but you can always switch to other settings. As mentioned earlier, you can even add more security groups onto the instances to customize things even more according to your needs.
+
+These are done via the following variables
+* `worker_node_allow_all_egress` (default `true`)
+* `cp_to_wn_from_port` (default `1025`)
+* `cp_to_wn_to_port` (default `65355`)
+
+Please note that if we follow **only the minimum rules for worker node**, they will only be able to communicate with the control plane on TCP:443.
 
 * ## Change log
 

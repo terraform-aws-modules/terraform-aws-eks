@@ -49,3 +49,24 @@ variable "workers_instance_type" {
   description = "Size of the workers instances."
   default     = "m4.large"
 }
+
+variable "workers_additional_sgs" {
+  description = "A list of security group IDs which we want to set onto the worker nodes instances"
+  type        = "list"
+  default     = []
+}
+
+variable worker_node_allow_all_egress {
+  description = "Specify whether you wish to allow worker node egress everwhere on all ports"
+  default     = true
+}
+
+variable "cp_to_wn_from_port" {
+  description = "The From port for the rules connecting our control plane to worker node"
+  default     = 1025
+}
+
+variable "cp_to_wn_to_port" {
+  description = "The to port for the rules connecting our control plane to worker node"
+  default     = 65535
+}
