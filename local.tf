@@ -129,5 +129,5 @@ users:
 KUBECONFIG
 
   # A mechanism to detect the AMI that we wish to use
-  worker_instance_ami = "${length(var.workers_ami_mapping) > 0? var.workers_ami_id : lookup(var.eks_ami_mapping, data.aws_region.current.name)}"
+  worker_instance_ami = "${length(var.workers_ami_mapping) > 0? var.workers_ami_id : lookup(var.workers_ami_mapping, data.aws_region.current.name)}"
 }
