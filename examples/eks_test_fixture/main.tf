@@ -11,14 +11,38 @@ provider "random" {
   version = "= 1.3.1"
 }
 
-# resource "random_pet" "suffix" {
-#   length = 1
-# }
+provider "http" {}
 
-# resource "random_string" "suffix" {
-#   length = 8
-#   special = false
-# }
+data "aws_ami" "eks_worker" {
+  filter {
+    name   = "name"
+    values = ["eks-worker-*"]
+  }
+
+  most_recent = true
+  owners      = ["602401143452"] # Amazon
+}
+
+data "aws_availability_zones" "available" {}
+
+data "http" "workstation_external_ip" {
+  url = "http://icanhazip.com"
+}
+
+locals {
+  workstation_external_cidr = "${chomp(data.http.workstation_external_ip.body)}/32"
+
+  tags = "${map("Environment", "test",
+                "GithubRepo", "terraform-aws-eks",
+                "GithubOrg", "terraform-aws-modules",
+                "Workspace", "${terraform.workspace}",
+  )}"
+}
+
+resource "random_string" "suffix" {
+  length  = 8
+  special = false
+}
 
 module "vpc" {
   source             = "terraform-aws-modules/vpc/aws"
@@ -42,14 +66,11 @@ module "security_group" {
 }
 
 module "eks" {
-  source = "../.."
-
-  # cluster_name    = "test-eks-${random_string.suffix.result}"
-  # cluster_name    = "test-eks-${random_pet.suffix.id}"
-  cluster_name = "test-eks-cluster"
-
-  security_groups = ["${module.security_group.this_security_group_id}"]
-  subnets         = "${module.vpc.public_subnets}"
-  tags            = "${local.tags}"
-  vpc_id          = "${module.vpc.vpc_id}"
+  source                = "../.."
+  cluster_name          = "test-eks-${random_string.suffix.result}"
+  subnets               = "${module.vpc.public_subnets}"
+  tags                  = "${local.tags}"
+  vpc_id                = "${module.vpc.vpc_id}"
+  workers_ami_id        = "${data.aws_ami.eks_worker.id}"
+  cluster_ingress_cidrs = ["${local.workstation_external_cidr}"]
 }

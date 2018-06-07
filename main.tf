@@ -3,6 +3,8 @@
 
 * A terraform module to create a managed Kubernetes cluster on AWS EKS. Available 
 * through the [Terraform registry](https://registry.terraform.io/modules/terraform-aws-modules/eks/aws).
+* Inspired by and adapted from [this doc](https://www.terraform.io/docs/providers/aws/guides/eks-getting-started.html)
+* and its [source code](https://github.com/terraform-providers/terraform-provider-aws/tree/master/examples/eks-getting-started).
 
 * | Branch | Build status                                                                                                                                                      |
 * | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -14,8 +16,7 @@
 ** You've created a Virtual Private Cloud (VPC) and subnets where you intend to put this EKS.
 
 * It's recommended you use this module with [terraform-aws-vpc](https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws),
-* [terraform-aws-security-group](https://registry.terraform.io/modules/terraform-aws-modules/security-group/aws), and
-* [terraform-aws-autoscaling](https://registry.terraform.io/modules/terraform-aws-modules/autoscaling/aws/).
+* and [terraform-aws-security-group](https://registry.terraform.io/modules/terraform-aws-modules/security-group/aws).
 
 * ## Usage example
 
@@ -23,13 +24,14 @@
 
 * ```hcl
 * module "eks" {
-*   source          = "terraform-aws-modules/eks/aws"
-*   version         = "0.1.0"
-*   cluster_name    = "test-eks-cluster"
-*   security_groups = ["sg-edcd9784", "sg-edcd9785"]
-*   subnets         = ["subnet-abcde012", "subnet-bcde012a"]
-*   tags            = "${map("Environment", "test")}"
-*   vpc_id          = "vpc-abcde012"
+*   source                = "terraform-aws-modules/eks/aws"
+*   version               = "0.1.0"
+*   cluster_name          = "test-eks-cluster"
+*   subnets               = ["subnet-abcde012", "subnet-bcde012a"]
+*   tags                  = "${map("Environment", "test")}"
+*   vpc_id                = "vpc-abcde012"
+*   workers_ami_id        = "ami-123456"
+*   cluster_ingress_cidrs = ["24.18.23.91/32"]
 * }
 * ```
 
@@ -82,3 +84,4 @@
 * MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/LICENSE) for full details.
 */
 
+provider "http" {}

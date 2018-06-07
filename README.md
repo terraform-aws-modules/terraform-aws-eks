@@ -2,6 +2,8 @@
 
 A terraform module to create a managed Kubernetes cluster on AWS EKS. Available
 through the [Terraform registry](https://registry.terraform.io/modules/terraform-aws-modules/eks/aws).
+Inspired by and adapted from [this doc](https://www.terraform.io/docs/providers/aws/guides/eks-getting-started.html)
+and its [source code](https://github.com/terraform-providers/terraform-provider-aws/tree/master/examples/eks-getting-started).
 
 | Branch | Build status                                                                                                                                                      |
 | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -13,8 +15,7 @@ through the [Terraform registry](https://registry.terraform.io/modules/terraform
 * You've created a Virtual Private Cloud (VPC) and subnets where you intend to put this EKS.
 
 It's recommended you use this module with [terraform-aws-vpc](https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws),
-[terraform-aws-security-group](https://registry.terraform.io/modules/terraform-aws-modules/security-group/aws), and
-[terraform-aws-autoscaling](https://registry.terraform.io/modules/terraform-aws-modules/autoscaling/aws/).
+and [terraform-aws-security-group](https://registry.terraform.io/modules/terraform-aws-modules/security-group/aws).
 
 ## Usage example
 
@@ -22,13 +23,14 @@ A full example leveraging other community modules is contained in the [examples/
 
 ```hcl
 module "eks" {
-  source          = "terraform-aws-modules/eks/aws"
-  version         = "0.1.0"
-  cluster_name    = "test-eks-cluster"
-  security_groups = ["sg-edcd9784", "sg-edcd9785"]
-  subnets         = ["subnet-abcde012", "subnet-bcde012a"]
-  tags            = "${map("Environment", "test")}"
-  vpc_id          = "vpc-abcde012"
+  source                = "terraform-aws-modules/eks/aws"
+  version               = "0.1.0"
+  cluster_name          = "test-eks-cluster"
+  subnets               = ["subnet-abcde012", "subnet-bcde012a"]
+  tags                  = "${map("Environment", "test")}"
+  vpc_id                = "vpc-abcde012"
+  workers_ami_id        = "ami-123456"
+  cluster_ingress_cidrs = ["24.18.23.91/32"]
 }
 ```
 
@@ -84,22 +86,26 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
+| cluster_ingress_cidrs | The CIDRs from which we can execute kubectl commands. | list | - | yes |
 | cluster_name | Name of the EKS cluster. | string | - | yes |
-| security_groups | The security groups to attach to the EKS cluster instances | list | - | yes |
+| cluster_version | Kubernetes version to use for the cluster. | string | `1.10` | no |
 | subnets | A list of subnets to associate with the cluster's underlying instances. | list | - | yes |
 | tags | A map of tags to add to all resources | string | `<map>` | no |
 | vpc_id | VPC id where the cluster and other resources will be deployed. | string | - | yes |
+| workers_ami_id | AMI ID for the eks workers. | string | - | yes |
+| workers_asg_desired_capacity | description | string | `1` | no |
+| workers_asg_max_size | description | string | `3` | no |
+| workers_asg_min_size | description | string | `1` | no |
+| workers_instance_type | Size of the workers instances. | string | `m4.large` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| cluster_arn | The Amazon Resource Name (ARN) of the cluster. |
-| cluster_certificate_authority | Nested attribute containing certificate-authority-data for your cluster |
-| cluster_data | The base64 encoded certificate data required to communicate with your cluster. Add this to the certificate-authority-data section of the kubeconfig file for your cluster. |
+| cluster_certificate_authority_data | Nested attribute containing certificate-authority-data for your cluster. Tis is the base64 encoded certificate data required to communicate with your cluster. |
 | cluster_endpoint | The endpoint for your Kubernetes API server. |
 | cluster_id | The name of the cluster. |
+| cluster_security_group_ids | description |
 | cluster_version | The Kubernetes server version for the cluster. |
-| cluster_vpc_config | description |
 | config_map_aws_auth | description |
 | kubeconfig | description |
