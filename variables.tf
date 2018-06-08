@@ -17,6 +17,16 @@ variable "cluster_version" {
   default     = "1.10"
 }
 
+variable "config_output_path" {
+  description = "Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory."
+  default     = "./"
+}
+
+variable "configure_kubectl_session" {
+  description = "Configure the current session's kubectl to use the instantiated cluster."
+  default     = false
+}
+
 variable "subnets" {
   description = "A list of subnets to associate with the cluster's underlying instances."
   type        = "list"

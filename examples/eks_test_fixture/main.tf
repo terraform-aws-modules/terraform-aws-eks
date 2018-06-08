@@ -36,16 +36,6 @@ resource "random_string" "suffix" {
   special = false
 }
 
-resource "local_file" "kubeconfig" {
-  content  = "${module.eks.kubeconfig}"
-  filename = "${path.module}/kubeconfig"
-}
-
-resource "local_file" "config-map-aws-auth" {
-  content  = "${module.eks.config_map_aws_auth}"
-  filename = "${path.module}/config-map-aws-auth.yaml"
-}
-
 module "vpc" {
   source             = "terraform-aws-modules/vpc/aws"
   version            = "1.14.0"
@@ -60,12 +50,13 @@ module "vpc" {
 }
 
 module "eks" {
-  source                = "../.."
-  cluster_name          = "${local.cluster_name}"
-  subnets               = "${module.vpc.public_subnets}"
-  tags                  = "${local.tags}"
-  vpc_id                = "${module.vpc.vpc_id}"
-  cluster_ingress_cidrs = ["${local.workstation_external_cidr}"]
-  workers_instance_type = "t2.small"
-  additional_userdata   = "echo hello world"
+  source                    = "../.."
+  cluster_name              = "${local.cluster_name}"
+  subnets                   = "${module.vpc.public_subnets}"
+  tags                      = "${local.tags}"
+  vpc_id                    = "${module.vpc.vpc_id}"
+  cluster_ingress_cidrs     = ["${local.workstation_external_cidr}"]
+  workers_instance_type     = "t2.small"
+  additional_userdata       = "echo hello world"
+  configure_kubectl_session = true
 }
