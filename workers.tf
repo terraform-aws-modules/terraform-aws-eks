@@ -23,7 +23,7 @@ resource "aws_launch_configuration" "workers" {
   instance_type               = "${var.workers_instance_type}"
   security_groups             = ["${aws_security_group.workers.id}"]
   user_data_base64            = "${base64encode(data.template_file.userdata.rendered)}"
-  ebs_optimized               = false
+  ebs_optimized               = "${var.ebs_optimized_workers ? module.ebs_optimized.answer : false}"
 
   lifecycle {
     create_before_destroy = true
