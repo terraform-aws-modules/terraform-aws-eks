@@ -14,16 +14,6 @@ provider "random" {
 provider "http" {}
 provider "local" {}
 
-data "aws_ami" "eks_worker" {
-  filter {
-    name   = "name"
-    values = ["eks-worker-*"]
-  }
-
-  most_recent = true
-  owners      = ["602401143452"] # Amazon
-}
-
 data "aws_availability_zones" "available" {}
 
 data "http" "workstation_external_ip" {
@@ -75,7 +65,6 @@ module "eks" {
   subnets               = "${module.vpc.public_subnets}"
   tags                  = "${local.tags}"
   vpc_id                = "${module.vpc.vpc_id}"
-  workers_ami_id        = "${data.aws_ami.eks_worker.id}"
   cluster_ingress_cidrs = ["${local.workstation_external_cidr}"]
   workers_instance_type = "t2.small"
 }

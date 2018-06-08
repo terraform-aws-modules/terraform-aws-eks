@@ -4,7 +4,7 @@ variable "cluster_ingress_cidrs" {
 }
 
 variable "cluster_name" {
-  description = "Name of the EKS cluster."
+  description = "Name of the EKS cluster which is also used as a prefix in names of related resources."
 }
 
 variable "cluster_version" {
@@ -18,7 +18,7 @@ variable "subnets" {
 }
 
 variable "tags" {
-  description = "A map of tags to add to all resources"
+  description = "A map of tags to add to all resources."
   default     = {}
 }
 
@@ -27,21 +27,22 @@ variable "vpc_id" {
 }
 
 variable "workers_ami_id" {
-  description = "AMI ID for the eks workers."
+  description = "AMI ID for the eks workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI."
+  default     = ""
 }
 
 variable "workers_asg_desired_capacity" {
-  description = "description"
+  description = "Desired worker capacity in the autoscaling group."
   default     = "1"
 }
 
 variable "workers_asg_max_size" {
-  description = "description"
+  description = "Maximum worker capacity in the autoscaling group."
   default     = "3"
 }
 
 variable "workers_asg_min_size" {
-  description = "description"
+  description = "Minimum worker capacity in the autoscaling group."
   default     = "1"
 }
 

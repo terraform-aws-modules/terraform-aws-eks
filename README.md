@@ -89,15 +89,15 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | cluster_ingress_cidrs | The CIDRs from which we can execute kubectl commands. | list | - | yes |
-| cluster_name | Name of the EKS cluster. | string | - | yes |
+| cluster_name | Name of the EKS cluster which is also used as a prefix in names of related resources. | string | - | yes |
 | cluster_version | Kubernetes version to use for the cluster. | string | `1.10` | no |
 | subnets | A list of subnets to associate with the cluster's underlying instances. | list | - | yes |
-| tags | A map of tags to add to all resources | string | `<map>` | no |
+| tags | A map of tags to add to all resources. | string | `<map>` | no |
 | vpc_id | VPC id where the cluster and other resources will be deployed. | string | - | yes |
-| workers_ami_id | AMI ID for the eks workers. | string | - | yes |
-| workers_asg_desired_capacity | description | string | `1` | no |
-| workers_asg_max_size | description | string | `3` | no |
-| workers_asg_min_size | description | string | `1` | no |
+| workers_ami_id | AMI ID for the eks workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI. | string | `` | no |
+| workers_asg_desired_capacity | Desired worker capacity in the autoscaling group. | string | `1` | no |
+| workers_asg_max_size | Maximum worker capacity in the autoscaling group. | string | `3` | no |
+| workers_asg_min_size | Minimum worker capacity in the autoscaling group. | string | `1` | no |
 | workers_instance_type | Size of the workers instances. | string | `m4.large` | no |
 
 ## Outputs
