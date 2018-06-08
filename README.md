@@ -28,7 +28,6 @@ module "eks" {
   subnets               = ["subnet-abcde012", "subnet-bcde012a"]
   tags                  = "${map("Environment", "test")}"
   vpc_id                = "vpc-abcde012"
-  workers_ami_id        = "ami-123456"
   cluster_ingress_cidrs = ["24.18.23.91/32"]
 }
 ```
@@ -92,6 +91,8 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster_ingress_cidrs | The CIDRs from which we can execute kubectl commands. | list | - | yes |
 | cluster_name | Name of the EKS cluster which is also used as a prefix in names of related resources. | string | - | yes |
 | cluster_version | Kubernetes version to use for the cluster. | string | `1.10` | no |
+| config_output_path | Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory. | string | `./` | no |
+| configure_kubectl_session | Configure the current session's kubectl to use the instantiated cluster. | string | `false` | no |
 | subnets | A list of subnets to associate with the cluster's underlying instances. | list | - | yes |
 | tags | A map of tags to add to all resources. | string | `<map>` | no |
 | vpc_id | VPC id where the cluster and other resources will be deployed. | string | - | yes |
