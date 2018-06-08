@@ -35,11 +35,11 @@ script:
 - cd -
 - terraform -v
 # - bundle exec kitchen test --destroy always
-deploy:
-  provider: script
-  script: ci/deploy.sh
-  on:
-    branch: master
+# deploy:
+#   provider: script
+#   script: ci/deploy.sh
+#   on:
+#     branch: master
 notifications:
   email:
     recipients:
