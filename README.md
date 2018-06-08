@@ -88,6 +88,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
+| additional_userdata | Extra lines of userdata (bash) which are appended to the default userdata code. | string | `` | no |
 | cluster_ingress_cidrs | The CIDRs from which we can execute kubectl commands. | list | - | yes |
 | cluster_name | Name of the EKS cluster which is also used as a prefix in names of related resources. | string | - | yes |
 | cluster_version | Kubernetes version to use for the cluster. | string | `1.10` | no |

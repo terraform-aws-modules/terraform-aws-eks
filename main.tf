@@ -1,7 +1,7 @@
 /**
 # terraform-aws-eks
 
-* A terraform module to create a managed Kubernetes cluster on AWS EKS. Available 
+* A terraform module to create a managed Kubernetes cluster on AWS EKS. Available
 * through the [Terraform registry](https://registry.terraform.io/modules/terraform-aws-modules/eks/aws).
 * Inspired by and adapted from [this doc](https://www.terraform.io/docs/providers/aws/guides/eks-getting-started.html)
 * and its [source code](https://github.com/terraform-providers/terraform-provider-aws/tree/master/examples/eks-getting-started).
@@ -87,3 +87,4 @@ To test your kubectl connection manually, see the [eks_test_fixture README](http
 */
 
 provider "null" {}
+provider "template" {}

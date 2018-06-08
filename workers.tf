@@ -16,16 +16,21 @@ resource "aws_autoscaling_group" "workers" {
 }
 
 resource "aws_launch_configuration" "workers" {
-  associate_public_ip_address = true
   name_prefix                 = "${var.cluster_name}"
+  associate_public_ip_address = true
   iam_instance_profile        = "${aws_iam_instance_profile.workers.name}"
   image_id                    = "${var.workers_ami_id == "" ? data.aws_ami.eks_worker.id : var.workers_ami_id}"
   instance_type               = "${var.workers_instance_type}"
   security_groups             = ["${aws_security_group.workers.id}"]
-  user_data_base64            = "${base64encode(local.workers_userdata)}"
+  user_data_base64            = "${base64encode(data.template_file.userdata.rendered)}"
+  ebs_optimized               = false
 
   lifecycle {
     create_before_destroy = true
+  }
+
+  root_block_device {
+    delete_on_termination = true
   }
 }
 
