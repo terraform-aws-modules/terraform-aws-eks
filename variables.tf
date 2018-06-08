@@ -27,6 +27,11 @@ variable "configure_kubectl_session" {
   default     = false
 }
 
+variable "ebs_optimized_workers" {
+  description = "If left at default of true, will use ebs optimization if available on the given instance type."
+  default     = true
+}
+
 variable "subnets" {
   description = "A list of subnets to associate with the cluster's underlying instances."
   type        = "list"

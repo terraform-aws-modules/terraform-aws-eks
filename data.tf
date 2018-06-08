@@ -71,3 +71,8 @@ data template_file config_map_aws_auth {
     role_arn = "${aws_iam_role.workers.arn}"
   }
 }
+
+module "ebs_optimized" {
+  source        = "modules/util/ebs_optimized/"
+  instance_type = "${var.workers_instance_type}"
+}
