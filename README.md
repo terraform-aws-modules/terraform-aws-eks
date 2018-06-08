@@ -103,11 +103,13 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | subnets | A list of subnets to associate with the cluster's underlying instances. | list | - | yes |
 | tags | A map of tags to add to all resources. | string | `<map>` | no |
 | vpc_id | VPC id where the cluster and other resources will be deployed. | string | - | yes |
-| workers_ami_id | AMI ID for the eks workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI. | string | `` | no |
-| workers_asg_desired_capacity | Desired worker capacity in the autoscaling group. | string | `1` | no |
-| workers_asg_max_size | Maximum worker capacity in the autoscaling group. | string | `3` | no |
-| workers_asg_min_size | Minimum worker capacity in the autoscaling group. | string | `1` | no |
-| workers_instance_type | Size of the workers instances. | string | `m4.large` | no |
+| worker_groups | A list of maps defining worker autoscaling groups | list of maps | - | no |
+| worker_groups.name | Name of the worker group | string | `nodes` | yes
+| worker_groups.ami_id | AMI ID for the eks workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI. | string | `` | no |
+| worker_groups.asg_desired_capacity | Desired worker capacity in the autoscaling group. | string | `1` | no |
+| worker_groups.asg_max_size | Maximum worker capacity in the autoscaling group. | string | `3` | no |
+| worker_groups.asg_min_size | Minimum worker capacity in the autoscaling group. | string | `1` | no |
+| worker_groups.instance_type | Size of the workers instances. | string | `m4.large` | no |
 
 ## Outputs
 

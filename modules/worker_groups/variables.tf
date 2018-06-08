@@ -3,33 +3,33 @@ variable "additional_userdata" {
   default     = ""
 }
 
-variable "cluster_ingress_cidrs" {
-  description = "The CIDRs from which we can execute kubectl commands."
-  type        = "list"
+variable "aws_region" {
+  description = "The AWS region where the cluster resides."
+}
+
+variable "certificate_authority" {
+  description = "Base64 encoded certificate authority of the cluster."
 }
 
 variable "cluster_name" {
   description = "Name of the EKS cluster which is also used as a prefix in names of related resources."
 }
 
-variable "cluster_version" {
-  description = "Kubernetes version to use for the cluster."
-  default     = "1.10"
-}
-
-variable "config_output_path" {
-  description = "Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory."
-  default     = "./"
-}
-
-variable "configure_kubectl_session" {
-  description = "Configure the current session's kubectl to use the instantiated cluster."
-  default     = false
-}
-
 variable "ebs_optimized_workers" {
   description = "If left at default of true, will use ebs optimization if available on the given instance type."
   default     = true
+}
+
+variable "endpoint" {
+  description = "API endpoint of the cluster."
+}
+
+variable "iam_instance_profile" {
+  description = "Worker IAM instance profile name."
+}
+
+variable "security_group_id" {
+  description = "Worker security group ID."
 }
 
 variable "subnets" {
@@ -42,8 +42,9 @@ variable "tags" {
   default     = {}
 }
 
-variable "vpc_id" {
-  description = "VPC id where the cluster and other resources will be deployed."
+variable "workers_ami_id" {
+  description = "AMI ID for the eks workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI."
+  default     = ""
 }
 
 variable "worker_groups" {

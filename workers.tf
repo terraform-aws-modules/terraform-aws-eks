@@ -1,37 +1,14 @@
-resource "aws_autoscaling_group" "workers" {
-  name_prefix          = "${var.cluster_name}"
-  launch_configuration = "${aws_launch_configuration.workers.id}"
-  desired_capacity     = "${var.workers_asg_desired_capacity}"
-  max_size             = "${var.workers_asg_max_size}"
-  min_size             = "${var.workers_asg_min_size}"
-  vpc_zone_identifier  = ["${var.subnets}"]
-
-  tags = ["${concat(
-    list(
-      map("key", "Name", "value", "${var.cluster_name}-eks_asg", "propagate_at_launch", true),
-      map("key", "kubernetes.io/cluster/${var.cluster_name}", "value", "owned", "propagate_at_launch", true),
-    ),
-    local.asg_tags)
-  }"]
-}
-
-resource "aws_launch_configuration" "workers" {
-  name_prefix                 = "${var.cluster_name}"
-  associate_public_ip_address = true
-  iam_instance_profile        = "${aws_iam_instance_profile.workers.name}"
-  image_id                    = "${var.workers_ami_id == "" ? data.aws_ami.eks_worker.id : var.workers_ami_id}"
-  instance_type               = "${var.workers_instance_type}"
-  security_groups             = ["${aws_security_group.workers.id}"]
-  user_data_base64            = "${base64encode(data.template_file.userdata.rendered)}"
-  ebs_optimized               = "${var.ebs_optimized_workers ? module.ebs_optimized.answer : false}"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  root_block_device {
-    delete_on_termination = true
-  }
+module "worker_groups" {
+  source                = "./modules/worker_groups"
+  aws_region            = "{data.aws_region.current.name}"
+  cluster_name          = "${var.cluster_name}"
+  certificate_authority = "${aws_eks_cluster.this.certificate_authority.0.data}"
+  endpoint              = "${aws_eks_cluster.this.endpoint}"
+  iam_instance_profile  = "${aws_iam_instance_profile.workers.name}"
+  security_group_id     = "${aws_security_group.workers.id}"
+  subnets               = "${var.subnets}"
+  tags                  = "${var.tags}"
+  worker_groups         = "${var.worker_groups}"
 }
 
 resource "aws_security_group" "workers" {
@@ -95,14 +72,4 @@ resource "aws_iam_role_policy_attachment" "workers_AmazonEKS_CNI_Policy" {
 resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryReadOnly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = "${aws_iam_role.workers.name}"
-}
-
-resource "null_resource" "tags_as_list_of_maps" {
-  count = "${length(keys(var.tags))}"
-
-  triggers = "${map(
-    "key", "${element(keys(var.tags), count.index)}",
-    "value", "${element(values(var.tags), count.index)}",
-    "propagate_at_launch", "true"
-  )}"
 }
