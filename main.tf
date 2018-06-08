@@ -33,6 +33,12 @@
 * }
 * ```
 
+* ## Dependencies
+
+* The `configure_kubectl_session` variable requires that both `[kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl)
+(>=1.10) and [`heptio-authenticator-aws`](https://github.com/heptio/authenticator#4-set-up-kubectl-to-use-heptio-authenticator-for-aws-tokens)
+are installed and on your shell's PATH.
+
 * ## Testing
 
 * This module has been packaged with [awspec](https://github.com/k1LoW/awspec) tests through [kitchen](https://kitchen.ci/) and [kitchen-terraform](https://newcontext-oss.github.io/kitchen-terraform/). To run them:
