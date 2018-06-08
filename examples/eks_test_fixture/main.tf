@@ -67,4 +67,5 @@ module "eks" {
   vpc_id                = "${module.vpc.vpc_id}"
   cluster_ingress_cidrs = ["${local.workstation_external_cidr}"]
   workers_instance_type = "t2.small"
+  additional_userdata   = "echo hello world"
 }

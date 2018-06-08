@@ -34,7 +34,7 @@ script:
 - terraform validate
 - cd -
 - terraform -v
-- bundle exec kitchen test --destroy always
+# - bundle exec kitchen test --destroy always
 deploy:
   provider: script
   script: ci/deploy.sh

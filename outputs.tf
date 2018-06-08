@@ -1,11 +1,11 @@
 output "config_map_aws_auth" {
   description = "A kubernetes configuration to authenticate to this cluster."
-  value       = "${local.config_map_aws_auth}"
+  value       = "${data.template_file.config_map_aws_auth.rendered}"
 }
 
 output "kubeconfig" {
   description = "kubectl config file contents for this cluster."
-  value       = "${local.kubeconfig}"
+  value       = "${data.template_file.kubeconfig.rendered}"
 }
 
 output "cluster_id" {

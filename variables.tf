@@ -1,3 +1,8 @@
+variable "additional_userdata" {
+  description = "Extra lines of userdata (bash) which are appended to the default userdata code."
+  default     = ""
+}
+
 variable "cluster_ingress_cidrs" {
   description = "The CIDRs from which we can execute kubectl commands."
   type        = "list"
