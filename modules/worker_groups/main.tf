@@ -1,12 +1,11 @@
 resource "aws_autoscaling_group" "workers" {
-  count = "${length(var.worker_groups)}"
-
   name_prefix          = "${lookup(var.worker_groups[count.index], "name")}.${var.cluster_name}"
   launch_configuration = "${element(aws_launch_configuration.workers.*.id, count.index)}"
   desired_capacity     = "${lookup(var.worker_groups[count.index], "asg_desired_capacity")}"
   max_size             = "${lookup(var.worker_groups[count.index], "asg_max_size")}"
   min_size             = "${lookup(var.worker_groups[count.index], "asg_min_size")}"
   vpc_zone_identifier  = ["${var.subnets}"]
+  count                = "${length(var.worker_groups)}"
 
   tags = ["${concat(
     list(
@@ -18,8 +17,6 @@ resource "aws_autoscaling_group" "workers" {
 }
 
 resource "aws_launch_configuration" "workers" {
-  count = "${length(var.worker_groups)}"
-
   name_prefix                 = "${lookup(var.worker_groups[count.index], "name")}.${lookup(var.worker_groups[count.index], "name")}.${var.cluster_name}"
   associate_public_ip_address = true
   iam_instance_profile        = "${var.iam_instance_profile}"
@@ -28,6 +25,7 @@ resource "aws_launch_configuration" "workers" {
   security_groups             = ["${var.security_group_id}"]
   user_data_base64            = "${base64encode(element(data.template_file.userdata.*.rendered, count.index))}"
   ebs_optimized               = "${var.ebs_optimized_workers ? lookup(local.ebs_optimized_types, lookup(var.worker_groups[count.index], "instance_type"), false) : false}"
+  count                       = "${length(var.worker_groups)}"
 
   lifecycle {
     create_before_destroy = true
@@ -39,9 +37,8 @@ resource "aws_launch_configuration" "workers" {
 }
 
 data template_file userdata {
-  count = "${length(var.worker_groups)}"
-
   template = "${file("${path.module}/templates/userdata.sh.tpl")}"
+  count    = "${length(var.worker_groups)}"
 
   vars {
     region              = "${var.aws_region}"
