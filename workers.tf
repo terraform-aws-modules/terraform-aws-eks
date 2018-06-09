@@ -1,6 +1,6 @@
 module "worker_groups" {
   source                = "./modules/worker_groups"
-  aws_region            = "{data.aws_region.current.name}"
+  aws_region            = "${data.aws_region.current.name}"
   cluster_name          = "${var.cluster_name}"
   certificate_authority = "${aws_eks_cluster.this.certificate_authority.0.data}"
   endpoint              = "${aws_eks_cluster.this.endpoint}"
