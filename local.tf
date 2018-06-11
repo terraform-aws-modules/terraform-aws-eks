@@ -1,5 +1,4 @@
 locals {
-  # More information: https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-06-05/amazon-eks-nodegroup.yaml
   asg_tags                  = ["${null_resource.tags_as_list_of_maps.*.triggers}"]
   cluster_security_group_id = "${var.cluster_security_group_id == "" ? aws_security_group.cluster.id : var.cluster_security_group_id}"
   worker_security_group_id  = "${var.worker_security_group_id == "" ? aws_security_group.workers.id : var.worker_security_group_id}"

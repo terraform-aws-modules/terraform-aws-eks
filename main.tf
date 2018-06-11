@@ -5,17 +5,15 @@
 * through the [Terraform registry](https://registry.terraform.io/modules/terraform-aws-modules/eks/aws).
 * Inspired by and adapted from [this doc](https://www.terraform.io/docs/providers/aws/guides/eks-getting-started.html)
 * and its [source code](https://github.com/terraform-providers/terraform-provider-aws/tree/master/examples/eks-getting-started).
-* Instructions on [this post](https://aws.amazon.com/blogs/aws/amazon-eks-now-generally-available/)
-* can help guide you through connecting to the cluster via `kubectl`.
 
 * | Branch | Build status                                                                                                                                                      |
 * | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 * | master | [![build Status](https://travis-ci.org/terraform-aws-modules/terraform-aws-eks.svg?branch=master)](https://travis-ci.org/terraform-aws-modules/terraform-aws-eks) |
 
 * ## Assumptions
-
-** You want to create a set of resources around an EKS cluster: namely an autoscaling group of workers and a security group for them.
-** You've created a Virtual Private Cloud (VPC) and subnets where you intend to put this EKS.
+** You want to create an EKS cluster and an autoscaling group of workers for the cluster.
+** You want these resources to exist within security groups that allow communication and coordination. These can be user provided or created within the module.
+** You've created a Virtual Private Cloud (VPC) and subnets where you intend to put the EKS resources.
 
 * ## Usage example
 
@@ -54,7 +52,8 @@ are installed and on your shell's PATH.
 
 * For now, connectivity to the kubernetes cluster is not tested but will be in the
 * future. If `configure_kubectl_session` is set `true`, once the test fixture has
-* converged, you can query the test cluster with `kubectl get nodes --watch --kubeconfig kubeconfig`.
+* converged, you can query the test cluster from that terminal session with
+* `kubectl get nodes --watch --kubeconfig kubeconfig`.
 
 * ## Doc generation
 
