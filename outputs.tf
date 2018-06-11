@@ -39,6 +39,11 @@ output "kubeconfig" {
   value       = "${data.template_file.kubeconfig.rendered}"
 }
 
+output "workers_asg_arns" {
+  description = "IDs of the autoscaling groups containing workers."
+  value       = "${aws_autoscaling_group.workers.*.arn}"
+}
+
 output "worker_security_group_id" {
   description = "Security group ID attached to the EKS workers."
   value       = "${local.worker_security_group_id}"
