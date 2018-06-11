@@ -4,7 +4,7 @@ resource "aws_eks_cluster" "this" {
   version  = "${var.cluster_version}"
 
   vpc_config {
-    security_group_ids = ["${aws_security_group.cluster.id}"]
+    security_group_ids = ["${local.cluster_security_group_id}"]
     subnet_ids         = ["${var.subnets}"]
   }
 
@@ -16,39 +16,43 @@ resource "aws_eks_cluster" "this" {
 
 resource "aws_security_group" "cluster" {
   name_prefix = "${var.cluster_name}"
-  description = "Cluster communication with workers nodes"
+  description = "EKS cluster security group."
   vpc_id      = "${var.vpc_id}"
   tags        = "${merge(var.tags, map("Name", "${var.cluster_name}-eks_cluster_sg"))}"
+  count       = "${var.cluster_security_group_id == "" ? 1 : 0}"
 }
 
 resource "aws_security_group_rule" "cluster_egress_internet" {
-  description       = "Allow cluster egress to the Internet."
+  description       = "Allow cluster egress access to the Internet."
   protocol          = "-1"
   security_group_id = "${aws_security_group.cluster.id}"
   cidr_blocks       = ["0.0.0.0/0"]
   from_port         = 0
   to_port           = 0
   type              = "egress"
+  count             = "${var.cluster_security_group_id == "" ? 1 : 0}"
 }
 
 resource "aws_security_group_rule" "cluster_https_worker_ingress" {
-  description              = "Allow pods to communicate with the cluster API Server."
+  description              = "Allow pods to communicate with the EKS cluster API."
   protocol                 = "tcp"
   security_group_id        = "${aws_security_group.cluster.id}"
-  source_security_group_id = "${aws_security_group.workers.id}"
+  source_security_group_id = "${local.worker_security_group_id}"
   from_port                = 443
   to_port                  = 443
   type                     = "ingress"
+  count                    = "${var.cluster_security_group_id == "" ? 1 : 0}"
 }
 
 resource "aws_security_group_rule" "cluster_https_cidr_ingress" {
-  cidr_blocks       = ["${var.cluster_ingress_cidrs}"]
-  description       = "Allow communication with the cluster API Server."
+  cidr_blocks       = ["${local.workstation_external_cidr}"]
+  description       = "Allow kubectl communication with the EKS cluster API."
   protocol          = "tcp"
   security_group_id = "${aws_security_group.cluster.id}"
   from_port         = 443
   to_port           = 443
   type              = "ingress"
+  count             = "${var.cluster_security_group_id == "" ? 1 : 0}"
 }
 
 resource "aws_iam_role" "cluster" {

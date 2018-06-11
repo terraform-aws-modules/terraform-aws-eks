@@ -5,8 +5,7 @@
 * through the [Terraform registry](https://registry.terraform.io/modules/terraform-aws-modules/eks/aws).
 * Inspired by and adapted from [this doc](https://www.terraform.io/docs/providers/aws/guides/eks-getting-started.html)
 * and its [source code](https://github.com/terraform-providers/terraform-provider-aws/tree/master/examples/eks-getting-started).
-* Instructions on [this post](https://aws.amazon.com/blogs/aws/amazon-eks-now-generally-available/)
-* can help guide you through connecting to the cluster via `kubectl`.
+* Read the [AWS docs on EKS to get connected to the k8s dashboard](https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html).
 
 * | Branch | Build status                                                                                                                                                      |
 * | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -14,8 +13,9 @@
 
 * ## Assumptions
 
-** You want to create a set of resources around an EKS cluster: namely an autoscaling group of workers and a security group for them.
-** You've created a Virtual Private Cloud (VPC) and subnets where you intend to put this EKS.
+** You want to create an EKS cluster and an autoscaling group of workers for the cluster.
+** You want these resources to exist within security groups that allow communication and coordination. These can be user provided or created within the module.
+** You've created a Virtual Private Cloud (VPC) and subnets where you intend to put the EKS resources.
 
 * ## Usage example
 
@@ -29,7 +29,6 @@
 *   subnets               = ["subnet-abcde012", "subnet-bcde012a"]
 *   tags                  = "${map("Environment", "test")}"
 *   vpc_id                = "vpc-abcde012"
-*   cluster_ingress_cidrs = ["24.18.23.91/32"]
 * }
 * ```
 
@@ -53,8 +52,10 @@ are installed and on your shell's PATH.
 * 3. Ensure your AWS environment is configured (i.e. credentials and region) for test.
 * 4. Test using `bundle exec kitchen test` from the root of the repo.
 
-For now, connectivity to the kubernetes cluster is not tested but will be in the future.
-To test your kubectl connection manually, see the [eks_test_fixture README](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_test_fixture/README.md).
+* For now, connectivity to the kubernetes cluster is not tested but will be in the
+* future. If `configure_kubectl_session` is set `true`, once the test fixture has
+* converged, you can query the test cluster from that terminal session with
+* `kubectl get nodes --watch --kubeconfig kubeconfig`.
 
 * ## Doc generation
 
@@ -93,28 +94,4 @@ To test your kubectl connection manually, see the [eks_test_fixture README](http
 
 provider "null" {}
 provider "template" {}
-
-resource "local_file" "kubeconfig" {
-  content  = "${data.template_file.kubeconfig.rendered}"
-  filename = "${var.config_output_path}/kubeconfig"
-  count    = "${var.configure_kubectl_session ? 1 : 0}"
-}
-
-resource "local_file" "config_map_aws_auth" {
-  content  = "${data.template_file.config_map_aws_auth.rendered}"
-  filename = "${var.config_output_path}/config-map-aws-auth.yaml"
-  count    = "${var.configure_kubectl_session ? 1 : 0}"
-}
-
-resource "null_resource" "configure_kubectl" {
-  provisioner "local-exec" {
-    command = "kubectl apply -f ${var.config_output_path}/config-map-aws-auth.yaml --kubeconfig ${var.config_output_path}/kubeconfig"
-  }
-
-  triggers {
-    config_map_rendered = "${data.template_file.config_map_aws_auth.rendered}"
-    kubeconfig_rendered = "${data.template_file.kubeconfig.rendered}"
-  }
-
-  count = "${var.configure_kubectl_session ? 1 : 0}"
-}
+provider "http" {}

@@ -1,14 +1,15 @@
 resource "aws_autoscaling_group" "workers" {
-  name_prefix          = "${var.cluster_name}"
-  launch_configuration = "${aws_launch_configuration.workers.id}"
-  desired_capacity     = "${var.workers_asg_desired_capacity}"
-  max_size             = "${var.workers_asg_max_size}"
-  min_size             = "${var.workers_asg_min_size}"
+  name_prefix          = "${var.cluster_name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
+  desired_capacity     = "${lookup(var.worker_groups[count.index], "asg_desired_capacity", lookup(var.workers_group_defaults, "asg_desired_capacity"))}"
+  max_size             = "${lookup(var.worker_groups[count.index], "asg_max_size",lookup(var.workers_group_defaults, "asg_max_size"))}"
+  min_size             = "${lookup(var.worker_groups[count.index], "asg_min_size",lookup(var.workers_group_defaults, "asg_min_size"))}"
+  launch_configuration = "${element(aws_launch_configuration.workers.*.id, count.index)}"
   vpc_zone_identifier  = ["${var.subnets}"]
+  count                = "${length(var.worker_groups)}"
 
   tags = ["${concat(
     list(
-      map("key", "Name", "value", "${var.cluster_name}-eks_asg", "propagate_at_launch", true),
+      map("key", "Name", "value", "${var.cluster_name}-${lookup(var.worker_groups[count.index], "name", count.index)}-eks_asg", "propagate_at_launch", true),
       map("key", "kubernetes.io/cluster/${var.cluster_name}", "value", "owned", "propagate_at_launch", true),
     ),
     local.asg_tags)
@@ -16,14 +17,15 @@ resource "aws_autoscaling_group" "workers" {
 }
 
 resource "aws_launch_configuration" "workers" {
-  name_prefix                 = "${var.cluster_name}"
+  name                        = "${var.cluster_name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
   associate_public_ip_address = true
-  iam_instance_profile        = "${aws_iam_instance_profile.workers.name}"
-  image_id                    = "${var.workers_ami_id == "" ? data.aws_ami.eks_worker.id : var.workers_ami_id}"
-  instance_type               = "${var.workers_instance_type}"
-  security_groups             = ["${aws_security_group.workers.id}"]
-  user_data_base64            = "${base64encode(data.template_file.userdata.rendered)}"
-  ebs_optimized               = "${var.ebs_optimized_workers ? module.ebs_optimized.answer : false}"
+  security_groups             = ["${local.worker_security_group_id}"]
+  iam_instance_profile        = "${aws_iam_instance_profile.workers.id}"
+  image_id                    = "${lookup(var.worker_groups[count.index], "ami_id", data.aws_ami.eks_worker.id)}"
+  instance_type               = "${lookup(var.worker_groups[count.index], "instance_type", lookup(var.workers_group_defaults, "instance_type"))}"
+  user_data_base64            = "${base64encode(element(data.template_file.userdata.*.rendered, count.index))}"
+  ebs_optimized               = "${lookup(var.worker_groups[count.index], "ebs_optimized", lookup(local.ebs_optimized, lookup(var.worker_groups[count.index], "instance_type", lookup(var.workers_group_defaults, "instance_type")), false))}"
+  count                       = "${length(var.worker_groups)}"
 
   lifecycle {
     create_before_destroy = true
@@ -38,6 +40,7 @@ resource "aws_security_group" "workers" {
   name_prefix = "${var.cluster_name}"
   description = "Security group for all nodes in the cluster."
   vpc_id      = "${var.vpc_id}"
+  count       = "${var.worker_security_group_id == "" ? 1 : 0}"
   tags        = "${merge(var.tags, map("Name", "${var.cluster_name}-eks_worker_sg", "kubernetes.io/cluster/${var.cluster_name}", "owned"
   ))}"
 }
@@ -50,6 +53,7 @@ resource "aws_security_group_rule" "workers_egress_internet" {
   from_port         = 0
   to_port           = 0
   type              = "egress"
+  count             = "${var.worker_security_group_id == "" ? 1 : 0}"
 }
 
 resource "aws_security_group_rule" "workers_ingress_self" {
@@ -60,16 +64,18 @@ resource "aws_security_group_rule" "workers_ingress_self" {
   from_port                = 0
   to_port                  = 65535
   type                     = "ingress"
+  count                    = "${var.worker_security_group_id == "" ? 1 : 0}"
 }
 
 resource "aws_security_group_rule" "workers_ingress_cluster" {
   description              = "Allow workers Kubelets and pods to receive communication from the cluster control plane."
   protocol                 = "tcp"
   security_group_id        = "${aws_security_group.workers.id}"
-  source_security_group_id = "${aws_security_group.cluster.id}"
+  source_security_group_id = "${local.cluster_security_group_id}"
   from_port                = 1025
   to_port                  = 65535
   type                     = "ingress"
+  count                    = "${var.worker_security_group_id == "" ? 1 : 0}"
 }
 
 resource "aws_iam_role" "workers" {
