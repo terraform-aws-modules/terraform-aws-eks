@@ -28,7 +28,6 @@ module "eks" {
   subnets               = ["subnet-abcde012", "subnet-bcde012a"]
   tags                  = "${map("Environment", "test")}"
   vpc_id                = "vpc-abcde012"
-  cluster_ingress_cidrs = ["24.18.23.91/32"]
 }
 ```
 
@@ -52,8 +51,9 @@ This module has been packaged with [awspec](https://github.com/k1LoW/awspec) tes
 3. Ensure your AWS environment is configured (i.e. credentials and region) for test.
 4. Test using `bundle exec kitchen test` from the root of the repo.
 
-For now, connectivity to the kubernetes cluster is not tested but will be in the future.
-To test your kubectl connection manually, see the [eks_test_fixture README](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_test_fixture/README.md).
+For now, connectivity to the kubernetes cluster is not tested but will be in the
+future. If `configure_kubectl_session` is set `true`, once the test fixture has
+converged, you can query the test cluster with `kubectl get nodes --watch --kubeconfig kubeconfig`.
 
 ## Doc generation
 
@@ -93,32 +93,27 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| additional_userdata | Extra lines of userdata (bash) which are appended to the default userdata code. | string | `` | no |
-| cluster_ingress_cidrs | The CIDRs from which we can execute kubectl commands. | list | - | yes |
-| cluster_name | Name of the EKS cluster which is also used as a prefix in names of related resources. | string | - | yes |
-| cluster_version | Kubernetes version to use for the cluster. | string | `1.10` | no |
+| cluster_name | Name of the EKS cluster. Also used as a prefix in names of related resources. | string | - | yes |
+| cluster_security_group_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32. | string | `` | no |
+| cluster_version | Kubernetes version to use for the EKS cluster. | string | `1.10` | no |
 | config_output_path | Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory. | string | `./` | no |
-| configure_kubectl_session | Configure the current session's kubectl to use the instantiated cluster. | string | `false` | no |
-| ebs_optimized_workers | If left at default of true, will use ebs optimization if available on the given instance type. | string | `true` | no |
-| subnets | A list of subnets to associate with the cluster's underlying instances. | list | - | yes |
+| configure_kubectl_session | Configure the current session's kubectl to use the instantiated EKS cluster. | string | `true` | no |
+| subnets | A list of subnets to place the EKS cluster and workers within. | list | - | yes |
 | tags | A map of tags to add to all resources. | string | `<map>` | no |
-| vpc_id | VPC id where the cluster and other resources will be deployed. | string | - | yes |
-| worker_groups | A list of maps defining worker autoscaling groups | list of maps | - | no |
-| worker_groups.name | Name of the worker group | string | `nodes` | yes
-| worker_groups.ami_id | AMI ID for the eks workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI. | string | `` | no |
-| worker_groups.asg_desired_capacity | Desired worker capacity in the autoscaling group. | string | `1` | no |
-| worker_groups.asg_max_size | Maximum worker capacity in the autoscaling group. | string | `3` | no |
-| worker_groups.asg_min_size | Minimum worker capacity in the autoscaling group. | string | `1` | no |
-| worker_groups.instance_type | Size of the workers instances. | string | `m4.large` | no |
+| vpc_id | VPC where the cluster and workers will be deployed. | string | - | yes |
+| worker_groups | A list of maps defining worker group configurations. See workers_group_defaults for valid keys. | list | `<list>` | no |
+| worker_security_group_id | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster. | string | `` | no |
+| workers_group_defaults | Default values for target groups as defined by the list of maps. | map | `<map>` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| cluster_certificate_authority_data | Nested attribute containing certificate-authority-data for your cluster. Tis is the base64 encoded certificate data required to communicate with your cluster. |
-| cluster_endpoint | The endpoint for your Kubernetes API server. |
-| cluster_id | The name/id of the cluster. |
-| cluster_security_group_ids | description |
-| cluster_version | The Kubernetes server version for the cluster. |
-| config_map_aws_auth | A kubernetes configuration to authenticate to this cluster. |
-| kubeconfig | kubectl config file contents for this cluster. |
+| cluster_certificate_authority_data | Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster. |
+| cluster_endpoint | The endpoint for your EKS Kubernetes API. |
+| cluster_id | The name/id of the EKS cluster. |
+| cluster_security_group_id | Security group ID attached to the EKS cluster. |
+| cluster_version | The Kubernetes server version for the EKS cluster. |
+| config_map_aws_auth | A kubernetes configuration to authenticate to this EKS cluster. |
+| kubeconfig | kubectl config file contents for this EKS cluster. |
+| worker_security_group_id | Security group ID attached to the EKS workers. |
