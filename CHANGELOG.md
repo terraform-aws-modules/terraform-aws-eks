@@ -9,11 +9,11 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- security group id can be provided for either or both of the cluster and the workers. If not provided, security groups will be created with sufficient rules to allow cluster-worker communication.
+- security group id can be provided for either/both of the cluster and the workers. If not provided, security groups will be created with sufficient rules to allow cluster-worker communication. - kudos to @tanmng on the idea ⭐
 
 ### Changed
 
-- Worker build out refactored to allow multiple autoscaling groups each having differing specs.
+- Worker build out refactored to allow multiple autoscaling groups each having differing specs. If none are given, a single ASG is created with a set of sane defaults - big thanks to @kppullin 🥨
 
 ## [[v0.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v0.1.1...v0.2.0)] - 2018-06-08]
 
