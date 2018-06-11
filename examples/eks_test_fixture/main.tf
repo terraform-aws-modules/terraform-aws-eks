@@ -11,18 +11,16 @@ provider "random" {
   version = "= 1.3.1"
 }
 
-provider "http" {}
-provider "local" {}
-
 data "aws_availability_zones" "available" {}
 
-data "http" "workstation_external_ip" {
-  url = "http://icanhazip.com"
-}
-
 locals {
-  workstation_external_cidr = "${chomp(data.http.workstation_external_ip.body)}/32"
-  cluster_name              = "test-eks-${random_string.suffix.result}"
+  cluster_name = "test-eks-${random_string.suffix.result}"
+
+  worker_groups = "${list(
+                  map("instance_type","t2.small",
+                      "additional_userdata","echo foo bar"
+                      ),
+  )}"
 
   tags = "${map("Environment", "test",
                 "GithubRepo", "terraform-aws-eks",
@@ -50,13 +48,10 @@ module "vpc" {
 }
 
 module "eks" {
-  source                    = "../.."
-  cluster_name              = "${local.cluster_name}"
-  subnets                   = "${module.vpc.public_subnets}"
-  tags                      = "${local.tags}"
-  vpc_id                    = "${module.vpc.vpc_id}"
-  cluster_ingress_cidrs     = ["${local.workstation_external_cidr}"]
-  workers_instance_type     = "t2.small"
-  additional_userdata       = "echo hello world"
-  configure_kubectl_session = true
+  source        = "../.."
+  cluster_name  = "${local.cluster_name}"
+  subnets       = "${module.vpc.public_subnets}"
+  tags          = "${local.tags}"
+  vpc_id        = "${module.vpc.vpc_id}"
+  worker_groups = "${local.worker_groups}"
 }

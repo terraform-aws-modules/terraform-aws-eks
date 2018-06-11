@@ -1,15 +1,5 @@
-output "config_map_aws_auth" {
-  description = "A kubernetes configuration to authenticate to this cluster."
-  value       = "${data.template_file.config_map_aws_auth.rendered}"
-}
-
-output "kubeconfig" {
-  description = "kubectl config file contents for this cluster."
-  value       = "${data.template_file.kubeconfig.rendered}"
-}
-
 output "cluster_id" {
-  description = "The name/id of the cluster."
+  description = "The name/id of the EKS cluster."
   value       = "${aws_eks_cluster.this.id}"
 }
 
@@ -25,16 +15,31 @@ output "cluster_certificate_authority_data" {
 }
 
 output "cluster_endpoint" {
-  description = "The endpoint for your Kubernetes API server."
+  description = "The endpoint for your EKS Kubernetes API."
   value       = "${aws_eks_cluster.this.endpoint}"
 }
 
 output "cluster_version" {
-  description = "The Kubernetes server version for the cluster."
+  description = "The Kubernetes server version for the EKS cluster."
   value       = "${aws_eks_cluster.this.version}"
 }
 
-output "cluster_security_group_ids" {
-  description = "description"
-  value       = "${aws_eks_cluster.this.vpc_config.0.security_group_ids}"
+output "cluster_security_group_id" {
+  description = "Security group ID attached to the EKS cluster."
+  value       = "${local.cluster_security_group_id}"
+}
+
+output "config_map_aws_auth" {
+  description = "A kubernetes configuration to authenticate to this EKS cluster."
+  value       = "${data.template_file.config_map_aws_auth.rendered}"
+}
+
+output "kubeconfig" {
+  description = "kubectl config file contents for this EKS cluster."
+  value       = "${data.template_file.kubeconfig.rendered}"
+}
+
+output "worker_security_group_id" {
+  description = "Security group ID attached to the EKS workers."
+  value       = "${local.worker_security_group_id}"
 }
