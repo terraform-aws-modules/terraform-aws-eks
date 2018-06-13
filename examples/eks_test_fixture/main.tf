@@ -48,10 +48,11 @@ module "vpc" {
 }
 
 module "eks" {
-  source        = "../.."
-  cluster_name  = "${local.cluster_name}"
-  subnets       = "${module.vpc.public_subnets}"
-  tags          = "${local.tags}"
-  vpc_id        = "${module.vpc.vpc_id}"
-  worker_groups = "${local.worker_groups}"
+  source         = "../.."
+  cluster_name   = "${local.cluster_name}"
+  subnets        = ["${module.vpc.public_subnets}", "${module.vpc.private_subnets}"]
+  worker_subnets = "${module.vpc.private_subnets}"
+  tags           = "${local.tags}"
+  vpc_id         = "${module.vpc.vpc_id}"
+  worker_groups  = "${local.worker_groups}"
 }
