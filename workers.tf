@@ -23,6 +23,7 @@ resource "aws_launch_configuration" "workers" {
   iam_instance_profile        = "${aws_iam_instance_profile.workers.id}"
   image_id                    = "${lookup(var.worker_groups[count.index], "ami_id", data.aws_ami.eks_worker.id)}"
   instance_type               = "${lookup(var.worker_groups[count.index], "instance_type", lookup(var.workers_group_defaults, "instance_type"))}"
+  key_name                    = "${lookup(var.worker_groups[count.index], "key_name", lookup(var.workers_group_defaults, "key_name"))}"
   user_data_base64            = "${base64encode(element(data.template_file.userdata.*.rendered, count.index))}"
   ebs_optimized               = "${lookup(var.worker_groups[count.index], "ebs_optimized", lookup(local.ebs_optimized, lookup(var.worker_groups[count.index], "instance_type", lookup(var.workers_group_defaults, "instance_type")), false))}"
   count                       = "${length(var.worker_groups)}"
