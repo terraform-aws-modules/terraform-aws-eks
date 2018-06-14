@@ -48,3 +48,8 @@ output "worker_security_group_id" {
   description = "Security group ID attached to the EKS workers."
   value       = "${local.worker_security_group_id}"
 }
+
+output "worker_iam_role_name" {
+  description = "IAM role name attached to EKS workers"
+  value       = "${aws_iam_role.workers.name}"
+}

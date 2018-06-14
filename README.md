@@ -119,3 +119,4 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | kubeconfig                         | kubectl config file contents for this EKS cluster.                                                                                                              |
 | worker_security_group_id           | Security group ID attached to the EKS workers.                                                                                                                  |
 | workers_asg_arns                   | IDs of the autoscaling groups containing workers.                                                                                                               |
+| worker_iam_role_name               | IAM role name attached to EKS workers.                                                                                                                          |
