@@ -58,6 +58,7 @@ variable "workers_group_defaults" {
     instance_type        = "m4.large"    # Size of the workers instances.
     additional_userdata  = ""            # userdata to append to the default userdata.
     ebs_optimized        = true          # sets whether to use ebs optimization on supported types.
+    public_ip            = false         # Associate a public ip address with a worker
   }
 }
 
