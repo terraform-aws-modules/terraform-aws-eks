@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [[v1.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.0.0...v1.0.1)] - 2018-06-23]
+
+### Added
+
+- new variable `worker_sg_ingress_from_port` allows to change the minimum port number from which pods will accept communication
+
 ## [[v1.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v0.2.0...v1.0.0)] - 2018-06-11]
 
 ### Added
