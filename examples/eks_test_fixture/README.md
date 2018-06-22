@@ -67,7 +67,7 @@ The following IAM policy is the minimum needed to execute the module from the te
         "ec2:DetachNetworkInterface",
         "ec2:DetachVolume",
         "ec2:Disassociate*",
-        "ModifySubnetAttribute",
+        "ec2:ModifySubnetAttribute",
         "ec2:ModifyVpcAttribute",
         "ec2:ModifyVpcEndpoint",
         "ec2:ReleaseAddress",
