@@ -24,7 +24,7 @@ sed -i s,CLIENT_CA_FILE,$CA_CERTIFICATE_FILE_PATH,g /etc/systemd/system/kubelet.
 
 # start services
 systemctl daemon-reload
-systemctl restart kubelet kube-proxy
+systemctl restart kubelet
 
 # Allow user supplied userdata code
 ${additional_userdata}
