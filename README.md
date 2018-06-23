@@ -23,7 +23,7 @@ A full example leveraging other community modules is contained in the [examples/
 ```hcl
 module "eks" {
   source                = "terraform-aws-modules/eks/aws"
-  version               = "0.1.0"
+  version               = "1.0.0"
   cluster_name          = "test-eks-cluster"
   subnets               = ["subnet-abcde012", "subnet-bcde012a"]
   tags                  = "${map("Environment", "test")}"
@@ -100,6 +100,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | config_output_path        | Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory.                                                                     | string |   `./`   |    no    |
 | configure_kubectl_session | Configure the current session's kubectl to use the instantiated EKS cluster.                                                                                                                                             | string |  `true`  |    no    |
 | subnets                   | A list of subnets to place the EKS cluster and workers within.                                                                                                                                                           |  list  |    -     |   yes    |
+| worker_subnets            | A list of subnets to place the EKS workers within. If empty then subnets variable will be used instead to place workers within.  |  list  |    []    |    no    |
 | tags                      | A map of tags to add to all resources.                                                                                                                                                                                   | string | `<map>`  |    no    |
 | vpc_id                    | VPC where the cluster and workers will be deployed.                                                                                                                                                                      | string |    -     |   yes    |
 | worker_groups             | A list of maps defining worker group configurations. See workers_group_defaults for valid keys.                                                                                                                          |  list  | `<list>` |    no    |

@@ -67,3 +67,9 @@ variable "worker_security_group_id" {
   description = "If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster."
   default     = ""
 }
+
+variable "worker_subnets" {
+  description = "A list of subnets to place the EKS workers within. If empty then subnets variable will be used instead to place workers within."
+  type        = "list"
+  default     = []
+}
