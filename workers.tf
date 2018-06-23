@@ -73,7 +73,7 @@ resource "aws_security_group_rule" "workers_ingress_cluster" {
   protocol                 = "tcp"
   security_group_id        = "${aws_security_group.workers.id}"
   source_security_group_id = "${local.cluster_security_group_id}"
-  from_port                = 1025
+  from_port                = "${var.worker_sg_ingress_from_port}"
   to_port                  = 65535
   type                     = "ingress"
   count                    = "${var.worker_security_group_id == "" ? 1 : 0}"
