@@ -16,6 +16,7 @@
 ** You want to create an EKS cluster and an autoscaling group of workers for the cluster.
 ** You want these resources to exist within security groups that allow communication and coordination. These can be user provided or created within the module.
 ** You've created a Virtual Private Cloud (VPC) and subnets where you intend to put the EKS resources.
+** If using the default variable value (`true`) for `configure_kubectl_session`, it's required that both [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl) (>=1.10) and [`heptio-authenticator-aws`](https://github.com/heptio/authenticator#4-set-up-kubectl-to-use-heptio-authenticator-for-aws-tokens) are installed and on your shell's PATH.
 
 * ## Usage example
 
@@ -32,11 +33,11 @@
 * }
 * ```
 
-* ## Dependencies
+* ## Release schedule
 
-* The `configure_kubectl_session` variable requires that both [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl)
-(>=1.10) and [`heptio-authenticator-aws`](https://github.com/heptio/authenticator#4-set-up-kubectl-to-use-heptio-authenticator-for-aws-tokens)
-are installed and on your shell's PATH.
+* Generally the maintainers will try to release the module once every 2 weeks to
+* keep up with PR additions. If particularly pressing changes are added or maintainers
+* come up with the spare time (hah!), release may happen more often on occasion.
 
 * ## Testing
 

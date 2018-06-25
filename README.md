@@ -15,6 +15,7 @@ Read the [AWS docs on EKS to get connected to the k8s dashboard](https://docs.aw
 - You want to create an EKS cluster and an autoscaling group of workers for the cluster.
 - You want these resources to exist within security groups that allow communication and coordination. These can be user provided or created within the module.
 - You've created a Virtual Private Cloud (VPC) and subnets where you intend to put the EKS resources.
+- If using the default variable value (`true`) for `configure_kubectl_session`, it's required that both [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl) (>=1.10) and [`heptio-authenticator-aws`](https://github.com/heptio/authenticator#4-set-up-kubectl-to-use-heptio-authenticator-for-aws-tokens) are installed and on your shell's PATH.
 
 ## Usage example
 
@@ -31,11 +32,11 @@ module "eks" {
 }
 ```
 
-## Dependencies
+## Release schedule
 
-The `configure_kubectl_session` variable requires that both [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl)
-(>=1.10) and [`heptio-authenticator-aws`](https://github.com/heptio/authenticator#4-set-up-kubectl-to-use-heptio-authenticator-for-aws-tokens)
-are installed and on your shell's PATH.
+Generally the maintainers will try to release the module once every 2 weeks to
+keep up with PR additions. If particularly pressing changes are added or maintainers
+come up with the spare time (hah!), release may happen more often on occasion.
 
 ## Testing
 
@@ -92,20 +93,20 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 
 ## Inputs
 
-| Name                      | Description                                                                                                                                                                                                              |  Type  | Default  | Required |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :----: | :------: | :------: |
-| cluster_name              | Name of the EKS cluster. Also used as a prefix in names of related resources.                                                                                                                                            | string |    -     |   yes    |
-| cluster_security_group_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32. | string | `` | no  |
-| cluster_version           | Kubernetes version to use for the EKS cluster.                                                                                                                                                                           | string |  `1.10`  |    no    |
-| config_output_path        | Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory.                                                                     | string |   `./`   |    no    |
-| configure_kubectl_session | Configure the current session's kubectl to use the instantiated EKS cluster.                                                                                                                                             | string |  `true`  |    no    |
-| subnets                   | A list of subnets to place the EKS cluster and workers within.                                                                                                                                                           |  list  |    -     |   yes    |
-| tags                      | A map of tags to add to all resources.                                                                                                                                                                                   | string | `<map>`  |    no    |
-| vpc_id                    | VPC where the cluster and workers will be deployed.                                                                                                                                                                      | string |    -     |   yes    |
-| worker_groups             | A list of maps defining worker group configurations. See workers_group_defaults for valid keys.                                                                                                                          |  list  | `<list>` |    no    |
-| worker_security_group_id  | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster.                                              | string | `` | no  |
-| worker_sg_ingress_from_port    | Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443).                                                                                                                                                         |  string   | `1025`  |    no    |
-| workers_group_defaults    | Default values for target groups as defined by the list of maps.                                                                                                                                                         |  map   | `<map>`  |    no    |
+| Name                        | Description                                                                                                                                                                                                              |  Type  | Default  | Required |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :----: | :------: | :------: |
+| cluster_name                | Name of the EKS cluster. Also used as a prefix in names of related resources.                                                                                                                                            | string |    -     |   yes    |
+| cluster_security_group_id   | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32. | string | `` | no  |
+| cluster_version             | Kubernetes version to use for the EKS cluster.                                                                                                                                                                           | string |  `1.10`  |    no    |
+| config_output_path          | Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory.                                                                     | string |   `./`   |    no    |
+| configure_kubectl_session   | Configure the current session's kubectl to use the instantiated EKS cluster.                                                                                                                                             | string |  `true`  |    no    |
+| subnets                     | A list of subnets to place the EKS cluster and workers within.                                                                                                                                                           |  list  |    -     |   yes    |
+| tags                        | A map of tags to add to all resources.                                                                                                                                                                                   | string | `<map>`  |    no    |
+| vpc_id                      | VPC where the cluster and workers will be deployed.                                                                                                                                                                      | string |    -     |   yes    |
+| worker_groups               | A list of maps defining worker group configurations. See workers_group_defaults for valid keys.                                                                                                                          |  list  | `<list>` |    no    |
+| worker_security_group_id    | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster.                                              | string | `` | no  |
+| worker_sg_ingress_from_port | Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443).                                   | string |  `1025`  |    no    |
+| workers_group_defaults      | Default values for target groups as defined by the list of maps.                                                                                                                                                         |  map   | `<map>`  |    no    |
 
 ## Outputs
 
@@ -118,6 +119,6 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster_version                    | The Kubernetes server version for the EKS cluster.                                                                                                              |
 | config_map_aws_auth                | A kubernetes configuration to authenticate to this EKS cluster.                                                                                                 |
 | kubeconfig                         | kubectl config file contents for this EKS cluster.                                                                                                              |
+| worker_iam_role_name               | IAM role name attached to EKS workers                                                                                                                           |
 | worker_security_group_id           | Security group ID attached to the EKS workers.                                                                                                                  |
 | workers_asg_arns                   | IDs of the autoscaling groups containing workers.                                                                                                               |
-| worker_iam_role_name               | IAM role name attached to EKS workers.                                                                                                                          |

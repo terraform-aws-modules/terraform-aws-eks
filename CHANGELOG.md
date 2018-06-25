@@ -5,11 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
-## [[v1.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.0.0...v1.0.1)] - 2018-06-23]
+## [[v1.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.0.0...v1.1.0)] - 2018-06-25]
 
 ### Added
 
-- new variable `worker_sg_ingress_from_port` allows to change the minimum port number from which pods will accept communication
+- new variable `worker_sg_ingress_from_port` allows to change the minimum port number from which pods will accept communication (Thanks, @ilyasotkov 👏).
+- expanded on worker example to show how multiple worker autoscaling groups can be created.
+- IPv4 is used explicitly to resolve testing from IPv6 networks (thanks, @tsub 🙏).
+- Configurable public IP attachment and ssh keys for worker groups. Defaults defined in `worker_group_defaults`. Nice, @hatemosphere 🌂
+- `worker_iam_role_name` now an output. Sweet, @artursmet 🕶️
+
+### Changed
+
+- IAM test role repaired by @lcharkiewicz 💅
+- `kube-proxy` restart no longer needed in userdata. Good catch, @hatemosphere 🔥
+- worker ASG reattachment wasn't possible when using `name`. Moved to `name_prefix` to allow recreation of resources. Kudos again, @hatemosphere 🐧
 
 ## [[v1.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v0.2.0...v1.0.0)] - 2018-06-11]
 

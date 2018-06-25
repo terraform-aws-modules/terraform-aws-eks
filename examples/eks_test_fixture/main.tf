@@ -16,12 +16,28 @@ data "aws_availability_zones" "available" {}
 locals {
   cluster_name = "test-eks-${random_string.suffix.result}"
 
+  # the commented out worker group list below shows an example of how to define
+  # multiple worker groups of differing configurations
+  # worker_groups = "${list(
+  #                   map("asg_desired_capacity", "2",
+  #                       "asg_max_size", "10",
+  #                       "asg_min_size", "2",
+  #                       "instance_type", "m4.xlarge",
+  #                       "name", "worker_group_a",
+  #                   ),
+  #                   map("asg_desired_capacity", "1",
+  #                       "asg_max_size", "5",
+  #                       "asg_min_size", "1",
+  #                       "instance_type", "m4.2xlarge",
+  #                       "name", "worker_group_b",
+  #                   ),
+  # )}"
+
   worker_groups = "${list(
                   map("instance_type","t2.small",
                       "additional_userdata","echo foo bar"
                       ),
   )}"
-
   tags = "${map("Environment", "test",
                 "GithubRepo", "terraform-aws-eks",
                 "GithubOrg", "terraform-aws-modules",
