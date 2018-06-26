@@ -14,6 +14,10 @@ resource "aws_autoscaling_group" "workers" {
     ),
     local.asg_tags)
   }"]
+
+  lifecycle {
+    ignore_changes = ["desired_capacity"]
+  }
 }
 
 resource "aws_launch_configuration" "workers" {
