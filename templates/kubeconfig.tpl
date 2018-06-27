@@ -10,7 +10,7 @@ clusters:
 
 contexts:
 - context:
-    cluster: kubernetes
+    cluster: ${cluster_name}
     user: aws
   name: aws
 current-context: aws
