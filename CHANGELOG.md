@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [[v1.3.0]()] - ]
+
+### Added
+
+- new variable `pre_userdata` added to worker launch configuration allows to run scripts before the plugin does anything.
+
 ## [[v1.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.0.0...v1.1.0)] - 2018-06-25]
 
 ### Added

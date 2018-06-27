@@ -57,6 +57,7 @@ variable "workers_group_defaults" {
     asg_min_size         = "1"           # Minimum worker capacity in the autoscaling group.
     instance_type        = "m4.large"    # Size of the workers instances.
     key_name             = ""            # The key name that should be used for the instances in the autoscaling group
+    pre_userdata         = ""            # userdata to pre-append to the default userdata.
     additional_userdata  = ""            # userdata to append to the default userdata.
     ebs_optimized        = true          # sets whether to use ebs optimization on supported types.
     public_ip            = false         # Associate a public ip address with a worker
