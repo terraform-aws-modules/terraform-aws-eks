@@ -1,3 +1,9 @@
+variable "aws_profile" {
+  description = "Name of the AWS profile to use in the generated kubeconfig."
+  default     = "default"
+  type        = "string"
+}
+
 variable "cluster_name" {
   description = "Name of the EKS cluster. Also used as a prefix in names of related resources."
 }

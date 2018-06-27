@@ -51,6 +51,7 @@ data template_file kubeconfig {
     cluster_name        = "${var.cluster_name}"
     endpoint            = "${aws_eks_cluster.this.endpoint}"
     region              = "${data.aws_region.current.name}"
+    aws_profile         = "${var.aws_profile}"
     cluster_auth_base64 = "${aws_eks_cluster.this.certificate_authority.0.data}"
   }
 }
