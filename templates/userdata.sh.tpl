@@ -1,5 +1,8 @@
 #!/bin/bash -xe
 
+# Allow user supplied pre userdata code
+${pre_userdata}
+
 # Certificate Authority config
 CA_CERTIFICATE_DIRECTORY=/etc/kubernetes/pki
 CA_CERTIFICATE_FILE_PATH=$CA_CERTIFICATE_DIRECTORY/ca.crt
