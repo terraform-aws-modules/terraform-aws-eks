@@ -6,22 +6,24 @@ clusters:
 - cluster:
     server: ${endpoint}
     certificate-authority-data: ${cluster_auth_base64}
-  name: kubernetes
+  name: ${cluster_name}
 
 contexts:
 - context:
-    cluster: kubernetes
-    user: aws
-  name: aws
-current-context: aws
+    cluster: ${cluster_name}
+    user: ${user_name}
+  name: ${context_name}
+current-context: ${context_name}
 
 users:
-- name: aws
+- name: ${user_name}
   user:
     exec:
       apiVersion: client.authentication.k8s.io/v1alpha1
-      command: heptio-authenticator-aws
+      command: ${aws_authenticator_command}
       args:
         - "token"
         - "-i"
         - "${cluster_name}"
+${aws_authenticator_additional_args}
+${aws_authenticator_env_variables}

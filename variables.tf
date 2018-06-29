@@ -73,3 +73,28 @@ variable "worker_sg_ingress_from_port" {
   description = "Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443)."
   default     = "1025"
 }
+
+variable "kubeconfig_context_name" {
+  description = "Name of the kubeconfig context."
+  default = "aws"
+}
+
+variable "kubeconfig_user_name" {
+  description = "Name of the kubeconfig user."
+  default = "aws"
+}
+
+variable "kubeconfig_aws_authenticator_command" {
+  description = "Command to use to to fetch AWS EKS credentials"
+  default = "heptio-authenticator-aws"
+}
+
+variable "kubeconfig_aws_authenticator_additional_args" {
+  description = "Any additional arguments to pass to the authenticator such as the role to assume [\"-r\", \"MyEksRole\"]"
+  default = []
+}
+
+variable "kubeconfig_aws_authenticator_env_variables" {
+  description = "Environment variables that should be used when executing the authenticator i.e. { AWS_PROFILE = \"eks\"}"
+  default = {}
+}
