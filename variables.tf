@@ -76,25 +76,25 @@ variable "worker_sg_ingress_from_port" {
 
 variable "kubeconfig_context_name" {
   description = "Name of the kubeconfig context."
-  default = "aws"
+  default     = "aws"
 }
 
 variable "kubeconfig_user_name" {
   description = "Name of the kubeconfig user."
-  default = "aws"
+  default     = "aws"
 }
 
 variable "kubeconfig_aws_authenticator_command" {
   description = "Command to use to to fetch AWS EKS credentials"
-  default = "heptio-authenticator-aws"
+  default     = "heptio-authenticator-aws"
 }
 
 variable "kubeconfig_aws_authenticator_additional_args" {
   description = "Any additional arguments to pass to the authenticator such as the role to assume [\"-r\", \"MyEksRole\"]"
-  default = []
+  default     = []
 }
 
 variable "kubeconfig_aws_authenticator_env_variables" {
   description = "Environment variables that should be used when executing the authenticator i.e. { AWS_PROFILE = \"eks\"}"
-  default = {}
+  default     = {}
 }
