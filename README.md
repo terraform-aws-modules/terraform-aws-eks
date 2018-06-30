@@ -113,9 +113,6 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | kubeconfig_aws_authenticator_additional_args | Any additional arguments to pass to the authenticator such as the role to assume `["-r", "MyEksRole"]`                                                                                                  |  map   | `<list>` |    no    |
 | kubeconfig_aws_authenticator_env_variables   | Environment variables that should be used when executing the authenticator i.e. `{ AWS_PROFILE = "eks"}`                                                                                                |  map   | `<map>`  |    no    |
 
-
-
-
 ## Outputs
 
 | Name                               | Description                                                                                                                                                     |
