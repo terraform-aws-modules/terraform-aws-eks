@@ -106,6 +106,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker_security_group_id    | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster.                                              | string | `` | no  |
 | worker_sg_ingress_from_port | Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443).                                   | string |  `1025`  |    no    |
 | workers_group_defaults      | Default values for target groups as defined by the list of maps.                                                                                                                                                         |  map   | `<map>`  |    no    |
+| workstation_cidr            | Override the default ingress rule that allows communication with the EKS cluster API. If not given, will use current IP/32.                                                                                              | string |    -     |    no    |
 
 ## Outputs
 
