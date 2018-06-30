@@ -45,7 +45,7 @@ resource "aws_security_group_rule" "cluster_https_worker_ingress" {
 }
 
 resource "aws_security_group_rule" "cluster_https_cidr_ingress" {
-  cidr_blocks       = ["${local.workstation_external_cidr}"]
+  cidr_blocks       = ["${local.workstation_cidr}"]
   description       = "Allow kubectl communication with the EKS cluster API."
   protocol          = "tcp"
   security_group_id = "${aws_security_group.cluster.id}"

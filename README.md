@@ -24,7 +24,6 @@ A full example leveraging other community modules is contained in the [examples/
 ```hcl
 module "eks" {
   source                = "terraform-aws-modules/eks/aws"
-  version               = "0.1.0"
   cluster_name          = "test-eks-cluster"
   subnets               = ["subnet-abcde012", "subnet-bcde012a"]
   tags                  = "${map("Environment", "test")}"
@@ -100,6 +99,11 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster_version             | Kubernetes version to use for the EKS cluster.                                                                                                                                                                           | string |  `1.10`  |    no    |
 | config_output_path          | Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory.                                                                     | string |   `./`   |    no    |
 | configure_kubectl_session   | Configure the current session's kubectl to use the instantiated EKS cluster.                                                                                                                                             | string |  `true`  |    no    |
+| kubeconfig_context_name     | Name of the kubeconfig context.                                                                                                                                                                                          |  map   |  `aws`   |    no    |
+| kubeconfig_user_name        | Name of the kubeconfig user.                                                                                                                                                                                             |  map   |  `aws`   |    no    |
+| kubeconfig_aws_authenticator_command         | Command to use to to fetch AWS EKS credentials                                                                                                                                                          |  map   | `heptio-authenticator-aws` | no |
+| kubeconfig_aws_authenticator_additional_args | Any additional arguments to pass to the authenticator such as the role to assume `["-r", "MyEksRole"]`                                                                                                  |  map   | `<list>` |    no    |
+| kubeconfig_aws_authenticator_env_variables   | Environment variables that should be used when executing the authenticator i.e. `{ AWS_PROFILE = "eks"}`                                                                                                |  map   | `<map>`  |    no    |
 | subnets                     | A list of subnets to place the EKS cluster and workers within.                                                                                                                                                           |  list  |    -     |   yes    |
 | tags                        | A map of tags to add to all resources.                                                                                                                                                                                   | string | `<map>`  |    no    |
 | vpc_id                      | VPC where the cluster and workers will be deployed.                                                                                                                                                                      | string |    -     |   yes    |
@@ -107,11 +111,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker_security_group_id    | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster.                                              | string |    ``    |    no    |
 | worker_sg_ingress_from_port | Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443).                                   | string |  `1025`  |    no    |
 | workers_group_defaults      | Default values for target groups as defined by the list of maps.                                                                                                                                                         |  map   | `<map>`  |    no    |
-| kubeconfig_context_name     | Name of the kubeconfig context.                                                                                                                                                                                          |  map   |  `aws`   |    no    |
-| kubeconfig_user_name        | Name of the kubeconfig user.                                                                                                                                                                                             |  map   |  `aws`   |    no    |
-| kubeconfig_aws_authenticator_command         | Command to use to to fetch AWS EKS credentials                                                                                                                                                          |  map   | `heptio-authenticator-aws` | no |
-| kubeconfig_aws_authenticator_additional_args | Any additional arguments to pass to the authenticator such as the role to assume `["-r", "MyEksRole"]`                                                                                                  |  map   | `<list>` |    no    |
-| kubeconfig_aws_authenticator_env_variables   | Environment variables that should be used when executing the authenticator i.e. `{ AWS_PROFILE = "eks"}`                                                                                                |  map   | `<map>`  |    no    |
+| workstation_cidr            | Override the default ingress rule that allows communication with the EKS cluster API. If not given, will use current IP/32.                                                                                              | string |    -     |    no    |
 
 ## Outputs
 
