@@ -25,3 +25,6 @@ users:
         - "token"
         - "-i"
         - "${cluster_name}"
+      env:
+        - name: AWS_PROFILE
+          value: ${aws_profile}
