@@ -1,7 +1,11 @@
 locals {
-  asg_tags                  = ["${null_resource.tags_as_list_of_maps.*.triggers}"]
-  cluster_security_group_id = "${var.cluster_security_group_id == "" ? aws_security_group.cluster.id : var.cluster_security_group_id}"
-  worker_security_group_id  = "${var.worker_security_group_id == "" ? aws_security_group.workers.id : var.worker_security_group_id}"
+  asg_tags = ["${null_resource.tags_as_list_of_maps.*.triggers}"]
+
+  # Followed recommendation http://67bricks.com/blog/?p=85
+  # to workaround terraform not supporting short circut evaluation
+  cluster_security_group_id = "${coalesce(join("", aws_security_group.cluster.*.id), var.cluster_security_group_id)}"
+
+  worker_security_group_id  = "${coalesce(join("", aws_security_group.workers.*.id), var.worker_security_group_id)}"
   workstation_external_cidr = "${chomp(data.http.workstation_external_ip.body)}/32"
   workstation_cidr          = "${coalesce(var.workstation_cidr, local.workstation_external_cidr)}"
 
