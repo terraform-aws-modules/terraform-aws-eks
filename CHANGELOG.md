@@ -5,11 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
-## [[v1.3.0]()] - ]
+## [[v1.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.2.0...v1.3.0)] - 2018-07-??]
 
 ### Added
 
-- new variable `pre_userdata` added to worker launch configuration allows to run scripts before the plugin does anything.
+- your excellent addition. (Hat-tip, @self 👒)
+
+### Changed
+
+- your excellent change. (Boomshakalaka, @self 🏀)
+
+## [[v1.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.1.0...v1.2.0)] - 2018-07-01]
+
+### Added
+
+- new variable `pre_userdata` added to worker launch configuration allows to run scripts before the plugin does anything. (W00t, @jimbeck 🦉)
+
+### Changed
+
+- kubeconfig made much more flexible. (Bang up job, @sdavids13 💥)
+- ASG desired capacity is now ignored as ASG size is more effectively handed by k8s. (Thanks, @ozbillwang 💇‍♂️)
+- Providing security groups didn't behave as expected. This has been fixed. (Good catch, @jimbeck 🔧)
+- workstation cidr to be allowed by created security group is now more flexible. (A welcome addition, @jimbeck 🔐)
 
 ## [[v1.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.0.0...v1.1.0)] - 2018-06-25]
 
