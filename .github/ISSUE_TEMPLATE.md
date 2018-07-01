@@ -1,21 +1,30 @@
 # I have issues
 
-## I'm submitting a
+## I'm submitting a...
 
 * [ ] bug report
 * [ ] feature request
 * [ ] support request
+* [ ] kudos, thank you, warm fuzzy
 
-## What is the current behavior
+## What is the current behavior?
 
-## If this is a bug, how to reproduce? Please include a code sample
 
-## What's the expected behavior
 
-## Environment
+## If this is a bug, how to reproduce? Please include a code sample if relevvant.
+
+
+
+## What's the expected behavior?
+
+
+
+## Are you able to fix this problem and submit a PR? Link here if you have already.
+
+## Environment details
 
 * Affected module version:
 * OS:
 * Terraform version:
 
-## Other relevant info
+## Any other relevant info

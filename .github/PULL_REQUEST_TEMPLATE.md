@@ -9,5 +9,6 @@ Please explain the changes you made here and link to any relevant issues.
 - [ ] `terraform fmt` and `terraform validate` both work from the root and `examples/eks_test_fixture` directories (look in CI for an example)
 - [ ] Tests for the changes have been added and passing (for bug fixes/features)
 - [ ] Test results are pasted in this PR (in lieu of CI)
-- [ ] Docs have been added/updated (for bug fixes/features)
-- [ ] Any breaking changes are noted in the description above
+- [ ] Docs have been updated using `terraform-docs` per `README.md` instructions
+- [ ] I've added my change to CHANGELOG.md
+- [ ] Any breaking changes are highlighted above

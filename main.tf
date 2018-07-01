@@ -25,7 +25,6 @@
 * ```hcl
 * module "eks" {
 *   source                = "terraform-aws-modules/eks/aws"
-*   version               = "0.1.0"
 *   cluster_name          = "test-eks-cluster"
 *   subnets               = ["subnet-abcde012", "subnet-bcde012a"]
 *   tags                  = "${map("Environment", "test")}"
