@@ -73,14 +73,6 @@ EOF
   }
 }
 
-data "template_file" "config_map_aws_auth" {
-  template = "${file("${path.module}/templates/config-map-aws-auth.yaml.tpl")}"
-
-  vars {
-    role_arn = "${aws_iam_role.workers.arn}"
-  }
-}
-
 data "template_file" "userdata" {
   template = "${file("${path.module}/templates/userdata.sh.tpl")}"
   count    = "${length(var.worker_groups)}"
