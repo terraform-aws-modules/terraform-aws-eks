@@ -1,6 +1,6 @@
 resource "local_file" "kubeconfig" {
   content  = "${data.template_file.kubeconfig.rendered}"
-  filename = "${var.config_output_path}/kubeconfig"
+  filename = "${var.config_output_path}/kubeconfig_eks_${data.aws_region.current.name}_${var.cluster_name}"
   count    = "${var.configure_kubectl_session ? 1 : 0}"
 }
 
