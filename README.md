@@ -102,8 +102,6 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | kubeconfig_aws_authenticator_additional_args | Any additional arguments to pass to the authenticator such as the role to assume ["-r", "MyEksRole"] | string | `<list>` | no |
 | kubeconfig_aws_authenticator_command | Command to use to to fetch AWS EKS credentials | string | `heptio-authenticator-aws` | no |
 | kubeconfig_aws_authenticator_env_variables | Environment variables that should be used when executing the authenticator i.e. { AWS_PROFILE = "eks"} | string | `<map>` | no |
-| kubeconfig_context_name | Name of the kubeconfig context. | string | `aws` | no |
-| kubeconfig_user_name | Name of the kubeconfig user. | string | `aws` | no |
 | subnets | A list of subnets to place the EKS cluster and workers within. | list | - | yes |
 | tags | A map of tags to add to all resources. | string | `<map>` | no |
 | vpc_id | VPC where the cluster and workers will be deployed. | string | - | yes |
