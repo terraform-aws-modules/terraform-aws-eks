@@ -13,7 +13,7 @@ echo "${cluster_auth_base64}" | base64 -d >$CA_CERTIFICATE_FILE_PATH
 KUBELET_NODE_LABELS=${kubelet_node_labels}
 if [[ $KUBELET_NODE_LABELS != "" ]]; then sed -i '/INTERNAL_IP/a \ \ --node-labels='"$KUBELET_NODE_LABELS"'\ \\' /etc/systemd/system/kubelet.service; fi
 
-# Authenticatoin
+# Authentication
 INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
 sed -i s,MASTER_ENDPOINT,${endpoint},g /var/lib/kubelet/kubeconfig
 sed -i s,CLUSTER_NAME,${cluster_name},g /var/lib/kubelet/kubeconfig
