@@ -91,6 +91,7 @@ variable "workers_group_defaults" {
     ebs_optimized        = true          # sets whether to use ebs optimization on supported types.
     public_ip            = false         # Associate a public ip address with a worker
     kubelet_node_labels  = ""            # This string is passed directly to kubelet via --node-lables= if set. It should be comma delimited with no spaces. If left empty no --node-labels switch is added.
+    subnets              = ""            # A comma delimited string of subnets to place the worker nodes in. i.e. subnet-123,subnet-456,subnet-789
   }
 }
 
