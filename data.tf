@@ -49,6 +49,7 @@ data "template_file" "kubeconfig" {
 
   vars {
     cluster_name                      = "${var.cluster_name}"
+    kubeconfig_name                   = "${local.kubeconfig_name}"
     endpoint                          = "${aws_eks_cluster.this.endpoint}"
     region                            = "${data.aws_region.current.name}"
     cluster_auth_base64               = "${aws_eks_cluster.this.certificate_authority.0.data}"

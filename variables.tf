@@ -93,3 +93,8 @@ variable "kubeconfig_aws_authenticator_env_variables" {
   description = "Environment variables that should be used when executing the authenticator i.e. { AWS_PROFILE = \"eks\"}"
   default     = {}
 }
+
+variable "kubeconfig_name" {
+  description = "Override the default name used for items kubeconfig"
+  default     = ""
+}

@@ -6,18 +6,18 @@ clusters:
 - cluster:
     server: ${endpoint}
     certificate-authority-data: ${cluster_auth_base64}
-  name: eks_${region}_${cluster_name}
+  name: ${kubeconfig_name}
 
 contexts:
 - context:
-    cluster: eks_${region}_${cluster_name}
-    user: eks_${region}_${cluster_name}
-  name: eks_${region}_${cluster_name}
+    cluster: ${kubeconfig_name}
+    user: ${kubeconfig_name}
+  name: ${kubeconfig_name}
 
-current-context: eks_${region}_${cluster_name}
+current-context: ${kubeconfig_name}
 
 users:
-- name: eks_${region}_${cluster_name}
+- name: ${kubeconfig_name}
   user:
     exec:
       apiVersion: client.authentication.k8s.io/v1alpha1
