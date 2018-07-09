@@ -49,11 +49,10 @@ data "template_file" "kubeconfig" {
 
   vars {
     cluster_name                      = "${var.cluster_name}"
+    kubeconfig_name                   = "${local.kubeconfig_name}"
     endpoint                          = "${aws_eks_cluster.this.endpoint}"
     region                            = "${data.aws_region.current.name}"
     cluster_auth_base64               = "${aws_eks_cluster.this.certificate_authority.0.data}"
-    context_name                      = "${var.kubeconfig_context_name}"
-    user_name                         = "${var.kubeconfig_user_name}"
     aws_authenticator_command         = "${var.kubeconfig_aws_authenticator_command}"
     aws_authenticator_additional_args = "${length(var.kubeconfig_aws_authenticator_additional_args) > 0 ? "        - ${join("\n        - ", var.kubeconfig_aws_authenticator_additional_args)}" : "" }"
     aws_authenticator_env_variables   = "${length(var.kubeconfig_aws_authenticator_env_variables) > 0 ? "      env:\n${join("\n", data.template_file.aws_authenticator_env_variables.*.rendered)}" : ""}"
