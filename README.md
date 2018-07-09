@@ -98,8 +98,8 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster_security_group_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32. | string | `` | no |
 | cluster_version | Kubernetes version to use for the EKS cluster. | string | `1.10` | no |
 | config_output_path | Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory. | string | `./` | no |
-| manage_aws_auth | Whether to write and apply the aws-auth configmap file. | boolean | `true` | no |
-| write_kubeconfig | Whether to write a kubeconfig file containing the cluster configuration. | boolean | `true` | no | 
+| manage_aws_auth | Whether to write and apply the aws-auth configmap file. | string | `true` | no |
+| write_kubeconfig | Whether to write a kubeconfig file containing the cluster configuration. | string | `true` | no |
 | kubeconfig_aws_authenticator_additional_args | Any additional arguments to pass to the authenticator such as the role to assume ["-r", "MyEksRole"] | string | `<list>` | no |
 | kubeconfig_aws_authenticator_command | Command to use to to fetch AWS EKS credentials | string | `heptio-authenticator-aws` | no |
 | kubeconfig_aws_authenticator_env_variables | Environment variables that should be used when executing the authenticator i.e. { AWS_PROFILE = "eks"} | string | `<map>` | no |
