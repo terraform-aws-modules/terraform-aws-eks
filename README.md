@@ -98,18 +98,18 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster_security_group_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32. | string | `` | no |
 | cluster_version | Kubernetes version to use for the EKS cluster. | string | `1.10` | no |
 | config_output_path | Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory. | string | `./` | no |
-| configure_kubectl_session | Configure the current session's kubectl to use the instantiated EKS cluster. | string | `true` | no |
-| kubeconfig_aws_authenticator_additional_args | Any additional arguments to pass to the authenticator such as the role to assume ["-r", "MyEksRole"] | string | `<list>` | no |
+| configure_kubectl_session | Configure the current session's kubectl to use the instantiated EKS cluster. | boolean | `true` | no |
+| kubeconfig_aws_authenticator_additional_args | Any additional arguments to pass to the authenticator such as the role to assume ["-r", "MyEksRole"] | list | `` | no |
 | kubeconfig_aws_authenticator_command | Command to use to to fetch AWS EKS credentials | string | `heptio-authenticator-aws` | no |
 | kubeconfig_aws_authenticator_env_variables | Environment variables that should be used when executing the authenticator i.e. { AWS_PROFILE = "eks"} | string | `<map>` | no |
 | kubeconfig_name | Override the default name used for items kubeconfig. | string | `` | no |
 | subnets | A list of subnets to place the EKS cluster and workers within. | list | - | yes |
-| tags | A map of tags to add to all resources. | string | `<map>` | no |
+| tags | A map of tags to add to all resources. | map | `` | no |
 | vpc_id | VPC where the cluster and workers will be deployed. | string | - | yes |
-| worker_groups | A list of maps defining worker group configurations. See workers_group_defaults for valid keys. | list | `<list>` | no |
+| worker_groups | A list of maps defining worker group configurations. See workers_group_defaults for valid keys. | list | `` | no |
 | worker_security_group_id | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster. | string | `` | no |
 | worker_sg_ingress_from_port | Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443). | string | `1025` | no |
-| workers_group_defaults | Default values for target groups as defined by the list of maps. | map | `<map>` | no |
+| workers_group_defaults | Default values for target groups as defined by the list of maps. | map | `` | no |
 | workstation_cidr | Override the default ingress rule that allows communication with the EKS cluster API. If not given, will use current IP/32. | string | `` | no |
 
 ## Outputs
