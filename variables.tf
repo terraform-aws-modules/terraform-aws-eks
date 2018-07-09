@@ -22,8 +22,13 @@ variable "config_output_path" {
   default     = "./"
 }
 
-variable "configure_kubectl_session" {
-  description = "Configure the current session's kubectl to use the instantiated EKS cluster."
+variable "write_kubeconfig" {
+  description = "Whether to write a kubeconfig file containing the cluster configuration"
+  default     = true
+}
+
+variable "manage_aws_auth" {
+  description = "Whether to write and apply the aws-auth configmap file"
   default     = true
 }
 
