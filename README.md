@@ -90,6 +90,7 @@ Many thanks to [the contributors listed here](https://github.com/terraform-aws-m
 
 MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/LICENSE) for full details.
 
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -102,7 +103,10 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | kubeconfig_aws_authenticator_additional_args | Any additional arguments to pass to the authenticator such as the role to assume ["-r", "MyEksRole"] | string | `<list>` | no |
 | kubeconfig_aws_authenticator_command | Command to use to to fetch AWS EKS credentials | string | `heptio-authenticator-aws` | no |
 | kubeconfig_aws_authenticator_env_variables | Environment variables that should be used when executing the authenticator i.e. { AWS_PROFILE = "eks"} | string | `<map>` | no |
-| kubeconfig_name | Override the default name used for items kubeconfig. | string | `` | no |
+| kubeconfig_name | Override the default name used for items kubeconfig | string | `` | no |
+| root_iops | The amount of provisioned IOPS. This must be set with a volume_type of 'io1'. | string | `` | no |
+| root_volume_size | The root size of the volume in gigabytes. | string | `20` | no |
+| root_volume_type | The type of root volume. Can be 'standard', 'gp2', or 'io1' | string | `gp2` | no |
 | subnets | A list of subnets to place the EKS cluster and workers within. | list | - | yes |
 | tags | A map of tags to add to all resources. | string | `<map>` | no |
 | vpc_id | VPC where the cluster and workers will be deployed. | string | - | yes |
@@ -126,3 +130,4 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker_iam_role_name | IAM role name attached to EKS workers |
 | worker_security_group_id | Security group ID attached to the EKS workers. |
 | workers_asg_arns | IDs of the autoscaling groups containing workers. |
+

@@ -37,6 +37,9 @@ resource "aws_launch_configuration" "workers" {
   }
 
   root_block_device {
+    volume_size           = "${var.root_volume_size}"
+    volume_type           = "${var.root_volume_type}"
+    iops                  = "${var.root_iops}"
     delete_on_termination = true
   }
 }
