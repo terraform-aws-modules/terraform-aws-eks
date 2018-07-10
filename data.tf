@@ -48,11 +48,11 @@ data "template_file" "kubeconfig" {
   template = "${file("${path.module}/templates/kubeconfig.tpl")}"
 
   vars {
-    cluster_name                      = "${aws_eks_cluster.cluster.name}"
-    endpoint                          = "${aws_eks_cluster.cluster.endpoint}"
+    cluster_name                      = "${aws_eks_cluster.this.name}"
     kubeconfig_name                   = "${local.kubeconfig_name}"
+    endpoint                          = "${aws_eks_cluster.this.endpoint}"
     region                            = "${data.aws_region.current.name}"
-    cluster_auth_base64               = "${aws_eks_cluster.cluster.certificate_authority.0.data}"
+    cluster_auth_base64               = "${aws_eks_cluster.this.certificate_authority.0.data}"
     aws_authenticator_command         = "${var.kubeconfig_aws_authenticator_command}"
     aws_authenticator_additional_args = "${length(var.kubeconfig_aws_authenticator_additional_args) > 0 ? "        - ${join("\n        - ", var.kubeconfig_aws_authenticator_additional_args)}" : "" }"
     aws_authenticator_env_variables   = "${length(var.kubeconfig_aws_authenticator_env_variables) > 0 ? "      env:\n${join("\n", data.template_file.aws_authenticator_env_variables.*.rendered)}" : ""}"
@@ -87,9 +87,9 @@ data "template_file" "userdata" {
 
   vars {
     region              = "${data.aws_region.current.name}"
-    cluster_name        = "${aws_eks_cluster.cluster.name}"
-    endpoint            = "${aws_eks_cluster.cluster.endpoint}"
-    cluster_auth_base64 = "${aws_eks_cluster.cluster.certificate_authority.0.data}"
+    cluster_name        = "${aws_eks_cluster.this.name}"
+    endpoint            = "${aws_eks_cluster.this.endpoint}"
+    cluster_auth_base64 = "${aws_eks_cluster.this.certificate_authority.0.data}"
     max_pod_count       = "${lookup(local.max_pod_per_node, lookup(var.worker_groups[count.index], "instance_type", lookup(var.workers_group_defaults, "instance_type")))}"
     pre_userdata        = "${lookup(var.worker_groups[count.index], "pre_userdata",lookup(var.workers_group_defaults, "pre_userdata"))}"
     additional_userdata = "${lookup(var.worker_groups[count.index], "additional_userdata",lookup(var.workers_group_defaults, "additional_userdata"))}"
