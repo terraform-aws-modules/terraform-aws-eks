@@ -63,7 +63,7 @@ Generate them like so:
 
 ```bash
 go get github.com/segmentio/terraform-docs
-terraform-docs md ./ | cat -s | ghead -n -1 > README.md
+terraform-docs md ./ | cat -s > README.md
 ```
 
 ## Contributing
@@ -103,9 +103,9 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | kubeconfig_aws_authenticator_command | Command to use to to fetch AWS EKS credentials | string | `heptio-authenticator-aws` | no |
 | kubeconfig_aws_authenticator_env_variables | Environment variables that should be used when executing the authenticator i.e. { AWS_PROFILE = "eks"} | string | `<map>` | no |
 | kubeconfig_name | Override the default name used for items kubeconfig | string | `` | no |
-| map_accounts | Additional AWS account numbers to add to the aws-auth configmap. | list | `<list>` | no |
-| map_roles | Additional IAM roles to add to the aws-auth configmap. | list | `<list>` | no |
-| map_users | Additional IAM users to add to the aws-auth configmap. | list | `<list>` | no |
+| map_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
+| map_roles | Additional IAM roles to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
+| map_users | Additional IAM users to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
 | subnets | A list of subnets to place the EKS cluster and workers within. | list | - | yes |
 | tags | A map of tags to add to all resources. | map | `<map>` | no |
 | vpc_id | VPC where the cluster and workers will be deployed. | string | - | yes |
@@ -130,4 +130,3 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker_iam_role_name | IAM role name attached to EKS workers |
 | worker_security_group_id | Security group ID attached to the EKS workers. |
 | workers_asg_arns | IDs of the autoscaling groups containing workers. |
-
