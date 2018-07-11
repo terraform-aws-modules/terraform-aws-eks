@@ -10,6 +10,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - kubelet_node_labels worker group option allows setting --node-labels= in kubelet. (Hat-tip, @bshelton229 👒)
+- `worker_iam_role_arn` added to outputs. Sweet, @hatemosphere 🔥
 
 ### Changed
 

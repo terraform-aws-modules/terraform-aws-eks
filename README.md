@@ -126,5 +126,6 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | config_map_aws_auth | A kubernetes configuration to authenticate to this EKS cluster. |
 | kubeconfig | kubectl config file contents for this EKS cluster. |
 | worker_iam_role_name | IAM role name attached to EKS workers |
+| worker_iam_role_arn | IAM role ID attached to EKS workers |
 | worker_security_group_id | Security group ID attached to the EKS workers. |
 | workers_asg_arns | IDs of the autoscaling groups containing workers. |
