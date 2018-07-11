@@ -15,7 +15,7 @@ Read the [AWS docs on EKS to get connected to the k8s dashboard](https://docs.aw
 * You want to create an EKS cluster and an autoscaling group of workers for the cluster.
 * You want these resources to exist within security groups that allow communication and coordination. These can be user provided or created within the module.
 * You've created a Virtual Private Cloud (VPC) and subnets where you intend to put the EKS resources.
-* If using the default variable value (`true`) for `configure_kubectl_session`, it's required that both [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl) (>=1.10) and [`heptio-authenticator-aws`](https://github.com/heptio/authenticator#4-set-up-kubectl-to-use-heptio-authenticator-for-aws-tokens) are installed and on your shell's PATH.
+* If using the default variable value (`true`) for `configure_kubectl_session`, it's required that both [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl) (>=1.10) and [`aws-iam-authenticator`](https://github.com/kubernetes-sigs/aws-iam-authenticator#4-set-up-kubectl-to-use-authentication-tokens-provided-by-aws-iam-authenticator-for-kubernetes) are installed and on your shell's PATH.
 
 ## Usage example
 
@@ -99,8 +99,8 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster_version | Kubernetes version to use for the EKS cluster. | string | `1.10` | no |
 | config_output_path | Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory. | string | `./` | no |
 | configure_kubectl_session | Configure the current session's kubectl to use the instantiated EKS cluster. | string | `true` | no |
+| kubeconfig_aws_authenticator_command | Command to use to to fetch AWS EKS credentials | string | `aws-iam-authenticator` | no |
 | kubeconfig_aws_authenticator_additional_args | Any additional arguments to pass to the authenticator such as the role to assume. ["-r", "MyEksRole"] | list | `<list>` | no |
-| kubeconfig_aws_authenticator_command | Command to use to to fetch AWS EKS credentials. | string | `heptio-authenticator-aws` | no |
 | kubeconfig_aws_authenticator_env_variables | Environment variables that should be used when executing the authenticator. e.g. { AWS_PROFILE = "eks"} | map | `<map>` | no |
 | kubeconfig_name | Override the default name used for items kubeconfig. | string | `` | no |
 | manage_aws_auth | Whether to write and apply the aws-auth configmap file. | string | `true` | no |

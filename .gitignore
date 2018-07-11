@@ -11,3 +11,4 @@ kubeconfig
 config-map-aws-auth.yaml
 eks-admin-cluster-role-binding.yaml
 eks-admin-service-account.yaml
+.idea/
