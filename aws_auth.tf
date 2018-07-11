@@ -13,7 +13,7 @@ resource "null_resource" "update_config_map_aws_auth" {
     config_map_rendered = "${data.template_file.config_map_aws_auth.rendered}"
   }
 
-  count = "${var.configure_kubectl_session ? 1 : 0}"
+  count = "${var.manage_aws_auth ? 1 : 0}"
 }
 
 data "template_file" "config_map_aws_auth" {
