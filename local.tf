@@ -8,8 +8,7 @@ locals {
   worker_security_group_id  = "${coalesce(join("", aws_security_group.workers.*.id), var.worker_security_group_id)}"
   workstation_external_cidr = "${chomp(data.http.workstation_external_ip.body)}/32"
   workstation_cidr          = "${coalesce(var.workstation_cidr, local.workstation_external_cidr)}"
-
-  kubeconfig_name = "${var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name}"
+  kubeconfig_name           = "${var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name}"
 
   # Mapping from the node type that we selected and the max number of pods that it can run
   # Taken from https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-06-05/amazon-eks-nodegroup.yaml

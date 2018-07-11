@@ -8,7 +8,7 @@ variable "cluster_security_group_id" {
 }
 
 variable "workstation_cidr" {
-  description = "Override the default ingress rule that allows communication with the EKS cluster API. If not given, will use current IP/32.    "
+  description = "Override the default ingress rule that allows communication with the EKS cluster API. If not given, will use current IP/32. "
   default     = ""
 }
 
@@ -105,18 +105,18 @@ variable "worker_sg_ingress_from_port" {
 }
 
 variable "kubeconfig_aws_authenticator_command" {
-  description = "Command to use to to fetch AWS EKS credentials"
+  description = "Command to use to to fetch AWS EKS credentials."
   default     = "aws-iam-authenticator"
 }
 
 variable "kubeconfig_aws_authenticator_additional_args" {
-  description = "Any additional arguments to pass to the authenticator such as the role to assume [\"-r\", \"MyEksRole\"]"
+  description = "Any additional arguments to pass to the authenticator such as the role to assume. e.g. [\"-r\", \"MyEksRole\"]."
   type        = "list"
   default     = []
 }
 
 variable "kubeconfig_aws_authenticator_env_variables" {
-  description = "Environment variables that should be used when executing the authenticator i.e. { AWS_PROFILE = \"eks\"}"
+  description = "Environment variables that should be used when executing the authenticator. e.g. { AWS_PROFILE = \"eks\"}."
   type        = "map"
   default     = {}
 }
