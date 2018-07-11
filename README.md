@@ -102,7 +102,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | kubeconfig_aws_authenticator_command | Command to use to to fetch AWS EKS credentials | string | `heptio-authenticator-aws` | no |
 | kubeconfig_aws_authenticator_env_variables | Environment variables that should be used when executing the authenticator i.e. { AWS_PROFILE = "eks"} | map | `<map>` | no |
 | kubeconfig_name | Override the default name used for items kubeconfig. | string | `` | no |
-| manage_aws_auth | Whether to write and apply the aws-auth configmap file | string | `true` | no |
+| manage_aws_auth | Whether to write and apply the aws-auth configmap file. | string | `true` | no |
 | map_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
 | map_roles | Additional IAM roles to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
 | map_users | Additional IAM users to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
@@ -114,7 +114,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker_sg_ingress_from_port | Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443). | string | `1025` | no |
 | workers_group_defaults | Default values for target groups as defined by the list of maps. | map | `<map>` | no |
 | workstation_cidr | Override the default ingress rule that allows communication with the EKS cluster API. If not given, will use current IP/32. | string | `` | no |
-| write_kubeconfig | Whether to write a kubeconfig file containing the cluster configuration | string | `true` | no |
+| write_kubeconfig | Whether to write a kubeconfig file containing the cluster configuration. | string | `true` | no |
 
 ## Outputs
 
