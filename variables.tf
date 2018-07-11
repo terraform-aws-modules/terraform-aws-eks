@@ -34,6 +34,7 @@ variable "subnets" {
 
 variable "tags" {
   description = "A map of tags to add to all resources."
+  type        = "map"
   default     = {}
 }
 
@@ -87,15 +88,17 @@ variable "kubeconfig_aws_authenticator_command" {
 
 variable "kubeconfig_aws_authenticator_additional_args" {
   description = "Any additional arguments to pass to the authenticator such as the role to assume [\"-r\", \"MyEksRole\"]"
+  type        = "list"
   default     = []
 }
 
 variable "kubeconfig_aws_authenticator_env_variables" {
   description = "Environment variables that should be used when executing the authenticator i.e. { AWS_PROFILE = \"eks\"}"
+  type        = "map"
   default     = {}
 }
 
 variable "kubeconfig_name" {
-  description = "Override the default name used for items kubeconfig"
+  description = "Override the default name used for items kubeconfig."
   default     = ""
 }
