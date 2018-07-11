@@ -48,7 +48,7 @@ data "template_file" "kubeconfig" {
   template = "${file("${path.module}/templates/kubeconfig.tpl")}"
 
   vars {
-    cluster_name                      = "${var.cluster_name}"
+    cluster_name                      = "${aws_eks_cluster.this.name}"
     kubeconfig_name                   = "${local.kubeconfig_name}"
     endpoint                          = "${aws_eks_cluster.this.endpoint}"
     region                            = "${data.aws_region.current.name}"
@@ -73,7 +73,7 @@ EOF
   }
 }
 
-data template_file config_map_aws_auth {
+data "template_file" "config_map_aws_auth" {
   template = "${file("${path.module}/templates/config-map-aws-auth.yaml.tpl")}"
 
   vars {
@@ -81,13 +81,13 @@ data template_file config_map_aws_auth {
   }
 }
 
-data template_file userdata {
+data "template_file" "userdata" {
   template = "${file("${path.module}/templates/userdata.sh.tpl")}"
   count    = "${length(var.worker_groups)}"
 
   vars {
     region              = "${data.aws_region.current.name}"
-    cluster_name        = "${var.cluster_name}"
+    cluster_name        = "${aws_eks_cluster.this.name}"
     endpoint            = "${aws_eks_cluster.this.endpoint}"
     cluster_auth_base64 = "${aws_eks_cluster.this.certificate_authority.0.data}"
     max_pod_count       = "${lookup(local.max_pod_per_node, lookup(var.worker_groups[count.index], "instance_type", lookup(var.workers_group_defaults, "instance_type")))}"

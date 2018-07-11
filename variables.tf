@@ -22,8 +22,13 @@ variable "config_output_path" {
   default     = "./"
 }
 
-variable "configure_kubectl_session" {
-  description = "Configure the current session's kubectl to use the instantiated EKS cluster."
+variable "write_kubeconfig" {
+  description = "Whether to write a kubeconfig file containing the cluster configuration"
+  default     = true
+}
+
+variable "manage_aws_auth" {
+  description = "Whether to write and apply the aws-auth configmap file"
   default     = true
 }
 
@@ -34,6 +39,7 @@ variable "subnets" {
 
 variable "tags" {
   description = "A map of tags to add to all resources."
+  type        = "map"
   default     = {}
 }
 
@@ -87,15 +93,17 @@ variable "kubeconfig_aws_authenticator_command" {
 
 variable "kubeconfig_aws_authenticator_additional_args" {
   description = "Any additional arguments to pass to the authenticator such as the role to assume [\"-r\", \"MyEksRole\"]"
+  type        = "list"
   default     = []
 }
 
 variable "kubeconfig_aws_authenticator_env_variables" {
   description = "Environment variables that should be used when executing the authenticator i.e. { AWS_PROFILE = \"eks\"}"
+  type        = "map"
   default     = {}
 }
 
 variable "kubeconfig_name" {
-  description = "Override the default name used for items kubeconfig"
+  description = "Override the default name used for items kubeconfig."
   default     = ""
 }
