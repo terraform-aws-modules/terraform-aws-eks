@@ -23,13 +23,31 @@ variable "config_output_path" {
 }
 
 variable "write_kubeconfig" {
-  description = "Whether to write a kubeconfig file containing the cluster configuration"
+  description = "Whether to write a kubeconfig file containing the cluster configuration."
   default     = true
 }
 
 variable "manage_aws_auth" {
-  description = "Whether to write and apply the aws-auth configmap file"
+  description = "Whether to write and apply the aws-auth configmap file."
   default     = true
+}
+
+variable "map_accounts" {
+  description = "Additional AWS account numbers to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format."
+  type        = "list"
+  default     = []
+}
+
+variable "map_roles" {
+  description = "Additional IAM roles to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format."
+  type        = "list"
+  default     = []
+}
+
+variable "map_users" {
+  description = "Additional IAM users to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format."
+  type        = "list"
+  default     = []
 }
 
 variable "subnets" {
