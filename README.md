@@ -63,7 +63,7 @@ Generate them like so:
 
 ```bash
 go get github.com/segmentio/terraform-docs
-terraform-docs md ./ | cat -s | ghead -n -1 > README.md
+terraform-docs md ./ | cat -s | tail -r | tail -n +2 | tail -r > README.md
 ```
 
 ## Contributing
@@ -97,10 +97,10 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster_name | Name of the EKS cluster. Also used as a prefix in names of related resources. | string | - | yes |
 | cluster_security_group_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32. | string | `` | no |
 | cluster_version | Kubernetes version to use for the EKS cluster. | string | `1.10` | no |
-| config_output_path | Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory. | string | `./` | no |
-| kubeconfig_aws_authenticator_additional_args | Any additional arguments to pass to the authenticator such as the role to assume ["-r", "MyEksRole"] | list | `<list>` | no |
-| kubeconfig_aws_authenticator_command | Command to use to to fetch AWS EKS credentials | string | `heptio-authenticator-aws` | no |
-| kubeconfig_aws_authenticator_env_variables | Environment variables that should be used when executing the authenticator i.e. { AWS_PROFILE = "eks"} | map | `<map>` | no |
+| config_output_path | Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory. Should end in a forward slash / . | string | `./` | no |
+| kubeconfig_aws_authenticator_additional_args | Any additional arguments to pass to the authenticator such as the role to assume. e.g. ["-r", "MyEksRole"]. | list | `<list>` | no |
+| kubeconfig_aws_authenticator_command | Command to use to to fetch AWS EKS credentials. | string | `aws-iam-authenticator` | no |
+| kubeconfig_aws_authenticator_env_variables | Environment variables that should be used when executing the authenticator. e.g. { AWS_PROFILE = "eks"}. | map | `<map>` | no |
 | kubeconfig_name | Override the default name used for items kubeconfig. | string | `` | no |
 | manage_aws_auth | Whether to write and apply the aws-auth configmap file. | string | `true` | no |
 | map_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
@@ -127,7 +127,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster_version | The Kubernetes server version for the EKS cluster. |
 | config_map_aws_auth | A kubernetes configuration to authenticate to this EKS cluster. |
 | kubeconfig | kubectl config file contents for this EKS cluster. |
-| worker_iam_role_name | IAM role name attached to EKS workers |
 | worker_iam_role_arn | IAM role ID attached to EKS workers |
+| worker_iam_role_name | IAM role name attached to EKS workers |
 | worker_security_group_id | Security group ID attached to the EKS workers. |
 | workers_asg_arns | IDs of the autoscaling groups containing workers. |
