@@ -64,7 +64,7 @@
 
 * ```bash
 * go get github.com/segmentio/terraform-docs
-* terraform-docs md ./ | cat -s | ghead -n -1 > README.md
+* terraform-docs md ./ | cat -s | tail -r | tail -n +2 | tail -r > README.md
 * ```
 
 * ## Contributing

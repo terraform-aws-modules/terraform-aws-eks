@@ -9,11 +9,11 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Some excellent feature. (you're on fire, @me 🔥)
+- A tiny but mighty feature. (you're on fire, @me 🔥)
 
 ### Changed
 
-- A very thoughtful change. (Boomshakalaka, @self 🏀)
+- A subtle but thoughtful change. (Boomshakalaka, @self 🏀)
 
 ## [[v1.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.2.0...v1.3.0)] - 2018-07-11]
 
@@ -22,6 +22,10 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - New variables `map_accounts`, `map_roles` and `map_users` in order to manage additional entries in the `aws-auth` configmap. (by @max-rocket-internet)
 - kubelet_node_labels worker group option allows setting --node-labels= in kubelet. (Hat-tip, @bshelton229 👒)
 - `worker_iam_role_arn` added to outputs. Sweet, @hatemosphere 🔥
+
+### Changed
+
+- Worker subnets able to be specified as a dedicated list per autoscaling group. (up top, @bshelton229 🙏)
 
 ## [[v1.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.1.0...v1.2.0)] - 2018-07-01]
 
