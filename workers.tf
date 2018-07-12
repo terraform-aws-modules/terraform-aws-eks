@@ -4,7 +4,7 @@ resource "aws_autoscaling_group" "workers" {
   max_size             = "${lookup(var.worker_groups[count.index], "asg_max_size",lookup(var.workers_group_defaults, "asg_max_size"))}"
   min_size             = "${lookup(var.worker_groups[count.index], "asg_min_size",lookup(var.workers_group_defaults, "asg_min_size"))}"
   launch_configuration = "${element(aws_launch_configuration.workers.*.id, count.index)}"
-  vpc_zone_identifier  = ["${var.subnets}"]
+  vpc_zone_identifier  = ["${split(",", coalesce(lookup(var.worker_groups[count.index], "subnets", ""), join(",", var.subnets)))}"]
   count                = "${length(var.worker_groups)}"
 
   tags = ["${concat(
