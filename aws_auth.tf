@@ -1,12 +1,12 @@
 resource "local_file" "config_map_aws_auth" {
   content  = "${data.template_file.config_map_aws_auth.rendered}"
-  filename = "${var.config_output_path}/config-map-aws-auth_${var.cluster_name}.yaml"
+  filename = "${var.config_output_path}config-map-aws-auth_${var.cluster_name}.yaml"
   count    = "${var.manage_aws_auth ? 1 : 0}"
 }
 
 resource "null_resource" "update_config_map_aws_auth" {
   provisioner "local-exec" {
-    command = "kubectl apply -f ${var.config_output_path}/config-map-aws-auth_${var.cluster_name}.yaml --kubeconfig ${var.config_output_path}/kubeconfig_${var.cluster_name}"
+    command = "kubectl apply -f ${var.config_output_path}config-map-aws-auth_${var.cluster_name}.yaml --kubeconfig ${var.config_output_path}kubeconfig_${var.cluster_name}"
   }
 
   triggers {

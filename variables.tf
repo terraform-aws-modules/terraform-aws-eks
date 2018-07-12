@@ -18,7 +18,7 @@ variable "cluster_version" {
 }
 
 variable "config_output_path" {
-  description = "Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory."
+  description = "Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory. Should end in a forward slash / ."
   default     = "./"
 }
 
