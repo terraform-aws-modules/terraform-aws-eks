@@ -53,7 +53,7 @@ variable "root_volume_type" {
 
 variable "root_iops" {
   description = "The amount of provisioned IOPS. This must be set with a volume_type of 'io1'."
-  default     = ""
+  default     = "0"
 }
 
 variable "worker_groups" {
