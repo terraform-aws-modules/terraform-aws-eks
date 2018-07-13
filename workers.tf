@@ -37,9 +37,9 @@ resource "aws_launch_configuration" "workers" {
   }
 
   root_block_device {
-    volume_size           = "${var.root_volume_size}"
-    volume_type           = "${var.root_volume_type}"
-    iops                  = "${var.root_iops}"
+    volume_size           = "${lookup(var.worker_groups[count.index], "root_volume_size", lookup(var.workers_group_defaults, "root_volume_size"))}"
+    volume_type           = "${lookup(var.worker_groups[count.index], "root_volume_type", lookup(var.workers_group_defaults, "root_volume_type"))}"
+    iops                  = "${lookup(var.worker_groups[count.index], "root_iops", lookup(var.workers_group_defaults, "root_iops"))}"
     delete_on_termination = true
   }
 }
