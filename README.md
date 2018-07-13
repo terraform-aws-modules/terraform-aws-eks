@@ -107,9 +107,6 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | map_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
 | map_roles | Additional IAM roles to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
 | map_users | Additional IAM users to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
-| root_iops | The amount of provisioned IOPS. This must be set with a volume_type of 'io1'. | string | `0` | no |
-| root_volume_size | The root size of the volume in gigabytes. | string | `20` | no |
-| root_volume_type | The type of root volume. Can be 'standard', 'gp2', or 'io1' | string | `gp2` | no |
 | subnets | A list of subnets to place the EKS cluster and workers within. | list | - | yes |
 | tags | A map of tags to add to all resources. | map | `<map>` | no |
 | vpc_id | VPC where the cluster and workers will be deployed. | string | - | yes |

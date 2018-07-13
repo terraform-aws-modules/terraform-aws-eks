@@ -65,21 +65,6 @@ variable "vpc_id" {
   description = "VPC where the cluster and workers will be deployed."
 }
 
-variable "root_volume_size" {
-  description = "The root size of the volume in gigabytes."
-  default     = "20"
-}
-
-variable "root_volume_type" {
-  description = "The type of root volume. Can be 'standard', 'gp2', or 'io1'"
-  default     = "gp2"
-}
-
-variable "root_iops" {
-  description = "The amount of provisioned IOPS. This must be set with a volume_type of 'io1'."
-  default     = "0"
-}
-
 variable "worker_groups" {
   description = "A list of maps defining worker group configurations. See workers_group_defaults for valid keys."
   type        = "list"
