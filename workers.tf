@@ -1,16 +1,16 @@
 resource "aws_autoscaling_group" "workers" {
-  name_prefix          = "${var.cluster_name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
+  name_prefix          = "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
   desired_capacity     = "${lookup(var.worker_groups[count.index], "asg_desired_capacity", lookup(var.workers_group_defaults, "asg_desired_capacity"))}"
   max_size             = "${lookup(var.worker_groups[count.index], "asg_max_size",lookup(var.workers_group_defaults, "asg_max_size"))}"
   min_size             = "${lookup(var.worker_groups[count.index], "asg_min_size",lookup(var.workers_group_defaults, "asg_min_size"))}"
   launch_configuration = "${element(aws_launch_configuration.workers.*.id, count.index)}"
-  vpc_zone_identifier  = ["${var.subnets}"]
+  vpc_zone_identifier  = ["${split(",", coalesce(lookup(var.worker_groups[count.index], "subnets", ""), join(",", var.subnets)))}"]
   count                = "${length(var.worker_groups)}"
 
   tags = ["${concat(
     list(
-      map("key", "Name", "value", "${var.cluster_name}-${lookup(var.worker_groups[count.index], "name", count.index)}-eks_asg", "propagate_at_launch", true),
-      map("key", "kubernetes.io/cluster/${var.cluster_name}", "value", "owned", "propagate_at_launch", true),
+      map("key", "Name", "value", "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}-eks_asg", "propagate_at_launch", true),
+      map("key", "kubernetes.io/cluster/${aws_eks_cluster.this.name}", "value", "owned", "propagate_at_launch", true),
     ),
     local.asg_tags)
   }"]
@@ -21,7 +21,7 @@ resource "aws_autoscaling_group" "workers" {
 }
 
 resource "aws_launch_configuration" "workers" {
-  name_prefix                 = "${var.cluster_name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
+  name_prefix                 = "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
   associate_public_ip_address = "${lookup(var.worker_groups[count.index], "public_ip", lookup(var.workers_group_defaults, "public_ip"))}"
   security_groups             = ["${local.worker_security_group_id}"]
   iam_instance_profile        = "${aws_iam_instance_profile.workers.id}"
@@ -45,11 +45,11 @@ resource "aws_launch_configuration" "workers" {
 }
 
 resource "aws_security_group" "workers" {
-  name_prefix = "${var.cluster_name}"
+  name_prefix = "${aws_eks_cluster.this.name}"
   description = "Security group for all nodes in the cluster."
   vpc_id      = "${var.vpc_id}"
   count       = "${var.worker_security_group_id == "" ? 1 : 0}"
-  tags        = "${merge(var.tags, map("Name", "${var.cluster_name}-eks_worker_sg", "kubernetes.io/cluster/${var.cluster_name}", "owned"
+  tags        = "${merge(var.tags, map("Name", "${aws_eks_cluster.this.name}-eks_worker_sg", "kubernetes.io/cluster/${aws_eks_cluster.this.name}", "owned"
   ))}"
 }
 
@@ -87,12 +87,12 @@ resource "aws_security_group_rule" "workers_ingress_cluster" {
 }
 
 resource "aws_iam_role" "workers" {
-  name_prefix        = "${var.cluster_name}"
+  name_prefix        = "${aws_eks_cluster.this.name}"
   assume_role_policy = "${data.aws_iam_policy_document.workers_assume_role_policy.json}"
 }
 
 resource "aws_iam_instance_profile" "workers" {
-  name_prefix = "${var.cluster_name}"
+  name_prefix = "${aws_eks_cluster.this.name}"
   role        = "${aws_iam_role.workers.name}"
 }
 

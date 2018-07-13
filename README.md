@@ -15,7 +15,7 @@ Read the [AWS docs on EKS to get connected to the k8s dashboard](https://docs.aw
 * You want to create an EKS cluster and an autoscaling group of workers for the cluster.
 * You want these resources to exist within security groups that allow communication and coordination. These can be user provided or created within the module.
 * You've created a Virtual Private Cloud (VPC) and subnets where you intend to put the EKS resources.
-* If using the default variable value (`true`) for `configure_kubectl_session`, it's required that both [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl) (>=1.10) and [`heptio-authenticator-aws`](https://github.com/heptio/authenticator#4-set-up-kubectl-to-use-heptio-authenticator-for-aws-tokens) are installed and on your shell's PATH.
+* If using the default variable value (`true`) for `configure_kubectl_session`, it's required that both [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl) (>=1.10) and [`aws-iam-authenticator`](https://github.com/kubernetes-sigs/aws-iam-authenticator#4-set-up-kubectl-to-use-authentication-tokens-provided-by-aws-iam-authenticator-for-kubernetes) are installed and on your shell's PATH.
 
 ## Usage example
 
@@ -63,7 +63,7 @@ Generate them like so:
 
 ```bash
 go get github.com/segmentio/terraform-docs
-terraform-docs md ./ | cat -s | ghead -n -1 > README.md
+terraform-docs md ./ | cat -s | tail -r | tail -n +2 | tail -r > README.md
 ```
 
 ## Contributing
@@ -98,23 +98,27 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster_name | Name of the EKS cluster. Also used as a prefix in names of related resources. | string | - | yes |
 | cluster_security_group_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32. | string | `` | no |
 | cluster_version | Kubernetes version to use for the EKS cluster. | string | `1.10` | no |
-| config_output_path | Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory. | string | `./` | no |
-| configure_kubectl_session | Configure the current session's kubectl to use the instantiated EKS cluster. | string | `true` | no |
-| kubeconfig_aws_authenticator_additional_args | Any additional arguments to pass to the authenticator such as the role to assume ["-r", "MyEksRole"] | string | `<list>` | no |
-| kubeconfig_aws_authenticator_command | Command to use to to fetch AWS EKS credentials | string | `heptio-authenticator-aws` | no |
-| kubeconfig_aws_authenticator_env_variables | Environment variables that should be used when executing the authenticator i.e. { AWS_PROFILE = "eks"} | string | `<map>` | no |
-| kubeconfig_name | Override the default name used for items kubeconfig | string | `` | no |
-| root_iops | The amount of provisioned IOPS. This must be set with a volume_type of 'io1'. | string | `` | no |
+| config_output_path | Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory. Should end in a forward slash / . | string | `./` | no |
+| kubeconfig_aws_authenticator_additional_args | Any additional arguments to pass to the authenticator such as the role to assume. e.g. ["-r", "MyEksRole"]. | list | `<list>` | no |
+| kubeconfig_aws_authenticator_command | Command to use to to fetch AWS EKS credentials. | string | `aws-iam-authenticator` | no |
+| kubeconfig_aws_authenticator_env_variables | Environment variables that should be used when executing the authenticator. e.g. { AWS_PROFILE = "eks"}. | map | `<map>` | no |
+| kubeconfig_name | Override the default name used for items kubeconfig. | string | `` | no |
+| manage_aws_auth | Whether to write and apply the aws-auth configmap file. | string | `true` | no |
+| map_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
+| map_roles | Additional IAM roles to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
+| map_users | Additional IAM users to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
+| root_iops | The amount of provisioned IOPS. This must be set with a volume_type of 'io1'. | string | `0` | no |
 | root_volume_size | The root size of the volume in gigabytes. | string | `20` | no |
 | root_volume_type | The type of root volume. Can be 'standard', 'gp2', or 'io1' | string | `gp2` | no |
 | subnets | A list of subnets to place the EKS cluster and workers within. | list | - | yes |
-| tags | A map of tags to add to all resources. | string | `<map>` | no |
+| tags | A map of tags to add to all resources. | map | `<map>` | no |
 | vpc_id | VPC where the cluster and workers will be deployed. | string | - | yes |
 | worker_groups | A list of maps defining worker group configurations. See workers_group_defaults for valid keys. | list | `<list>` | no |
 | worker_security_group_id | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster. | string | `` | no |
 | worker_sg_ingress_from_port | Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443). | string | `1025` | no |
 | workers_group_defaults | Default values for target groups as defined by the list of maps. | map | `<map>` | no |
 | workstation_cidr | Override the default ingress rule that allows communication with the EKS cluster API. If not given, will use current IP/32. | string | `` | no |
+| write_kubeconfig | Whether to write a kubeconfig file containing the cluster configuration. | string | `true` | no |
 
 ## Outputs
 
@@ -127,6 +131,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster_version | The Kubernetes server version for the EKS cluster. |
 | config_map_aws_auth | A kubernetes configuration to authenticate to this EKS cluster. |
 | kubeconfig | kubectl config file contents for this EKS cluster. |
+| worker_iam_role_arn | IAM role ID attached to EKS workers |
 | worker_iam_role_name | IAM role name attached to EKS workers |
 | worker_security_group_id | Security group ID attached to the EKS workers. |
 | workers_asg_arns | IDs of the autoscaling groups containing workers. |

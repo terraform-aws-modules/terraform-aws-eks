@@ -16,7 +16,7 @@
 ** You want to create an EKS cluster and an autoscaling group of workers for the cluster.
 ** You want these resources to exist within security groups that allow communication and coordination. These can be user provided or created within the module.
 ** You've created a Virtual Private Cloud (VPC) and subnets where you intend to put the EKS resources.
-** If using the default variable value (`true`) for `configure_kubectl_session`, it's required that both [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl) (>=1.10) and [`heptio-authenticator-aws`](https://github.com/heptio/authenticator#4-set-up-kubectl-to-use-heptio-authenticator-for-aws-tokens) are installed and on your shell's PATH.
+** If using the default variable value (`true`) for `configure_kubectl_session`, it's required that both [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl) (>=1.10) and [`aws-iam-authenticator`](https://github.com/kubernetes-sigs/aws-iam-authenticator#4-set-up-kubectl-to-use-authentication-tokens-provided-by-aws-iam-authenticator-for-kubernetes) are installed and on your shell's PATH.
 
 * ## Usage example
 
@@ -64,7 +64,7 @@
 
 * ```bash
 * go get github.com/segmentio/terraform-docs
-* terraform-docs md ./ | cat -s | ghead -n -1 > README.md
+* terraform-docs md ./ | cat -s | tail -r | tail -n +2 | tail -r > README.md
 * ```
 
 * ## Contributing
