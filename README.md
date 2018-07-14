@@ -90,6 +90,7 @@ Many thanks to [the contributors listed here](https://github.com/terraform-aws-m
 
 MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/LICENSE) for full details.
 
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -131,3 +132,4 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker_iam_role_name | IAM role name attached to EKS workers |
 | worker_security_group_id | Security group ID attached to the EKS workers. |
 | workers_asg_arns | IDs of the autoscaling groups containing workers. |
+
