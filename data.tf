@@ -1,6 +1,7 @@
 data "aws_region" "current" {}
 
 data "http" "workstation_external_ip" {
+  count = "${var.workstation_cidr == "" ? 1 : 0}"
   url = "https://ipv4.icanhazip.com"
 }
 
