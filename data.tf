@@ -2,7 +2,7 @@ data "aws_region" "current" {}
 
 data "http" "workstation_external_ip" {
   count = "${var.workstation_cidr == "" ? 1 : 0}"
-  url = "https://ipv4.icanhazip.com"
+  url   = "https://ipv4.icanhazip.com"
 }
 
 data "aws_iam_policy_document" "workers_assume_role_policy" {

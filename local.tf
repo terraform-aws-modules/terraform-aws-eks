@@ -5,9 +5,9 @@ locals {
   # to workaround terraform not supporting short circut evaluation
   cluster_security_group_id = "${coalesce(join("", aws_security_group.cluster.*.id), var.cluster_security_group_id)}"
 
-  worker_security_group_id  = "${coalesce(join("", aws_security_group.workers.*.id), var.worker_security_group_id)}"
-  workstation_cidr          = "${coalesce(var.workstation_cidr, format("%s/32", chomp(join("", data.http.workstation_external_ip.*.body))))}"
-  kubeconfig_name           = "${coalesce(var.kubeconfig_name, "eks_${var.cluster_name}")}"
+  worker_security_group_id = "${coalesce(join("", aws_security_group.workers.*.id), var.worker_security_group_id)}"
+  workstation_cidr         = "${coalesce(var.workstation_cidr, format("%s/32", chomp(join("", data.http.workstation_external_ip.*.body))))}"
+  kubeconfig_name          = "${coalesce(var.kubeconfig_name, "eks_${var.cluster_name}")}"
 
   # Mapping from the node type that we selected and the max number of pods that it can run
   # Taken from https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-06-05/amazon-eks-nodegroup.yaml
