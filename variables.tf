@@ -74,6 +74,12 @@ variable "worker_groups" {
   }]
 }
 
+variable "worker_group_count" {
+  description = "The number of maps contained within the worker_groups list."
+  type        = "string"
+  default     = "1"
+}
+
 variable "workers_group_defaults" {
   description = "Default values for target groups as defined by the list of maps."
   type        = "map"
