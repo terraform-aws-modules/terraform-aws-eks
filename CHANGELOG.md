@@ -10,6 +10,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - manage eks workers' root volume size and type
+- `workers_asg_names` added to outputs.
 
 ### Changed
 
