@@ -44,6 +44,11 @@ output "workers_asg_arns" {
   value       = "${aws_autoscaling_group.workers.*.arn}"
 }
 
+output "workers_asg_names" {
+  description = "Names of the autoscaling groups containing workers."
+  value       = "${aws_autoscaling_group.workers.*.id}"
+}
+
 output "worker_security_group_id" {
   description = "Security group ID attached to the EKS workers."
   value       = "${local.worker_security_group_id}"
