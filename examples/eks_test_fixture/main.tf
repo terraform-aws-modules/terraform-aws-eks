@@ -37,7 +37,8 @@ locals {
 
   worker_groups = "${list(
                   map("instance_type","t2.small",
-                      "additional_userdata","echo foo bar"
+                      "additional_userdata","echo foo bar",
+                      "subnets", "${join(",", module.vpc.private_subnets)}",
                       ),
   )}"
   tags = "${map("Environment", "test",
@@ -68,7 +69,7 @@ module "vpc" {
 module "eks" {
   source             = "../.."
   cluster_name       = "${local.cluster_name}"
-  subnets            = "${module.vpc.public_subnets}"
+  subnets            = ["${module.vpc.public_subnets}", "${module.vpc.private_subnets}"]
   tags               = "${local.tags}"
   vpc_id             = "${module.vpc.vpc_id}"
   worker_groups      = "${local.worker_groups}"
