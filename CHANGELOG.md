@@ -9,8 +9,9 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- manage eks workers' root volume size and type
-- `workers_asg_names` added to outputs.
+- manage eks workers' root volume size and type.
+- `workers_asg_names` added to outputs. (kudos to @laverya)
+- New top level variable `worker_group_count` added to replace the use of `length(var.worker_groups)`. This allows using computed values as part of worker group configs. (complaints to @laverya)
 
 ### Changed
 
