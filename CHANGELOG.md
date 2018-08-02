@@ -5,17 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
-## [[v1.4.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.3.0...HEAD)] - 2018-07-??]
+## [[v1.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.4.0...HEAD)] - 2018-08-??]
+
+### Added
+
+- A useful addition (slam dunk, @self 🔥)
+
+### Changed
+
+- A subtle but thoughtful change. (Boomshakalaka, @self 🏀)
+
+## [[v1.4.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.3.0...v1.4.0)] - 2018-08-02]
 
 ### Added
 
 - manage eks workers' root volume size and type.
 - `workers_asg_names` added to outputs. (kudos to @laverya)
 - New top level variable `worker_group_count` added to replace the use of `length(var.worker_groups)`. This allows using computed values as part of worker group configs. (complaints to @laverya)
-
-### Changed
-
-- A subtle but thoughtful change. (Boomshakalaka, @self 🏀)
 
 ## [[v1.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.2.0...v1.3.0)] - 2018-07-11]
 
