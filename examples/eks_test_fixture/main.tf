@@ -24,18 +24,21 @@ locals {
   #                       "asg_min_size", "2",
   #                       "instance_type", "m4.xlarge",
   #                       "name", "worker_group_a",
+  #                       "subnets", "${join(",", module.vpc.private_subnets)}",
   #                   ),
   #                   map("asg_desired_capacity", "1",
   #                       "asg_max_size", "5",
   #                       "asg_min_size", "1",
   #                       "instance_type", "m4.2xlarge",
   #                       "name", "worker_group_b",
+  #                       "subnets", "${join(",", module.vpc.private_subnets)}",
   #                   ),
   # )}"
 
   worker_groups = "${list(
                   map("instance_type","t2.small",
-                      "additional_userdata","echo foo bar"
+                      "additional_userdata","echo foo bar",
+                      "subnets", "${join(",", module.vpc.private_subnets)}",
                       ),
   )}"
   tags = "${map("Environment", "test",
@@ -64,13 +67,14 @@ module "vpc" {
 }
 
 module "eks" {
-  source        = "../.."
-  cluster_name  = "${local.cluster_name}"
-  subnets       = "${module.vpc.public_subnets}"
-  tags          = "${local.tags}"
-  vpc_id        = "${module.vpc.vpc_id}"
-  worker_groups = "${local.worker_groups}"
-  map_roles     = "${var.map_roles}"
-  map_users     = "${var.map_users}"
-  map_accounts  = "${var.map_accounts}"
+  source             = "../.."
+  cluster_name       = "${local.cluster_name}"
+  subnets            = ["${module.vpc.public_subnets}", "${module.vpc.private_subnets}"]
+  tags               = "${local.tags}"
+  vpc_id             = "${module.vpc.vpc_id}"
+  worker_groups      = "${local.worker_groups}"
+  worker_group_count = "1"
+  map_roles          = "${var.map_roles}"
+  map_users          = "${var.map_users}"
+  map_accounts       = "${var.map_accounts}"
 }
