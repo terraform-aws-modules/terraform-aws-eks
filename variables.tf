@@ -7,11 +7,6 @@ variable "cluster_security_group_id" {
   default     = ""
 }
 
-variable "workstation_cidr" {
-  description = "Override the default ingress rule that allows communication with the EKS cluster API. If not given, will use current IP/32. "
-  default     = ""
-}
-
 variable "cluster_version" {
   description = "Kubernetes version to use for the EKS cluster."
   default     = "1.10"

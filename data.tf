@@ -1,9 +1,5 @@
 data "aws_region" "current" {}
 
-data "http" "workstation_external_ip" {
-  url = "https://ipv4.icanhazip.com"
-}
-
 data "aws_iam_policy_document" "workers_assume_role_policy" {
   statement {
     sid = "EKSWorkerAssumeRole"
