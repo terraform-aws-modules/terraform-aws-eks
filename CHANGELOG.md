@@ -9,7 +9,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- A useful addition (slam dunk, @self 🔥)
+- add spot_price option to aws_launch_configuration
 
 ### Changed
 
