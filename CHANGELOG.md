@@ -9,7 +9,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- A useful addition (slam dunk, @self 🔥)
+- Allow multiple additional security groups to be passed and attached to the workers
 
 ### Changed
 
