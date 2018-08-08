@@ -23,7 +23,7 @@ resource "aws_autoscaling_group" "workers" {
 resource "aws_launch_configuration" "workers" {
   name_prefix                 = "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
   associate_public_ip_address = "${lookup(var.worker_groups[count.index], "public_ip", lookup(var.workers_group_defaults, "public_ip"))}"
-  security_groups             = ["${local.worker_security_group_id}"]
+  security_groups             = ["${concat(list(local.worker_security_group_id), var.worker_additional_security_group_ids)}"]
   iam_instance_profile        = "${aws_iam_instance_profile.workers.id}"
   image_id                    = "${lookup(var.worker_groups[count.index], "ami_id", data.aws_ami.eks_worker.id)}"
   instance_type               = "${lookup(var.worker_groups[count.index], "instance_type", lookup(var.workers_group_defaults, "instance_type"))}"
