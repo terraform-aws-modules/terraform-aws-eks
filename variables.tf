@@ -69,12 +69,6 @@ variable "worker_groups" {
   }]
 }
 
-variable "worker_group_count" {
-  description = "The number of maps contained within the worker_groups list."
-  type        = "string"
-  default     = "1"
-}
-
 variable "workers_group_defaults" {
   description = "Default values for target groups as defined by the list of maps."
   type        = "map"
@@ -98,6 +92,7 @@ variable "workers_group_defaults" {
     public_ip            = false         # Associate a public ip address with a worker
     kubelet_node_labels  = ""            # This string is passed directly to kubelet via --node-labels= if set. It should be comma delimited with no spaces. If left empty no --node-labels switch is added.
     subnets              = ""            # A comma delimited string of subnets to place the worker nodes in. i.e. subnet-123,subnet-456,subnet-789
+    autoscaling_enabled  = false         # Sets whether policy and matching tags will be added to allow autoscaling.
   }
 }
 

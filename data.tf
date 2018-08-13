@@ -71,7 +71,7 @@ EOF
 
 data "template_file" "userdata" {
   template = "${file("${path.module}/templates/userdata.sh.tpl")}"
-  count    = "${var.worker_group_count}"
+  count    = "${length(var.worker_groups)}"
 
   vars {
     region              = "${data.aws_region.current.name}"
