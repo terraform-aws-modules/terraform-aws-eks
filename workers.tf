@@ -9,10 +9,15 @@ resource "aws_autoscaling_group" "workers" {
 
   tags = ["${concat(
     list(
-      map("key", "Name", "value", "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}-eks_asg", "propagate_at_launch", true),
-      map("key", "kubernetes.io/cluster/${aws_eks_cluster.this.name}", "value", "owned", "propagate_at_launch", true)
+      map("key", "Name", "value", "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}-eks_asg", "propagate_at_launch", "true"),
+      map("key", "kubernetes.io/cluster/${aws_eks_cluster.this.name}", "value", "owned", "propagate_at_launch", "true"),
     ),
-    local.asg_tags)
+    local.asg_tags,
+    list(
+      map("key", "${lookup(var.worker_groups[count.index], "distro", var.workers_group_defaults["distro"]) == "ubuntu" ? "com.ubuntu.cloud:eks:kubelet:" : ""}max-pods-per-node",
+          "value", "${local.max_pod_per_node[lookup(var.worker_groups[count.index], "instance_type", var.workers_group_defaults["instance_type"])]}",
+          "propagate_at_launch", "true")
+    ))
   }"]
 
   lifecycle {
@@ -25,7 +30,8 @@ resource "aws_launch_configuration" "workers" {
   associate_public_ip_address = "${lookup(var.worker_groups[count.index], "public_ip", var.workers_group_defaults["public_ip"])}"
   security_groups             = ["${local.worker_security_group_id}"]
   iam_instance_profile        = "${aws_iam_instance_profile.workers.id}"
-  image_id                    = "${lookup(var.worker_groups[count.index], "ami_id", data.aws_ami.eks_worker.id)}"
+  image_id                    = "${lookup(var.worker_groups[count.index], "ami_id", lookup(local.distros[lookup(var.worker_groups[count.index], "distro", var.workers_group_defaults["distro"])], "ami_id"))}"
+
   instance_type               = "${lookup(var.worker_groups[count.index], "instance_type", var.workers_group_defaults["instance_type"])}"
   key_name                    = "${lookup(var.worker_groups[count.index], "key_name", var.workers_group_defaults["key_name"])}"
   user_data_base64            = "${base64encode(element(data.template_file.userdata.*.rendered, count.index))}"
@@ -118,6 +124,6 @@ resource "null_resource" "tags_as_list_of_maps" {
   triggers = {
     key                 = "${element(keys(var.tags), count.index)}",
     value               = "${element(values(var.tags), count.index)}",
-    propagate_at_launch = true
+    propagate_at_launch = "true"
   }
 }

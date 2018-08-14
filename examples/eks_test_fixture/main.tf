@@ -22,6 +22,7 @@ locals {
   #   {
   #     name                  = "worker_group_a"
   #     instance_type         = "m4.xlarge"
+  #     distro                = "ubuntu"
   #     asg_desired_capacity  = 2
   #     asg_min_size          = 2
   #     asg_max_size          = 10
@@ -30,6 +31,7 @@ locals {
   #   {
   #     name                  = "worker_group_b"
   #     instance_type         = "m4.2xlarge"
+  #     distro                = "amazon"
   #     asg_desired_capacity  = 1
   #     asg_min_size          = 1
   #     asg_max_size          = 5

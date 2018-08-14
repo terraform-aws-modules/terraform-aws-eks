@@ -15,7 +15,7 @@ data "aws_iam_policy_document" "workers_assume_role_policy" {
   }
 }
 
-data "aws_ami" "eks_worker" {
+data "aws_ami" "eks_worker_amazon" {
   filter {
     name   = "name"
     values = ["eks-worker-*"]
@@ -23,6 +23,16 @@ data "aws_ami" "eks_worker" {
 
   most_recent = true
   owners      = ["602401143452"] # Amazon
+}
+
+data "aws_ami" "eks_worker_ubuntu" {
+  filter {
+    name   = "name"
+    values = ["ubuntu-eks/*"]
+  }
+
+  most_recent = true
+  owners      = ["099720109477"] # Canonical
 }
 
 data "aws_iam_policy_document" "cluster_assume_role_policy" {
@@ -70,7 +80,7 @@ EOF
 }
 
 data "template_file" "userdata" {
-  template = "${file("${path.module}/templates/userdata.sh.tpl")}"
+  template = "${lookup(local.distros[lookup(var.worker_groups[count.index], "distro", var.workers_group_defaults["distro"])], "userdata_tpl")}"
   count    = "${var.worker_group_count}"
 
   vars {
