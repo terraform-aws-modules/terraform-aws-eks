@@ -64,8 +64,8 @@ Documentation should be modified within `main.tf` and generated using [terraform
 Generate them like so:
 
 ```bash
-go get github.com/segmentio/terraform-docs
-terraform-docs md ./ | cat -s | tail -r | tail -n +2 | tail -r > README.md
+go get github.com/getcloudnative/terraform-docs
+terraform-docs md ./ > README.md
 ```
 
 ## Contributing
@@ -116,7 +116,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker_groups | A list of maps defining worker group configurations. See workers_group_defaults for valid keys. | list | `[ { "name": "default" } ]` | no |
 | worker_security_group_id | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster. | string | `` | no |
 | worker_sg_ingress_from_port | Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443). | string | `1025` | no |
-| workers_group_defaults | Default values for target groups as defined by the list of maps. | map | `{ "additional_userdata": "", "ami_id": "", "asg_desired_capacity": "1", "asg_max_size": "3", "asg_min_size": "1", "ebs_optimized": true, "instance_type": "m4.large", "key_name": "", "kubelet_node_labels": "", "name": "count.index", "pre_userdata": "", "public_ip": false, "root_iops": "0", "root_volume_size": "100", "root_volume_type": "gp2", "spot_price": "", "subnets": "" }` | no |
+| workers_group_defaults | Default values for target groups as defined by the list of maps. | map | `{ "additional_userdata": "", "ami_id": "", "asg_desired_capacity": "1", "asg_max_size": "3", "asg_min_size": "1", "distro": "amazon", "ebs_optimized": true, "instance_type": "m4.large", "key_name": "", "kubelet_node_labels": "", "name": "count.index", "pre_userdata": "", "public_ip": false, "root_iops": "0", "root_volume_size": "100", "root_volume_type": "gp2", "spot_price": "", "subnets": "" }` | no |
 | write_kubeconfig | Whether to write a kubeconfig file containing the cluster configuration. | string | `true` | no |
 
 ## Outputs

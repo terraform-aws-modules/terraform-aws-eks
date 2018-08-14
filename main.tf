@@ -65,8 +65,8 @@
 * Generate them like so:
 
 * ```bash
-* go get github.com/segmentio/terraform-docs
-* terraform-docs md ./ | cat -s | tail -r | tail -n +2 | tail -r > README.md
+* go get github.com/getcloudnative/terraform-docs
+* terraform-docs md ./ > README.md
 * ```
 
 * ## Contributing
