@@ -26,7 +26,9 @@ module "eks" {
   source                = "terraform-aws-modules/eks/aws"
   cluster_name          = "test-eks-cluster"
   subnets               = ["subnet-abcde012", "subnet-bcde012a"]
-  tags                  = "${map("Environment", "test")}"
+  tags                  = {
+                            "Environment" = "test"
+                          }
   vpc_id                = "vpc-abcde012"
 }
 ```
@@ -90,6 +92,7 @@ Many thanks to [the contributors listed here](https://github.com/terraform-aws-m
 
 MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/LICENSE) for full details.
 
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -98,22 +101,22 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster_security_group_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32. | string | `` | no |
 | cluster_version | Kubernetes version to use for the EKS cluster. | string | `1.10` | no |
 | config_output_path | Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory. Should end in a forward slash / . | string | `./` | no |
-| kubeconfig_aws_authenticator_additional_args | Any additional arguments to pass to the authenticator such as the role to assume. e.g. ["-r", "MyEksRole"]. | list | `<list>` | no |
+| kubeconfig_aws_authenticator_additional_args | Any additional arguments to pass to the authenticator such as the role to assume. e.g. ["-r", "MyEksRole"]. | list | `[]` | no |
 | kubeconfig_aws_authenticator_command | Command to use to to fetch AWS EKS credentials. | string | `aws-iam-authenticator` | no |
-| kubeconfig_aws_authenticator_env_variables | Environment variables that should be used when executing the authenticator. e.g. { AWS_PROFILE = "eks"}. | map | `<map>` | no |
+| kubeconfig_aws_authenticator_env_variables | Environment variables that should be used when executing the authenticator. e.g. { AWS_PROFILE = "eks"}. | map | `{}` | no |
 | kubeconfig_name | Override the default name used for items kubeconfig. | string | `` | no |
 | manage_aws_auth | Whether to write and apply the aws-auth configmap file. | string | `true` | no |
-| map_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
-| map_roles | Additional IAM roles to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
-| map_users | Additional IAM users to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
+| map_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `[]` | no |
+| map_roles | Additional IAM roles to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `[]` | no |
+| map_users | Additional IAM users to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `[]` | no |
 | subnets | A list of subnets to place the EKS cluster and workers within. | list | - | yes |
-| tags | A map of tags to add to all resources. | map | `<map>` | no |
+| tags | A map of tags to add to all resources. | map | `{}` | no |
 | vpc_id | VPC where the cluster and workers will be deployed. | string | - | yes |
 | worker_group_count | The number of maps contained within the worker_groups list. | string | `1` | no |
-| worker_groups | A list of maps defining worker group configurations. See workers_group_defaults for valid keys. | list | `<list>` | no |
+| worker_groups | A list of maps defining worker group configurations. See workers_group_defaults for valid keys. | list | `[ { "name": "default" } ]` | no |
 | worker_security_group_id | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster. | string | `` | no |
 | worker_sg_ingress_from_port | Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443). | string | `1025` | no |
-| workers_group_defaults | Default values for target groups as defined by the list of maps. | map | `<map>` | no |
+| workers_group_defaults | Default values for target groups as defined by the list of maps. | map | `{ "additional_userdata": "", "ami_id": "", "asg_desired_capacity": "1", "asg_max_size": "3", "asg_min_size": "1", "ebs_optimized": true, "instance_type": "m4.large", "key_name": "", "kubelet_node_labels": "", "name": "count.index", "pre_userdata": "", "public_ip": false, "root_iops": "0", "root_volume_size": "100", "root_volume_type": "gp2", "spot_price": "", "subnets": "" }` | no |
 | write_kubeconfig | Whether to write a kubeconfig file containing the cluster configuration. | string | `true` | no |
 
 ## Outputs
@@ -132,3 +135,4 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker_security_group_id | Security group ID attached to the EKS workers. |
 | workers_asg_arns | IDs of the autoscaling groups containing workers. |
 | workers_asg_names | Names of the autoscaling groups containing workers. |
+
