@@ -32,12 +32,12 @@ resource "aws_launch_configuration" "workers" {
   iam_instance_profile        = "${aws_iam_instance_profile.workers.id}"
   image_id                    = "${lookup(var.worker_groups[count.index], "ami_id", lookup(local.distros[lookup(var.worker_groups[count.index], "distro", var.workers_group_defaults["distro"])], "ami_id"))}"
 
-  instance_type               = "${lookup(var.worker_groups[count.index], "instance_type", var.workers_group_defaults["instance_type"])}"
-  key_name                    = "${lookup(var.worker_groups[count.index], "key_name", var.workers_group_defaults["key_name"])}"
-  user_data_base64            = "${base64encode(element(data.template_file.userdata.*.rendered, count.index))}"
-  ebs_optimized               = "${lookup(var.worker_groups[count.index], "ebs_optimized", lookup(local.ebs_optimized, lookup(var.worker_groups[count.index], "instance_type", var.workers_group_defaults["instance_type"]), false))}"
-  spot_price                  = "${lookup(var.worker_groups[count.index], "spot_price", var.workers_group_defaults["spot_price"])}"
-  count                       = "${var.worker_group_count}"
+  instance_type    = "${lookup(var.worker_groups[count.index], "instance_type", var.workers_group_defaults["instance_type"])}"
+  key_name         = "${lookup(var.worker_groups[count.index], "key_name", var.workers_group_defaults["key_name"])}"
+  user_data_base64 = "${base64encode(element(data.template_file.userdata.*.rendered, count.index))}"
+  ebs_optimized    = "${lookup(var.worker_groups[count.index], "ebs_optimized", lookup(local.ebs_optimized, lookup(var.worker_groups[count.index], "instance_type", var.workers_group_defaults["instance_type"]), false))}"
+  spot_price       = "${lookup(var.worker_groups[count.index], "spot_price", var.workers_group_defaults["spot_price"])}"
+  count            = "${var.worker_group_count}"
 
   lifecycle {
     create_before_destroy = true
@@ -122,8 +122,8 @@ resource "null_resource" "tags_as_list_of_maps" {
   count = "${length(keys(var.tags))}"
 
   triggers = {
-    key                 = "${element(keys(var.tags), count.index)}",
-    value               = "${element(values(var.tags), count.index)}",
+    key                 = "${element(keys(var.tags), count.index)}"
+    value               = "${element(values(var.tags), count.index)}"
     propagate_at_launch = "true"
   }
 }

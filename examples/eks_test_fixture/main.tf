@@ -44,14 +44,13 @@ locals {
       instance_type       = "t2.small"
       additional_userdata = "echo foo bar"
       subnets             = "${join(",", module.vpc.private_subnets)}"
-    }
+    },
   ]
-
   tags = {
-    "Environment"       = "test"
-    "GithubRepo"        = "terraform-aws-eks"
-    "GithubOrg"         = "terraform-aws-modules"
-    "Workspace"         = "${terraform.workspace}"
+    "Environment" = "test"
+    "GithubRepo"  = "terraform-aws-eks"
+    "GithubOrg"   = "terraform-aws-modules"
+    "Workspace"   = "${terraform.workspace}"
   }
 }
 

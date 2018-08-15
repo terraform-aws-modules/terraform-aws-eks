@@ -195,10 +195,8 @@ locals {
     }
 
     ubuntu = {
-      ami_id = "${data.aws_ami.eks_worker_ubuntu.id}"
+      ami_id       = "${data.aws_ami.eks_worker_ubuntu.id}"
       userdata_tpl = "${file("${path.module}/templates/userdata.yaml.tpl")}"
     }
-
   }
-
 }
