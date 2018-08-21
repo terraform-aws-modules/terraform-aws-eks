@@ -94,6 +94,7 @@ variable "workers_group_defaults" {
     pre_userdata         = ""            # userdata to pre-append to the default userdata.
     additional_userdata  = ""            # userdata to append to the default userdata.
     ebs_optimized        = true          # sets whether to use ebs optimization on supported types.
+    enable_monitoring    = true          # Enables/disables detailed monitoring.
     public_ip            = false         # Associate a public ip address with a worker
     kubelet_node_labels  = ""            # This string is passed directly to kubelet via --node-lables= if set. It should be comma delimited with no spaces. If left empty no --node-labels switch is added.
     subnets              = ""            # A comma delimited string of subnets to place the worker nodes in. i.e. subnet-123,subnet-456,subnet-789
