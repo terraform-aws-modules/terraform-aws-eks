@@ -82,6 +82,7 @@ variable "workers_group_defaults" {
   default = {
     name                 = "count.index" # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
     ami_id               = ""            # AMI ID for the eks workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI.
+    distro               = "amazon"      # Worker distro (amazon or ubuntu).
     asg_desired_capacity = "1"           # Desired worker capacity in the autoscaling group.
     asg_max_size         = "3"           # Maximum worker capacity in the autoscaling group.
     asg_min_size         = "1"           # Minimum worker capacity in the autoscaling group.

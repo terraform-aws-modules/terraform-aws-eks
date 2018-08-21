@@ -187,4 +187,16 @@ locals {
     "x1e.8xlarge"  = true
     "x1e.xlarge"   = true
   }
+
+  distros = {
+    amazon = {
+      ami_id       = "${data.aws_ami.eks_worker_amazon.id}"
+      userdata_tpl = "${file("${path.module}/templates/userdata.sh.tpl")}"
+    }
+
+    ubuntu = {
+      ami_id       = "${data.aws_ami.eks_worker_ubuntu.id}"
+      userdata_tpl = "${file("${path.module}/templates/userdata.yaml.tpl")}"
+    }
+  }
 }

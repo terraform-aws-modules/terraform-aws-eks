@@ -27,7 +27,9 @@
 *   source                = "terraform-aws-modules/eks/aws"
 *   cluster_name          = "test-eks-cluster"
 *   subnets               = ["subnet-abcde012", "subnet-bcde012a"]
-*   tags                  = "${map("Environment", "test")}"
+*   tags                  = {
+*                             "Environment" = "test"
+*                           }
 *   vpc_id                = "vpc-abcde012"
 * }
 * ```
@@ -63,8 +65,8 @@
 * Generate them like so:
 
 * ```bash
-* go get github.com/segmentio/terraform-docs
-* terraform-docs md ./ | cat -s | tail -r | tail -n +2 | tail -r > README.md
+* go get github.com/getcloudnative/terraform-docs
+* terraform-docs md ./ > README.md
 * ```
 
 * ## Contributing

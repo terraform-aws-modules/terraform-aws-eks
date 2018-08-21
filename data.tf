@@ -15,7 +15,7 @@ data "aws_iam_policy_document" "workers_assume_role_policy" {
   }
 }
 
-data "aws_ami" "eks_worker" {
+data "aws_ami" "eks_worker_amazon" {
   filter {
     name   = "name"
     values = ["eks-worker-*"]
@@ -23,6 +23,16 @@ data "aws_ami" "eks_worker" {
 
   most_recent = true
   owners      = ["602401143452"] # Amazon
+}
+
+data "aws_ami" "eks_worker_ubuntu" {
+  filter {
+    name   = "name"
+    values = ["ubuntu-eks/*"]
+  }
+
+  most_recent = true
+  owners      = ["099720109477"] # Canonical
 }
 
 data "aws_iam_policy_document" "cluster_assume_role_policy" {
@@ -70,7 +80,7 @@ EOF
 }
 
 data "template_file" "userdata" {
-  template = "${file("${path.module}/templates/userdata.sh.tpl")}"
+  template = "${lookup(local.distros[lookup(var.worker_groups[count.index], "distro", var.workers_group_defaults["distro"])], "userdata_tpl")}"
   count    = "${var.worker_group_count}"
 
   vars {
@@ -78,9 +88,9 @@ data "template_file" "userdata" {
     cluster_name        = "${aws_eks_cluster.this.name}"
     endpoint            = "${aws_eks_cluster.this.endpoint}"
     cluster_auth_base64 = "${aws_eks_cluster.this.certificate_authority.0.data}"
-    max_pod_count       = "${lookup(local.max_pod_per_node, lookup(var.worker_groups[count.index], "instance_type", lookup(var.workers_group_defaults, "instance_type")))}"
-    pre_userdata        = "${lookup(var.worker_groups[count.index], "pre_userdata",lookup(var.workers_group_defaults, "pre_userdata"))}"
-    additional_userdata = "${lookup(var.worker_groups[count.index], "additional_userdata",lookup(var.workers_group_defaults, "additional_userdata"))}"
-    kubelet_node_labels = "${lookup(var.worker_groups[count.index], "kubelet_node_labels",lookup(var.workers_group_defaults, "kubelet_node_labels"))}"
+    max_pod_count       = "${lookup(local.max_pod_per_node, lookup(var.worker_groups[count.index], "instance_type", var.workers_group_defaults["instance_type"]))}"
+    pre_userdata        = "${lookup(var.worker_groups[count.index], "pre_userdata", var.workers_group_defaults["pre_userdata"])}"
+    additional_userdata = "${lookup(var.worker_groups[count.index], "additional_userdata", var.workers_group_defaults["additional_userdata"])}"
+    kubelet_node_labels = "${lookup(var.worker_groups[count.index], "kubelet_node_labels", var.workers_group_defaults["kubelet_node_labels"])}"
   }
 }
