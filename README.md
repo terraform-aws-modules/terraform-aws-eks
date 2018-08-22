@@ -109,6 +109,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | subnets | A list of subnets to place the EKS cluster and workers within. | list | - | yes |
 | tags | A map of tags to add to all resources. | map | `<map>` | no |
 | vpc_id | VPC where the cluster and workers will be deployed. | string | - | yes |
+| worker_additional_security_group_ids | Will append provided security group IDs to the workers to complement the security groups created by this module or provided by worker_security_group_id | string | `<list>` | no |
 | worker_group_count | The number of maps contained within the worker_groups list. | string | `1` | no |
 | worker_groups | A list of maps defining worker group configurations. See workers_group_defaults for valid keys. | list | `<list>` | no |
 | worker_security_group_id | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster. | string | `` | no |
