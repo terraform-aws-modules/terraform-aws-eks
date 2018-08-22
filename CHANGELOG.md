@@ -11,6 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 - add spot_price option to aws_launch_configuration
 - add enable_monitoring option to aws_launch_configuration
+- add t3 instance class settings
 
 ### Changed
 
