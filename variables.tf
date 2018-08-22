@@ -7,11 +7,6 @@ variable "cluster_security_group_id" {
   default     = ""
 }
 
-variable "workstation_cidr" {
-  description = "Override the default ingress rule that allows communication with the EKS cluster API. If not given, will use current IP/32. "
-  default     = ""
-}
-
 variable "cluster_version" {
   description = "Kubernetes version to use for the EKS cluster."
   default     = "1.10"
@@ -91,13 +86,15 @@ variable "workers_group_defaults" {
     asg_max_size         = "3"           # Maximum worker capacity in the autoscaling group.
     asg_min_size         = "1"           # Minimum worker capacity in the autoscaling group.
     instance_type        = "m4.large"    # Size of the workers instances.
-    root_volume_size     = "20"          # root volume size of workers instances.
+    spot_price           = ""            # Cost of spot instance.
+    root_volume_size     = "100"         # root volume size of workers instances.
     root_volume_type     = "gp2"         # root volume type of workers instances, can be 'standard', 'gp2', or 'io1'
     root_iops            = "0"           # The amount of provisioned IOPS. This must be set with a volume_type of "io1".
     key_name             = ""            # The key name that should be used for the instances in the autoscaling group
     pre_userdata         = ""            # userdata to pre-append to the default userdata.
     additional_userdata  = ""            # userdata to append to the default userdata.
     ebs_optimized        = true          # sets whether to use ebs optimization on supported types.
+    enable_monitoring    = true          # Enables/disables detailed monitoring.
     public_ip            = false         # Associate a public ip address with a worker
     kubelet_node_labels  = ""            # This string is passed directly to kubelet via --node-lables= if set. It should be comma delimited with no spaces. If left empty no --node-labels switch is added.
     subnets              = ""            # A comma delimited string of subnets to place the worker nodes in. i.e. subnet-123,subnet-456,subnet-789
