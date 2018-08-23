@@ -9,6 +9,10 @@ CA_CERTIFICATE_FILE_PATH=$CA_CERTIFICATE_DIRECTORY/ca.crt
 mkdir -p $CA_CERTIFICATE_DIRECTORY
 echo "${cluster_auth_base64}" | base64 -d >$CA_CERTIFICATE_FILE_PATH
 
+# Set kubelet --register-with-taints if kubelet_node_taints were set
+KUBELET_NODE_TAINTS=${kubelet_node_taints}
+if [[ $KUBELET_NODE_TAINTS != "" ]]; then sed -i '/INTERNAL_IP/a \ \ --register-with-taints='"$KUBELET_NODE_TAINTS"'\ \\' /etc/systemd/system/kubelet.service; fi
+
 # Set kubelet --node-labels if kubelet_node_labels were set
 KUBELET_NODE_LABELS=${kubelet_node_labels}
 if [[ $KUBELET_NODE_LABELS != "" ]]; then sed -i '/INTERNAL_IP/a \ \ --node-labels='"$KUBELET_NODE_LABELS"'\ \\' /etc/systemd/system/kubelet.service; fi

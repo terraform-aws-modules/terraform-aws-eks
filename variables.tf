@@ -97,6 +97,7 @@ variable "workers_group_defaults" {
     enable_monitoring    = true          # Enables/disables detailed monitoring.
     public_ip            = false         # Associate a public ip address with a worker
     kubelet_node_labels  = ""            # This string is passed directly to kubelet via --node-lables= if set. It should be comma delimited with no spaces. If left empty no --node-labels switch is added.
+    kubelet_node_taints  = ""            # This string is passed directly to kubelet via --register-with-taints= if set. It should be comma separated "=:" with no spaces. If left empty no --register-with-taints switch is added.
     subnets              = ""            # A comma delimited string of subnets to place the worker nodes in. i.e. subnet-123,subnet-456,subnet-789
   }
 }
