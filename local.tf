@@ -64,6 +64,11 @@ locals {
     t2.large    = 35
     t2.xlarge   = 44
     t2.2xlarge  = 44
+    t3.small    = 8
+    t3.medium   = 17
+    t3.large    = 35
+    t3.xlarge   = 44
+    t3.2xlarge  = 44
     x1.16xlarge = 234
     x1.32xlarge = 234
   }
@@ -178,6 +183,11 @@ locals {
     "t2.nano"      = false
     "t2.small"     = false
     "t2.xlarge"    = false
+    "t3.small"     = false
+    "t3.medium"    = false
+    "t3.large"     = false
+    "t3.xlarge"    = false
+    "t3.2xlarge"   = false
     "x1.16xlarge"  = true
     "x1.32xlarge"  = true
     "x1e.16xlarge" = true
