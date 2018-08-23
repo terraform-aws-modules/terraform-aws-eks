@@ -82,5 +82,6 @@ data "template_file" "userdata" {
     pre_userdata        = "${lookup(var.worker_groups[count.index], "pre_userdata",lookup(var.workers_group_defaults, "pre_userdata"))}"
     additional_userdata = "${lookup(var.worker_groups[count.index], "additional_userdata",lookup(var.workers_group_defaults, "additional_userdata"))}"
     kubelet_node_labels = "${lookup(var.worker_groups[count.index], "kubelet_node_labels",lookup(var.workers_group_defaults, "kubelet_node_labels"))}"
+    kubelet_node_taints = "${lookup(var.worker_groups[count.index], "kubelet_node_taints",lookup(var.workers_group_defaults, "kubelet_node_taints"))}"
   }
 }
