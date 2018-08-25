@@ -78,9 +78,9 @@ data "template_file" "userdata" {
     cluster_name        = "${aws_eks_cluster.this.name}"
     endpoint            = "${aws_eks_cluster.this.endpoint}"
     cluster_auth_base64 = "${aws_eks_cluster.this.certificate_authority.0.data}"
-    max_pod_count       = "${lookup(local.max_pod_per_node, lookup(var.worker_groups[count.index], "instance_type", lookup(var.workers_group_defaults, "instance_type")))}"
-    pre_userdata        = "${lookup(var.worker_groups[count.index], "pre_userdata",lookup(var.workers_group_defaults, "pre_userdata"))}"
-    additional_userdata = "${lookup(var.worker_groups[count.index], "additional_userdata",lookup(var.workers_group_defaults, "additional_userdata"))}"
-    kubelet_node_labels = "${lookup(var.worker_groups[count.index], "kubelet_node_labels",lookup(var.workers_group_defaults, "kubelet_node_labels"))}"
+    max_pod_count       = "${lookup(local.max_pod_per_node, lookup(var.worker_groups[count.index], "instance_type", lookup(local.workers_group_defaults, "instance_type")))}"
+    pre_userdata        = "${lookup(var.worker_groups[count.index], "pre_userdata",lookup(local.workers_group_defaults, "pre_userdata"))}"
+    additional_userdata = "${lookup(var.worker_groups[count.index], "additional_userdata",lookup(local.workers_group_defaults, "additional_userdata"))}"
+    kubelet_node_labels = "${lookup(var.worker_groups[count.index], "kubelet_node_labels",lookup(local.workers_group_defaults, "kubelet_node_labels"))}"
   }
 }

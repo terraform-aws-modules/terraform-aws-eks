@@ -8,6 +8,30 @@ locals {
   worker_security_group_id = "${coalesce(join("", aws_security_group.workers.*.id), var.worker_security_group_id)}"
   kubeconfig_name          = "${var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name}"
 
+  workers_group_defaults_defaults = {
+    name                 = "count.index" # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
+    ami_id               = ""            # AMI ID for the eks workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI.
+    asg_desired_capacity = "1"           # Desired worker capacity in the autoscaling group.
+    asg_max_size         = "3"           # Maximum worker capacity in the autoscaling group.
+    asg_min_size         = "1"           # Minimum worker capacity in the autoscaling group.
+    instance_type        = "m4.large"    # Size of the workers instances.
+    spot_price           = ""            # Cost of spot instance.
+    root_volume_size     = "100"         # root volume size of workers instances.
+    root_volume_type     = "gp2"         # root volume type of workers instances, can be 'standard', 'gp2', or 'io1'
+    root_iops            = "0"           # The amount of provisioned IOPS. This must be set with a volume_type of "io1".
+    key_name             = ""            # The key name that should be used for the instances in the autoscaling group
+    pre_userdata         = ""            # userdata to pre-append to the default userdata.
+    additional_userdata  = ""            # userdata to append to the default userdata.
+    ebs_optimized        = true          # sets whether to use ebs optimization on supported types.
+    enable_monitoring    = true          # Enables/disables detailed monitoring.
+    public_ip            = false         # Associate a public ip address with a worker
+    kubelet_node_labels  = ""            # This string is passed directly to kubelet via --node-labels= if set. It should be comma delimited with no spaces. If left empty no --node-labels switch is added.
+    subnets              = ""            # A comma delimited string of subnets to place the worker nodes in. i.e. subnet-123,subnet-456,subnet-789
+    autoscaling_enabled  = false         # Sets whether policy and matching tags will be added to allow autoscaling.
+  }
+
+  workers_group_defaults = "${merge(local.workers_group_defaults_defaults, var.workers_group_defaults)}"
+
   # Mapping from the node type that we selected and the max number of pods that it can run
   # Taken from https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-06-05/amazon-eks-nodegroup.yaml
   max_pod_per_node = {
