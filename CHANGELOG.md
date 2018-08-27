@@ -9,13 +9,10 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Added autoscaling policies into module that are optionally attached when enabled for a worker group. (by @max-rocket-internet)
-
-### Added
-
 - add spot_price option to aws_launch_configuration
 - add enable_monitoring option to aws_launch_configuration
 - add t3 instance class settings
+- Added autoscaling policies into module that are optionally attached when enabled for a worker group. (by @max-rocket-internet)
 
 ### Changed
 
