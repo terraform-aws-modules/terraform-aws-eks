@@ -5,7 +5,7 @@ resource "aws_autoscaling_group" "workers" {
   min_size             = "${lookup(var.worker_groups[count.index], "asg_min_size",lookup(var.workers_group_defaults, "asg_min_size"))}"
   launch_configuration = "${element(aws_launch_configuration.workers.*.id, count.index)}"
   vpc_zone_identifier  = ["${split(",", coalesce(lookup(var.worker_groups[count.index], "subnets", ""), join(",", var.subnets)))}"]
-  count                = "${length(var.worker_groups)}"
+  count                = "${var.worker_group_count}"
 
   tags = ["${concat(
     list(
@@ -33,7 +33,7 @@ resource "aws_launch_configuration" "workers" {
   ebs_optimized               = "${lookup(var.worker_groups[count.index], "ebs_optimized", lookup(local.ebs_optimized, lookup(var.worker_groups[count.index], "instance_type", lookup(var.workers_group_defaults, "instance_type")), false))}"
   enable_monitoring           = "${lookup(var.worker_groups[count.index], "enable_monitoring", lookup(var.workers_group_defaults, "enable_monitoring"))}"
   spot_price                  = "${lookup(var.worker_groups[count.index], "spot_price", lookup(var.workers_group_defaults, "spot_price"))}"
-  count                       = "${length(var.worker_groups)}"
+  count                       = "${var.worker_group_count}"
 
   lifecycle {
     create_before_destroy = true
