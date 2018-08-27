@@ -10,10 +10,12 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - A useful addition (slam dunk, @self 🔥)
+- add support for [`amazon-eks-node-*` AMI with bootstrap script](https://aws.amazon.com/blogs/opensource/improvements-eks-worker-node-provisioning/) (by @erks)
 
 ### Changed
 
 - A subtle but thoughtful change. (Boomshakalaka, @self 🏀)
+- **Breaking change** Removed support for `eks-worker-*` AMI. The cluster specifying a custom AMI based off of `eks-worker-*` AMI will have to rebuild the AMI from `amazon-eks-node-*`.  (by @erks)
 
 ## [[v1.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.4.0...v1.5.0)] - 2018-08-30]
 
