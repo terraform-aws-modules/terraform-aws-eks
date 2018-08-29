@@ -39,6 +39,7 @@ locals {
                   map("instance_type","t2.small",
                       "additional_userdata","echo foo bar",
                       "subnets", "${join(",", module.vpc.private_subnets)}",
+                      "additional_security_group_ids", "${aws_security_group.worker_group_mgmt_one.id},${aws_security_group.worker_group_mgmt_two.id}"
                       ),
   )}"
   tags = "${map("Environment", "test",
@@ -53,9 +54,39 @@ resource "random_string" "suffix" {
   special = false
 }
 
-resource "aws_security_group" "nix_mgmt" {
-  name_prefix = "nix_mgmt"
+resource "aws_security_group" "worker_group_mgmt_one" {
+  name_prefix = "worker_group_mgmt_one"
   description = "SG to be applied to all *nix machines"
+  vpc_id      = "${module.vpc.vpc_id}"
+
+  ingress {
+    from_port = 22
+    to_port   = 22
+    protocol  = "tcp"
+
+    cidr_blocks = [
+      "10.0.0.0/8",
+    ]
+  }
+}
+
+resource "aws_security_group" "worker_group_mgmt_two" {
+  name_prefix = "worker_group_mgmt_two"
+  vpc_id      = "${module.vpc.vpc_id}"
+
+  ingress {
+    from_port = 22
+    to_port   = 22
+    protocol  = "tcp"
+
+    cidr_blocks = [
+      "192.168.0.0/16",
+    ]
+  }
+}
+
+resource "aws_security_group" "all_worker_mgmt" {
+  name_prefix = "all_worker_management"
   vpc_id      = "${module.vpc.vpc_id}"
 
   ingress {
@@ -92,7 +123,7 @@ module "eks" {
   vpc_id                               = "${module.vpc.vpc_id}"
   worker_groups                        = "${local.worker_groups}"
   worker_group_count                   = "1"
-  worker_additional_security_group_ids = ["${aws_security_group.nix_mgmt.id}"]
+  worker_additional_security_group_ids = ["${aws_security_group.all_worker_mgmt.id}"]
   map_roles                            = "${var.map_roles}"
   map_users                            = "${var.map_users}"
   map_accounts                         = "${var.map_accounts}"
