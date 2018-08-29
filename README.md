@@ -31,6 +31,10 @@ module "eks" {
 }
 ```
 
+## Other documentation
+
+- [Autoscaling](docs/autoscaling.md): How to enabled worker node autoscaling.
+
 ## Release schedule
 
 Generally the maintainers will try to release the module once every 2 weeks to
