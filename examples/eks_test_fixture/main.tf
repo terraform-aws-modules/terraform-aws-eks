@@ -53,6 +53,24 @@ resource "random_string" "suffix" {
   special = false
 }
 
+resource "aws_security_group" "nix_mgmt" {
+  name_prefix = "nix_mgmt"
+  description = "SG to be applied to all *nix machines"
+  vpc_id      = "${module.vpc.vpc_id}"
+
+  ingress {
+    from_port = 22
+    to_port   = 22
+    protocol  = "tcp"
+
+    cidr_blocks = [
+      "10.0.0.0/8",
+      "172.16.0.0/12",
+      "192.168.0.0/16",
+    ]
+  }
+}
+
 module "vpc" {
   source             = "terraform-aws-modules/vpc/aws"
   version            = "1.14.0"
@@ -67,14 +85,15 @@ module "vpc" {
 }
 
 module "eks" {
-  source             = "../.."
-  cluster_name       = "${local.cluster_name}"
-  subnets            = ["${module.vpc.private_subnets}"]
-  tags               = "${local.tags}"
-  vpc_id             = "${module.vpc.vpc_id}"
-  worker_groups      = "${local.worker_groups}"
-  worker_group_count = "1"
-  map_roles          = "${var.map_roles}"
-  map_users          = "${var.map_users}"
-  map_accounts       = "${var.map_accounts}"
+  source                               = "../.."
+  cluster_name                         = "${local.cluster_name}"
+  subnets                              = ["${module.vpc.private_subnets}"]
+  tags                                 = "${local.tags}"
+  vpc_id                               = "${module.vpc.vpc_id}"
+  worker_groups                        = "${local.worker_groups}"
+  worker_group_count                   = "1"
+  worker_additional_security_group_ids = ["${aws_security_group.nix_mgmt.id}"]
+  map_roles                            = "${var.map_roles}"
+  map_users                            = "${var.map_users}"
+  map_accounts                         = "${var.map_accounts}"
 }

@@ -132,3 +132,9 @@ variable "kubeconfig_name" {
   description = "Override the default name used for items kubeconfig."
   default     = ""
 }
+
+variable "worker_additional_security_group_ids" {
+  description = "A list of additional security group ids to attach to worker instances"
+  type        = "list"
+  default     = []
+}
