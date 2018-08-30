@@ -12,6 +12,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - add spot_price option to aws_launch_configuration
 - add enable_monitoring option to aws_launch_configuration
 - add t3 instance class settings
+- add aws_iam_service_linked_role for elasticloadbalancing. (by @max-rocket-internet)
 - Added autoscaling policies into module that are optionally attached when enabled for a worker group. (by @max-rocket-internet)
 
 ### Changed
