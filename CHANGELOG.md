@@ -12,6 +12,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - add spot_price option to aws_launch_configuration
 - add enable_monitoring option to aws_launch_configuration
 - add t3 instance class settings
+- add optional input `worker_additional_security_group_ids` of type list that allows the passing of additional security groups for inclusion in the launch configuration of the worker nodes. (by @mr-joshua)
 - Added autoscaling policies into module that are optionally attached when enabled for a worker group. (by @max-rocket-internet)
 
 ### Changed
