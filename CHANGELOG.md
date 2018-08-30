@@ -10,6 +10,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - A useful addition (slam dunk, @self 🔥)
+- add optional input `worker_additional_security_group_ids` to allow one or more additional security groups to be added to all worker launch configurations - #47 (by @hhobbsh @mr-joshua)
+- add optional input `additional_security_group_ids` to allow one or more additional security groups to be added to a specific worker launch configuration - #47 (by @mr-joshua)
 
 ### Changed
 
@@ -24,8 +26,6 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - add t3 instance class settings
 - add aws_iam_service_linked_role for elasticloadbalancing. (by @max-rocket-internet)
 - Added autoscaling policies into module that are optionally attached when enabled for a worker group. (by @max-rocket-internet)
-- add optional input `worker_additional_security_group_ids` to allow one or more additional security groups to be added to all worker launch configurations - #47 (by @mr-joshua)
-- add optional input `additional_security_group_ids` to allow one or more additional security groups to be added to a specific worker launch configuration - #47 (by @mr-joshua)
 
 ### Changed
 
