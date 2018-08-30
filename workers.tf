@@ -1,8 +1,8 @@
 resource "aws_autoscaling_group" "workers" {
   name_prefix          = "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
-  desired_capacity     = "${lookup(var.worker_groups[count.index], "asg_desired_capacity", lookup(var.workers_group_defaults, "asg_desired_capacity"))}"
-  max_size             = "${lookup(var.worker_groups[count.index], "asg_max_size",lookup(var.workers_group_defaults, "asg_max_size"))}"
-  min_size             = "${lookup(var.worker_groups[count.index], "asg_min_size",lookup(var.workers_group_defaults, "asg_min_size"))}"
+  desired_capacity     = "${lookup(var.worker_groups[count.index], "asg_desired_capacity", lookup(local.workers_group_defaults, "asg_desired_capacity"))}"
+  max_size             = "${lookup(var.worker_groups[count.index], "asg_max_size",lookup(local.workers_group_defaults, "asg_max_size"))}"
+  min_size             = "${lookup(var.worker_groups[count.index], "asg_min_size",lookup(local.workers_group_defaults, "asg_min_size"))}"
   launch_configuration = "${element(aws_launch_configuration.workers.*.id, count.index)}"
   vpc_zone_identifier  = ["${split(",", coalesce(lookup(var.worker_groups[count.index], "subnets", ""), join(",", var.subnets)))}"]
   count                = "${var.worker_group_count}"
@@ -23,16 +23,16 @@ resource "aws_autoscaling_group" "workers" {
 
 resource "aws_launch_configuration" "workers" {
   name_prefix                 = "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
-  associate_public_ip_address = "${lookup(var.worker_groups[count.index], "public_ip", lookup(var.workers_group_defaults, "public_ip"))}"
+  associate_public_ip_address = "${lookup(var.worker_groups[count.index], "public_ip", lookup(local.workers_group_defaults, "public_ip"))}"
   security_groups             = ["${local.worker_security_group_id}"]
   iam_instance_profile        = "${aws_iam_instance_profile.workers.id}"
   image_id                    = "${lookup(var.worker_groups[count.index], "ami_id", data.aws_ami.eks_worker.id)}"
-  instance_type               = "${lookup(var.worker_groups[count.index], "instance_type", lookup(var.workers_group_defaults, "instance_type"))}"
-  key_name                    = "${lookup(var.worker_groups[count.index], "key_name", lookup(var.workers_group_defaults, "key_name"))}"
+  instance_type               = "${lookup(var.worker_groups[count.index], "instance_type", lookup(local.workers_group_defaults, "instance_type"))}"
+  key_name                    = "${lookup(var.worker_groups[count.index], "key_name", lookup(local.workers_group_defaults, "key_name"))}"
   user_data_base64            = "${base64encode(element(data.template_file.userdata.*.rendered, count.index))}"
-  ebs_optimized               = "${lookup(var.worker_groups[count.index], "ebs_optimized", lookup(local.ebs_optimized, lookup(var.worker_groups[count.index], "instance_type", lookup(var.workers_group_defaults, "instance_type")), false))}"
-  enable_monitoring           = "${lookup(var.worker_groups[count.index], "enable_monitoring", lookup(var.workers_group_defaults, "enable_monitoring"))}"
-  spot_price                  = "${lookup(var.worker_groups[count.index], "spot_price", lookup(var.workers_group_defaults, "spot_price"))}"
+  ebs_optimized               = "${lookup(var.worker_groups[count.index], "ebs_optimized", lookup(local.ebs_optimized, lookup(var.worker_groups[count.index], "instance_type", lookup(local.workers_group_defaults, "instance_type")), false))}"
+  enable_monitoring           = "${lookup(var.worker_groups[count.index], "enable_monitoring", lookup(local.workers_group_defaults, "enable_monitoring"))}"
+  spot_price                  = "${lookup(var.worker_groups[count.index], "spot_price", lookup(local.workers_group_defaults, "spot_price"))}"
   count                       = "${var.worker_group_count}"
 
   lifecycle {
@@ -40,9 +40,9 @@ resource "aws_launch_configuration" "workers" {
   }
 
   root_block_device {
-    volume_size           = "${lookup(var.worker_groups[count.index], "root_volume_size", lookup(var.workers_group_defaults, "root_volume_size"))}"
-    volume_type           = "${lookup(var.worker_groups[count.index], "root_volume_type", lookup(var.workers_group_defaults, "root_volume_type"))}"
-    iops                  = "${lookup(var.worker_groups[count.index], "root_iops", lookup(var.workers_group_defaults, "root_iops"))}"
+    volume_size           = "${lookup(var.worker_groups[count.index], "root_volume_size", lookup(local.workers_group_defaults, "root_volume_size"))}"
+    volume_type           = "${lookup(var.worker_groups[count.index], "root_volume_type", lookup(local.workers_group_defaults, "root_volume_type"))}"
+    iops                  = "${lookup(var.worker_groups[count.index], "root_iops", lookup(local.workers_group_defaults, "root_iops"))}"
     delete_on_termination = true
   }
 }
