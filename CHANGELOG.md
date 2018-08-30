@@ -5,21 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
-## [[v1.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.4.0...HEAD)] - 2018-08-??]
+## [[v1.6.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.5.0...HEAD)] - 2018-09-??]
+
+### Added
+
+- A useful addition (slam dunk, @self 🔥)
+
+### Changed
+
+- A subtle but thoughtful change. (Boomshakalaka, @self 🏀)
+
+## [[v1.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.4.0...v1.5.0)] - 2018-08-30]
 
 ### Added
 
 - add spot_price option to aws_launch_configuration
 - add enable_monitoring option to aws_launch_configuration
 - add t3 instance class settings
+- add aws_iam_service_linked_role for elasticloadbalancing. (by @max-rocket-internet)
 - Added autoscaling policies into module that are optionally attached when enabled for a worker group. (by @max-rocket-internet)
 - add optional input `worker_additional_security_group_ids` to allow one or more additional security groups to be added to all worker launch configurations - #47 (by @mr-joshua)
 - add optional input `additional_security_group_ids` to allow one or more additional security groups to be added to a specific worker launch configuration - #47 (by @mr-joshua)
 
 ### Changed
 
-- A subtle but thoughtful change. (Boomshakalaka, @self 🏀)
 - **Breaking change** Removed `workstation_cidr` variable, http callout and unnecessary security rule. (by @dpiddockcmp)
+- Can now selectively override keys in `workers_group_defaults` variable rather than callers maintaining a duplicate of the whole map. (by @dpiddockcmp)
 
 ## [[v1.4.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.3.0...v1.4.0)] - 2018-08-02]
 
