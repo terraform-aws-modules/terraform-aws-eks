@@ -25,10 +25,9 @@ locals {
     ebs_optimized        = true          # sets whether to use ebs optimization on supported types.
     enable_monitoring    = true          # Enables/disables detailed monitoring.
     public_ip            = false         # Associate a public ip address with a worker
-    kubelet_node_labels  = ""            # Deprecated - use kubelet_extra_args. This string is passed directly to kubelet via --node-labels= if set. It should be comma delimited with no spaces. If left empty no --node-labels switch is added.
+    kubelet_extra_args   = ""            # This string is passed directly to kubelet if set. Useful for adding labels or taints.
     subnets              = ""            # A comma delimited string of subnets to place the worker nodes in. i.e. subnet-123,subnet-456,subnet-789
     autoscaling_enabled  = false         # Sets whether policy and matching tags will be added to allow autoscaling.
-    kubelet_extra_args   = ""            # This string is passed directly to kubelet if set. Useful for adding labels or taints.
   }
 
   workers_group_defaults = "${merge(local.workers_group_defaults_defaults, var.workers_group_defaults)}"
