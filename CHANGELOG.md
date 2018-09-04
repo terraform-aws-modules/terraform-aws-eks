@@ -16,6 +16,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - A subtle but thoughtful change. (Boomshakalaka, @self 🏀)
+- allow a custom AMI to be specified as a default (by @erks)
 - **Breaking change** Removed support for `eks-worker-*` AMI. The cluster specifying a custom AMI based off of `eks-worker-*` AMI will have to rebuild the AMI from `amazon-eks-node-*`.  (by @erks)
 - **Breaking change** Removed `kubelet_node_labels` worker group option in favor of `kubelet_extra_args`. (by @erks)
 

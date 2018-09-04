@@ -26,7 +26,7 @@ resource "aws_launch_configuration" "workers" {
   associate_public_ip_address = "${lookup(var.worker_groups[count.index], "public_ip", lookup(local.workers_group_defaults, "public_ip"))}"
   security_groups             = ["${local.worker_security_group_id}"]
   iam_instance_profile        = "${aws_iam_instance_profile.workers.id}"
-  image_id                    = "${lookup(var.worker_groups[count.index], "ami_id", data.aws_ami.eks_worker.id)}"
+  image_id                    = "${lookup(var.worker_groups[count.index], "ami_id", lookup(local.workers_group_defaults, "ami_id", data.aws_ami.eks_worker.id))}"
   instance_type               = "${lookup(var.worker_groups[count.index], "instance_type", lookup(local.workers_group_defaults, "instance_type"))}"
   key_name                    = "${lookup(var.worker_groups[count.index], "key_name", lookup(local.workers_group_defaults, "key_name"))}"
   user_data_base64            = "${base64encode(element(data.template_file.userdata.*.rendered, count.index))}"
