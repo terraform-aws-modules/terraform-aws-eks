@@ -14,6 +14,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - A subtle but thoughtful change. (Boomshakalaka, @self 🏀)
+- allow a custom AMI to be specified as a default (by @erks)
 
 ## [[v1.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.4.0...v1.5.0)] - 2018-08-30]
 
