@@ -25,77 +25,12 @@ locals {
     ebs_optimized        = true          # sets whether to use ebs optimization on supported types.
     enable_monitoring    = true          # Enables/disables detailed monitoring.
     public_ip            = false         # Associate a public ip address with a worker
-    kubelet_node_labels  = ""            # This string is passed directly to kubelet via --node-labels= if set. It should be comma delimited with no spaces. If left empty no --node-labels switch is added.
+    kubelet_extra_args   = ""            # This string is passed directly to kubelet if set. Useful for adding labels or taints.
     subnets              = ""            # A comma delimited string of subnets to place the worker nodes in. i.e. subnet-123,subnet-456,subnet-789
     autoscaling_enabled  = false         # Sets whether policy and matching tags will be added to allow autoscaling.
   }
 
   workers_group_defaults = "${merge(local.workers_group_defaults_defaults, var.workers_group_defaults)}"
-
-  # Mapping from the node type that we selected and the max number of pods that it can run
-  # Taken from https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-06-05/amazon-eks-nodegroup.yaml
-  max_pod_per_node = {
-    c4.large    = 29
-    c4.xlarge   = 58
-    c4.2xlarge  = 58
-    c4.4xlarge  = 234
-    c4.8xlarge  = 234
-    c5.large    = 29
-    c5.xlarge   = 58
-    c5.2xlarge  = 58
-    c5.4xlarge  = 234
-    c5.9xlarge  = 234
-    c5.18xlarge = 737
-    i3.large    = 29
-    i3.xlarge   = 58
-    i3.2xlarge  = 58
-    i3.4xlarge  = 234
-    i3.8xlarge  = 234
-    i3.16xlarge = 737
-    m3.medium   = 12
-    m3.large    = 29
-    m3.xlarge   = 58
-    m3.2xlarge  = 118
-    m4.large    = 20
-    m4.xlarge   = 58
-    m4.2xlarge  = 58
-    m4.4xlarge  = 234
-    m4.10xlarge = 234
-    m5.large    = 29
-    m5.xlarge   = 58
-    m5.2xlarge  = 58
-    m5.4xlarge  = 234
-    m5.12xlarge = 234
-    m5.24xlarge = 737
-    p2.xlarge   = 58
-    p2.8xlarge  = 234
-    p2.16xlarge = 234
-    p3.2xlarge  = 58
-    p3.8xlarge  = 234
-    p3.16xlarge = 234
-    r3.xlarge   = 58
-    r3.2xlarge  = 58
-    r3.4xlarge  = 234
-    r3.8xlarge  = 234
-    r4.large    = 29
-    r4.xlarge   = 58
-    r4.2xlarge  = 58
-    r4.4xlarge  = 234
-    r4.8xlarge  = 234
-    r4.16xlarge = 737
-    t2.small    = 8
-    t2.medium   = 17
-    t2.large    = 35
-    t2.xlarge   = 44
-    t2.2xlarge  = 44
-    t3.small    = 8
-    t3.medium   = 17
-    t3.large    = 35
-    t3.xlarge   = 44
-    t3.2xlarge  = 44
-    x1.16xlarge = 234
-    x1.32xlarge = 234
-  }
 
   ebs_optimized = {
     "c1.medium"    = false
