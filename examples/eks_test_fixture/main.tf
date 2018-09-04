@@ -36,10 +36,15 @@ locals {
   # )}"
 
   worker_groups = "${list(
-                  map("instance_type","t2.small",
-                      "additional_userdata","echo foo bar",
-                      "subnets", "${join(",", module.vpc.private_subnets)}",
-                      ),
+    map("instance_type","t2.small",
+      "additional_userdata","echo foo bar",
+      "subnets", "${join(",", module.vpc.private_subnets)}",
+    ),
+    map("instance_type","t2.small",
+      "additional_userdata","echo foo bar",
+      "subnets", "${join(",", module.vpc.private_subnets)}",
+      "additional_security_group_ids", "${aws_security_group.worker_group_mgmt_one.id},${aws_security_group.worker_group_mgmt_two.id}"
+    )
   )}"
   tags = "${map("Environment", "test",
                 "GithubRepo", "terraform-aws-eks",
@@ -51,6 +56,54 @@ locals {
 resource "random_string" "suffix" {
   length  = 8
   special = false
+}
+
+resource "aws_security_group" "worker_group_mgmt_one" {
+  name_prefix = "worker_group_mgmt_one"
+  description = "SG to be applied to all *nix machines"
+  vpc_id      = "${module.vpc.vpc_id}"
+
+  ingress {
+    from_port = 22
+    to_port   = 22
+    protocol  = "tcp"
+
+    cidr_blocks = [
+      "10.0.0.0/8",
+    ]
+  }
+}
+
+resource "aws_security_group" "worker_group_mgmt_two" {
+  name_prefix = "worker_group_mgmt_two"
+  vpc_id      = "${module.vpc.vpc_id}"
+
+  ingress {
+    from_port = 22
+    to_port   = 22
+    protocol  = "tcp"
+
+    cidr_blocks = [
+      "192.168.0.0/16",
+    ]
+  }
+}
+
+resource "aws_security_group" "all_worker_mgmt" {
+  name_prefix = "all_worker_management"
+  vpc_id      = "${module.vpc.vpc_id}"
+
+  ingress {
+    from_port = 22
+    to_port   = 22
+    protocol  = "tcp"
+
+    cidr_blocks = [
+      "10.0.0.0/8",
+      "172.16.0.0/12",
+      "192.168.0.0/16",
+    ]
+  }
 }
 
 module "vpc" {
@@ -67,14 +120,15 @@ module "vpc" {
 }
 
 module "eks" {
-  source             = "../.."
-  cluster_name       = "${local.cluster_name}"
-  subnets            = ["${module.vpc.private_subnets}"]
-  tags               = "${local.tags}"
-  vpc_id             = "${module.vpc.vpc_id}"
-  worker_groups      = "${local.worker_groups}"
-  worker_group_count = "1"
-  map_roles          = "${var.map_roles}"
-  map_users          = "${var.map_users}"
-  map_accounts       = "${var.map_accounts}"
+  source                               = "../.."
+  cluster_name                         = "${local.cluster_name}"
+  subnets                              = ["${module.vpc.private_subnets}"]
+  tags                                 = "${local.tags}"
+  vpc_id                               = "${module.vpc.vpc_id}"
+  worker_groups                        = "${local.worker_groups}"
+  worker_group_count                   = "2"
+  worker_additional_security_group_ids = ["${aws_security_group.all_worker_mgmt.id}"]
+  map_roles                            = "${var.map_roles}"
+  map_users                            = "${var.map_users}"
+  map_accounts                         = "${var.map_accounts}"
 }
