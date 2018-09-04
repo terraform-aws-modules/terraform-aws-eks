@@ -9,14 +9,13 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- A useful addition (slam dunk, @self 🔥)
 - add support for [`amazon-eks-node-*` AMI with bootstrap script](https://aws.amazon.com/blogs/opensource/improvements-eks-worker-node-provisioning/) (by @erks)
-- expose `kubelet_extra_args` worker group option (replacing `kubelet_node_labels`) to allow specifying arbitrary kubelet options (e.g. taints and labels) (by @erks) 
+- expose `kubelet_extra_args` worker group option (replacing `kubelet_node_labels`) to allow specifying arbitrary kubelet options (e.g. taints and labels) (by @erks)
 
 ### Changed
 
-- A subtle but thoughtful change. (Boomshakalaka, @self 🏀)
 - allow a custom AMI to be specified as a default (by @erks)
+- Bugfix for above change (by @max-rocket-internet)
 - **Breaking change** Removed support for `eks-worker-*` AMI. The cluster specifying a custom AMI based off of `eks-worker-*` AMI will have to rebuild the AMI from `amazon-eks-node-*`.  (by @erks)
 - **Breaking change** Removed `kubelet_node_labels` worker group option in favor of `kubelet_extra_args`. (by @erks)
 
