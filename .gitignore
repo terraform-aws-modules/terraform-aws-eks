@@ -10,5 +10,6 @@ terraform.tfstate.d/
 eks-admin-cluster-role-binding.yaml
 eks-admin-service-account.yaml
 .idea/
+*.iml
 config-map-aws-auth*.yaml
 kubeconfig_*
