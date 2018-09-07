@@ -1,3 +1,8 @@
+output "region" {
+  description = "AWS region."
+  value       = "${module.eks.aws_region}"
+}
+
 output "cluster_endpoint" {
   description = "Endpoint for EKS control plane."
   value       = "${module.eks.cluster_endpoint}"
@@ -16,9 +21,4 @@ output "kubectl_config" {
 output "config_map_aws_auth" {
   description = ""
   value       = "${module.eks.config_map_aws_auth}"
-}
-
-output "region" {
-  description = "AWS region."
-  value       = "${var.region}"
 }
