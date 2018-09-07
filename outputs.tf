@@ -44,17 +44,17 @@ output "cluster_security_group_id" {
 }
 
 output "config_map_aws_auth" {
-  description = "A kubernetes configuration to authenticate to this EKS cluster."
+  description = "A kubernetes configuration to authenticate to the EKS cluster."
   value       = "${data.template_file.config_map_aws_auth.rendered}"
 }
 
 output "kubeconfig" {
-  description = "kubectl config file contents for this EKS cluster."
+  description = "kubectl config file contents for the EKS cluster."
   value       = "${data.template_file.kubeconfig.rendered}"
 }
 
 output "workers_asg_arns" {
-  description = "IDs of the autoscaling groups containing workers."
+  description = "ARNs of the autoscaling groups containing workers."
   value       = "${aws_autoscaling_group.workers.*.arn}"
 }
 
@@ -69,21 +69,21 @@ output "worker_security_group_id" {
 }
 
 output "worker_instance_role_arn" {
-  description = "Instance IAM role ARN attached to EKS workers"
+  description = "Instance IAM role ARN attached to the EKS workers."
   value       = "${data.aws_iam_role.workers.arn}"
 }
 
 output "worker_instance_role_name" {
-  description = "Instance IAM role name attached to EKS workers"
+  description = "Instance IAM role name attached to the EKS workers."
   value       = "${data.aws_iam_role.workers.name}"
 }
 
 output "worker_instance_profile_arn" {
-  description = "EC2 instance IAM role ARN attached to EKS workers"
+  description = "EC2 instance IAM role ARN attached to the EKS workers."
   value       = "${data.aws_iam_instance_profile.workers.arn}"
 }
 
 output "worker_instance_profile_name" {
-  description = "EC2 instance IAM role ARN attached to EKS workers"
+  description = "EC2 instance IAM role ARN attached to the EKS workers."
   value       = "${data.aws_iam_instance_profile.workers.name}"
 }

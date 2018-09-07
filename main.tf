@@ -82,6 +82,8 @@
 * Testing and using this repo requires a minimum set of IAM permissions. Test permissions
 * are listed in the [eks_test_fixture README](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_test_fixture/README.md).
 
+* For environments with strict `iam:*` permissions, existing IAM roles can be provided. See `cluster_service_role_name`, `worker_instance_role_name` and `worker_instance_profile_name`.
+
 * ## Change log
 
 * The [changelog](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/CHANGELOG.md) captures all important release notes.

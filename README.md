@@ -81,6 +81,8 @@ Full contributing [guidelines are covered here](https://github.com/terraform-aws
 Testing and using this repo requires a minimum set of IAM permissions. Test permissions
 are listed in the [eks_test_fixture README](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_test_fixture/README.md).
 
+For environments with strict `iam:*` permissions, existing IAM roles can be provided. See `cluster_service_role_name`, `worker_instance_role_name` and `worker_instance_profile_name`.
+
 ## Change log
 
 The [changelog](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/CHANGELOG.md) captures all important release notes.
@@ -100,6 +102,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 |------|-------------|:----:|:-----:|:-----:|
 | cluster_name | Name of the EKS cluster. Also used as a prefix in names of related resources. | string | - | yes |
 | cluster_security_group_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32. | string | `` | no |
+| cluster_service_role_name | If provided, the EKS cluster will use this service role. If not given, a service IAM role will be created with the necessary policies attached. | string | `` | no |
 | cluster_version | Kubernetes version to use for the EKS cluster. | string | `1.10` | no |
 | config_output_path | Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory. Should end in a forward slash / . | string | `./` | no |
 | create_elb_service_linked_role | Whether to create the service linked role for the elasticloadbalancing service. Without this EKS cannot create ELBs. | string | `false` | no |
@@ -117,6 +120,8 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker_additional_security_group_ids | A list of additional security group ids to attach to worker instances | list | `<list>` | no |
 | worker_group_count | The number of maps contained within the worker_groups list. | string | `1` | no |
 | worker_groups | A list of maps defining worker group configurations. See workers_group_defaults for valid keys. | list | `<list>` | no |
+| worker_instance_profile_name | If provided, the EKS worker nodes will spawn using this EC2 instance IAM profile. If not given, an instance profile will be created with the necessary policies attached. | string | `` | no |
+| worker_instance_role_name | If provided, the EKS worker nodes will spawn using this EC2 instance IAM role. If not given, an instance role will be created with the necessary policies attached. | string | `` | no |
 | worker_security_group_id | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster. | string | `` | no |
 | worker_sg_ingress_from_port | Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443). | string | `1025` | no |
 | workers_group_defaults | Override default values for target groups. See workers_group_defaults_defaults in locals.tf for valid keys. | map | `<map>` | no |
@@ -126,15 +131,21 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 
 | Name | Description |
 |------|-------------|
+| aws_region | The AWS region of the resources. |
+| cluster_arn | The Amazon Resource Name (ARN) of the cluster. |
 | cluster_certificate_authority_data | Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster. |
 | cluster_endpoint | The endpoint for your EKS Kubernetes API. |
 | cluster_id | The name/id of the EKS cluster. |
 | cluster_security_group_id | Security group ID attached to the EKS cluster. |
+| cluster_service_role_arn | Service IAM role ARN attached to the EKS cluster. |
+| cluster_service_role_name | Service IAM role name attached to the EKS cluster. |
 | cluster_version | The Kubernetes server version for the EKS cluster. |
-| config_map_aws_auth | A kubernetes configuration to authenticate to this EKS cluster. |
-| kubeconfig | kubectl config file contents for this EKS cluster. |
-| worker_iam_role_arn | IAM role ID attached to EKS workers |
-| worker_iam_role_name | IAM role name attached to EKS workers |
+| config_map_aws_auth | A kubernetes configuration to authenticate to the EKS cluster. |
+| kubeconfig | kubectl config file contents for the EKS cluster. |
+| worker_instance_profile_arn | EC2 instance IAM role ARN attached to the EKS workers. |
+| worker_instance_profile_name | EC2 instance IAM role ARN attached to the EKS workers. |
+| worker_instance_role_arn | Instance IAM role ARN attached to the EKS workers. |
+| worker_instance_role_name | Instance IAM role name attached to the EKS workers. |
 | worker_security_group_id | Security group ID attached to the EKS workers. |
-| workers_asg_arns | IDs of the autoscaling groups containing workers. |
+| workers_asg_arns | ARNs of the autoscaling groups containing workers. |
 | workers_asg_names | Names of the autoscaling groups containing workers. |
