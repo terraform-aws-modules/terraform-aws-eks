@@ -14,6 +14,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - A subtle but thoughtful change. (Boomshakalaka, @self 🏀)
+- fix default worker subnets not working (by @erks)
 
 ## [[v1.6.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.5.0...v1.6.0)] - 2018-09-04]
 
