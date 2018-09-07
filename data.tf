@@ -1,5 +1,13 @@
 data "aws_region" "current" {}
 
+data "aws_iam_role" "workers" {
+  name = "${local.worker_instance_role_name}"
+}
+
+data "aws_iam_instance_profile" "workers" {
+  name = "${local.worker_instance_profile_name}"
+}
+
 data "aws_iam_policy_document" "workers_assume_role_policy" {
   statement {
     sid = "EKSWorkerAssumeRole"
@@ -23,6 +31,10 @@ data "aws_ami" "eks_worker" {
 
   most_recent = true
   owners      = ["602401143452"] # Amazon
+}
+
+data "aws_iam_role" "cluster" {
+  name = "${local.cluster_service_role_name}"
 }
 
 data "aws_iam_policy_document" "cluster_assume_role_policy" {

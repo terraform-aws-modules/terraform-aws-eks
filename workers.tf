@@ -25,7 +25,7 @@ resource "aws_launch_configuration" "workers" {
   name_prefix                 = "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
   associate_public_ip_address = "${lookup(var.worker_groups[count.index], "public_ip", lookup(local.workers_group_defaults, "public_ip"))}"
   security_groups             = ["${local.worker_security_group_id}", "${var.worker_additional_security_group_ids}", "${compact(split(",",lookup(var.worker_groups[count.index],"additional_security_group_ids",lookup(local.workers_group_defaults, "additional_security_group_ids"))))}"]
-  iam_instance_profile        = "${aws_iam_instance_profile.workers.id}"
+  iam_instance_profile        = "${data.aws_iam_instance_profile.workers.arn}"
   image_id                    = "${lookup(var.worker_groups[count.index], "ami_id", lookup(local.workers_group_defaults, "ami_id"))}"
   instance_type               = "${lookup(var.worker_groups[count.index], "instance_type", lookup(local.workers_group_defaults, "instance_type"))}"
   key_name                    = "${lookup(var.worker_groups[count.index], "key_name", lookup(local.workers_group_defaults, "key_name"))}"
@@ -52,8 +52,7 @@ resource "aws_security_group" "workers" {
   description = "Security group for all nodes in the cluster."
   vpc_id      = "${var.vpc_id}"
   count       = "${var.worker_security_group_id == "" ? 1 : 0}"
-  tags        = "${merge(var.tags, map("Name", "${aws_eks_cluster.this.name}-eks_worker_sg", "kubernetes.io/cluster/${aws_eks_cluster.this.name}", "owned"
-  ))}"
+  tags        = "${merge(var.tags, map("Name", "${aws_eks_cluster.this.name}-eks_worker_sg", "kubernetes.io/cluster/${aws_eks_cluster.this.name}", "owned"))}"
 }
 
 resource "aws_security_group_rule" "workers_egress_internet" {
@@ -92,26 +91,31 @@ resource "aws_security_group_rule" "workers_ingress_cluster" {
 resource "aws_iam_role" "workers" {
   name_prefix        = "${aws_eks_cluster.this.name}"
   assume_role_policy = "${data.aws_iam_policy_document.workers_assume_role_policy.json}"
+  count              = "${var.worker_instance_role_name == "" ? 1 : 0}"
 }
 
 resource "aws_iam_instance_profile" "workers" {
   name_prefix = "${aws_eks_cluster.this.name}"
-  role        = "${aws_iam_role.workers.name}"
+  role        = "${local.worker_instance_role_name}"
+  count       = "${var.worker_instance_profile_name == "" ? 1 : 0}"
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = "${aws_iam_role.workers.name}"
+  role       = "${data.aws_iam_role.workers.name}"
+  count      = "${var.worker_instance_role_name == "" ? 1 : 0}"
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEKS_CNI_Policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = "${aws_iam_role.workers.name}"
+  role       = "${data.aws_iam_role.workers.name}"
+  count      = "${var.worker_instance_role_name == "" ? 1 : 0}"
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryReadOnly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = "${aws_iam_role.workers.name}"
+  role       = "${data.aws_iam_role.workers.name}"
+  count      = "${var.worker_instance_role_name == "" ? 1 : 0}"
 }
 
 resource "null_resource" "tags_as_list_of_maps" {
@@ -126,13 +130,15 @@ resource "null_resource" "tags_as_list_of_maps" {
 
 resource "aws_iam_role_policy_attachment" "workers_autoscaling" {
   policy_arn = "${aws_iam_policy.worker_autoscaling.arn}"
-  role       = "${aws_iam_role.workers.name}"
+  role       = "${data.aws_iam_role.workers.name}"
+  count      = "${var.worker_instance_role_name == "" ? 1 : 0}"
 }
 
 resource "aws_iam_policy" "worker_autoscaling" {
   name_prefix = "eks-worker-autoscaling-${aws_eks_cluster.this.name}"
   description = "EKS worker node autoscaling policy for cluster ${aws_eks_cluster.this.name}"
   policy      = "${data.aws_iam_policy_document.worker_autoscaling.json}"
+  count       = "${var.worker_instance_role_name == "" ? 1 : 0}"
 }
 
 data "aws_iam_policy_document" "worker_autoscaling" {

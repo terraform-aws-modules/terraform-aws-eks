@@ -24,6 +24,16 @@ output "cluster_version" {
   value       = "${aws_eks_cluster.this.version}"
 }
 
+output "cluster_service_role_arn" {
+  description = "Service IAM role ARN attached to the EKS cluster."
+  value       = "${data.aws_iam_role.cluster.arn}"
+}
+
+output "cluster_service_role_name" {
+  description = "Service IAM role name attached to the EKS cluster."
+  value       = "${data.aws_iam_role.cluster.name}"
+}
+
 output "cluster_security_group_id" {
   description = "Security group ID attached to the EKS cluster."
   value       = "${local.cluster_security_group_id}"
@@ -54,12 +64,22 @@ output "worker_security_group_id" {
   value       = "${local.worker_security_group_id}"
 }
 
-output "worker_iam_role_name" {
-  description = "IAM role name attached to EKS workers"
-  value       = "${aws_iam_role.workers.name}"
+output "worker_instance_role_arn" {
+  description = "Instance IAM role ARN attached to EKS workers"
+  value       = "${data.aws_iam_role.workers.arn}"
 }
 
-output "worker_iam_role_arn" {
-  description = "IAM role ID attached to EKS workers"
-  value       = "${aws_iam_role.workers.arn}"
+output "worker_instance_role_name" {
+  description = "Instance IAM role name attached to EKS workers"
+  value       = "${data.aws_iam_role.workers.name}"
+}
+
+output "worker_instance_profile_arn" {
+  description = "EC2 instance IAM role ARN attached to EKS workers"
+  value       = "${data.aws_iam_instance_profile.workers.arn}"
+}
+
+output "worker_instance_profile_name" {
+  description = "EC2 instance IAM role ARN attached to EKS workers"
+  value       = "${data.aws_iam_instance_profile.workers.name}"
 }
