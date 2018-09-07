@@ -1,3 +1,8 @@
+output "aws_region" {
+  description = "The AWS region of the resources."
+  value       = "${data.aws_region.current.name}"
+}
+
 output "cluster_id" {
   description = "The name/id of the EKS cluster."
   value       = "${aws_eks_cluster.this.id}"
