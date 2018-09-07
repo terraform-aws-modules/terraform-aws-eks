@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Allow to use existing IAM resources instead of creating new ones
+- Enable cluster ARN output
+- Output AWS region from EKS module
+- Add more outputs for test fixture
+
+### Changed
+
+- Move kubectl template_files to kubectl.tf
+- Declare update_config_map_aws_auth dependency on the existence of a kubeconfig
+- Use EKS module output for AWS region output in test fixture
+
 ## [[v1.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.6.0...HEAD)] - 2018-09-??]
 
 ### Added
