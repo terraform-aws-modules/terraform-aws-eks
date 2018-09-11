@@ -15,14 +15,34 @@ data "aws_iam_policy_document" "workers_assume_role_policy" {
   }
 }
 
-data "aws_ami" "eks_worker" {
+data "aws_ami" "eks_default" {
   filter {
     name   = "name"
     values = ["amazon-eks-node-*"]
   }
 
   most_recent = true
-  owners      = ["602401143452"] # Amazon
+  owners      = ["602401143452"]
+}
+
+data "aws_ami" "eks_gpu" {
+  filter {
+    name   = "name"
+    values = ["amazon-eks-gpu-node-*"]
+  }
+
+  most_recent = true
+  owners      = ["679593333241"]
+}
+
+data "aws_ami" "ubuntu" {
+  filter {
+    name   = "name"
+    values = ["ubuntu-eks/*"]
+  }
+
+  most_recent = true
+  owners      = ["099720109477"]
 }
 
 data "aws_iam_policy_document" "cluster_assume_role_policy" {
