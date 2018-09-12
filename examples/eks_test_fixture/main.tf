@@ -46,11 +46,12 @@ locals {
       "additional_security_group_ids", "${aws_security_group.worker_group_mgmt_one.id},${aws_security_group.worker_group_mgmt_two.id}"
     )
   )}"
-  tags = "${map("Environment", "test",
-                "GithubRepo", "terraform-aws-eks",
-                "GithubOrg", "terraform-aws-modules",
-                "Workspace", "${terraform.workspace}",
-  )}"
+  tags = {
+    Environment = "test"
+    GithubRepo  = "terraform-aws-eks"
+    GithubOrg   = "terraform-aws-modules"
+    Workspace   = "${terraform.workspace}"
+  }
 }
 
 resource "random_string" "suffix" {
