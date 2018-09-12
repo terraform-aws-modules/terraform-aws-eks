@@ -121,11 +121,11 @@ resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryRea
 resource "null_resource" "tags_as_list_of_maps" {
   count = "${length(keys(var.tags))}"
 
-  triggers = "${map(
-    "key", "${element(keys(var.tags), count.index)}",
-    "value", "${element(values(var.tags), count.index)}",
-    "propagate_at_launch", "true"
-  )}"
+  triggers = {
+    key                 = "${element(keys(var.tags), count.index)}"
+    value               = "${element(values(var.tags), count.index)}"
+    propagate_at_launch = "true"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "workers_autoscaling" {
