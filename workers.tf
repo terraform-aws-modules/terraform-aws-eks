@@ -1,11 +1,12 @@
 resource "aws_autoscaling_group" "workers" {
-  name_prefix          = "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
-  desired_capacity     = "${lookup(var.worker_groups[count.index], "asg_desired_capacity", lookup(local.workers_group_defaults, "asg_desired_capacity"))}"
-  max_size             = "${lookup(var.worker_groups[count.index], "asg_max_size",lookup(local.workers_group_defaults, "asg_max_size"))}"
-  min_size             = "${lookup(var.worker_groups[count.index], "asg_min_size",lookup(local.workers_group_defaults, "asg_min_size"))}"
-  launch_configuration = "${element(aws_launch_configuration.workers.*.id, count.index)}"
-  vpc_zone_identifier  = ["${split(",", coalesce(lookup(var.worker_groups[count.index], "subnets", ""), lookup(local.workers_group_defaults, "subnets")))}"]
-  count                = "${var.worker_group_count}"
+  name_prefix           = "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
+  desired_capacity      = "${lookup(var.worker_groups[count.index], "asg_desired_capacity", lookup(local.workers_group_defaults, "asg_desired_capacity"))}"
+  max_size              = "${lookup(var.worker_groups[count.index], "asg_max_size",lookup(local.workers_group_defaults, "asg_max_size"))}"
+  min_size              = "${lookup(var.worker_groups[count.index], "asg_min_size",lookup(local.workers_group_defaults, "asg_min_size"))}"
+  launch_configuration  = "${element(aws_launch_configuration.workers.*.id, count.index)}"
+  vpc_zone_identifier   = ["${split(",", coalesce(lookup(var.worker_groups[count.index], "subnets", ""), lookup(local.workers_group_defaults, "subnets")))}"]
+  count                 = "${var.worker_group_count}"
+  protect_from_scale_in = "${lookup(var.worker_groups[count.index], "protect_from_scale_in", lookup(local.workers_group_defaults, "protect_from_scale_in"))}"
 
   tags = ["${concat(
     list(
