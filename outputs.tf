@@ -55,11 +55,21 @@ output "worker_security_group_id" {
 }
 
 output "worker_iam_role_name" {
-  description = "IAM role name attached to EKS workers"
-  value       = "${aws_iam_role.workers.name}"
+  description = "IAM role name attached to the first EKS worker group"
+  value       = "${element(aws_iam_instance_profile.workers.*.name, 0)}"
 }
 
 output "worker_iam_role_arn" {
-  description = "IAM role ID attached to EKS workers"
-  value       = "${aws_iam_role.workers.arn}"
+  description = "IAM role ID attached to the first EKS worker group"
+  value       = "${element(aws_iam_instance_profile.workers.*.arn, 0)}"
+}
+
+output "worker_iam_role_names" {
+  description = "IAM role names attached to EKS workers"
+  value       = "${aws_iam_role.workers.*.name}"
+}
+
+output "worker_iam_role_arns" {
+  description = "IAM role IDs attached to EKS workers"
+  value       = "${aws_iam_role.workers.*.arn}"
 }
