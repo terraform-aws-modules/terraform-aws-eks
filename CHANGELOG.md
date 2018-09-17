@@ -10,13 +10,13 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - A useful addition (slam dunk, @self 🔥)
+- Worker groups can be created with independent IAM profiles. (from @laverya)
 
 ### Changed
 
 - A subtle but thoughtful change. (Boomshakalaka, @self 🏀)
 - fix default worker subnets not working (by @erks)
 - fix default worker autoscaling_enabled not working (by @erks)
-- Worker groups can be created with independent IAM profiles. (from @laverya)
 
 ## [[v1.6.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.5.0...v1.6.0)] - 2018-09-04]
 
