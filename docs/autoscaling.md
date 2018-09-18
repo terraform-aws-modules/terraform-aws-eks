@@ -2,6 +2,7 @@
 
 Autoscaling of worker nodes can be easily enabled by setting the `autoscaling_enabled` variable to `true` for a worker group in the `worker_groups` map.
 This will add the required tags to the autoscaling group for the [cluster-autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler).
+One should also set `protect_from_scale_in` to `true` for such worker groups, to ensure that cluster-autoscaler is solely responsible for scaling events.
 
 You will also need to install the cluster-autoscaler into your cluster. The easiest way to do this is with [helm](https://helm.sh/).
 

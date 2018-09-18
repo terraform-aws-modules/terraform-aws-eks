@@ -16,6 +16,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - A subtle but thoughtful change. (Boomshakalaka, @self 🏀)
 - fix default worker subnets not working (by @erks)
 - fix default worker autoscaling_enabled not working (by @erks)
+- add `protect_from_scale_in` to solve issue #134 (by @kinghajj)
 
 ## [[v1.6.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.5.0...v1.6.0)] - 2018-09-04]
 
