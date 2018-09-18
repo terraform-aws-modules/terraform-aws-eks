@@ -56,12 +56,12 @@ output "worker_security_group_id" {
 
 output "worker_iam_role_name" {
   description = "IAM role name attached to the first EKS worker group"
-  value       = "${element(aws_iam_instance_profile.workers.*.name, 0)}"
+  value       = "${element(aws_iam_role.workers.*.name, 0)}"
 }
 
 output "worker_iam_role_arn" {
   description = "IAM role ID attached to the first EKS worker group"
-  value       = "${element(aws_iam_instance_profile.workers.*.arn, 0)}"
+  value       = "${element(aws_iam_role.workers.*.arn, 0)}"
 }
 
 output "worker_iam_role_names" {

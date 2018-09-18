@@ -157,4 +157,6 @@ locals {
     "x1e.8xlarge"  = true
     "x1e.xlarge"   = true
   }
+
+  worker_iam_role_count = "${var.multiple_worker_group_iam_roles == "" ? 1 : var.worker_group_count}"
 }

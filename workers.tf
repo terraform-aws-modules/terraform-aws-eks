@@ -92,31 +92,31 @@ resource "aws_security_group_rule" "workers_ingress_cluster" {
 resource "aws_iam_role" "workers" {
   name_prefix        = "${aws_eks_cluster.this.name}-${count.index}"
   assume_role_policy = "${data.aws_iam_policy_document.workers_assume_role_policy.json}"
-  count              = "${var.multiple_worker_group_iam_roles == "" ? 1 : var.worker_group_count}"
+  count              = "${local.worker_iam_role_count}"
 }
 
 resource "aws_iam_instance_profile" "workers" {
   name_prefix = "${aws_eks_cluster.this.name}-${count.index}"
   role        = "${element(aws_iam_role.workers.*.name, count.index)}"
-  count       = "${var.multiple_worker_group_iam_roles == "" ? 1 : var.worker_group_count}"
+  count       = "${local.worker_iam_role_count}"
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = "${element(aws_iam_role.workers.*.name, count.index)}"
-  count      = "${var.multiple_worker_group_iam_roles == "" ? 1 : var.worker_group_count}"
+  count      = "${local.worker_iam_role_count}"
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEKS_CNI_Policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = "${element(aws_iam_role.workers.*.name, count.index)}"
-  count      = "${var.multiple_worker_group_iam_roles == "" ? 1 : var.worker_group_count}"
+  count      = "${local.worker_iam_role_count}"
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryReadOnly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = "${element(aws_iam_role.workers.*.name, count.index)}"
-  count      = "${var.multiple_worker_group_iam_roles == "" ? 1 : var.worker_group_count}"
+  count      = "${local.worker_iam_role_count}"
 }
 
 resource "null_resource" "tags_as_list_of_maps" {
@@ -132,7 +132,7 @@ resource "null_resource" "tags_as_list_of_maps" {
 resource "aws_iam_role_policy_attachment" "workers_autoscaling" {
   policy_arn = "${aws_iam_policy.worker_autoscaling.arn}"
   role       = "${element(aws_iam_role.workers.*.name, count.index)}"
-  count      = "${var.multiple_worker_group_iam_roles == "" ? 1 : var.worker_group_count}"
+  count      = "${local.worker_iam_role_count}"
 }
 
 resource "aws_iam_policy" "worker_autoscaling" {
