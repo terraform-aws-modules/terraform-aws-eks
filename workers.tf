@@ -26,7 +26,7 @@ resource "aws_launch_configuration" "workers" {
   name_prefix                 = "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
   associate_public_ip_address = "${lookup(var.worker_groups[count.index], "public_ip", lookup(local.workers_group_defaults, "public_ip"))}"
   security_groups             = ["${local.worker_security_group_id}", "${var.worker_additional_security_group_ids}", "${compact(split(",",lookup(var.worker_groups[count.index],"additional_security_group_ids",lookup(local.workers_group_defaults, "additional_security_group_ids"))))}"]
-  iam_instance_profile        = "${element(aws_iam_instance_profile.workers.*.id, var.multiple_worker_group_iam_roles == "" ? 0 : count.index)}"
+  iam_instance_profile        = "${lookup(var.worker_groups[count.index], "iam_role_id",  lookup(local.workers_group_defaults, "iam_role_id", aws_iam_role.workers.id))}"
   image_id                    = "${lookup(var.worker_groups[count.index], "ami_id", lookup(local.workers_group_defaults, "ami_id"))}"
   instance_type               = "${lookup(var.worker_groups[count.index], "instance_type", lookup(local.workers_group_defaults, "instance_type"))}"
   key_name                    = "${lookup(var.worker_groups[count.index], "key_name", lookup(local.workers_group_defaults, "key_name"))}"
@@ -91,33 +91,28 @@ resource "aws_security_group_rule" "workers_ingress_cluster" {
 }
 
 resource "aws_iam_role" "workers" {
-  name_prefix        = "${aws_eks_cluster.this.name}-${count.index}"
+  name_prefix        = "${aws_eks_cluster.this.name}"
   assume_role_policy = "${data.aws_iam_policy_document.workers_assume_role_policy.json}"
-  count              = "${local.worker_iam_role_count}"
 }
 
 resource "aws_iam_instance_profile" "workers" {
   name_prefix = "${aws_eks_cluster.this.name}-${count.index}"
-  role        = "${element(aws_iam_role.workers.*.name, count.index)}"
-  count       = "${local.worker_iam_role_count}"
+  role        = "${aws_iam_role.workers.name}"
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = "${element(aws_iam_role.workers.*.name, count.index)}"
-  count      = "${local.worker_iam_role_count}"
+  role       = "${aws_iam_role.workers.name}"
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEKS_CNI_Policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = "${element(aws_iam_role.workers.*.name, count.index)}"
-  count      = "${local.worker_iam_role_count}"
+  role       = "${aws_iam_role.workers.name}"
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryReadOnly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = "${element(aws_iam_role.workers.*.name, count.index)}"
-  count      = "${local.worker_iam_role_count}"
+  role       = "${aws_iam_role.workers.name}"
 }
 
 resource "null_resource" "tags_as_list_of_maps" {
@@ -132,8 +127,7 @@ resource "null_resource" "tags_as_list_of_maps" {
 
 resource "aws_iam_role_policy_attachment" "workers_autoscaling" {
   policy_arn = "${aws_iam_policy.worker_autoscaling.arn}"
-  role       = "${element(aws_iam_role.workers.*.name, count.index)}"
-  count      = "${local.worker_iam_role_count}"
+  role       = "${aws_iam_role.workers.name}"
 }
 
 resource "aws_iam_policy" "worker_autoscaling" {

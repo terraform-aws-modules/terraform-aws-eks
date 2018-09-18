@@ -10,7 +10,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - A useful addition (slam dunk, @self 🔥)
-- Worker groups can be created with independent IAM profiles. (from @laverya)
+- Worker groups can be created with a specified IAM profile. (from @laverya)
 
 ### Changed
 

@@ -123,8 +123,3 @@ variable "kubeconfig_name" {
   description = "Override the default name used for items kubeconfig."
   default     = ""
 }
-
-variable "multiple_worker_group_iam_roles" {
-  description = "If provided, an IAM role will be created for each worker group instead of all worker groups sharing the same role."
-  default     = ""
-}

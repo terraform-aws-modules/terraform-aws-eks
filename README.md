@@ -111,7 +111,6 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | map_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
 | map_roles | Additional IAM roles to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
 | map_users | Additional IAM users to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
-| multiple_worker_group_iam_roles | If provided, an IAM role will be created for each worker group instead of all worker groups sharing the same role. | string | `` | no |
 | subnets | A list of subnets to place the EKS cluster and workers within. | list | - | yes |
 | tags | A map of tags to add to all resources. | map | `<map>` | no |
 | vpc_id | VPC where the cluster and workers will be deployed. | string | - | yes |
@@ -134,10 +133,8 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster_version | The Kubernetes server version for the EKS cluster. |
 | config_map_aws_auth | A kubernetes configuration to authenticate to this EKS cluster. |
 | kubeconfig | kubectl config file contents for this EKS cluster. |
-| worker_iam_role_arn | IAM role ID attached to the first EKS worker group |
-| worker_iam_role_arns | IAM role IDs attached to EKS workers |
-| worker_iam_role_name | IAM role name attached to the first EKS worker group |
-| worker_iam_role_names | IAM role names attached to EKS workers |
+| worker_iam_role_arn | default IAM role name for EKS worker groups |
+| worker_iam_role_name | default IAM role name for EKS worker groups |
 | worker_security_group_id | Security group ID attached to the EKS workers. |
 | workers_asg_arns | IDs of the autoscaling groups containing workers. |
 | workers_asg_names | Names of the autoscaling groups containing workers. |
