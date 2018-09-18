@@ -17,11 +17,11 @@ resource "null_resource" "update_config_map_aws_auth" {
 }
 
 data "template_file" "worker_role_arns" {
-  count    = "${local.worker_iam_role_count}"
+  count    = "${var.worker_group_count}"
   template = "${file("${path.module}/templates/worker-role.tpl")}"
 
   vars {
-    worker_role_arn = "${element(aws_iam_role.workers.*.arn, count.index)}"
+    worker_role_arn = "${lookup(var.worker_groups[count.index], "iam_role_id",  lookup(local.workers_group_defaults, "iam_role_id", aws_iam_role.workers.id))}"
   }
 }
 
@@ -29,7 +29,7 @@ data "template_file" "config_map_aws_auth" {
   template = "${file("${path.module}/templates/config-map-aws-auth.yaml.tpl")}"
 
   vars {
-    worker_role_arn = "${join(",", data.template_file.worker_role_arns.*.rendered)}"
+    worker_role_arn = "${join("", distinct(data.template_file.worker_role_arns.*.rendered))}"
     map_users       = "${join("", data.template_file.map_users.*.rendered)}"
     map_roles       = "${join("", data.template_file.map_roles.*.rendered)}"
     map_accounts    = "${join("", data.template_file.map_accounts.*.rendered)}"
