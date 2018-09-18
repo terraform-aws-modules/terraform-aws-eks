@@ -1,6 +1,26 @@
+output "region" {
+  description = "AWS region."
+  value       = "${module.eks.aws_region}"
+}
+
+output "cluster_id" {
+  description = "The name/id of the EKS cluster."
+  value       = "${module.eks.cluster_id}"
+}
+
+output "cluster_arn" {
+  description = "The Amazon Resource Name (ARN) of the cluster."
+  value       = "${module.eks.cluster_arn}"
+}
+
 output "cluster_endpoint" {
   description = "Endpoint for EKS control plane."
   value       = "${module.eks.cluster_endpoint}"
+}
+
+output "cluster_version" {
+  description = "The Kubernetes server version for the EKS cluster."
+  value       = "${module.eks.cluster_version}"
 }
 
 output "cluster_security_group_id" {
@@ -16,9 +36,4 @@ output "kubectl_config" {
 output "config_map_aws_auth" {
   description = ""
   value       = "${module.eks.config_map_aws_auth}"
-}
-
-output "region" {
-  description = "AWS region."
-  value       = "${var.region}"
 }

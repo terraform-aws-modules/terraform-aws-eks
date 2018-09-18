@@ -1,12 +1,17 @@
 locals {
   asg_tags = ["${null_resource.tags_as_list_of_maps.*.triggers}"]
 
+  kubeconfig_name = "${var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name}"
+
   # Followed recommendation http://67bricks.com/blog/?p=85
   # to workaround terraform not supporting short circut evaluation
+  cluster_service_role_name = "${coalesce(join("", aws_iam_role.cluster.*.name), var.cluster_service_role_name)}"
+
   cluster_security_group_id = "${coalesce(join("", aws_security_group.cluster.*.id), var.cluster_security_group_id)}"
 
-  worker_security_group_id = "${coalesce(join("", aws_security_group.workers.*.id), var.worker_security_group_id)}"
-  kubeconfig_name          = "${var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name}"
+  worker_instance_role_name    = "${coalesce(join("", aws_iam_role.workers.*.name), var.worker_instance_role_name)}"
+  worker_instance_profile_name = "${coalesce(join("", aws_iam_instance_profile.workers.*.name), var.worker_instance_profile_name)}"
+  worker_security_group_id     = "${coalesce(join("", aws_security_group.workers.*.id), var.worker_security_group_id)}"
 
   workers_group_defaults_defaults = {
     name                          = "count.index"                   # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.

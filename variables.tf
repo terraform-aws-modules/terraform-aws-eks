@@ -2,6 +2,11 @@ variable "cluster_name" {
   description = "Name of the EKS cluster. Also used as a prefix in names of related resources."
 }
 
+variable "cluster_service_role_name" {
+  description = "If provided, the EKS cluster will use this service role. If not given, a service IAM role will be created with the necessary policies attached."
+  default     = ""
+}
+
 variable "cluster_security_group_id" {
   description = "If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32."
   default     = ""
@@ -84,6 +89,16 @@ variable "workers_group_defaults" {
   description = "Override default values for target groups. See workers_group_defaults_defaults in locals.tf for valid keys."
   type        = "map"
   default     = {}
+}
+
+variable "worker_instance_role_name" {
+  description = "If provided, the EKS worker nodes will spawn using this EC2 instance IAM role. If not given, an instance role will be created with the necessary policies attached."
+  default     = ""
+}
+
+variable "worker_instance_profile_name" {
+  description = "If provided, the EKS worker nodes will spawn using this EC2 instance IAM profile. If not given, an instance profile will be created with the necessary policies attached."
+  default     = ""
 }
 
 variable "worker_security_group_id" {

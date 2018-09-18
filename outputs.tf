@@ -1,13 +1,17 @@
+output "aws_region" {
+  description = "The AWS region of the resources."
+  value       = "${data.aws_region.current.name}"
+}
+
 output "cluster_id" {
   description = "The name/id of the EKS cluster."
   value       = "${aws_eks_cluster.this.id}"
 }
 
-# Though documented, not yet supported
-# output "cluster_arn" {
-#   description = "The Amazon Resource Name (ARN) of the cluster."
-#   value       = "${aws_eks_cluster.this.arn}"
-# }
+output "cluster_arn" {
+  description = "The Amazon Resource Name (ARN) of the cluster."
+  value       = "${aws_eks_cluster.this.arn}"
+}
 
 output "cluster_certificate_authority_data" {
   description = "Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster."
@@ -24,23 +28,33 @@ output "cluster_version" {
   value       = "${aws_eks_cluster.this.version}"
 }
 
+output "cluster_service_role_arn" {
+  description = "Service IAM role ARN attached to the EKS cluster."
+  value       = "${data.aws_iam_role.cluster.arn}"
+}
+
+output "cluster_service_role_name" {
+  description = "Service IAM role name attached to the EKS cluster."
+  value       = "${data.aws_iam_role.cluster.name}"
+}
+
 output "cluster_security_group_id" {
   description = "Security group ID attached to the EKS cluster."
   value       = "${local.cluster_security_group_id}"
 }
 
 output "config_map_aws_auth" {
-  description = "A kubernetes configuration to authenticate to this EKS cluster."
+  description = "A kubernetes configuration to authenticate to the EKS cluster."
   value       = "${data.template_file.config_map_aws_auth.rendered}"
 }
 
 output "kubeconfig" {
-  description = "kubectl config file contents for this EKS cluster."
+  description = "kubectl config file contents for the EKS cluster."
   value       = "${data.template_file.kubeconfig.rendered}"
 }
 
 output "workers_asg_arns" {
-  description = "IDs of the autoscaling groups containing workers."
+  description = "ARNs of the autoscaling groups containing workers."
   value       = "${aws_autoscaling_group.workers.*.arn}"
 }
 
@@ -54,12 +68,22 @@ output "worker_security_group_id" {
   value       = "${local.worker_security_group_id}"
 }
 
-output "worker_iam_role_name" {
-  description = "IAM role name attached to EKS workers"
-  value       = "${aws_iam_role.workers.name}"
+output "worker_instance_role_arn" {
+  description = "Instance IAM role ARN attached to the EKS workers."
+  value       = "${data.aws_iam_role.workers.arn}"
 }
 
-output "worker_iam_role_arn" {
-  description = "IAM role ID attached to EKS workers"
-  value       = "${aws_iam_role.workers.arn}"
+output "worker_instance_role_name" {
+  description = "Instance IAM role name attached to the EKS workers."
+  value       = "${data.aws_iam_role.workers.name}"
+}
+
+output "worker_instance_profile_arn" {
+  description = "EC2 instance IAM role ARN attached to the EKS workers."
+  value       = "${data.aws_iam_instance_profile.workers.arn}"
+}
+
+output "worker_instance_profile_name" {
+  description = "EC2 instance IAM role ARN attached to the EKS workers."
+  value       = "${data.aws_iam_instance_profile.workers.name}"
 }
