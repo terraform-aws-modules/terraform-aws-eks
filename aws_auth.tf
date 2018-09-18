@@ -21,7 +21,7 @@ data "template_file" "worker_role_arns" {
   template = "${file("${path.module}/templates/worker-role.tpl")}"
 
   vars {
-    worker_role_arn = "${lookup(var.worker_groups[count.index], "iam_role_id",  lookup(local.workers_group_defaults, "iam_role_id", "") != "" ? lookup(local.workers_group_defaults, "iam_role_id", "") : aws_iam_instance_profile.workers.id)}"
+    worker_role_arn = "${"${element(aws_iam_instance_profile.workers.*.role, count.index)}"}"
   }
 }
 
