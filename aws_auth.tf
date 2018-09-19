@@ -16,12 +16,15 @@ resource "null_resource" "update_config_map_aws_auth" {
   count = "${var.manage_aws_auth ? 1 : 0}"
 }
 
+data "aws_caller_identity" "current" {}
+
 data "template_file" "worker_role_arns" {
-  count    = "${var.worker_group_count}"
-  template = "${file("${path.module}/templates/worker-role.tpl")}"
+  depends_on = ["aws_launch_configuration.workers"]
+  count      = "${var.worker_group_count}"
+  template   = "${file("${path.module}/templates/worker-role.tpl")}"
 
   vars {
-    worker_role_arn = "${"${element(aws_iam_instance_profile.workers.*.role, count.index)}"}"
+    worker_role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${element(aws_iam_instance_profile.workers.*.role, count.index)}"
   }
 }
 
