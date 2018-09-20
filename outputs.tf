@@ -60,6 +60,6 @@ output "worker_iam_role_name" {
 }
 
 output "worker_iam_role_arn" {
-  description = "default IAM role name for EKS worker groups"
+  description = "default IAM role ARN for EKS worker groups"
   value       = "${aws_iam_role.workers.arn}"
 }

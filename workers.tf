@@ -97,7 +97,7 @@ resource "aws_iam_role" "workers" {
 
 resource "aws_iam_instance_profile" "workers" {
   name_prefix = "${aws_eks_cluster.this.name}"
-  role        = "${lookup(var.worker_groups[count.index], "iam_role_id",  lookup(local.workers_group_defaults, "iam_role_id", "") != "" ? lookup(local.workers_group_defaults, "iam_role_id", "") : aws_iam_role.workers.id)}"
+  role        = "${lookup(var.worker_groups[count.index], "iam_role_id",  lookup(local.workers_group_defaults, "iam_role_id"))}"
   count       = "${var.worker_group_count}"
 }
 
