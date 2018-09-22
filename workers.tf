@@ -10,7 +10,7 @@ resource "aws_autoscaling_group" "workers" {
 
   tags = ["${concat(
     list(
-      map("key", "Name", "value", "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}-eks_asg", "propagate_at_launch", true),
+      map("key", "eksName", "value", "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}-eks_asg", "propagate_at_launch", true),
       map("key", "kubernetes.io/cluster/${aws_eks_cluster.this.name}", "value", "owned", "propagate_at_launch", true),
       map("key", "k8s.io/cluster-autoscaler/${lookup(var.worker_groups[count.index], "autoscaling_enabled", lookup(local.workers_group_defaults, "autoscaling_enabled")) == 1 ? "enabled" : "disabled"  }", "value", "true", "propagate_at_launch", false),
     ),
