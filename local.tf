@@ -30,6 +30,7 @@ locals {
     autoscaling_enabled           = false                           # Sets whether policy and matching tags will be added to allow autoscaling.
     additional_security_group_ids = ""                              # A comman delimited list of additional security group ids to include in worker launch config
     protect_from_scale_in         = false                           # Prevent AWS from scaling in, so that cluster-autoscaler is solely responsible.
+    iam_role_id                   = "${aws_iam_role.workers.id}"    # Use the specified IAM role if set.
   }
 
   workers_group_defaults = "${merge(local.workers_group_defaults_defaults, var.workers_group_defaults)}"
