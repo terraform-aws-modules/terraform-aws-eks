@@ -49,6 +49,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - **Breaking change** Removed `workstation_cidr` variable, http callout and unnecessary security rule. (by @dpiddockcmp)
+  If you are upgrading from 1.4 you should fix state after upgrade: `terraform state rm module.eks.data.http.workstation_external_ip`
 - Can now selectively override keys in `workers_group_defaults` variable rather than callers maintaining a duplicate of the whole map. (by @dpiddockcmp)
 
 ## [[v1.4.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.3.0...v1.4.0)] - 2018-08-02]
