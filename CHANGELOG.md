@@ -10,6 +10,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - A useful addition (slam dunk, @self 🔥)
+- exposed `aws_eks_cluster` create and destroy timeouts (by @RGPosadas)
 
 ### Changed
 
