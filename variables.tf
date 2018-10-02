@@ -123,3 +123,13 @@ variable "kubeconfig_name" {
   description = "Override the default name used for items kubeconfig."
   default     = ""
 }
+
+variable "aws_eks_cluster_create_timeout" {
+  description = "Timeout value when creating the EKS cluster."
+  default = "15m"
+}
+
+variable "aws_eks_cluster_delete_timeout" {
+  description = "Timeout value when deleting the EKS cluster."
+  default = "15m"
+}
