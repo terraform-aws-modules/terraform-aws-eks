@@ -9,8 +9,8 @@ resource "aws_eks_cluster" "this" {
   }
 
   timeouts {
-    create = "${var.aws_eks_cluster_create_timeout}"
-    delete = "${var.aws_eks_cluster_delete_timeout}"
+    create = "${var.cluster_create_timeout}"
+    delete = "${var.cluster_delete_timeout}"
   }
 
   depends_on = [
