@@ -98,6 +98,8 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
+| cluster_create_timeout | Timeout value when creating the EKS cluster. | string | `15m` | no |
+| cluster_delete_timeout | Timeout value when deleting the EKS cluster. | string | `15m` | no |
 | cluster_name | Name of the EKS cluster. Also used as a prefix in names of related resources. | string | - | yes |
 | cluster_security_group_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32. | string | `` | no |
 | cluster_version | Kubernetes version to use for the EKS cluster. | string | `1.10` | no |
