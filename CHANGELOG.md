@@ -10,6 +10,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - A useful addition (slam dunk, @self 🔥)
+- `suspended_processes` to `worker_groups` input (by @bkmeneguello)
 
 ### Changed
 
