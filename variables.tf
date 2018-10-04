@@ -126,10 +126,10 @@ variable "kubeconfig_name" {
 
 variable "cluster_create_timeout" {
   description = "Timeout value when creating the EKS cluster."
-  default = "15m"
+  default     = "15m"
 }
 
 variable "cluster_delete_timeout" {
   description = "Timeout value when deleting the EKS cluster."
-  default = "15m"
+  default     = "15m"
 }
