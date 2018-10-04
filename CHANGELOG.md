@@ -12,6 +12,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - A useful addition (slam dunk, @self 🔥)
 - Worker groups can be created with a specified IAM profile. (from @laverya)
 - exposed `aws_eks_cluster` create and destroy timeouts (by @RGPosadas)
+- Added `suspended_processes` to `worker_groups` input (by @bkmeneguello)
 
 ### Changed
 
