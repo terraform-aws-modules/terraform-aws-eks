@@ -32,7 +32,8 @@ locals {
     protect_from_scale_in         = false                           # Prevent AWS from scaling in, so that cluster-autoscaler is solely responsible.
     iam_role_id                   = "${aws_iam_role.workers.id}"    # Use the specified IAM role if set.
   }
-  worker_group_count = "${length(var.worker_groups)}"
+
+  worker_group_count     = "${length(var.worker_groups)}"
   workers_group_defaults = "${merge(local.workers_group_defaults_defaults, var.workers_group_defaults)}"
 
   ebs_optimized = {

@@ -1,6 +1,4 @@
 resource "aws_autoscaling_group" "workers" {
-
-
   name_prefix           = "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
   desired_capacity      = "${lookup(var.worker_groups[count.index], "asg_desired_capacity", local.workers_group_defaults["asg_desired_capacity"])}"
   max_size              = "${lookup(var.worker_groups[count.index], "asg_max_size", local.workers_group_defaults["asg_max_size"])}"
@@ -36,7 +34,7 @@ resource "aws_launch_configuration" "workers" {
   ebs_optimized               = "${lookup(var.worker_groups[count.index], "ebs_optimized", lookup(local.ebs_optimized, lookup(var.worker_groups[count.index], "instance_type", local.workers_group_defaults["instance_type"]), false))}"
   enable_monitoring           = "${lookup(var.worker_groups[count.index], "enable_monitoring", local.workers_group_defaults["enable_monitoring"])}"
   spot_price                  = "${lookup(var.worker_groups[count.index], "spot_price", local.workers_group_defaults["spot_price"])}"
-  count                 = "${local.worker_group_count}"
+  count                       = "${local.worker_group_count}"
 
   lifecycle {
     create_before_destroy = true
