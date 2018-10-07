@@ -8,7 +8,7 @@ resource "aws_autoscaling_group" "workers" {
   launch_configuration  = "${element(aws_launch_configuration.workers.*.id, count.index)}"
   vpc_zone_identifier   = ["${split(",", coalesce(lookup(var.worker_groups[count.index], "subnets", ""), local.workers_group_defaults["subnets"]))}"]
   protect_from_scale_in = "${lookup(var.worker_groups[count.index], "protect_from_scale_in", local.workers_group_defaults["protect_from_scale_in"])}"
-  count                 = "${var.worker_group_count}"
+  count                 = "${local.worker_group_count}"
 
   tags = ["${concat(
     list(
@@ -36,7 +36,7 @@ resource "aws_launch_configuration" "workers" {
   ebs_optimized               = "${lookup(var.worker_groups[count.index], "ebs_optimized", lookup(local.ebs_optimized, lookup(var.worker_groups[count.index], "instance_type", local.workers_group_defaults["instance_type"]), false))}"
   enable_monitoring           = "${lookup(var.worker_groups[count.index], "enable_monitoring", local.workers_group_defaults["enable_monitoring"])}"
   spot_price                  = "${lookup(var.worker_groups[count.index], "spot_price", local.workers_group_defaults["spot_price"])}"
-  count                       = "${var.worker_group_count}"
+  count                 = "${local.worker_group_count}"
 
   lifecycle {
     create_before_destroy = true
@@ -100,7 +100,7 @@ resource "aws_iam_role" "workers" {
 resource "aws_iam_instance_profile" "workers" {
   name_prefix = "${aws_eks_cluster.this.name}"
   role        = "${lookup(var.worker_groups[count.index], "iam_role_id",  lookup(local.workers_group_defaults, "iam_role_id"))}"
-  count       = "${var.worker_group_count}"
+  count       = "${local.worker_group_count}"
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {

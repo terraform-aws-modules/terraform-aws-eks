@@ -73,13 +73,6 @@ variable "worker_groups" {
     "name" = "default"
   }]
 }
-
-variable "worker_group_count" {
-  description = "The number of maps contained within the worker_groups list."
-  type        = "string"
-  default     = "1"
-}
-
 variable "workers_group_defaults" {
   description = "Override default values for target groups. See workers_group_defaults_defaults in locals.tf for valid keys."
   type        = "map"

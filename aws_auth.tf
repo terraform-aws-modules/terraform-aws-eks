@@ -19,7 +19,7 @@ resource "null_resource" "update_config_map_aws_auth" {
 data "aws_caller_identity" "current" {}
 
 data "template_file" "worker_role_arns" {
-  count    = "${var.worker_group_count}"
+  count    = "${local.worker_group_count}"
   template = "${file("${path.module}/templates/worker-role.tpl")}"
 
   vars {

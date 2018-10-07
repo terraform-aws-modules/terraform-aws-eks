@@ -71,7 +71,7 @@ EOF
 
 data "template_file" "userdata" {
   template = "${file("${path.module}/templates/userdata.sh.tpl")}"
-  count    = "${var.worker_group_count}"
+  count    = "${local.worker_group_count}"
 
   vars {
     cluster_name        = "${aws_eks_cluster.this.name}"
