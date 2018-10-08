@@ -133,7 +133,6 @@ module "eks" {
   tags                                 = "${local.tags}"
   vpc_id                               = "${module.vpc.vpc_id}"
   worker_groups                        = "${local.worker_groups}"
-  worker_group_count                   = "2"
   worker_additional_security_group_ids = ["${aws_security_group.all_worker_mgmt.id}"]
   map_roles                            = "${var.map_roles}"
   map_users                            = "${var.map_users}"
