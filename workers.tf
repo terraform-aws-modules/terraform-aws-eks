@@ -35,6 +35,7 @@ resource "aws_launch_configuration" "workers" {
   ebs_optimized               = "${lookup(var.worker_groups[count.index], "ebs_optimized", lookup(local.ebs_optimized, lookup(var.worker_groups[count.index], "instance_type", local.workers_group_defaults["instance_type"]), false))}"
   enable_monitoring           = "${lookup(var.worker_groups[count.index], "enable_monitoring", local.workers_group_defaults["enable_monitoring"])}"
   spot_price                  = "${lookup(var.worker_groups[count.index], "spot_price", local.workers_group_defaults["spot_price"])}"
+  placement_tenancy           = "${lookup(var.worker_groups[count.index], "placement_tenancy", local.workers_group_defaults["placement_tenancy"])}"
   count                       = "${var.worker_group_count}"
 
   lifecycle {
@@ -87,6 +88,17 @@ resource "aws_security_group_rule" "workers_ingress_cluster" {
   source_security_group_id = "${local.cluster_security_group_id}"
   from_port                = "${var.worker_sg_ingress_from_port}"
   to_port                  = 65535
+  type                     = "ingress"
+  count                    = "${var.worker_security_group_id == "" ? 1 : 0}"
+}
+
+resource "aws_security_group_rule" "workers_ingress_cluster_https" {
+  description              = "Allow pods running extension API servers on port 443 to receive communication from cluster control plane."
+  protocol                 = "tcp"
+  security_group_id        = "${aws_security_group.workers.id}"
+  source_security_group_id = "${local.cluster_security_group_id}"
+  from_port                = 443
+  to_port                  = 443
   type                     = "ingress"
   count                    = "${var.worker_security_group_id == "" ? 1 : 0}"
 }
