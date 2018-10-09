@@ -12,6 +12,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - A useful addition (slam dunk, @self 🔥)
 - Worker groups can be created with a specified IAM profile. (from @laverya)
 - exposed `aws_eks_cluster` create and destroy timeouts (by @RGPosadas)
+- Allow port 443 from EKS service to nodes to run `metrics-server`. (by @max-rocket-internet)
 
 ### Changed
 
