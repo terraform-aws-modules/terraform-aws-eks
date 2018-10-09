@@ -5,6 +5,8 @@ resource "local_file" "config_map_aws_auth" {
 }
 
 resource "null_resource" "update_config_map_aws_auth" {
+  depends_on = ["aws_eks_cluster.this"]
+
   provisioner "local-exec" {
     command = "kubectl apply -f ${var.config_output_path}config-map-aws-auth_${var.cluster_name}.yaml --kubeconfig ${var.config_output_path}kubeconfig_${var.cluster_name}"
   }
