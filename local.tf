@@ -17,6 +17,7 @@ locals {
     asg_min_size                  = "1"                             # Minimum worker capacity in the autoscaling group.
     instance_type                 = "m4.large"                      # Size of the workers instances.
     spot_price                    = ""                              # Cost of spot instance.
+    placement_tenancy             = ""                              # The tenancy of the instance. Valid values are "default" or "dedicated".
     root_volume_size              = "100"                           # root volume size of workers instances.
     root_volume_type              = "gp2"                           # root volume type of workers instances, can be 'standard', 'gp2', or 'io1'
     root_iops                     = "0"                             # The amount of provisioned IOPS. This must be set with a volume_type of "io1".
