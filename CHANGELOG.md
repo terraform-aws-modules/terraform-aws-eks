@@ -5,11 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
-## [[v1.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.6.0...HEAD)] - 2018-09-??]
+## [[v1.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.7.0...HEAD)] - 2018-10-??]
 
 ### Added
 
 - A useful addition (slam dunk, @self 🔥)
+
+### Changed
+
+- A subtle but thoughtful change. (Boomshakalaka, @self 🏀)
+
+## [[v1.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.6.0...v1.7.0)] - 2018-10-09]
+
+### Added
+
 - Worker groups can be created with a specified IAM profile. (from @laverya)
 - exposed `aws_eks_cluster` create and destroy timeouts (by @RGPosadas)
 - exposed `placement_tenancy` for autoscaling group (by @monsterxx03)
