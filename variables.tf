@@ -22,11 +22,6 @@ variable "write_kubeconfig" {
   default     = true
 }
 
-variable "create_elb_service_linked_role" {
-  description = "Whether to create the service linked role for the elasticloadbalancing service. Without this EKS cannot create ELBs."
-  default     = false
-}
-
 variable "manage_aws_auth" {
   description = "Whether to write and apply the aws-auth configmap file."
   default     = true
