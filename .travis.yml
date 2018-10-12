@@ -6,7 +6,7 @@ services:
 - docker
 
 rvm:
-- 2.4.2
+- 2.4.4
 
 env:
   global:
