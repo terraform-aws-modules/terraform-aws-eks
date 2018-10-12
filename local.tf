@@ -70,7 +70,7 @@ locals {
     "d2.4xlarge"   = true
     "d2.8xlarge"   = true
     "f1.2xlarge"   = true
-    "f1.4xlarge"	 = true
+    "f1.4xlarge"   = true
     "f1.16xlarge"  = true
     "g2.2xlarge"   = true
     "g2.8xlarge"   = false
@@ -114,7 +114,7 @@ locals {
     "m5.xlarge"    = true
     "m5.2xlarge"   = true
     "m5.4xlarge"   = true
-    "m5.9xlarge"  = true
+    "m5.9xlarge"   = true
     "m5.18xlarge"  = true
     "m5d.large"    = true
     "m5d.xlarge"   = true
@@ -147,7 +147,7 @@ locals {
     "t2.large"     = false
     "t2.xlarge"    = false
     "t2.2xlarge"   = false
-    "t3.nano"			 = true
+    "t3.nano"      = true
     "t3.micro"     = true
     "t3.small"     = true
     "t3.medium"    = true
