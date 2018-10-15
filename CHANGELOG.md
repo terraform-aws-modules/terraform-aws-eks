@@ -11,6 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 - A useful addition (slam dunk, @self 🔥)
 - `suspended_processes` to `worker_groups` input (by @bkmeneguello)
+- `target_group_arns` to `worker_groups` input (by @zihaoyu)
 
 ### Changed
 
