@@ -13,7 +13,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- A subtle but thoughtful change. (Boomshakalaka, @self 🏀)
+- Removed providers from `main.tf`. (by @max-rocket-internet)
 
 ## [[v1.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.6.0...v1.7.0)] - 2018-10-09]
 
