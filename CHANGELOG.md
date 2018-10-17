@@ -9,10 +9,12 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- A useful addition (slam dunk, @self 🔥)
+- `suspended_processes` to `worker_groups` input (by @bkmeneguello)
 
 ### Changed
 
+- Remove aws_iam_service_linked_role (by @max-rocket-internet)
+- Adjust the order and correct/update the ec2 instance type info. (@chenrui333)
 - Removed providers from `main.tf`. (by @max-rocket-internet)
 
 ## [[v1.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.6.0...v1.7.0)] - 2018-10-09]
@@ -26,7 +28,6 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- A subtle but thoughtful change. (Boomshakalaka, @self 🏀)
 - fix default worker subnets not working (by @erks)
 - fix default worker autoscaling_enabled not working (by @erks)
 - Cosmetic syntax changes to improve readability. (by @max-rocket-internet)

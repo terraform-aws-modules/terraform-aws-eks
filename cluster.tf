@@ -63,8 +63,3 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSServicePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
   role       = "${aws_iam_role.cluster.name}"
 }
-
-resource "aws_iam_service_linked_role" "elasticloadbalancing" {
-  count            = "${var.create_elb_service_linked_role}"
-  aws_service_name = "elasticloadbalancing.amazonaws.com"
-}
