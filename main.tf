@@ -96,5 +96,3 @@
 * MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/LICENSE) for full details.
 */
 
-provider "null" {}
-provider "template" {}

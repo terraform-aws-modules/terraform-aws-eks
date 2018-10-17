@@ -15,6 +15,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 - Remove aws_iam_service_linked_role (by @max-rocket-internet)
 - Adjust the order and correct/update the ec2 instance type info. (@chenrui333)
+- Removed providers from `main.tf`. (by @max-rocket-internet)
 
 ## [[v1.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.6.0...v1.7.0)] - 2018-10-09]
 
