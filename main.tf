@@ -16,7 +16,7 @@
 ** You want to create an EKS cluster and an autoscaling group of workers for the cluster.
 ** You want these resources to exist within security groups that allow communication and coordination. These can be user provided or created within the module.
 ** You've created a Virtual Private Cloud (VPC) and subnets where you intend to put the EKS resources.
-** If using the default variable value (`true`) for `configure_kubectl_session`, it's required that both [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl) (>=1.10) and [`aws-iam-authenticator`](https://github.com/kubernetes-sigs/aws-iam-authenticator#4-set-up-kubectl-to-use-authentication-tokens-provided-by-aws-iam-authenticator-for-kubernetes) are installed and on your shell's PATH.
+** If `manage_aws_auth = true`, it's required that both [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl) (>=1.10) and [`aws-iam-authenticator`](https://github.com/kubernetes-sigs/aws-iam-authenticator#4-set-up-kubectl-to-use-authentication-tokens-provided-by-aws-iam-authenticator-for-kubernetes) are installed and on your shell's PATH.
 
 * ## Usage example
 
@@ -57,9 +57,12 @@
 * 4. Test using `bundle exec kitchen test` from the root of the repo.
 
 * For now, connectivity to the kubernetes cluster is not tested but will be in the
-* future. If `configure_kubectl_session` is set `true`, once the test fixture has
-* converged, you can query the test cluster from that terminal session with
-* `kubectl get nodes --watch --kubeconfig kubeconfig`.
+* future. Once the test fixture has converged, you can query the test cluster from
+* that terminal session with
+* ```bash
+* kubectl get nodes --watch --kubeconfig kubeconfig
+* ```
+* (using default settings `config_output_path = "./"` & `write_kubeconfig = true`)
 
 * ## Doc generation
 
