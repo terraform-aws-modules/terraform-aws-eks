@@ -23,8 +23,8 @@ install:
 - bundle install
 
 before_script:
-- export LATEST_TERRAFORM_VERSION=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | grep tag_name | cut -d '"' -f 4 | cut -c1-)
-- echo "LATEST_TERRAFORM_VERSION is $LATEST_TERRAFORM_VERSION"
+- export LATEST_TERRAFORM_VERSION=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | grep tag_name | cut -d '"' -f 4 | cut -c2-)
+- echo "LATEST_TERRAFORM_VERSION is $LATEST_TERRAFORM_VERSION" # version should be `0.11.10` instead of `v0.11.10`
 - curl --silent --output terraform.zip https://releases.hashicorp.com/terraform/${LATEST_TERRAFORM_VERSION}/terraform_${LATEST_TERRAFORM_VERSION}_linux_amd64.zip
 - unzip terraform.zip ; rm -f terraform.zip; chmod +x terraform
 - mkdir -p ${HOME}/bin ; export PATH=${PATH}:${HOME}/bin; mv terraform ${HOME}/bin/
