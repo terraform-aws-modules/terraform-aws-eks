@@ -1,5 +1,5 @@
 terraform {
-  required_version = "= 0.11.7"
+  required_version = "= 0.11.8"
 }
 
 provider "aws" {
@@ -18,39 +18,46 @@ locals {
 
   # the commented out worker group list below shows an example of how to define
   # multiple worker groups of differing configurations
-  # worker_groups = "${list(
-  #                   map("asg_desired_capacity", "2",
-  #                       "asg_max_size", "10",
-  #                       "asg_min_size", "2",
-  #                       "instance_type", "m4.xlarge",
-  #                       "name", "worker_group_a",
-  #                       "subnets", "${join(",", module.vpc.private_subnets)}",
-  #                   ),
-  #                   map("asg_desired_capacity", "1",
-  #                       "asg_max_size", "5",
-  #                       "asg_min_size", "1",
-  #                       "instance_type", "m4.2xlarge",
-  #                       "name", "worker_group_b",
-  #                       "subnets", "${join(",", module.vpc.private_subnets)}",
-  #                   ),
-  # )}"
+  # worker_groups = [
+  #   {
+  #     asg_desired_capacity = 2
+  #     asg_max_size = 10
+  #     asg_min_size = 2
+  #     instance_type = "m4.xlarge"
+  #     name = "worker_group_a"
+  #     additional_userdata = "echo foo bar"
+  #     subnets = "${join(",", module.vpc.private_subnets)}"
+  #   },
+  #   {
+  #     asg_desired_capacity = 1
+  #     asg_max_size = 5
+  #     asg_min_size = 1
+  #     instance_type = "m4.2xlarge"
+  #     name = "worker_group_b"
+  #     additional_userdata = "echo foo bar"
+  #     subnets = "${join(",", module.vpc.private_subnets)}"
+  #   },
+  # ]
 
-  worker_groups = "${list(
-    map("instance_type","t2.small",
-      "additional_userdata","echo foo bar",
-      "subnets", "${join(",", module.vpc.private_subnets)}",
-    ),
-    map("instance_type","t2.small",
-      "additional_userdata","echo foo bar",
-      "subnets", "${join(",", module.vpc.private_subnets)}",
-      "additional_security_group_ids", "${aws_security_group.worker_group_mgmt_one.id},${aws_security_group.worker_group_mgmt_two.id}"
-    )
-  )}"
-  tags = "${map("Environment", "test",
-                "GithubRepo", "terraform-aws-eks",
-                "GithubOrg", "terraform-aws-modules",
-                "Workspace", "${terraform.workspace}",
-  )}"
+  worker_groups = [
+    {
+      instance_type       = "t2.small"
+      additional_userdata = "echo foo bar"
+      subnets             = "${join(",", module.vpc.private_subnets)}"
+    },
+    {
+      instance_type                 = "t2.small"
+      additional_userdata           = "echo foo bar"
+      subnets                       = "${join(",", module.vpc.private_subnets)}"
+      additional_security_group_ids = "${aws_security_group.worker_group_mgmt_one.id},${aws_security_group.worker_group_mgmt_two.id}"
+    },
+  ]
+  tags = {
+    Environment = "test"
+    GithubRepo  = "terraform-aws-eks"
+    GithubOrg   = "terraform-aws-modules"
+    Workspace   = "${terraform.workspace}"
+  }
 }
 
 resource "random_string" "suffix" {

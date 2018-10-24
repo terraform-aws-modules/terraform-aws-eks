@@ -26,7 +26,7 @@ module "eks" {
   source                = "terraform-aws-modules/eks/aws"
   cluster_name          = "test-eks-cluster"
   subnets               = ["subnet-abcde012", "subnet-bcde012a"]
-  tags                  = "${map("Environment", "test")}"
+  tags                  = {Environment = "test"}
   vpc_id                = "vpc-abcde012"
 }
 ```
@@ -98,6 +98,8 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
+| cluster_create_timeout | Timeout value when creating the EKS cluster. | string | `15m` | no |
+| cluster_delete_timeout | Timeout value when deleting the EKS cluster. | string | `15m` | no |
 | cluster_name | Name of the EKS cluster. Also used as a prefix in names of related resources. | string | - | yes |
 | cluster_security_group_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32. | string | `` | no |
 | cluster_version | Kubernetes version to use for the EKS cluster. | string | `1.10` | no |
@@ -133,8 +135,8 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster_version | The Kubernetes server version for the EKS cluster. |
 | config_map_aws_auth | A kubernetes configuration to authenticate to this EKS cluster. |
 | kubeconfig | kubectl config file contents for this EKS cluster. |
-| worker_iam_role_arn | IAM role ID attached to EKS workers |
-| worker_iam_role_name | IAM role name attached to EKS workers |
+| worker_iam_role_arn | default IAM role ARN for EKS worker groups |
+| worker_iam_role_name | default IAM role name for EKS worker groups |
 | worker_security_group_id | Security group ID attached to the EKS workers. |
 | workers_asg_arns | IDs of the autoscaling groups containing workers. |
 | workers_asg_names | Names of the autoscaling groups containing workers. |

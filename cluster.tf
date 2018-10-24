@@ -8,6 +8,11 @@ resource "aws_eks_cluster" "this" {
     subnet_ids         = ["${var.subnets}"]
   }
 
+  timeouts {
+    create = "${var.cluster_create_timeout}"
+    delete = "${var.cluster_delete_timeout}"
+  }
+
   depends_on = [
     "aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy",
     "aws_iam_role_policy_attachment.cluster_AmazonEKSServicePolicy",

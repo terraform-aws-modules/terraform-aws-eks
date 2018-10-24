@@ -6,6 +6,7 @@ locals {
   cluster_security_group_id = "${coalesce(join("", aws_security_group.cluster.*.id), var.cluster_security_group_id)}"
 
   worker_security_group_id = "${coalesce(join("", aws_security_group.workers.*.id), var.worker_security_group_id)}"
+  default_iam_role_id      = "${element(concat(aws_iam_role.workers.*.id, list("")), 0)}"
   kubeconfig_name          = "${var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name}"
 
   workers_group_defaults_defaults = {
@@ -16,6 +17,7 @@ locals {
     asg_min_size                  = "1"                             # Minimum worker capacity in the autoscaling group.
     instance_type                 = "m4.large"                      # Size of the workers instances.
     spot_price                    = ""                              # Cost of spot instance.
+    placement_tenancy             = ""                              # The tenancy of the instance. Valid values are "default" or "dedicated".
     root_volume_size              = "100"                           # root volume size of workers instances.
     root_volume_type              = "gp2"                           # root volume type of workers instances, can be 'standard', 'gp2', or 'io1'
     root_iops                     = "0"                             # The amount of provisioned IOPS. This must be set with a volume_type of "io1".
@@ -30,6 +32,7 @@ locals {
     autoscaling_enabled           = false                           # Sets whether policy and matching tags will be added to allow autoscaling.
     additional_security_group_ids = ""                              # A comman delimited list of additional security group ids to include in worker launch config
     protect_from_scale_in         = false                           # Prevent AWS from scaling in, so that cluster-autoscaler is solely responsible.
+    iam_role_id                   = "${local.default_iam_role_id}"  # Use the specified IAM role if set.
   }
 
   workers_group_defaults = "${merge(local.workers_group_defaults_defaults, var.workers_group_defaults)}"

@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
-## [[v1.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.6.0...HEAD)] - 2018-09-??]
+## [[v1.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.7.0...HEAD)] - 2018-10-??]
 
 ### Added
 
@@ -14,8 +14,22 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - A subtle but thoughtful change. (Boomshakalaka, @self 🏀)
+
+## [[v1.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.6.0...v1.7.0)] - 2018-10-09]
+
+### Added
+
+- Worker groups can be created with a specified IAM profile. (from @laverya)
+- exposed `aws_eks_cluster` create and destroy timeouts (by @RGPosadas)
+- exposed `placement_tenancy` for autoscaling group (by @monsterxx03)
+- Allow port 443 from EKS service to nodes to run `metrics-server`. (by @max-rocket-internet)
+
+### Changed
+
+- A subtle but thoughtful change. (Boomshakalaka, @self 🏀)
 - fix default worker subnets not working (by @erks)
 - fix default worker autoscaling_enabled not working (by @erks)
+- Cosmetic syntax changes to improve readability. (by @max-rocket-internet)
 - add `protect_from_scale_in` to solve issue #134 (by @kinghajj)
 
 ## [[v1.6.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.5.0...v1.6.0)] - 2018-09-04]
@@ -47,6 +61,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - **Breaking change** Removed `workstation_cidr` variable, http callout and unnecessary security rule. (by @dpiddockcmp)
+  If you are upgrading from 1.4 you should fix state after upgrade: `terraform state rm module.eks.data.http.workstation_external_ip`
 - Can now selectively override keys in `workers_group_defaults` variable rather than callers maintaining a duplicate of the whole map. (by @dpiddockcmp)
 
 ## [[v1.4.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.3.0...v1.4.0)] - 2018-08-02]
