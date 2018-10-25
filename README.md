@@ -15,7 +15,7 @@ Read the [AWS docs on EKS to get connected to the k8s dashboard](https://docs.aw
 * You want to create an EKS cluster and an autoscaling group of workers for the cluster.
 * You want these resources to exist within security groups that allow communication and coordination. These can be user provided or created within the module.
 * You've created a Virtual Private Cloud (VPC) and subnets where you intend to put the EKS resources.
-* If using the default variable value (`true`) for `configure_kubectl_session`, it's required that both [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl) (>=1.10) and [`aws-iam-authenticator`](https://github.com/kubernetes-sigs/aws-iam-authenticator#4-set-up-kubectl-to-use-authentication-tokens-provided-by-aws-iam-authenticator-for-kubernetes) are installed and on your shell's PATH.
+* If `manage_aws_auth = true`, it's required that both [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl) (>=1.10) and [`aws-iam-authenticator`](https://github.com/kubernetes-sigs/aws-iam-authenticator#4-set-up-kubectl-to-use-authentication-tokens-provided-by-aws-iam-authenticator-for-kubernetes) are installed and on your shell's PATH.
 
 ## Usage example
 
@@ -56,9 +56,12 @@ This module has been packaged with [awspec](https://github.com/k1LoW/awspec) tes
 4. Test using `bundle exec kitchen test` from the root of the repo.
 
 For now, connectivity to the kubernetes cluster is not tested but will be in the
-future. If `configure_kubectl_session` is set `true`, once the test fixture has
-converged, you can query the test cluster from that terminal session with
-`kubectl get nodes --watch --kubeconfig kubeconfig`.
+future. Once the test fixture has converged, you can query the test cluster from
+that terminal session with
+```bash
+kubectl get nodes --watch --kubeconfig kubeconfig
+```
+(using default settings `config_output_path = "./"` & `write_kubeconfig = true`)
 
 ## Doc generation
 
@@ -103,7 +106,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster_name | Name of the EKS cluster. Also used as a prefix in names of related resources. | string | - | yes |
 | cluster_security_group_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32. | string | `` | no |
 | cluster_version | Kubernetes version to use for the EKS cluster. | string | `1.10` | no |
-| config_output_path | Determines where config files are placed if using configure_kubectl_session and you want config files to land outside the current working directory. Should end in a forward slash / . | string | `./` | no |
+| config_output_path | Where to save the Kubectl config file (if `write_kubeconfig = true`). Should end in a forward slash `/` . | string | `./` | no |
 | kubeconfig_aws_authenticator_additional_args | Any additional arguments to pass to the authenticator such as the role to assume. e.g. ["-r", "MyEksRole"]. | list | `<list>` | no |
 | kubeconfig_aws_authenticator_command | Command to use to to fetch AWS EKS credentials. | string | `aws-iam-authenticator` | no |
 | kubeconfig_aws_authenticator_env_variables | Environment variables that should be used when executing the authenticator. e.g. { AWS_PROFILE = "eks"}. | map | `<map>` | no |
@@ -121,7 +124,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker_security_group_id | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster. | string | `` | no |
 | worker_sg_ingress_from_port | Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443). | string | `1025` | no |
 | workers_group_defaults | Override default values for target groups. See workers_group_defaults_defaults in locals.tf for valid keys. | map | `<map>` | no |
-| write_kubeconfig | Whether to write a kubeconfig file containing the cluster configuration. | string | `true` | no |
+| write_kubeconfig | Whether to write a Kubectl config file containing the cluster configuration. Saved to `config_output_path`. | string | `true` | no |
 
 ## Outputs
 
