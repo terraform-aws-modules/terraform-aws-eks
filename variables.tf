@@ -102,6 +102,12 @@ variable "kubeconfig_aws_authenticator_command" {
   default     = "aws-iam-authenticator"
 }
 
+variable "kubeconfig_aws_authenticator_command_args" {
+  description = "Default arguments passed to the authenticator command. Defaults to [token -i $cluster_name]."
+  type        = "list"
+  default     = []
+}
+
 variable "kubeconfig_aws_authenticator_additional_args" {
   description = "Any additional arguments to pass to the authenticator such as the role to assume. e.g. [\"-r\", \"MyEksRole\"]."
   type        = "list"
