@@ -11,6 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 - `suspended_processes` to `worker_groups` input (by @bkmeneguello)
 - `target_group_arns` to `worker_groups` input (by @zihaoyu)
+- Add `wait_nodes_max_tries` to wait for nodes to be available before applying the kubernetes configurations (by @rmakram-ims)
 
 ### Changed
 
