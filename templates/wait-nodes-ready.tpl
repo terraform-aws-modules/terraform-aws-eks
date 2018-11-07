@@ -3,8 +3,8 @@
 retrycmd()
 {
     local cmd=$1
-    local max=${{2:-600}}
-    local interval=${{3:-.25}}
+    local max=$${2:-600}
+    local interval=$${3:-.25}
     local status
 
     local iters=0
@@ -15,11 +15,11 @@ retrycmd()
         else
             status=$?
         fi
-        if [ ${{iters}} -ge ${{max}} ]; then
+        if [ $${iters} -ge $${max} ]; then
             return $status
         fi
         iters=$(($iters + 1))
-        sleep ${{interval}}
+        sleep $${interval}
     done
 }
 
