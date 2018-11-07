@@ -29,7 +29,7 @@ data "template_file" "wait_nodes_script" {
 
   vars {
     kubeconfig = "${var.config_output_path}kubeconfig_${var.cluster_name}"
-    max_tries = "${var.wait_nodes_max_tries}"
+    max_tries  = "${var.wait_nodes_max_tries}"
   }
 }
 
