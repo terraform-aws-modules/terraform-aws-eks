@@ -1,29 +1,19 @@
 #!/bin/sh -xe
-
-retrycmd()
-{
-    local cmd=$1
-    local max=$${2:-600}
-    local interval=$${3:-.25}
-    local status
-
-    local iters=0
-    while true
+# Run command repeatedly until it compltes without errors or retry ${max_tries} with a sleep interval of 0.25 seconds
+cmd='kubectl get nodes --kubeconfig ${kubeconfig}'
+iters=0
+while true
     do
         if $cmd &> /dev/null; then
+            status=$?
             break
         else
             status=$?
         fi
-        if [ $${iters} -ge $${max} ]; then
-            return $status
+        if [ $${iters} -ge ${max_tries} ]; then
+            break
         fi
         iters=$(($iters + 1))
-        sleep $${interval}
+        sleep .25
     done
-}
-
-counter=1
-echo -e "Waiting for kubernetes to be ready to apply "
-retrycmd "kubectl get nodes --kubeconfig ${kubeconfig}" ${max_tries}
-echo $?
+exit $status
