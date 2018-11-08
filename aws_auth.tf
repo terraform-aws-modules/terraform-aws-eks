@@ -11,7 +11,7 @@ resource "local_file" "wait_nodes_script" {
 }
 
 resource "null_resource" "wait_nodes" {
-  depends_on = ["aws_eks_cluster.this"]
+  depends_on = ["aws_eks_cluster.this", "local_file.kubeconfig"]
 
   provisioner "local-exec" {
     command = "sh ${var.config_output_path}wait_nodes_script_${var.cluster_name}"
