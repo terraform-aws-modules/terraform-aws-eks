@@ -11,7 +11,7 @@
 
 
 
-## If this is a bug, how to reproduce? Please include a code sample if relevvant.
+## If this is a bug, how to reproduce? Please include a code sample if relevant.
 
 
 
