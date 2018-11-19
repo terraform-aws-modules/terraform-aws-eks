@@ -39,10 +39,22 @@ variable "map_roles" {
   default     = []
 }
 
+variable "map_roles_count" {
+  description = "The count of roles in the map_roles list. Note: this is a workaround for a known issue with passing lists in terraform as variables"
+  type        = "string"
+  default     = 0
+}
+
 variable "map_users" {
   description = "Additional IAM users to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format."
   type        = "list"
   default     = []
+}
+
+variable "map_users_count" {
+  description = "The count of roles in the map_users list. Note: this is a workaround for a known issue with passing lists in terraform as variables"
+  type        = "string"
+  default     = 0
 }
 
 variable "subnets" {

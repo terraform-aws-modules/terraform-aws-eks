@@ -114,7 +114,9 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | manage_aws_auth | Whether to write and apply the aws-auth configmap file. | string | `true` | no |
 | map_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
 | map_roles | Additional IAM roles to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
+| map_roles_count | The count of roles in the map_roles list. Note: this is a workaround for a known issue with passing lists in terraform as variables | string | `<list>` | no |
 | map_users | Additional IAM users to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
+| map_users_count | The count of roles in the map_users list. Note: this is a workaround for a known issue with passing lists in terraform as variables | string | `<list>` | no |
 | subnets | A list of subnets to place the EKS cluster and workers within. | list | - | yes |
 | tags | A map of tags to add to all resources. | map | `<map>` | no |
 | vpc_id | VPC where the cluster and workers will be deployed. | string | - | yes |

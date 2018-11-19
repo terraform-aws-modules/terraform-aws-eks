@@ -41,7 +41,7 @@ data "template_file" "config_map_aws_auth" {
 }
 
 data "template_file" "map_users" {
-  count    = "${length(var.map_users)}"
+  count    = "${var.map_users_count}"
   template = "${file("${path.module}/templates/config-map-aws-auth-map_users.yaml.tpl")}"
 
   vars {
@@ -52,7 +52,7 @@ data "template_file" "map_users" {
 }
 
 data "template_file" "map_roles" {
-  count    = "${length(var.map_roles)}"
+  count    = "${var.map_roles_count}"
   template = "${file("${path.module}/templates/config-map-aws-auth-map_roles.yaml.tpl")}"
 
   vars {
