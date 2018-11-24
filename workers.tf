@@ -1,3 +1,5 @@
+# Worker Groups using Launch Configurations
+
 resource "aws_autoscaling_group" "workers" {
   name_prefix           = "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
   desired_capacity      = "${lookup(var.worker_groups[count.index], "asg_desired_capacity", local.workers_group_defaults["asg_desired_capacity"])}"
