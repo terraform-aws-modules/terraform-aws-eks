@@ -23,8 +23,6 @@ users:
       apiVersion: client.authentication.k8s.io/v1alpha1
       command: ${aws_authenticator_command}
       args:
-        - "token"
-        - "-i"
-        - "${cluster_name}"
+${aws_authenticator_command_args}
 ${aws_authenticator_additional_args}
 ${aws_authenticator_env_variables}
