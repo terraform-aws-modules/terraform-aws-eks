@@ -11,6 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 - `suspended_processes` to `worker_groups` input (by @bkmeneguello)
 - `target_group_arns` to `worker_groups` input (by @zihaoyu)
+- `force_detach_policies` to `aws_iam_role` `cluster` and `workers` (by @marky-mark)
 - `cluster_create_security_group` and `worker_create_security_group`. This allows using computed cluster and worker security groups. (by @rmakram-ims)
 
 ### Changed

@@ -50,8 +50,9 @@ resource "aws_security_group_rule" "cluster_https_worker_ingress" {
 }
 
 resource "aws_iam_role" "cluster" {
-  name_prefix        = "${var.cluster_name}"
-  assume_role_policy = "${data.aws_iam_policy_document.cluster_assume_role_policy.json}"
+  name_prefix           = "${var.cluster_name}"
+  assume_role_policy    = "${data.aws_iam_policy_document.cluster_assume_role_policy.json}"
+  force_detach_policies = true
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
