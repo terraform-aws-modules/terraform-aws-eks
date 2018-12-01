@@ -134,8 +134,3 @@ variable "cluster_delete_timeout" {
   description = "Timeout value when deleting the EKS cluster."
   default     = "15m"
 }
-
-variable "wait_nodes_max_tries" {
-  description = "Wait max tries for nodes to become available. Each try is 0.25 seconds."
-  default     = 60
-}

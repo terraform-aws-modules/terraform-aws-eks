@@ -4,40 +4,11 @@ resource "local_file" "config_map_aws_auth" {
   count    = "${var.manage_aws_auth ? 1 : 0}"
 }
 
-resource "local_file" "wait_nodes_script" {
-  content  = "${data.template_file.wait_nodes_script.rendered}"
-  filename = "${var.config_output_path}wait_nodes_script_${var.cluster_name}"
-  count    = "${var.manage_aws_auth ? 1 : 0}"
-}
-
-resource "null_resource" "wait_nodes" {
-  depends_on = ["aws_eks_cluster.this", "local_file.kubeconfig"]
-
-  provisioner "local-exec" {
-    command = "sh -xe ${var.config_output_path}wait_nodes_script_${var.cluster_name}"
-  }
-
-  triggers {
-    wait_nodes_script_rendered = "${data.template_file.wait_nodes_script.rendered}"
-  }
-
-  count = "${var.manage_aws_auth ? 1 : 0}"
-}
-
-data "template_file" "wait_nodes_script" {
-  template = "${file("${path.module}/templates/wait-nodes-ready.tpl")}"
-
-  vars {
-    kubeconfig = "${var.config_output_path}kubeconfig_${var.cluster_name}"
-    max_tries  = "${var.wait_nodes_max_tries}"
-  }
-}
-
 resource "null_resource" "update_config_map_aws_auth" {
-  depends_on = ["null_resource.wait_nodes"]
+  depends_on = ["aws_eks_cluster.this"]
 
   provisioner "local-exec" {
-    command = "kubectl apply -f ${var.config_output_path}config-map-aws-auth_${var.cluster_name}.yaml --kubeconfig ${var.config_output_path}kubeconfig_${var.cluster_name}"
+    command = "for i in {1..5}; do kubectl apply -f ${var.config_output_path}config-map-aws-auth_${var.cluster_name}.yaml --kubeconfig ${var.config_output_path}kubeconfig_${var.cluster_name} && break || sleep 10; done"
   }
 
   triggers {
