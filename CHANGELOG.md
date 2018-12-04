@@ -5,7 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
-## [[v1.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.7.0...HEAD)] - 2018-10-??]
+## [[v1.9.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.8.0...HEAD)] - 2019-01-??]
+
+### Added
+
+- Write your awesome addition here (by @you)
+
+### Changed
+
+- Write your awesome change here (by @you)
+
+## [[v1.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.7.0...v1.8.0)] - 2018-12-04]
 
 ### Added
 
