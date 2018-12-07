@@ -9,7 +9,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Write your awesome addition here (by @you)
+- New input variables `map_roles_count` and `map_users_count` to allow using computed values as part of `map_roles` and `map_users` configs.
 
 ### Changed
 
