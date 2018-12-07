@@ -40,7 +40,7 @@ variable "map_roles" {
 }
 
 variable "map_roles_count" {
-  description = "The count of roles in the map_roles list. Note: this is a workaround for a known issue with passing lists in terraform as variables"
+  description = "The count of roles in the map_roles list."
   type        = "string"
   default     = 0
 }
@@ -52,7 +52,7 @@ variable "map_users" {
 }
 
 variable "map_users_count" {
-  description = "The count of roles in the map_users list. Note: this is a workaround for a known issue with passing lists in terraform as variables"
+  description = "The count of roles in the map_users list."
   type        = "string"
   default     = 0
 }

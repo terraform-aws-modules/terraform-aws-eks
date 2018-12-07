@@ -109,14 +109,15 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | config_output_path | Where to save the Kubectl config file (if `write_kubeconfig = true`). Should end in a forward slash `/` . | string | `./` | no |
 | kubeconfig_aws_authenticator_additional_args | Any additional arguments to pass to the authenticator such as the role to assume. e.g. ["-r", "MyEksRole"]. | list | `<list>` | no |
 | kubeconfig_aws_authenticator_command | Command to use to to fetch AWS EKS credentials. | string | `aws-iam-authenticator` | no |
+| kubeconfig_aws_authenticator_command_args | Default arguments passed to the authenticator command. Defaults to [token -i $cluster_name]. | list | `<list>` | no |
 | kubeconfig_aws_authenticator_env_variables | Environment variables that should be used when executing the authenticator. e.g. { AWS_PROFILE = "eks"}. | map | `<map>` | no |
 | kubeconfig_name | Override the default name used for items kubeconfig. | string | `` | no |
 | manage_aws_auth | Whether to write and apply the aws-auth configmap file. | string | `true` | no |
 | map_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
 | map_roles | Additional IAM roles to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
-| map_roles_count | The count of roles in the map_roles list. Note: this is a workaround for a known issue with passing lists in terraform as variables | string | `<list>` | no |
+| map_roles_count | The count of roles in the map_roles list. | string | `0` | no |
 | map_users | Additional IAM users to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
-| map_users_count | The count of roles in the map_users list. Note: this is a workaround for a known issue with passing lists in terraform as variables | string | `<list>` | no |
+| map_users_count | The count of roles in the map_users list. | string | `0` | no |
 | subnets | A list of subnets to place the EKS cluster and workers within. | list | - | yes |
 | tags | A map of tags to add to all resources. | map | `<map>` | no |
 | vpc_id | VPC where the cluster and workers will be deployed. | string | - | yes |
@@ -144,3 +145,4 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker_security_group_id | Security group ID attached to the EKS workers. |
 | workers_asg_arns | IDs of the autoscaling groups containing workers. |
 | workers_asg_names | Names of the autoscaling groups containing workers. |
+
