@@ -25,6 +25,12 @@ variable "map_roles" {
   ]
 }
 
+variable "map_roles_count" {
+  description = "The count of roles in the map_roles list."
+  type        = "list"
+  default     = 1
+}
+
 variable "map_users" {
   description = "Additional IAM users to add to the aws-auth configmap."
   type        = "list"
@@ -41,4 +47,10 @@ variable "map_users" {
       group    = "system:masters"
     },
   ]
+}
+
+variable "map_users_count" {
+  description = "The count of roles in the map_users list."
+  type        = "list"
+  default     = 1
 }
