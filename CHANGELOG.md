@@ -9,7 +9,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Write your awesome addition here (by @you)
+- Added ability to choose local-exec interpreter (by @rothandrew)
 
 ### Changed
 
