@@ -66,11 +66,11 @@ kubectl get nodes --watch --kubeconfig kubeconfig
 ## Doc generation
 
 Documentation should be modified within `main.tf` and generated using [terraform-docs](https://github.com/segmentio/terraform-docs).
-Generate them like so:
 
-```bash
-go get github.com/segmentio/terraform-docs
-terraform-docs md ./ | cat -s | tail -r | tail -n +2 | tail -r > README.md
+Install it with `go get github.com/segmentio/terraform-docs` or `brew install terraform-docs` and then use it to generate the `README.md` file:
+
+```
+terraform-docs --with-aggregate-type-defaults md ./ | cat -s | tail -r | tail -n +2 | tail -r > README.md
 ```
 
 ## Contributing
@@ -112,7 +112,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | kubeconfig\_aws\_authenticator\_command\_args | Default arguments passed to the authenticator command. Defaults to [token -i $cluster_name]. | list | `<list>` | no |
 | kubeconfig\_aws\_authenticator\_env\_variables | Environment variables that should be used when executing the authenticator. e.g. { AWS_PROFILE = "eks"}. | map | `<map>` | no |
 | kubeconfig\_name | Override the default name used for items kubeconfig. | string | `` | no |
-| local\_exec\_interpreter | Command to run for local-exec resources. Must be a shell-style interpreter. If you are on Windows Git Bash is a good choice. Defaults to ["/bin/sh", "-c"] | list | `<list>` | no |
+| local\_exec\_interpreter | Command to run for local-exec resources. Must be a shell-style interpreter. If you are on Windows Git Bash is a good choice. | list | `<list>` | no |
 | manage\_aws\_auth | Whether to write and apply the aws-auth configmap file. | string | `true` | no |
 | map\_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
 | map\_accounts\_count | The count of accounts in the map_accounts list. | string | `0` | no |

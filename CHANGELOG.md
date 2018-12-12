@@ -13,7 +13,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Added ability to choose local-exec interpreter (by @rothandrew)
 
 ### Changed
-- Write your awesome change here (by @you)
+- Added `--with-aggregate-type-defaults` option to terraform-docs (by @max-rocket-internet)
 
 ## [[v1.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.7.0...v1.8.0)] - 2018-12-04]
 
