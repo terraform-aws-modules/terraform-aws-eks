@@ -33,6 +33,12 @@ variable "map_accounts" {
   default     = []
 }
 
+variable "map_accounts_count" {
+  description = "The count of accounts in the map_accounts list."
+  type        = "string"
+  default     = 0
+}
+
 variable "map_roles" {
   description = "Additional IAM roles to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format."
   type        = "list"

@@ -12,6 +12,12 @@ variable "map_accounts" {
   ]
 }
 
+variable "map_accounts_count" {
+  description = "The count of accounts in the map_accounts list."
+  type        = "string"
+  default     = 1
+}
+
 variable "map_roles" {
   description = "Additional IAM roles to add to the aws-auth configmap."
   type        = "list"

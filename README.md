@@ -115,6 +115,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | local_exec_interpreter | Command to run for local-exec resources. Must be a shell-style interpreter. If you are on Windows Git Bash is a good choice. Defaults to ["/bin/sh", "-c"] | list | `<list>` | no |
 | manage_aws_auth | Whether to write and apply the aws-auth configmap file. | string | `true` | no |
 | map_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
+| map_accounts_count | The count of accounts in the map_accounts list. | string | `0` | no |
 | map_roles | Additional IAM roles to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |
 | map_roles_count | The count of roles in the map_roles list. | string | `0` | no |
 | map_users | Additional IAM users to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `<list>` | no |

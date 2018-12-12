@@ -140,4 +140,5 @@ module "eks" {
   map_users                            = "${var.map_users}"
   map_users_count                      = "${var.map_users_count}"
   map_accounts                         = "${var.map_accounts}"
+  map_accounts_count                   = "${var.map_accounts_count}"
 }

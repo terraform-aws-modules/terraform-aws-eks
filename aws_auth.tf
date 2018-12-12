@@ -64,7 +64,7 @@ data "template_file" "map_roles" {
 }
 
 data "template_file" "map_accounts" {
-  count    = "${length(var.map_accounts)}"
+  count    = "${var.map_accounts_count}"
   template = "${file("${path.module}/templates/config-map-aws-auth-map_accounts.yaml.tpl")}"
 
   vars {
