@@ -15,7 +15,7 @@ variable "map_accounts" {
 variable "map_accounts_count" {
   description = "The count of accounts in the map_accounts list."
   type        = "string"
-  default     = 1
+  default     = 2
 }
 
 variable "map_roles" {
@@ -58,5 +58,5 @@ variable "map_users" {
 variable "map_users_count" {
   description = "The count of roles in the map_users list."
   type        = "string"
-  default     = 1
+  default     = 2
 }
