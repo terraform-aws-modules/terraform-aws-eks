@@ -67,11 +67,11 @@
 * ## Doc generation
 
 * Documentation should be modified within `main.tf` and generated using [terraform-docs](https://github.com/segmentio/terraform-docs).
-* Generate them like so:
-
-* ```bash
-* go get github.com/segmentio/terraform-docs
-* terraform-docs md ./ | cat -s | tail -r | tail -n +2 | tail -r > README.md
+*
+* Install it with `go get github.com/segmentio/terraform-docs` or `brew install terraform-docs` and then use it to generate the `README.md` file:
+*
+* ```
+* terraform-docs --with-aggregate-type-defaults md ./ | cat -s | tail -r | tail -n +2 | tail -r > README.md
 * ```
 
 * ## Contributing
