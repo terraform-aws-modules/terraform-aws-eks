@@ -8,7 +8,8 @@ resource "null_resource" "update_config_map_aws_auth" {
   depends_on = ["aws_eks_cluster.this"]
 
   provisioner "local-exec" {
-    command = "for i in {1..5}; do kubectl apply -f ${var.config_output_path}config-map-aws-auth_${var.cluster_name}.yaml --kubeconfig ${var.config_output_path}kubeconfig_${var.cluster_name} && break || sleep 10; done"
+    command     = "for i in {1..5}; do kubectl apply -f ${var.config_output_path}config-map-aws-auth_${var.cluster_name}.yaml --kubeconfig ${var.config_output_path}kubeconfig_${var.cluster_name} && break || sleep 10; done"
+    interpreter = ["${var.local_exec_interpreter}"]
   }
 
   triggers {
