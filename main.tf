@@ -71,7 +71,7 @@
 * Install it with `go get github.com/segmentio/terraform-docs` or `brew install terraform-docs` and then use it to generate the `README.md` file:
 *
 * ```
-* terraform-docs --with-aggregate-type-defaults md ./ | cat -s | tail -r | tail -n +2 | tail -r > README.md
+* terraform-docs --with-aggregate-type-defaults md ./ | sed -e '$ d' -e 'N;/^\n$/D;P;D' > README.md
 * ```
 
 * ## Contributing
