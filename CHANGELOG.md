@@ -5,13 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
-## [[v1.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.7.0...HEAD)] - 2018-10-??]
+## [[v1.9.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.8.0...HEAD)] - 2019-01-??]
+
+### Added
+
+- Added ability to choose local-exec interpreter (by @rothandrew)
+
+### Changed
+
+- Write your awesome change here (by @you)
+
+## [[v1.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.7.0...v1.8.0)] - 2018-12-04]
 
 ### Added
 
 - `suspended_processes` to `worker_groups` input (by @bkmeneguello)
 - `target_group_arns` to `worker_groups` input (by @zihaoyu)
 - `force_detach_policies` to `aws_iam_role` `cluster` and `workers` (by @marky-mark)
+- Added sleep while trying to apply the kubernetes configurations if failed, up to 50 seconds (by @rmakram-ims)
 - `cluster_create_security_group` and `worker_create_security_group`. This allows using computed cluster and worker security groups. (by @rmakram-ims)
 
 ### Changed
