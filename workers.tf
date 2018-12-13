@@ -20,7 +20,7 @@ resource "aws_autoscaling_group" "workers" {
   }"]
 
   lifecycle {
-    ignore_changes = ["desired_capacity"]
+    ignore_changes = ["desired_capacity", "target_group_arns"]
   }
 }
 
