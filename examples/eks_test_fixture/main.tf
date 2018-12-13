@@ -136,6 +136,9 @@ module "eks" {
   worker_group_count                   = "2"
   worker_additional_security_group_ids = ["${aws_security_group.all_worker_mgmt.id}"]
   map_roles                            = "${var.map_roles}"
+  map_roles_count                      = "${var.map_roles_count}"
   map_users                            = "${var.map_users}"
+  map_users_count                      = "${var.map_users_count}"
   map_accounts                         = "${var.map_accounts}"
+  map_accounts_count                   = "${var.map_accounts_count}"
 }
