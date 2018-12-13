@@ -5,14 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
-## [[v1.9.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.8.0...HEAD)] - 2019-01-??]
+
+## [[v2.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.8.0...HEAD)] - 2019-01-??]
 
 ### Added
-
+- (Breaking Change) New input variables `map_accounts_count`, `map_roles_count` and `map_users_count` to allow using computed values as part of `map_accounts`, `map_roles` and `map_users` configs (by @chili-man on behalf of OpenGov).
 - Added ability to choose local-exec interpreter (by @rothandrew)
 
 ### Changed
-
 - Added `--with-aggregate-type-defaults` option to terraform-docs (by @max-rocket-internet)
 
 ## [[v1.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.7.0...v1.8.0)] - 2018-12-04]
