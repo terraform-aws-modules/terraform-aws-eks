@@ -101,6 +101,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
+| cluster\_create\_security\_group | Whether to create a security group for the cluster or attach the cluster to `cluster_security_group_id`. | string | `true` | no |
 | cluster\_create\_timeout | Timeout value when creating the EKS cluster. | string | `15m` | no |
 | cluster\_delete\_timeout | Timeout value when deleting the EKS cluster. | string | `15m` | no |
 | cluster\_name | Name of the EKS cluster. Also used as a prefix in names of related resources. | string | - | yes |
@@ -124,6 +125,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | tags | A map of tags to add to all resources. | map | `<map>` | no |
 | vpc\_id | VPC where the cluster and workers will be deployed. | string | - | yes |
 | worker\_additional\_security\_group\_ids | A list of additional security group ids to attach to worker instances | list | `<list>` | no |
+| worker\_create\_security\_group | Whether to create a security group for the workers or attach the workers to `worker_security_group_id`. | string | `true` | no |
 | worker\_group\_count | The number of maps contained within the worker_groups list. | string | `1` | no |
 | worker\_groups | A list of maps defining worker group configurations. See workers_group_defaults for valid keys. | list | `<list>` | no |
 | worker\_security\_group\_id | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster. | string | `` | no |

@@ -158,3 +158,13 @@ variable "local_exec_interpreter" {
   type        = "list"
   default     = ["/bin/sh", "-c"]
 }
+
+variable "cluster_create_security_group" {
+  description = "Whether to create a security group for the cluster or attach the cluster to `cluster_security_group_id`."
+  default     = true
+}
+
+variable "worker_create_security_group" {
+  description = "Whether to create a security group for the workers or attach the workers to `worker_security_group_id`."
+  default     = true
+}
