@@ -21,7 +21,7 @@ data "aws_ami" "eks_worker" {
     values = ["amazon-eks-node-${var.cluster_version}-v*"]
   }
 
-  most_recent = "${var.worker_ami_most_recent}"
+  most_recent = true
   owners      = ["602401143452"]
 }
 

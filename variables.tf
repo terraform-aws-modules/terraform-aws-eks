@@ -115,11 +115,6 @@ variable "worker_sg_ingress_from_port" {
   default     = "1025"
 }
 
-variable "worker_ami_most_recent" {
-  description = "Whether to use most recent worker AMI from AWS. Only applies to the default AMI and for the cluster version."
-  default     = true
-}
-
 variable "kubeconfig_aws_authenticator_command" {
   description = "Command to use to to fetch AWS EKS credentials."
   default     = "aws-iam-authenticator"
