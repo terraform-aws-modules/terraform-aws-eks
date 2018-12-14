@@ -1,16 +1,13 @@
-# See http://pre-commit.com for more information
-# See http://pre-commit.com/hooks.html for more hooks
 repos:
-- repo: git://github.com/antonbabenko/pre-commit-terraform
-  rev: v1.7.1
-  hooks:
-    - id: terraform_fmt
-    # - id: terraform_docs
-- repo: git://github.com/pre-commit/pre-commit-hooks
-  rev: v1.2.3
-  hooks:
-    - id: check-merge-conflict
-    -   id: trailing-whitespace
-    # -   id: end-of-file-fixer
-    -   id: check-yaml
-    -   id: check-added-large-files
+  - repo: git://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.7.4
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_docs
+  - repo: git://github.com/pre-commit/pre-commit-hooks
+    rev: v2.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-added-large-files
