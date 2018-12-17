@@ -105,7 +105,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster\_delete\_timeout | Timeout value when deleting the EKS cluster. | string | `15m` | no |
 | cluster\_name | Name of the EKS cluster. Also used as a prefix in names of related resources. | string | - | yes |
 | cluster\_security\_group\_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32. | string | `` | no |
-| cluster\_version | Kubernetes version to use for the EKS cluster. | string | `1.10` | no |
+| cluster\_version | Kubernetes version to use for the EKS cluster. | string | `1.11` | no |
 | config\_output\_path | Where to save the Kubectl config file (if `write_kubeconfig = true`). Should end in a forward slash `/` . | string | `./` | no |
 | kubeconfig\_aws\_authenticator\_additional\_args | Any additional arguments to pass to the authenticator such as the role to assume. e.g. ["-r", "MyEksRole"]. | list | `[]` | no |
 | kubeconfig\_aws\_authenticator\_command | Command to use to to fetch AWS EKS credentials. | string | `aws-iam-authenticator` | no |
