@@ -25,6 +25,9 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 - Added `--with-aggregate-type-defaults` option to terraform-docs (by @max-rocket-internet)
 - Updated AMI ID filtering to only filter AMIs from current cluster k8s version (by @max-rocket-internet)
+- Added `pre-commit-terraform` git hook to automatically create documentation of inputs/outputs (by @antonbabenko)
+- Travis fixes (by @RothAndrew)
+- Fixed some Windows compatibility issues (by @RothAndrew)
 
 ## [[v1.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.7.0...v1.8.0)] - 2018-12-04]
 
