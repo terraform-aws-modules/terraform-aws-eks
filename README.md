@@ -22,12 +22,22 @@ Read the [AWS docs on EKS to get connected to the k8s dashboard](https://docs.aw
 A full example leveraging other community modules is contained in the [examples/eks_test_fixture directory](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_test_fixture). Here's the gist of using it via the Terraform registry:
 
 ```hcl
-module "eks" {
-  source                = "terraform-aws-modules/eks/aws"
-  cluster_name          = "test-eks-cluster"
-  subnets               = ["subnet-abcde012", "subnet-bcde012a"]
-  tags                  = {Environment = "test"}
-  vpc_id                = "vpc-abcde012"
+module "my-cluster" {
+  source       = "terraform-aws-modules/eks/aws"
+  cluster_name = "my-cluster"
+  subnets      = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
+  vpc_id       = "vpc-1234556abcdef"
+
+  worker_groups = [
+    {
+      instance_type = "m4.large"
+      asg_max_size  = 5
+    }
+  ]
+
+  tags = {
+    environment = "test"
+  }
 }
 ```
 
