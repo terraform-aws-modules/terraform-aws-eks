@@ -23,7 +23,12 @@ variable "write_kubeconfig" {
 }
 
 variable "manage_aws_auth" {
-  description = "Whether to write and apply the aws-auth configmap file."
+  description = "Whether to apply the aws-auth configmap file."
+  default     = true
+}
+
+variable "write_aws_auth_config" {
+  description = "Whether to write the aws-auth configmap file."
   default     = true
 }
 
