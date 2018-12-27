@@ -11,14 +11,13 @@ resource "null_resource" "update_config_map_aws_auth" {
     working_dir = "${path.module}"
 
     command = <<EOS
-mkfifo aws_auth_configmap kube_config & \
 for i in {1..5}; do \
-echo "${null_resource.update_config_map_aws_auth.triggers.kube_config_map_rendered}" > kube_config & \
-echo "${null_resource.update_config_map_aws_auth.triggers.config_map_rendered}" > aws_auth_configmap & \
-kubectl apply -f aws_auth_configmap --kubeconfig kube_config && break || \
+echo "${null_resource.update_config_map_aws_auth.triggers.kube_config_map_rendered}" > kube_config.yaml & \
+echo "${null_resource.update_config_map_aws_auth.triggers.config_map_rendered}" > aws_auth_configmap.yaml & \
+kubectl apply -f aws_auth_configmap.yaml --kubeconfig kube_config.yaml && break || \
 sleep 10; \
 done; \
-rm -f aws_auth_configmap kube_config;
+rm aws_auth_configmap.yaml kube_config.yaml;
 EOS
 
     interpreter = ["${var.local_exec_interpreter}"]
