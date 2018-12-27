@@ -131,6 +131,11 @@ resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryRea
   role       = "${aws_iam_role.workers.name}"
 }
 
+resource "aws_iam_role_policy_attachment" "node-AmazonEC2RoleforSSM" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+  role       = "${aws_iam_role.workers.name}"
+}
+
 resource "null_resource" "tags_as_list_of_maps" {
   count = "${length(keys(var.tags))}"
 
