@@ -14,6 +14,7 @@ resource "null_resource" "update_config_map_aws_auth" {
 
   triggers {
     config_map_rendered = "${data.template_file.config_map_aws_auth.rendered}"
+    endpoint            = "${aws_eks_cluster.this.endpoint}"
   }
 
   count = "${var.manage_aws_auth ? 1 : 0}"

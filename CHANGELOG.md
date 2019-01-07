@@ -12,6 +12,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
  - Removed invalid action from worker_autoscaling iam policy
+ - Updated the `update_config_map_aws_auth` resource to trigger when the EKS cluster endpoint changes. This likely
+   means that a new cluster was spun up so our ConfigMap won't exist (fixes #234) (by @elatt)
 
 ## [[v2.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.8.0...v2.0.0)] - 2018-12-14]
 
