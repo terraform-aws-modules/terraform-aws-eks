@@ -99,6 +99,12 @@ variable "workers_group_defaults" {
   default     = {}
 }
 
+variable "worker_group_ebs_block_device_count" {
+  description = "The number of ebs block devices configured for each worke group."
+  type        = "string"
+  default     = "0"
+}
+
 variable "worker_security_group_id" {
   description = "If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster."
   default     = ""

@@ -39,6 +39,36 @@ locals {
   #   },
   # ]
 
+  # it is possible to attach between 0-2 ebs block devices to
+  # worker groups; note that all worker groups must have the
+  # same number of block devices
+  #
+  # worker_groups = [
+  #   {
+  #     asg_desired_capacity = 2
+  #     asg_max_size = 10
+  #     asg_min_size = 2
+  #     instance_type = "m4.xlarge"
+  #     name = "worker_group_a"
+  #     additional_userdata = "echo foo bar"
+  #     subnets = "${join(",", module.vpc.private_subnets)}"
+  #     ebs_block_device_0_device_name = "/dev/xvdb"
+  #     ebs_block_device_1_device_name = "/dev/xvdc"
+  #   },
+  #   {
+  #     asg_desired_capacity = 1
+  #     asg_max_size = 5
+  #     asg_min_size = 1
+  #     instance_type = "m4.2xlarge"
+  #     name = "worker_group_b"
+  #     additional_userdata = "echo foo bar"
+  #     subnets = "${join(",", module.vpc.private_subnets)}"
+  #     ebs_block_device_0_device_name = "/dev/xvdb"
+  #     ebs_block_device_1_device_name = "/dev/xvdc"
+  #   },
+  # ]
+  # worker_group_ebs_block_device_count = 2
+
   worker_groups = [
     {
       instance_type       = "t2.small"
