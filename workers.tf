@@ -145,7 +145,6 @@ resource "aws_launch_configuration" "workers_with_two_ebs_block_devices" {
   }
 }
 
-
 resource "aws_security_group" "workers" {
   name_prefix = "${aws_eks_cluster.this.name}"
   description = "Security group for all nodes in the cluster."

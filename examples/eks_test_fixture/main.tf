@@ -39,6 +39,7 @@ locals {
   #   },
   # ]
 
+
   # it is possible to attach between 0-2 ebs block devices to
   # worker groups; note that all worker groups must have the
   # same number of block devices
