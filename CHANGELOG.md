@@ -7,11 +7,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[v2.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.0.0...HEAD)] - 2019-01-??]
 
-### Added
- - Write your awesome addition here (by @you)
-
 ### Changed
- - Removed invalid action from worker_autoscaling iam policy
+- Removed invalid action from worker_autoscaling iam policy (by @marcelloromani)
 
 ## [[v2.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.8.0...v2.0.0)] - 2018-12-14]
 
