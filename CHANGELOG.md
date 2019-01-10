@@ -11,7 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
  - Write your awesome addition here (by @you)
 
 ### Changed
- - Write your awesome change here (by @you)
+ - Removed invalid action from worker_autoscaling iam policy
 
 ## [[v2.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.8.0...v2.0.0)] - 2018-12-14]
 
@@ -33,6 +33,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+-  Support for using AWS Launch Templates to define autoscaling groups (by @skang0601)
 - `suspended_processes` to `worker_groups` input (by @bkmeneguello)
 - `target_group_arns` to `worker_groups` input (by @zihaoyu)
 - `force_detach_policies` to `aws_iam_role` `cluster` and `workers` (by @marky-mark)
@@ -41,6 +42,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- new variables worker_groups_launch_template and worker_group_count_launch_template (by @skang0601)
 - Remove aws_iam_service_linked_role (by @max-rocket-internet)
 - Adjust the order and correct/update the ec2 instance type info. (@chenrui333)
 - Removed providers from `main.tf`. (by @max-rocket-internet)
