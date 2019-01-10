@@ -1,4 +1,5 @@
 resource "aws_eks_cluster" "this" {
+  count    = "${var.module_enabled ? 1 : 0}"
   name     = "${var.cluster_name}"
   role_arn = "${aws_iam_role.cluster.arn}"
   version  = "${var.cluster_version}"
