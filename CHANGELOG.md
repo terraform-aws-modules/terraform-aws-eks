@@ -11,7 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
  - Write your awesome addition here (by @you)
 
 ### Changed
- - Write your awesome change here (by @you)
+ - Removed invalid action from worker_autoscaling iam policy
 
 ## [[v2.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.8.0...v2.0.0)] - 2018-12-14]
 
