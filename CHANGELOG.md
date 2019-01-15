@@ -12,7 +12,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Write your awesome addition here (by @you)
 
 ### Changed
-
+- Updated the `update_config_map_aws_auth` resource to trigger when the EKS cluster endpoint changes. This likely means that a new cluster was spun up so our ConfigMap won't exist (fixes #234) (by @elatt)
 - Removed invalid action from worker_autoscaling iam policy (by @marcelloromani)
 - Fixed zsh-specific syntax in retry loop for aws auth config map (by @marcelloromani)
 - Fix: fail deployment if applying the aws auth config map still fails after 10 attempts (by @marcelloromani)
