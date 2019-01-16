@@ -5,13 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
-## [[v2.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.0.0...HEAD)] - 2019-01-??]
+### Next release
 
-### Added
+#### [[v2.2.0?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.1.0...HEAD)] - 2019-02-??]
+
+##### Added
 
 - Write your awesome addition here (by @you)
 
+##### Changed
+
+- Write your awesome change here (by @you)
+
+# History
+
+## [[v2.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.0.0...v2.1.0)] - 2019-01-15]
+
+### Added
+
+- Initial support for worker groups based on Launch Templates (by @skang0601)
+
 ### Changed
+
 - Updated the `update_config_map_aws_auth` resource to trigger when the EKS cluster endpoint changes. This likely means that a new cluster was spun up so our ConfigMap won't exist (fixes #234) (by @elatt)
 - Removed invalid action from worker_autoscaling iam policy (by @marcelloromani)
 - Fixed zsh-specific syntax in retry loop for aws auth config map (by @marcelloromani)
