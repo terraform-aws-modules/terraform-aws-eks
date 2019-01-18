@@ -11,6 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ##### Added
 
+- Add `use_max_pods` (by @knqyf263)
 - Write your awesome addition here (by @you)
 
 ##### Changed
@@ -52,7 +53,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
--  Support for using AWS Launch Templates to define autoscaling groups (by @skang0601)
+- Support for using AWS Launch Templates to define autoscaling groups (by @skang0601)
 - `suspended_processes` to `worker_groups` input (by @bkmeneguello)
 - `target_group_arns` to `worker_groups` input (by @zihaoyu)
 - `force_detach_policies` to `aws_iam_role` `cluster` and `workers` (by @marky-mark)
@@ -96,7 +97,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 - allow a custom AMI to be specified as a default (by @erks)
 - bugfix for above change (by @max-rocket-internet)
-- **Breaking change** Removed support for `eks-worker-*` AMI. The cluster specifying a custom AMI based off of `eks-worker-*` AMI will have to rebuild the AMI from `amazon-eks-node-*`.  (by @erks)
+- **Breaking change** Removed support for `eks-worker-*` AMI. The cluster specifying a custom AMI based off of `eks-worker-*` AMI will have to rebuild the AMI from `amazon-eks-node-*`. (by @erks)
 - **Breaking change** Removed `kubelet_node_labels` worker group option in favor of `kubelet_extra_args`. (by @erks)
 
 ## [[v1.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.4.0...v1.5.0)] - 2018-08-30]
