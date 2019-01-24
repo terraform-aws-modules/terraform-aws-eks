@@ -39,6 +39,23 @@ locals {
   #   },
   # ]
 
+  # the commented out worker group tags below shows an example of how to define
+  # custom tags for the worker groups ASG
+  # worker_group_tags = [
+  #   [
+  #     {
+  #       key   = "k8s.io/cluster-autoscaler/node-template/taint/nvidia.com/gpu"
+  #       value = "gpu:NoSchedule"
+  #     },
+  #   ],
+  #   [
+  #     {
+  #       key   = "k8s.io/cluster-autoscaler/node-template/taint/nvidia.com/gpu"
+  #       value = "gpu:NoSchedule"
+  #     },
+  #   ],
+  # ]
+
   worker_groups = [
     {
       # This will launch an autoscaling group with only On-Demand instances
