@@ -11,11 +11,11 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ##### Added
 
-- Write your awesome addition here (by @you)
+- Ability to configure force_delete for the worker group ASG (by @stefansedich)
 
 ##### Changed
 
-- Write your awesome change here (by @you)
+- Change worker group ASG to use create_before_destroy (by @stefansedich)
 
 # History
 

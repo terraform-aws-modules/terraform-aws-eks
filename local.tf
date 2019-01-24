@@ -15,6 +15,7 @@ locals {
     asg_desired_capacity          = "1"                             # Desired worker capacity in the autoscaling group.
     asg_max_size                  = "3"                             # Maximum worker capacity in the autoscaling group.
     asg_min_size                  = "1"                             # Minimum worker capacity in the autoscaling group.
+    asg_force_delete              = false                           # Enable forced deletion for the autoscaling group.
     instance_type                 = "m4.large"                      # Size of the workers instances.
     spot_price                    = ""                              # Cost of spot instance.
     placement_tenancy             = ""                              # The tenancy of the instance. Valid values are "default" or "dedicated".
@@ -46,6 +47,7 @@ locals {
     asg_desired_capacity                     = "1"                                           # Desired worker capacity in the autoscaling group.
     asg_max_size                             = "3"                                           # Maximum worker capacity in the autoscaling group.
     asg_min_size                             = "1"                                           # Minimum worker capacity in the autoscaling group.
+    asg_force_delete                         = false                                         # Enable forced deletion for the autoscaling group.
     instance_type                            = "m4.large"                                    # Size of the workers instances.
     override_instance_type                   = "t3.large"                                    # Need to specify at least one additional instance type for mixed instances policy. The instance_type holds  higher priority for on demand instances.
     on_demand_allocation_strategy            = "prioritized"                                 # Strategy to use when launching on-demand instances. Valid values: prioritized.
