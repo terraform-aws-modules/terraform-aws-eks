@@ -39,6 +39,7 @@ locals {
   #   },
   # ]
 
+
   # the commented out worker group tags below shows an example of how to define
   # custom tags for the worker groups ASG
   # worker_group_tags = [
