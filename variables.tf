@@ -105,7 +105,7 @@ variable "worker_group_tags" {
   description = "A list of lists containing maps defining extra tags to be applied to the worker group ASG."
   type        = "list"
 
-  default = []
+  default = [[]]
 }
 
 variable "worker_groups_launch_template" {
