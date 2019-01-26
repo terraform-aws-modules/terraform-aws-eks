@@ -135,7 +135,7 @@ variable "worker_group_launch_template_tags" {
   description = "A list of lists containing maps defining extra tags to be applied to the worker group template ASG."
   type        = "list"
 
-  default = []
+  default = [[]]
 }
 
 variable "worker_security_group_id" {
