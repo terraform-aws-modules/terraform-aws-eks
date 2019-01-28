@@ -104,7 +104,10 @@ variable "workers_group_defaults" {
 variable "worker_group_tags" {
   description = "A map defining extra tags to be applied to the worker group ASG."
   type        = "map"
-  default     = { default = [] }
+
+  default = {
+    default = []
+  }
 }
 
 variable "worker_groups_launch_template" {
@@ -133,7 +136,10 @@ variable "workers_group_launch_template_defaults" {
 variable "worker_group_launch_template_tags" {
   description = "A map defining extra tags to be applied to the worker group template ASG."
   type        = "map"
-  default     = { default = [] }
+
+  default = {
+    default = []
+  }
 }
 
 variable "worker_security_group_id" {
