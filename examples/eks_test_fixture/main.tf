@@ -42,20 +42,20 @@ locals {
 
   # the commented out worker group tags below shows an example of how to define
   # custom tags for the worker groups ASG
-  # worker_group_tags = [
-  #   [
+  # worker_group_tags = {
+  #   "worker_group_a" = [
   #     {
   #       key   = "k8s.io/cluster-autoscaler/node-template/taint/nvidia.com/gpu"
   #       value = "gpu:NoSchedule"
   #     },
   #   ],
-  #   [
+  #   "worker_group_b" = [
   #     {
   #       key   = "k8s.io/cluster-autoscaler/node-template/taint/nvidia.com/gpu"
   #       value = "gpu:NoSchedule"
   #     },
   #   ],
-  # ]
+  # }
 
   worker_groups = [
     {

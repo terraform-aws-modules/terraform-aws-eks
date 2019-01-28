@@ -20,7 +20,7 @@ resource "aws_autoscaling_group" "workers" {
       map("key", "k8s.io/cluster-autoscaler/${lookup(var.worker_groups[count.index], "autoscaling_enabled", local.workers_group_defaults["autoscaling_enabled"]) == 1 ? "enabled" : "disabled"  }", "value", "true", "propagate_at_launch", false)
     ),
     local.asg_tags,
-    list(var.worker_group_tags[length(var.worker_group_tags) > count.index ? count.index : "0"]))
+    var.worker_group_tags[contains(keys(var.worker_group_tags), "${lookup(var.worker_groups[count.index], "name", count.index)}") ? "${lookup(var.worker_groups[count.index], "name", count.index)}" : "default"])
   }"]
 
   lifecycle {
