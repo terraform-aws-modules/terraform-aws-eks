@@ -16,6 +16,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ##### Changed
 
 - Change worker group ASG to use create_before_destroy (by @stefansedich)
+- Fixed a bug where worker group defaults were being used for launch template user data (by @leonsodhi-lf)
 
 # History
 
