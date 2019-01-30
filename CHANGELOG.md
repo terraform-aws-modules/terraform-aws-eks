@@ -13,10 +13,13 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 - Ability to configure force_delete for the worker group ASG (by @stefansedich)
 - Ability to configure worker group ASG tags (by @stefansedich)
+- Added EBS optimized mapping for the g3s.xlarge instance type (by @stefansedich)
+- `enabled_metrics` input (by @zanitete)
 
 ##### Changed
 
 - Change worker group ASG to use create_before_destroy (by @stefansedich)
+- Fixed a bug where worker group defaults were being used for launch template user data (by @leonsodhi-lf)
 
 # History
 
