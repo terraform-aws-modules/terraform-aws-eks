@@ -45,14 +45,16 @@ locals {
   # worker_group_tags = {
   #   worker_group_a = [
   #     {
-  #       key   = "k8s.io/cluster-autoscaler/node-template/taint/nvidia.com/gpu"
-  #       value = "gpu:NoSchedule"
+  #       key                 = "k8s.io/cluster-autoscaler/node-template/taint/nvidia.com/gpu"
+  #       value               = "gpu:NoSchedule"
+  #       propagate_at_launch = true
   #     },
   #   ],
   #   worker_group_b = [
   #     {
-  #       key   = "k8s.io/cluster-autoscaler/node-template/taint/nvidia.com/gpu"
-  #       value = "gpu:NoSchedule"
+  #       key                 = "k8s.io/cluster-autoscaler/node-template/taint/nvidia.com/gpu"
+  #       value               = "gpu:NoSchedule"
+  #       propagate_at_launch = true
   #     },
   #   ],
   # }
