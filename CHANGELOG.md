@@ -12,6 +12,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ##### Added
 
 - Ability to configure force_delete for the worker group ASG (by @stefansedich)
+- Added EBS optimized mapping for the g3s.xlarge instance type (by @stefansedich)
 - `enabled_metrics` input (by @zanitete)
 
 ##### Changed

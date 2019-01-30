@@ -117,6 +117,7 @@ locals {
     "f1.16xlarge"  = true
     "g2.2xlarge"   = true
     "g2.8xlarge"   = false
+    "g3s.xlarge"   = true
     "g3.4xlarge"   = true
     "g3.8xlarge"   = true
     "g3.16xlarge"  = true
