@@ -101,6 +101,15 @@ variable "workers_group_defaults" {
   default     = {}
 }
 
+variable "worker_group_tags" {
+  description = "A map defining extra tags to be applied to the worker group ASG."
+  type        = "map"
+
+  default = {
+    default = []
+  }
+}
+
 variable "worker_groups_launch_template" {
   description = "A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys."
   type        = "list"
@@ -122,6 +131,15 @@ variable "workers_group_launch_template_defaults" {
   description = "Override default values for target groups. See workers_group_defaults_defaults in locals.tf for valid keys."
   type        = "map"
   default     = {}
+}
+
+variable "worker_group_launch_template_tags" {
+  description = "A map defining extra tags to be applied to the worker group template ASG."
+  type        = "map"
+
+  default = {
+    default = []
+  }
 }
 
 variable "worker_security_group_id" {
