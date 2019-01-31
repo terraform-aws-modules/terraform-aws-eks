@@ -7,18 +7,20 @@ resource "local_file" "config_map_aws_auth" {
 resource "null_resource" "update_config_map_aws_auth" {
   depends_on = ["aws_eks_cluster.this"]
 
+  # Cluster may not yet be fully running when this executes, so retry
+  # saving config map up to 10 times
+  # We use shell tricks to pass both the kubeconfig and config map via
+  # heredocs without writing files to disk; we pass them in using file
+  # descriptors 3 and 4 respectively
   provisioner "local-exec" {
-    working_dir = "${path.module}"
-
-    command = <<EOS
-for i in {1..5}; do \
-echo "${null_resource.update_config_map_aws_auth.triggers.kube_config_map_rendered}" > kube_config.yaml & \
-echo "${null_resource.update_config_map_aws_auth.triggers.config_map_rendered}" > aws_auth_configmap.yaml & \
-kubectl apply -f aws_auth_configmap.yaml --kubeconfig kube_config.yaml && break || \
-sleep 10; \
-done; \
-rm aws_auth_configmap.yaml kube_config.yaml;
-EOS
+    command = <<EOT
+for i in `seq 1 10`; do kubectl apply -f /dev/fd/3 --kubeconfig /dev/fd/4 3<<'EOF1' 4<<'EOF2' && exit 0 || sleep 10
+${data.template_file.config_map_aws_auth.rendered}
+EOF1
+${data.template_file.kubeconfig.rendered}
+EOF2
+done; exit 1
+EOT
 
     interpreter = ["${var.local_exec_interpreter}"]
   }

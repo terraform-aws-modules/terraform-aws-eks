@@ -20,7 +20,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 - Change worker group ASG to use create_before_destroy (by @stefansedich)
 - Fixed a bug where worker group defaults were being used for launch template user data (by @leonsodhi-lf)
-- Managed_aws_auth option is true, the aws-auth configmap file is no longer created, and write_aws_auth_config must be set to true to generate config_map. (by @yutachaos)
+- Managed_aws_auth option is true, the aws-auth configmap file is no longer created, and write_aws_auth_config must be set to true to generate config_map. (by @yutachaos and @mbarrien)
 
 # History
 
