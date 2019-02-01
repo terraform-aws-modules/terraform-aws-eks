@@ -1,20 +1,32 @@
 resource "local_file" "config_map_aws_auth" {
   content  = "${data.template_file.config_map_aws_auth.rendered}"
   filename = "${var.config_output_path}config-map-aws-auth_${var.cluster_name}.yaml"
-  count    = "${var.manage_aws_auth ? 1 : 0}"
+  count    = "${var.write_aws_auth_config ? 1 : 0}"
 }
 
 resource "null_resource" "update_config_map_aws_auth" {
   depends_on = ["aws_eks_cluster.this"]
 
   provisioner "local-exec" {
-    command     = "for i in `seq 1 10`; do kubectl apply -f ${var.config_output_path}config-map-aws-auth_${var.cluster_name}.yaml --kubeconfig ${var.config_output_path}kubeconfig_${var.cluster_name} && exit 0 || sleep 10; done; exit 1"
+    working_dir = "${path.module}"
+
+    command = <<EOS
+for i in `seq 1 10`; do \
+echo "${null_resource.update_config_map_aws_auth.triggers.kube_config_map_rendered}" > kube_config.yaml & \
+echo "${null_resource.update_config_map_aws_auth.triggers.config_map_rendered}" > aws_auth_configmap.yaml & \
+kubectl apply -f aws_auth_configmap.yaml --kubeconfig kube_config.yaml && break || \
+sleep 10; \
+done; \
+rm aws_auth_configmap.yaml kube_config.yaml;
+EOS
+
     interpreter = ["${var.local_exec_interpreter}"]
   }
 
   triggers {
-    config_map_rendered = "${data.template_file.config_map_aws_auth.rendered}"
-    endpoint            = "${aws_eks_cluster.this.endpoint}"
+    kube_config_map_rendered = "${data.template_file.kubeconfig.rendered}"
+    config_map_rendered      = "${data.template_file.config_map_aws_auth.rendered}"
+    endpoint                 = "${aws_eks_cluster.this.endpoint}"
   }
 
   count = "${var.manage_aws_auth ? 1 : 0}"
