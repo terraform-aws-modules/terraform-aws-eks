@@ -114,6 +114,7 @@ resource "aws_security_group_rule" "workers_ingress_cluster_https" {
 resource "aws_iam_role" "workers" {
   name_prefix           = "${aws_eks_cluster.this.name}"
   assume_role_policy    = "${data.aws_iam_policy_document.workers_assume_role_policy.json}"
+  permissions_boundary  = "${var.permissions_boundary}"
   force_detach_policies = true
 }
 

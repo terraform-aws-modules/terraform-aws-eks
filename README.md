@@ -130,6 +130,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | map\_roles\_count | The count of roles in the map_roles list. | string | `"0"` | no |
 | map\_users | Additional IAM users to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `[]` | no |
 | map\_users\_count | The count of roles in the map_users list. | string | `"0"` | no |
+| permissions\_boundary | If provided, all IAM roles will be created with this permissions boundary attached. | string | `""` | no |
 | subnets | A list of subnets to place the EKS cluster and workers within. | list | n/a | yes |
 | tags | A map of tags to add to all resources. | map | `{}` | no |
 | vpc\_id | VPC where the cluster and workers will be deployed. | string | n/a | yes |
