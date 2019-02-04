@@ -11,6 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ##### Added
 
+- Ability to specify a permissions_boundary for IAM roles (by @dylanhellems)
 - Ability to configure force_delete for the worker group ASG (by @stefansedich)
 - Ability to configure worker group ASG tags (by @stefansedich)
 - Added EBS optimized mapping for the g3s.xlarge instance type (by @stefansedich)
