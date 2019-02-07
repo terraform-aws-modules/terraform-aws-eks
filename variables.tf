@@ -216,3 +216,8 @@ variable "worker_create_security_group" {
   description = "Whether to create a security group for the workers or attach the workers to `worker_security_group_id`."
   default     = true
 }
+
+variable "permissions_boundary" {
+  description = "If provided, all IAM roles will be created with this permissions boundary attached."
+  default     = ""
+}
