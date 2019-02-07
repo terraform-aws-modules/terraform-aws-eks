@@ -39,6 +39,11 @@ output "kubeconfig" {
   value       = "${data.template_file.kubeconfig.rendered}"
 }
 
+output "kubeconfig_filename" {
+  description = "The filename of the generated kubectl config."
+  value       = "${local_file.kubeconfig.*.filename}"
+}
+
 output "workers_asg_arns" {
   description = "IDs of the autoscaling groups containing workers."
   value       = "${concat(aws_autoscaling_group.workers.*.arn, aws_autoscaling_group.workers_launch_template.*.arn)}"
