@@ -5,11 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
-### Next release
+## Next release
 
-#### [[v2.2.0?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.1.0...HEAD)] - 2019-02-??]
+## [[v2.3.0?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.0...HEAD)] - 2019-03-??]
 
-##### Added
+### Added
+
+- Write your awesome addition here (by @you)
+
+### Changed
+
+ - Write your awesome change here (by @you)
+
+# History
+
+## [[v2.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.1.0...v2.2.0)] - 2019-02-07]
+
+### Added
 
 - Ability to specify a permissions_boundary for IAM roles (by @dylanhellems)
 - Ability to configure force_delete for the worker group ASG (by @stefansedich)
@@ -18,13 +30,11 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - `enabled_metrics` input (by @zanitete)
 - write_aws_auth_config to input (by @yutachaos)
 
-##### Changed
+### Changed
 
 - Change worker group ASG to use create_before_destroy (by @stefansedich)
 - Fixed a bug where worker group defaults were being used for launch template user data (by @leonsodhi-lf)
 - Managed_aws_auth option is true, the aws-auth configmap file is no longer created, and write_aws_auth_config must be set to true to generate config_map. (by @yutachaos)
-
-# History
 
 ## [[v2.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.0.0...v2.1.0)] - 2019-01-15]
 
