@@ -19,6 +19,12 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 # History
 
+## [[v2.2.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.0...v2.2.1)] - 2019-02-18]
+
+### Added
+
+- Added output for generated kubeconfig filename (by @syst0m)
+
 ## [[v2.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.1.0...v2.2.0)] - 2019-02-07]
 
 ### Added
