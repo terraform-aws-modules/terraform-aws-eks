@@ -41,7 +41,7 @@ output "kubeconfig" {
 
 output "kubeconfig_filename" {
   description = "The filename of the generated kubectl config."
-  value       = "${local_file.kubeconfig.*.filename}"
+  value       = "${element(concat(local_file.kubeconfig.*.filename, list("")), 0)}"
 }
 
 output "workers_asg_arns" {
