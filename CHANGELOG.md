@@ -19,6 +19,12 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 # History
 
+## [[v2.2.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.1...v2.2.2)] - 2019-02-25]
+
+### Added
+
+- Ability to specify a path for IAM roles (by @tekn0ir)
+
 ## [[v2.2.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.0...v2.2.1)] - 2019-02-18]
 
 ### Added
