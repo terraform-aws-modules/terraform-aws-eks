@@ -12,6 +12,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Write your awesome addition here (by @you)
+- Adding ebs encryption for workers launched using workers_launch_template (by @russki)
 
 ### Changed
 
