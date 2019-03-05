@@ -144,8 +144,8 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker\_groups\_launch\_template | A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys. | list | `[ { "name": "default" } ]` | no |
 | worker\_security\_group\_id | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster. | string | `""` | no |
 | worker\_sg\_ingress\_from\_port | Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443). | string | `"1025"` | no |
-| workers\_group\_defaults | Override default values for target groups. See workers_group_defaults_defaults in locals.tf for valid keys. | map | `{}` | no |
-| workers\_group\_launch\_template\_defaults | Override default values for target groups. See workers_group_defaults_defaults in locals.tf for valid keys. | map | `{}` | no |
+| workers\_group\_defaults | Override default values for target groups. See workers_group_defaults_defaults in local.tf for valid keys. | map | `{}` | no |
+| workers\_group\_launch\_template\_defaults | Override default values for target groups. See workers_group_defaults_defaults in local.tf for valid keys. | map | `{}` | no |
 | write\_aws\_auth\_config | Whether to write the aws-auth configmap file. | string | `"true"` | no |
 | write\_kubeconfig | Whether to write a Kubectl config file containing the cluster configuration. Saved to `config_output_path`. | string | `"true"` | no |
 
