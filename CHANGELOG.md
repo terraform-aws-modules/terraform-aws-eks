@@ -11,7 +11,9 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Write your awesome addition here (by @you)
+- Added output for generated kubeconfig filename (by @syst0m)
+- Added outputs for cluster role ARN and name (by @spingel)
+- Added optional name filter variable to be able to pin worker AMI to a release (by @max-rocket-internet)
 
 ### Changed
 
@@ -20,11 +22,6 @@ project adheres to [Semantic Versioning](http://semver.org/).
 # History
 
 ## [[v2.2.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.0...v2.2.1)] - 2019-02-18]
-
-### Added
-
-- Added output for generated kubeconfig filename (by @syst0m)
-- Added outputs for cluster role ARN and name (by @spingel)
 
 ## [[v2.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.1.0...v2.2.0)] - 2019-02-07]
 
