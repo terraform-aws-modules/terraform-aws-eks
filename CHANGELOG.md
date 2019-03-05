@@ -24,6 +24,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Added output for generated kubeconfig filename (by @syst0m)
+- Added outputs for cluster role ARN and name (by @spingel)
 
 ## [[v2.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.1.0...v2.2.0)] - 2019-02-07]
 
