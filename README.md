@@ -135,6 +135,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | tags | A map of tags to add to all resources. | map | `{}` | no |
 | vpc\_id | VPC where the cluster and workers will be deployed. | string | n/a | yes |
 | worker\_additional\_security\_group\_ids | A list of additional security group ids to attach to worker instances | list | `[]` | no |
+| worker\_ami\_name\_filter | Additional name filter for AWS EKS worker AMI. Default behaviour will get latest for the cluster_version but could be set to a release from amazon-eks-ami, e.g. "v20190220" | string | `"v*"` | no |
 | worker\_create\_security\_group | Whether to create a security group for the workers or attach the workers to `worker_security_group_id`. | string | `"true"` | no |
 | worker\_group\_count | The number of maps contained within the worker_groups list. | string | `"1"` | no |
 | worker\_group\_launch\_template\_count | The number of maps contained within the worker_groups_launch_template list. | string | `"0"` | no |
@@ -155,9 +156,9 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 |------|-------------|
 | cluster\_certificate\_authority\_data | Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster. |
 | cluster\_endpoint | The endpoint for your EKS Kubernetes API. |
+| cluster\_iam\_role\_arn | IAM role ARN of the EKS cluster. |
+| cluster\_iam\_role\_name | IAM role name of the EKS cluster. |
 | cluster\_id | The name/id of the EKS cluster. |
-| cluster\_role\_arn | IAM role ARN of the EKS cluster role. |
-| cluster\_role\_name | IAM role name of the EKS cluster role. |
 | cluster\_security\_group\_id | Security group ID attached to the EKS cluster. |
 | cluster\_version | The Kubernetes server version for the EKS cluster. |
 | config\_map\_aws\_auth | A kubernetes configuration to authenticate to this EKS cluster. |

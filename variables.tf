@@ -101,7 +101,7 @@ variable "worker_group_count" {
 }
 
 variable "workers_group_defaults" {
-  description = "Override default values for target groups. See workers_group_defaults_defaults in locals.tf for valid keys."
+  description = "Override default values for target groups. See workers_group_defaults_defaults in local.tf for valid keys."
   type        = "map"
   default     = {}
 }
@@ -133,7 +133,7 @@ variable "worker_group_launch_template_count" {
 }
 
 variable "workers_group_launch_template_defaults" {
-  description = "Override default values for target groups. See workers_group_defaults_defaults in locals.tf for valid keys."
+  description = "Override default values for target groups. See workers_group_defaults_defaults in local.tf for valid keys."
   type        = "map"
   default     = {}
 }
@@ -150,6 +150,11 @@ variable "worker_group_launch_template_tags" {
 variable "worker_security_group_id" {
   description = "If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster."
   default     = ""
+}
+
+variable "worker_ami_name_filter" {
+  description = "Additional name filter for AWS EKS worker AMI. Default behaviour will get latest for the cluster_version but could be set to a release from amazon-eks-ami, e.g. \"v20190220\""
+  default     = "v*"
 }
 
 variable "worker_additional_security_group_ids" {
