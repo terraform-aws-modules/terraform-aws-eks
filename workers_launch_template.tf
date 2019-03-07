@@ -105,4 +105,5 @@ resource "aws_iam_instance_profile" "workers_launch_template" {
   name_prefix = "${aws_eks_cluster.this.name}"
   role        = "${lookup(var.worker_groups_launch_template[count.index], "iam_role_id",  lookup(local.workers_group_launch_template_defaults, "iam_role_id"))}"
   count       = "${var.worker_group_launch_template_count}"
+  path        = "${var.iam_path}"
 }
