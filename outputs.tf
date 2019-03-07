@@ -34,6 +34,16 @@ output "config_map_aws_auth" {
   value       = "${data.template_file.config_map_aws_auth.rendered}"
 }
 
+output "cluster_iam_role_name" {
+  description = "IAM role name of the EKS cluster."
+  value       = "${aws_iam_role.cluster.name}"
+}
+
+output "cluster_iam_role_arn" {
+  description = "IAM role ARN of the EKS cluster."
+  value       = "${aws_iam_role.cluster.arn}"
+}
+
 output "kubeconfig" {
   description = "kubectl config file contents for this EKS cluster."
   value       = "${data.template_file.kubeconfig.rendered}"
