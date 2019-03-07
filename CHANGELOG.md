@@ -11,6 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- Added "ec2:DescribeLaunchTemplateVersions" action to worker instance role (by @skang0601)
 - Adding ebs encryption for workers launched using workers_launch_template (by @russki)
 - Added output for generated kubeconfig filename (by @syst0m)
 - Added outputs for cluster role ARN and name (by @spingel)
