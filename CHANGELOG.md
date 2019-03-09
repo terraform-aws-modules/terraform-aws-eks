@@ -11,6 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- "k8s.io/cluster-autoscaler/{cluster-name}" and "k8s.io/cluster-autoscaler/node-template/resources/ephemeral-storage" tags for autoscaling groups (by @tbarrella)
 - Added "ec2:DescribeLaunchTemplateVersions" action to worker instance role (by @skang0601)
 - Adding ebs encryption for workers launched using workers_launch_template (by @russki)
 - Added output for generated kubeconfig filename (by @syst0m)
