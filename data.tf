@@ -18,11 +18,13 @@ data "aws_iam_policy_document" "workers_assume_role_policy" {
 data "aws_ami" "eks_worker" {
   filter {
     name   = "name"
-    values = ["amazon-eks-node-${var.cluster_version}-v*"]
+    values = ["amazon-eks-node-${var.cluster_version}-${var.worker_ami_name_filter}"]
   }
 
   most_recent = true
-  owners      = ["602401143452"]
+
+  # Owner ID of AWS EKS team
+  owners = ["602401143452"]
 }
 
 data "aws_iam_policy_document" "cluster_assume_role_policy" {

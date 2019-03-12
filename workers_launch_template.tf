@@ -96,6 +96,8 @@ resource "aws_launch_template" "workers_launch_template" {
       volume_size           = "${lookup(var.worker_groups_launch_template[count.index], "root_volume_size", local.workers_group_launch_template_defaults["root_volume_size"])}"
       volume_type           = "${lookup(var.worker_groups_launch_template[count.index], "root_volume_type", local.workers_group_launch_template_defaults["root_volume_type"])}"
       iops                  = "${lookup(var.worker_groups_launch_template[count.index], "root_iops", local.workers_group_launch_template_defaults["root_iops"])}"
+      encrypted             = "${lookup(var.worker_groups_launch_template[count.index], "root_encrypted", local.workers_group_launch_template_defaults["root_encrypted"])}"
+      kms_key_id            = "${lookup(var.worker_groups_launch_template[count.index], "kms_key_id", local.workers_group_launch_template_defaults["kms_key_id"])}"
       delete_on_termination = true
     }
   }
@@ -105,4 +107,5 @@ resource "aws_iam_instance_profile" "workers_launch_template" {
   name_prefix = "${aws_eks_cluster.this.name}"
   role        = "${lookup(var.worker_groups_launch_template[count.index], "iam_role_id",  lookup(local.workers_group_launch_template_defaults, "iam_role_id"))}"
   count       = "${var.worker_group_launch_template_count}"
+  path        = "${var.iam_path}"
 }

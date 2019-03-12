@@ -11,7 +11,11 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Write your awesome addition here (by @you)
+- Added "ec2:DescribeLaunchTemplateVersions" action to worker instance role (by @skang0601)
+- Adding ebs encryption for workers launched using workers_launch_template (by @russki)
+- Added output for generated kubeconfig filename (by @syst0m)
+- Added outputs for cluster role ARN and name (by @spingel)
+- Added optional name filter variable to be able to pin worker AMI to a release (by @max-rocket-internet)
 
 ### Changed
 
@@ -19,11 +23,13 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 # History
 
-## [[v2.2.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.0...v2.2.1)] - 2019-02-18]
+## [[v2.2.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.1...v2.2.2)] - 2019-02-25]
 
 ### Added
 
-- Added output for generated kubeconfig filename (by @syst0m)
+- Ability to specify a path for IAM roles (by @tekn0ir)
+
+## [[v2.2.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.0...v2.2.1)] - 2019-02-18]
 
 ## [[v2.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.1.0...v2.2.0)] - 2019-02-07]
 
