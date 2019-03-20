@@ -143,6 +143,12 @@ resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryRea
   role       = "${aws_iam_role.workers.name}"
 }
 
+resource "aws_iam_role_policy_attachment" "workers_additional_policies" {
+  count      = "${var.workers_additional_policies_count}"
+  role       = "${aws_iam_role.workers.name}"
+  policy_arn = "${var.workers_additional_policies[count.index]}"
+}
+
 resource "null_resource" "tags_as_list_of_maps" {
   count = "${length(keys(var.tags))}"
 
