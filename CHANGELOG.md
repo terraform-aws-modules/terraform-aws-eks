@@ -7,10 +7,23 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v2.3.0?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.0...HEAD)] - 2019-03-??]
+## [[v2.4.0?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.3.0...HEAD)] - 2019-04-??]
 
 ### Added
 
+- Write your awesome addition here (by @you)
+
+### Changed
+
+- Write your awesome change here (by @you)
+
+# History
+
+## [[v2.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.1...v2.3.0)] - 2019-03-20]
+
+### Added
+
+- Allow additional policies to be attached to worker nodes (by @rottenbytes)
 - Ability to specify a placement group for each worker group (by @matheuss)
 - "k8s.io/cluster-autoscaler/{cluster-name}" and "k8s.io/cluster-autoscaler/node-template/resources/ephemeral-storage" tags for autoscaling groups (by @tbarrella)
 - Added "ec2:DescribeLaunchTemplateVersions" action to worker instance role (by @skang0601)
@@ -18,12 +31,6 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Added output for generated kubeconfig filename (by @syst0m)
 - Added outputs for cluster role ARN and name (by @spingel)
 - Added optional name filter variable to be able to pin worker AMI to a release (by @max-rocket-internet)
-
-### Changed
-
- - Write your awesome change here (by @you)
-
-# History
 
 ## [[v2.2.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.1...v2.2.2)] - 2019-02-25]
 
