@@ -12,6 +12,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Write your awesome addition here (by @you)
+- Fixed: Ability to destroy clusters due to security groups being attached to ENI's (by @whiskeyjimbo)
 
 ### Changed
 
