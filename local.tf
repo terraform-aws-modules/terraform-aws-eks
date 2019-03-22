@@ -1,4 +1,6 @@
 locals {
+  asset_dir = "${var.asset_dir == "" ? "${path.cwd}/assets" : replace(var.asset_dir, "/[/]$/", "")}"
+
   asg_tags = ["${null_resource.tags_as_list_of_maps.*.triggers}"]
 
   # Followed recommendation http://67bricks.com/blog/?p=85

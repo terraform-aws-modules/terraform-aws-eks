@@ -12,23 +12,13 @@ variable "cluster_version" {
   default     = "1.11"
 }
 
-variable "config_output_path" {
-  description = "Where to save the Kubectl config file (if `write_kubeconfig = true`). Should end in a forward slash `/` ."
-  default     = "./"
-}
-
-variable "write_kubeconfig" {
-  description = "Whether to write a Kubectl config file containing the cluster configuration. Saved to `config_output_path`."
-  default     = true
+variable "asset_dir" {
+  description = "Absolute path to base directory of bootstrap manifests and secrets such as kubeconfig. [Example: `${path.cwd}/assets`]"
+  default     = ""
 }
 
 variable "manage_aws_auth" {
   description = "Whether to apply the aws-auth configmap file."
-  default     = true
-}
-
-variable "write_aws_auth_config" {
-  description = "Whether to write the aws-auth configmap file."
   default     = true
 }
 
