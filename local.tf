@@ -1,4 +1,6 @@
 locals {
+  asset_dir = "${replace(var.asset_dir, "/[/]$/", "")}" # trim any trailing slash
+
   asg_tags = ["${null_resource.tags_as_list_of_maps.*.triggers}"]
 
   # Followed recommendation http://67bricks.com/blog/?p=85
