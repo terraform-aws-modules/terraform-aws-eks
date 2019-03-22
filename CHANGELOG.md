@@ -11,7 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Write your awesome addition here (by @you)
+- Added support for eks public and private endpoints (by @stijndehaes)
 
 ### Changed
 

@@ -241,3 +241,13 @@ variable "iam_path" {
   description = "If provided, all IAM roles will be created on this path."
   default     = "/"
 }
+
+variable "cluster_endpoint_private_access" {
+  description = "Indicates whether or not the Amazon EKS private API server endpoint is enabled."
+  default     = false
+}
+
+variable "cluster_endpoint_public_access" {
+  description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled."
+  default     = true
+}
