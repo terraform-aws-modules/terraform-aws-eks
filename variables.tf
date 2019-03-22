@@ -13,7 +13,8 @@ variable "cluster_version" {
 }
 
 variable "asset_dir" {
-  description = "Absolute path to base directory of bootstrap manifests and secrets such as kubeconfig. [Example: `${path.root}/assets`]"
+  description = "Absolute path to base directory of bootstrap manifests and secrets such as kubeconfig. [Example: `${path.cwd}/assets`]"
+  default     = ""
 }
 
 variable "manage_aws_auth" {
@@ -60,6 +61,12 @@ variable "map_users_count" {
 variable "subnets" {
   description = "A list of subnets to place the EKS cluster and workers within."
   type        = "list"
+}
+
+variable "cni_cidr_block" {
+  description = "Additional IPV4 CIDR block to attach to VPC for CNI Custom Networking. [Example: `100.65.0.0/16`] https://docs.aws.amazon.com/eks/latest/userguide/cni-custom-network.html"
+  type        = "string"
+  default     = ""
 }
 
 variable "tags" {

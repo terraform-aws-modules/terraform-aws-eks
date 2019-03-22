@@ -1,5 +1,5 @@
 locals {
-  asset_dir = "${replace(var.asset_dir, "/[/]$/", "")}" # trim any trailing slash
+  asset_dir = "${var.asset_dir == "" ? "${path.cwd}/assets" : replace(var.asset_dir, "/[/]$/", "")}"
 
   asg_tags = ["${null_resource.tags_as_list_of_maps.*.triggers}"]
 

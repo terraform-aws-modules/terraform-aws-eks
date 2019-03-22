@@ -1,0 +1,12 @@
+---
+spec:
+  template:
+    spec:
+      containers:
+      - name: aws-node
+        image: tilmankrauss/amazon-k8s-cni:v1.3.0-91-g1448130d
+        env:
+        - name: AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG
+          value: "true"
+        - name: ENI_CONFIG_LABEL_DEF
+          value: "failure-domain.beta.kubernetes.io/zone"
