@@ -103,6 +103,17 @@ resource "aws_security_group_rule" "workers_ingress_cluster" {
   count                    = "${var.worker_create_security_group ? 1 : 0}"
 }
 
+resource "aws_security_group_rule" "workers_ingress_cluster_minimum" {
+  description              = "Allow workers Kubelets and pods to receive minimum communication from the cluster control plane."
+  protocol                 = "tcp"
+  security_group_id        = "${aws_security_group.workers.id}"
+  source_security_group_id = "${local.cluster_security_group_id}"
+  from_port                = 10250
+  to_port                  = 10250
+  type                     = "ingress"
+  count                    = "${var.worker_create_security_group ? 1 : 0}"
+}
+
 resource "aws_security_group_rule" "workers_ingress_cluster_https" {
   description              = "Allow pods running extension API servers on port 443 to receive communication from cluster control plane."
   protocol                 = "tcp"
