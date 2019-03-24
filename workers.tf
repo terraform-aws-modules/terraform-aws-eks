@@ -111,7 +111,7 @@ resource "aws_security_group_rule" "workers_ingress_cluster_kubelet" {
   from_port                = 10250
   to_port                  = 10250
   type                     = "ingress"
-  count                    = "${var.worker_create_security_group ? 1 : 0}"
+  count                    = "${var.worker_create_security_group ? (var.worker_sg_ingress_from_port <= 10250 ? 1 : 0) : 0}"
 }
 
 resource "aws_security_group_rule" "workers_ingress_cluster_https" {
