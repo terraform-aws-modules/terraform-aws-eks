@@ -93,7 +93,7 @@ resource "aws_security_group_rule" "workers_ingress_self" {
 }
 
 resource "aws_security_group_rule" "workers_ingress_cluster" {
-  description              = "Allow workers Kubelets and pods to receive communication from the cluster control plane."
+  description              = "Allow workers pods to receive communication from the cluster control plane."
   protocol                 = "tcp"
   security_group_id        = "${aws_security_group.workers.id}"
   source_security_group_id = "${local.cluster_security_group_id}"
@@ -101,6 +101,17 @@ resource "aws_security_group_rule" "workers_ingress_cluster" {
   to_port                  = 65535
   type                     = "ingress"
   count                    = "${var.worker_create_security_group ? 1 : 0}"
+}
+
+resource "aws_security_group_rule" "workers_ingress_cluster_kubelet" {
+  description              = "Allow workers Kubelets to receive communication from the cluster control plane."
+  protocol                 = "tcp"
+  security_group_id        = "${aws_security_group.workers.id}"
+  source_security_group_id = "${local.cluster_security_group_id}"
+  from_port                = 10250
+  to_port                  = 10250
+  type                     = "ingress"
+  count                    = "${var.worker_create_security_group ? (var.worker_sg_ingress_from_port > 10250 ? 1 : 0) : 0}"
 }
 
 resource "aws_security_group_rule" "workers_ingress_cluster_https" {
