@@ -113,10 +113,13 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster\_create\_security\_group | Whether to create a security group for the cluster or attach the cluster to `cluster_security_group_id`. | string | `"true"` | no |
 | cluster\_create\_timeout | Timeout value when creating the EKS cluster. | string | `"15m"` | no |
 | cluster\_delete\_timeout | Timeout value when deleting the EKS cluster. | string | `"15m"` | no |
+| cluster\_endpoint\_private\_access | Indicates whether or not the Amazon EKS private API server endpoint is enabled. | string | `"false"` | no |
+| cluster\_endpoint\_public\_access | Indicates whether or not the Amazon EKS public API server endpoint is enabled. | string | `"true"` | no |
 | cluster\_name | Name of the EKS cluster. Also used as a prefix in names of related resources. | string | n/a | yes |
 | cluster\_security\_group\_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32. | string | `""` | no |
 | cluster\_version | Kubernetes version to use for the EKS cluster. | string | `"1.11"` | no |
 | config\_output\_path | Where to save the Kubectl config file (if `write_kubeconfig = true`). Should end in a forward slash `/` . | string | `"./"` | no |
+| iam\_path | If provided, all IAM roles will be created on this path. | string | `"/"` | no |
 | kubeconfig\_aws\_authenticator\_additional\_args | Any additional arguments to pass to the authenticator such as the role to assume. e.g. ["-r", "MyEksRole"]. | list | `[]` | no |
 | kubeconfig\_aws\_authenticator\_command | Command to use to fetch AWS EKS credentials. | string | `"aws-iam-authenticator"` | no |
 | kubeconfig\_aws\_authenticator\_command\_args | Default arguments passed to the authenticator command. Defaults to [token -i $cluster_name]. | list | `[]` | no |
@@ -145,11 +148,12 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker\_groups\_launch\_template | A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys. | list | `[ { "name": "default" } ]` | no |
 | worker\_security\_group\_id | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster. | string | `""` | no |
 | worker\_sg\_ingress\_from\_port | Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443). | string | `"1025"` | no |
+| workers\_additional\_policies | Additional policies to be added to workers | list | `[]` | no |
+| workers\_additional\_policies\_count |  | string | `"0"` | no |
 | workers\_group\_defaults | Override default values for target groups. See workers_group_defaults_defaults in local.tf for valid keys. | map | `{}` | no |
 | workers\_group\_launch\_template\_defaults | Override default values for target groups. See workers_group_defaults_defaults in local.tf for valid keys. | map | `{}` | no |
 | write\_aws\_auth\_config | Whether to write the aws-auth configmap file. | string | `"true"` | no |
 | write\_kubeconfig | Whether to write a Kubectl config file containing the cluster configuration. Saved to `config_output_path`. | string | `"true"` | no |
-| iam\_path | If provided, all IAM roles will be created with path. | string | `"/"` | no |
 
 ## Outputs
 
