@@ -24,7 +24,7 @@ locals {
     root_iops                     = "0"                             # The amount of provisioned IOPS. This must be set with a volume_type of "io1".
     key_name                      = ""                              # The key name that should be used for the instances in the autoscaling group
     pre_userdata                  = ""                              # userdata to pre-append to the default userdata.
-    enable_docker_bridge          = "false"                         # --enable-docker-bridge bootstrap.sh arg
+    bootstrap_extra_args          = ""                              # Extra arguments passed to the bootstrap.sh script from the EKS AMI.
     additional_userdata           = ""                              # userdata to append to the default userdata.
     ebs_optimized                 = true                            # sets whether to use ebs optimization on supported types.
     enable_monitoring             = true                            # Enables/disables detailed monitoring.
@@ -68,7 +68,7 @@ locals {
     kms_key_id                               = ""                                            # KMS key ID used for encrypted block device. ASG must have access to this key. If not specified, the default KMS key will be used.
     key_name                                 = ""                                            # The key name that should be used for the instances in the autoscaling group
     pre_userdata                             = ""                                            # userdata to pre-append to the default userdata.
-    enable_docker_bridge                     = "false"                                       # --enable-docker-bridge bootstrap.sh arg
+    bootstrap_extra_args                     = ""                                            # Extra arguments passed to the bootstrap.sh script from the EKS AMI.
     additional_userdata                      = ""                                            # userdata to append to the default userdata.
     ebs_optimized                            = true                                          # sets whether to use ebs optimization on supported types.
     enable_monitoring                        = true                                          # Enables/disables detailed monitoring.

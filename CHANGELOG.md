@@ -12,12 +12,11 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Added support for eks public and private endpoints (by @stijndehaes)
-- Write your awesome addition here (by @you)
 - Added minimum inbound traffic rule to the cluster worker security group as per the [EKS security group requirements](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html) (by @sc250024)
 
 ### Changed
 
-- Write your awesome change here (by @you)
+- (Breaking Change) Replaced `enable_docker_bridge` with a generic option called `bootstrap_extra_args` to resolve [310](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/310) (by @max-rocket-internet)
 
 # History
 
@@ -33,6 +32,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Added output for generated kubeconfig filename (by @syst0m)
 - Added outputs for cluster role ARN and name (by @spingel)
 - Added optional name filter variable to be able to pin worker AMI to a release (by @max-rocket-internet)
+- Added `--enable-docker-bridge` option for bootstrap.sh in AMI (by @michaelmccord)
 
 ## [[v2.2.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.1...v2.2.2)] - 2019-02-25]
 
