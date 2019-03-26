@@ -11,14 +11,24 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- Write your awesome addition here (by @you)
+
+### Changed
+
+ - Write your awesome change here (by @you)
+
+# History
+
+## [[v2.3.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.3.0...v2.3.1)] - 2019-03-26]
+
+### Added
+
 - Added support for eks public and private endpoints (by @stijndehaes)
 - Added minimum inbound traffic rule to the cluster worker security group as per the [EKS security group requirements](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html) (by @sc250024)
 
 ### Changed
 
 - (Breaking Change) Replaced `enable_docker_bridge` with a generic option called `bootstrap_extra_args` to resolve [310](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/310) (by @max-rocket-internet)
-
-# History
 
 ## [[v2.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.1...v2.3.0)] - 2019-03-20]
 
