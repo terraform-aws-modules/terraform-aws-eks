@@ -16,7 +16,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- Replaced `enable_docker_bridge` with a generic option called `bootstrap_extra_args` to resolve [310](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/310) (by @max-rocket-internet)
+- (Breaking Change) Replaced `enable_docker_bridge` with a generic option called `bootstrap_extra_args` to resolve [310](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/310) (by @max-rocket-internet)
 
 # History
 
