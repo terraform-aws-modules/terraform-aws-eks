@@ -16,6 +16,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
  - Write your awesome change here (by @you)
+ - Upgraded default kubernetes version from 1.11 to 1.12 (by @stijndehaes)
 
 # History
 

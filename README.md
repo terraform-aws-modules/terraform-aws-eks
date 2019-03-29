@@ -117,7 +117,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster\_endpoint\_public\_access | Indicates whether or not the Amazon EKS public API server endpoint is enabled. | string | `"true"` | no |
 | cluster\_name | Name of the EKS cluster. Also used as a prefix in names of related resources. | string | n/a | yes |
 | cluster\_security\_group\_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32. | string | `""` | no |
-| cluster\_version | Kubernetes version to use for the EKS cluster. | string | `"1.11"` | no |
+| cluster\_version | Kubernetes version to use for the EKS cluster. | string | `"1.12"` | no |
 | config\_output\_path | Where to save the Kubectl config file (if `write_kubeconfig = true`). Should end in a forward slash `/` . | string | `"./"` | no |
 | iam\_path | If provided, all IAM roles will be created on this path. | string | `"/"` | no |
 | kubeconfig\_aws\_authenticator\_additional\_args | Any additional arguments to pass to the authenticator such as the role to assume. e.g. ["-r", "MyEksRole"]. | list | `[]` | no |

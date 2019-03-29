@@ -9,7 +9,7 @@ variable "cluster_security_group_id" {
 
 variable "cluster_version" {
   description = "Kubernetes version to use for the EKS cluster."
-  default     = "1.11"
+  default     = "1.12"
 }
 
 variable "config_output_path" {
