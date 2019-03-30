@@ -13,12 +13,15 @@ resource "aws_autoscaling_group" "workers" {
   suspended_processes   = ["${compact(split(",", coalesce(lookup(var.worker_groups[count.index], "suspended_processes", ""), local.workers_group_defaults["suspended_processes"])))}"]
   enabled_metrics       = ["${compact(split(",", coalesce(lookup(var.worker_groups[count.index], "enabled_metrics", ""), local.workers_group_defaults["enabled_metrics"])))}"]
   count                 = "${var.worker_group_count}"
+  placement_group       = "${lookup(var.worker_groups[count.index], "placement_group", local.workers_group_defaults["placement_group"])}"
 
   tags = ["${concat(
     list(
       map("key", "Name", "value", "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}-eks_asg", "propagate_at_launch", true),
       map("key", "kubernetes.io/cluster/${aws_eks_cluster.this.name}", "value", "owned", "propagate_at_launch", true),
-      map("key", "k8s.io/cluster-autoscaler/${lookup(var.worker_groups[count.index], "autoscaling_enabled", local.workers_group_defaults["autoscaling_enabled"]) == 1 ? "enabled" : "disabled"  }", "value", "true", "propagate_at_launch", false)
+      map("key", "k8s.io/cluster-autoscaler/${lookup(var.worker_groups[count.index], "autoscaling_enabled", local.workers_group_defaults["autoscaling_enabled"]) == 1 ? "enabled" : "disabled"  }", "value", "true", "propagate_at_launch", false),
+      map("key", "k8s.io/cluster-autoscaler/${aws_eks_cluster.this.name}", "value", "", "propagate_at_launch", false),
+      map("key", "k8s.io/cluster-autoscaler/node-template/resources/ephemeral-storage", "value", "${lookup(var.worker_groups[count.index], "root_volume_size", local.workers_group_defaults["root_volume_size"])}Gi", "propagate_at_launch", false)
     ),
     local.asg_tags,
     var.worker_group_tags[contains(keys(var.worker_group_tags), "${lookup(var.worker_groups[count.index], "name", count.index)}") ? "${lookup(var.worker_groups[count.index], "name", count.index)}" : "default"])
@@ -90,7 +93,7 @@ resource "aws_security_group_rule" "workers_ingress_self" {
 }
 
 resource "aws_security_group_rule" "workers_ingress_cluster" {
-  description              = "Allow workers Kubelets and pods to receive communication from the cluster control plane."
+  description              = "Allow workers pods to receive communication from the cluster control plane."
   protocol                 = "tcp"
   security_group_id        = "${aws_security_group.workers.id}"
   source_security_group_id = "${local.cluster_security_group_id}"
@@ -98,6 +101,17 @@ resource "aws_security_group_rule" "workers_ingress_cluster" {
   to_port                  = 65535
   type                     = "ingress"
   count                    = "${var.worker_create_security_group ? 1 : 0}"
+}
+
+resource "aws_security_group_rule" "workers_ingress_cluster_kubelet" {
+  description              = "Allow workers Kubelets to receive communication from the cluster control plane."
+  protocol                 = "tcp"
+  security_group_id        = "${aws_security_group.workers.id}"
+  source_security_group_id = "${local.cluster_security_group_id}"
+  from_port                = 10250
+  to_port                  = 10250
+  type                     = "ingress"
+  count                    = "${var.worker_create_security_group ? (var.worker_sg_ingress_from_port > 10250 ? 1 : 0) : 0}"
 }
 
 resource "aws_security_group_rule" "workers_ingress_cluster_https" {
@@ -115,6 +129,7 @@ resource "aws_iam_role" "workers" {
   name_prefix           = "${aws_eks_cluster.this.name}"
   assume_role_policy    = "${data.aws_iam_policy_document.workers_assume_role_policy.json}"
   permissions_boundary  = "${var.permissions_boundary}"
+  path                  = "${var.iam_path}"
   force_detach_policies = true
 }
 
@@ -122,6 +137,7 @@ resource "aws_iam_instance_profile" "workers" {
   name_prefix = "${aws_eks_cluster.this.name}"
   role        = "${lookup(var.worker_groups[count.index], "iam_role_id",  lookup(local.workers_group_defaults, "iam_role_id"))}"
   count       = "${var.worker_group_count}"
+  path        = "${var.iam_path}"
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {
@@ -137,6 +153,12 @@ resource "aws_iam_role_policy_attachment" "workers_AmazonEKS_CNI_Policy" {
 resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryReadOnly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = "${aws_iam_role.workers.name}"
+}
+
+resource "aws_iam_role_policy_attachment" "workers_additional_policies" {
+  count      = "${var.workers_additional_policies_count}"
+  role       = "${aws_iam_role.workers.name}"
+  policy_arn = "${var.workers_additional_policies[count.index]}"
 }
 
 resource "null_resource" "tags_as_list_of_maps" {
@@ -158,6 +180,7 @@ resource "aws_iam_policy" "worker_autoscaling" {
   name_prefix = "eks-worker-autoscaling-${aws_eks_cluster.this.name}"
   description = "EKS worker node autoscaling policy for cluster ${aws_eks_cluster.this.name}"
   policy      = "${data.aws_iam_policy_document.worker_autoscaling.json}"
+  path        = "${var.iam_path}"
 }
 
 data "aws_iam_policy_document" "worker_autoscaling" {
@@ -170,6 +193,7 @@ data "aws_iam_policy_document" "worker_autoscaling" {
       "autoscaling:DescribeAutoScalingInstances",
       "autoscaling:DescribeLaunchConfigurations",
       "autoscaling:DescribeTags",
+      "ec2:DescribeLaunchTemplateVersions",
     ]
 
     resources = ["*"]

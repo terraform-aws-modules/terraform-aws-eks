@@ -101,7 +101,7 @@ variable "worker_group_count" {
 }
 
 variable "workers_group_defaults" {
-  description = "Override default values for target groups. See workers_group_defaults_defaults in locals.tf for valid keys."
+  description = "Override default values for target groups. See workers_group_defaults_defaults in local.tf for valid keys."
   type        = "map"
   default     = {}
 }
@@ -133,7 +133,7 @@ variable "worker_group_launch_template_count" {
 }
 
 variable "workers_group_launch_template_defaults" {
-  description = "Override default values for target groups. See workers_group_defaults_defaults in locals.tf for valid keys."
+  description = "Override default values for target groups. See workers_group_defaults_defaults in local.tf for valid keys."
   type        = "map"
   default     = {}
 }
@@ -152,6 +152,11 @@ variable "worker_security_group_id" {
   default     = ""
 }
 
+variable "worker_ami_name_filter" {
+  description = "Additional name filter for AWS EKS worker AMI. Default behaviour will get latest for the cluster_version but could be set to a release from amazon-eks-ami, e.g. \"v20190220\""
+  default     = "v*"
+}
+
 variable "worker_additional_security_group_ids" {
   description = "A list of additional security group ids to attach to worker instances"
   type        = "list"
@@ -161,6 +166,16 @@ variable "worker_additional_security_group_ids" {
 variable "worker_sg_ingress_from_port" {
   description = "Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443)."
   default     = "1025"
+}
+
+variable "workers_additional_policies" {
+  description = "Additional policies to be added to workers"
+  type        = "list"
+  default     = []
+}
+
+variable "workers_additional_policies_count" {
+  default = 0
 }
 
 variable "kubeconfig_aws_authenticator_command" {
@@ -220,4 +235,19 @@ variable "worker_create_security_group" {
 variable "permissions_boundary" {
   description = "If provided, all IAM roles will be created with this permissions boundary attached."
   default     = ""
+}
+
+variable "iam_path" {
+  description = "If provided, all IAM roles will be created on this path."
+  default     = "/"
+}
+
+variable "cluster_endpoint_private_access" {
+  description = "Indicates whether or not the Amazon EKS private API server endpoint is enabled."
+  default     = false
+}
+
+variable "cluster_endpoint_public_access" {
+  description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled."
+  default     = true
 }
