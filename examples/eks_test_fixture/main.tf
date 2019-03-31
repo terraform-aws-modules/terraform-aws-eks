@@ -3,7 +3,7 @@ terraform {
 }
 
 provider "aws" {
-  version = ">= 1.47.0"
+  version = ">= 2.0.0"
   region  = "${var.region}"
 }
 
@@ -144,7 +144,7 @@ resource "aws_security_group" "all_worker_mgmt" {
 
 module "vpc" {
   source             = "terraform-aws-modules/vpc/aws"
-  version            = "1.14.0"
+  version            = "1.60.0"
   name               = "test-vpc"
   cidr               = "10.0.0.0/16"
   azs                = ["${data.aws_availability_zones.available.names[0]}", "${data.aws_availability_zones.available.names[1]}", "${data.aws_availability_zones.available.names[2]}"]
