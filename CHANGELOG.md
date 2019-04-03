@@ -15,6 +15,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+ - Updated vpc module version and aws provider version. (by @chenrui333)
  - Write your awesome change here (by @you)
  - Upgraded default kubernetes version from 1.11 to 1.12 (by @stijndehaes)
 
