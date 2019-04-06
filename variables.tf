@@ -267,3 +267,8 @@ variable "cluster_iam_role_name" {
   description = "IAM role name for the cluster. Only applicable if manage_cluster_iam_resources is set to false."
   default     = ""
 }
+
+variable "manage_worker_iam_resources" {
+  description = "Whether to let the module manage worker IAM resources. If set to false, instance_profile_name must be specified for workers (either in the defaults or individually)."
+  default     = true
+}
