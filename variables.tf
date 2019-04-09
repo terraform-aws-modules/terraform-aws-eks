@@ -30,7 +30,6 @@ variable "manage_aws_auth" {
 variable "install_kubectl" {
   default     = false
   description = "Installs the kubectl in module-local"
-  type        = "string"
 }
 
 variable "write_aws_auth_config" {
