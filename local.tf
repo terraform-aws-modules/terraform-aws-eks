@@ -12,7 +12,7 @@ locals {
   kubeconfig_aws_authenticator_command = "${var.install_kubectl ? "${path.module}/aws-iam-authenticator" : "${var.kubeconfig_aws_authenticator_command}"}"
   kubectl_command = "${var.install_kubectl ? "${path.module}/kubectl" : "kubectl"}"
 
-  kubectl_versions = map("1.11", "1.11.8", "1.12", "1.12.6")
+  kubectl_versions = "${map("1.11", "1.11.8", "1.12", "1.12.6")}"
 
   workers_group_defaults_defaults = {
     name                          = "count.index"                   # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
