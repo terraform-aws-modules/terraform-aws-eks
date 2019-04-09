@@ -131,6 +131,9 @@ resource "aws_iam_role" "workers" {
   permissions_boundary  = "${var.permissions_boundary}"
   path                  = "${var.iam_path}"
   force_detach_policies = true
+  tags        = "${merge(var.tags, map("Name", "${aws_eks_cluster.this.name}-eks_worker_sg", "kubernetes.io/cluster/${aws_eks_cluster.this.name}", "owned"
+  ))}"
+
 }
 
 resource "aws_iam_instance_profile" "workers" {
