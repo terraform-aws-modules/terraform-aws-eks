@@ -16,6 +16,8 @@ locals {
   && sudo chmod +x aws-iam-authenticator
   EOH
 
+  kubectl_command = "${var.install_kubectl ? "${path.module}/kubectl" : "kubectl"}"
+
   workers_group_defaults_defaults = {
     name                          = "count.index"                   # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
     ami_id                        = "${data.aws_ami.eks_worker.id}" # AMI ID for the eks workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI.
