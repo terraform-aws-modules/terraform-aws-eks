@@ -50,7 +50,7 @@ data "template_file" "kubeconfig" {
     endpoint                          = "${aws_eks_cluster.this.endpoint}"
     region                            = "${data.aws_region.current.name}"
     cluster_auth_base64               = "${aws_eks_cluster.this.certificate_authority.0.data}"
-    aws_authenticator_command         = "${var.install_kubectl ? "${path.module}/${var.kubeconfig_aws_authenticator_command}" : "${var.kubeconfig_aws_authenticator_command}"}"
+    aws_authenticator_command         = "${local.kubeconfig_aws_authenticator_command}"
     aws_authenticator_command_args    = "${length(var.kubeconfig_aws_authenticator_command_args) > 0 ? "        - ${join("\n        - ", var.kubeconfig_aws_authenticator_command_args)}" : "        - ${join("\n        - ", formatlist("\"%s\"", list("token", "-i", aws_eks_cluster.this.name)))}"}"
     aws_authenticator_additional_args = "${length(var.kubeconfig_aws_authenticator_additional_args) > 0 ? "        - ${join("\n        - ", var.kubeconfig_aws_authenticator_additional_args)}" : ""}"
     aws_authenticator_env_variables   = "${length(var.kubeconfig_aws_authenticator_env_variables) > 0 ? "      env:\n${join("\n", data.template_file.aws_authenticator_env_variables.*.rendered)}" : ""}"
