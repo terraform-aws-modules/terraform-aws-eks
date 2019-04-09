@@ -188,6 +188,12 @@ locals {
     "r4.4xlarge"   = true
     "r4.8xlarge"   = true
     "r4.16xlarge"  = true
+    "r5.large"     = true
+    "r5.xlarge"    = true
+    "r5.2xlarge"   = true
+    "r5.4xlarge"   = true
+    "r5.12xlarge"  = true
+    "r5.24xlarge"  = true
     "t1.micro"     = false
     "t2.nano"      = false
     "t2.micro"     = false
