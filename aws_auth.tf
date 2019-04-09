@@ -5,7 +5,10 @@ resource "local_file" "config_map_aws_auth" {
 }
 
 resource "null_resource" "update_config_map_aws_auth" {
-  depends_on = ["aws_eks_cluster.this"]
+  depends_on = [
+    "aws_eks_cluster.this",
+    "null_resource.install_kubectl",
+  ]
 
   provisioner "local-exec" {
     working_dir = "${path.module}"
