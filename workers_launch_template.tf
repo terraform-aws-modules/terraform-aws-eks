@@ -67,7 +67,7 @@ resource "aws_launch_template" "workers_launch_template" {
     security_groups             = ["${local.worker_security_group_id}", "${var.worker_additional_security_group_ids}", "${compact(split(",",lookup(var.worker_groups_launch_template[count.index],"additional_security_group_ids", local.workers_group_launch_template_defaults["additional_security_group_ids"])))}"]
   }
 
-  iam_instance_profile = {
+  iam_instance_profile {
     name = "${element(aws_iam_instance_profile.workers_launch_template.*.name, count.index)}"
   }
 
@@ -89,19 +89,6 @@ resource "aws_launch_template" "workers_launch_template" {
 
   lifecycle {
     create_before_destroy = true
-  }
-
-  block_device_mappings {
-    device_name = "${data.aws_ami.eks_worker.root_device_name}"
-
-    ebs {
-      volume_size           = "${lookup(var.worker_groups_launch_template[count.index], "root_volume_size", local.workers_group_launch_template_defaults["root_volume_size"])}"
-      volume_type           = "${lookup(var.worker_groups_launch_template[count.index], "root_volume_type", local.workers_group_launch_template_defaults["root_volume_type"])}"
-      iops                  = "${lookup(var.worker_groups_launch_template[count.index], "root_iops", local.workers_group_launch_template_defaults["root_iops"])}"
-      encrypted             = "${lookup(var.worker_groups_launch_template[count.index], "root_encrypted", local.workers_group_launch_template_defaults["root_encrypted"])}"
-      kms_key_id            = "${lookup(var.worker_groups_launch_template[count.index], "kms_key_id", local.workers_group_launch_template_defaults["kms_key_id"])}"
-      delete_on_termination = true
-    }
   }
 }
 
