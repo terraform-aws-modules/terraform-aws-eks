@@ -1,11 +1,7 @@
 resource "null_resource" "install_kubectl" {
   provisioner "local-exec" {
     working_dir = "${path.module}"
-
-    command = <<EOH
-curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.14.0/bin/linux/amd64/kubectl \
-&& chmod +x kubectl
-EOH
+    command     = "${local.install_kubectl_command}"
   }
 
   triggers {
