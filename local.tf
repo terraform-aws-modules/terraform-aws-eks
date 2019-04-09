@@ -51,7 +51,6 @@ locals {
   workers_group_launch_template_defaults_defaults = {
     name                                     = "count.index"                                 # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
     ami_id                                   = "${data.aws_ami.eks_worker.id}"               # AMI ID for the eks workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI.
-    root_block_device_id                     = "${data.aws_ami.eks_worker.root_device_name}" # Root device name for workers. If non is provided, will assume default AMI was used.
     asg_desired_capacity                     = "1"                                           # Desired worker capacity in the autoscaling group.
     asg_max_size                             = "3"                                           # Maximum worker capacity in the autoscaling group.
     asg_min_size                             = "1"                                           # Minimum worker capacity in the autoscaling group.
@@ -66,6 +65,7 @@ locals {
     spot_max_price                           = ""                                            # Maximum price per unit hour that the user is willing to pay for the Spot instances. Default is the on-demand price
     spot_price                               = ""                                            # Cost of spot instance.
     placement_tenancy                        = "default"                                     # The tenancy of the instance. Valid values are "default" or "dedicated".
+    root_volume_size                         = "100"                                         # root volume size of workers instances. Only used for cluster-autoscaler tags on ASGs. You cannot change the root volume size with a launch template.
     key_name                                 = ""                                            # The key name that should be used for the instances in the autoscaling group
     pre_userdata                             = ""                                            # userdata to pre-append to the default userdata.
     bootstrap_extra_args                     = ""                                            # Extra arguments passed to the bootstrap.sh script from the EKS AMI.
