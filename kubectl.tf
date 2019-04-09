@@ -14,7 +14,7 @@ EOH
     endpoint                 = "${aws_eks_cluster.this.endpoint}"
   }
 
-  count = "${var.manage_aws_auth ? 1 : 0}"
+  count = "${var.install_kubectl ? 1 : 0}"
 }
 
 resource "local_file" "kubeconfig" {
