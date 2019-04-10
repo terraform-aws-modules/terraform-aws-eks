@@ -1,7 +1,8 @@
 resource "null_resource" "install_kubectl" {
   provisioner "local-exec" {
     working_dir = "${path.module}"
-    command     = <<EOH
+
+    command = <<EOH
 curl -LO https://storage.googleapis.com/kubernetes-release/release/v${local.kubectl_versions[var.cluster_version]}/bin/linux/amd64/kubectl && \
 chmod +x ./kubectl && \
 curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.12.7/2019-03-27/bin/linux/amd64/aws-iam-authenticator && \

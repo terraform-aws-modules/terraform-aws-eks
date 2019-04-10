@@ -10,7 +10,7 @@ locals {
   kubeconfig_name          = "${var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name}"
 
   kubeconfig_aws_authenticator_command = "${var.install_kubectl ? "${path.module}/aws-iam-authenticator" : "${var.kubeconfig_aws_authenticator_command}"}"
-  kubectl_command = "${var.install_kubectl ? "${path.module}/kubectl" : "kubectl"}"
+  kubectl_command                      = "${var.install_kubectl ? "${path.module}/kubectl" : "kubectl"}"
 
   kubectl_versions = "${map("1.11", "1.11.8", "1.12", "1.12.6")}"
 
