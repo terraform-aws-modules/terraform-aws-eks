@@ -11,7 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Write your awesome addition here (by @you)
+- Added support for cluster logging via the `cluster_enabled_log_types` variable (by @sc250024)
 
 ### Changed
 
