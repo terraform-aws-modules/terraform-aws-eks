@@ -69,6 +69,16 @@ output "worker_security_group_id" {
   value       = "${local.worker_security_group_id}"
 }
 
+output "worker_iam_instance_profile_arns" {
+  description = "default IAM instance profile ARN for EKS worker groups"
+  value       = "${aws_iam_instance_profile.workers.*.arn}"
+}
+
+output "worker_iam_instance_profile_names" {
+  description = "default IAM instance profile name for EKS worker groups"
+  value       = "${aws_iam_instance_profile.workers.*.name}"
+}
+
 output "worker_iam_role_name" {
   description = "default IAM role name for EKS worker groups"
   value       = "${aws_iam_role.workers.name}"

@@ -11,7 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Write your awesome addition here (by @you)
+- Added outputs for worker IAM instance profile(s) (by @soapergem)
 
 ### Changed
 
