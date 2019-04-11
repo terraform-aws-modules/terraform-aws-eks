@@ -82,7 +82,8 @@ resource "aws_launch_template" "workers_launch_template" {
   }
 
   placement {
-    tenancy = "${lookup(var.worker_groups_launch_template[count.index], "placement_tenancy", local.workers_group_launch_template_defaults["placement_tenancy"])}"
+    tenancy    = "${lookup(var.worker_groups_launch_template[count.index], "placement_tenancy", local.workers_group_launch_template_defaults["placement_tenancy"])}"
+    group_name = "${lookup(var.worker_groups_launch_template[count.index], "placement_group", local.workers_group_launch_template_defaults["placement_group"])}"
   }
 
   count = "${var.worker_group_launch_template_count}"
