@@ -73,6 +73,7 @@ locals {
     ebs_optimized                            = true                                          # sets whether to use ebs optimization on supported types.
     enable_monitoring                        = true                                          # Enables/disables detailed monitoring.
     public_ip                                = false                                         # Associate a public ip address with a worker
+    eni_delete                               = true                                          # Delete the ENI on termination (if set to false you will have to manually delete before destroying)
     kubelet_extra_args                       = ""                                            # This string is passed directly to kubelet if set. Useful for adding labels or taints.
     subnets                                  = "${join(",", var.subnets)}"                   # A comma delimited string of subnets to place the worker nodes in. i.e. subnet-123,subnet-456,subnet-789
     autoscaling_enabled                      = false                                         # Sets whether policy and matching tags will be added to allow autoscaling.

@@ -11,6 +11,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- Write your awesome addition here (by @you)
+- Fixed: Ability to destroy clusters due to security groups being attached to ENI's (by @whiskeyjimbo)
 - Added outputs for worker IAM instance profile(s) (by @soapergem)
 - Added support for cluster logging via the `cluster_enabled_log_types` variable (by @sc250024)
 
