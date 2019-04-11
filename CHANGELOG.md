@@ -11,6 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- Added outputs for worker IAM instance profile(s) (by @soapergem)
 - Added support for cluster logging via the `cluster_enabled_log_types` variable (by @sc250024)
 
 ### Changed
