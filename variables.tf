@@ -1,3 +1,9 @@
+variable "cluster_enabled_log_types" {
+  default     = []
+  description = "A list of the desired control plane logging to enable. For more information, see Amazon EKS Control Plane Logging documentation (https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html)"
+  type        = "list"
+}
+
 variable "cluster_name" {
   description = "Name of the EKS cluster. Also used as a prefix in names of related resources."
 }
@@ -9,7 +15,7 @@ variable "cluster_security_group_id" {
 
 variable "cluster_version" {
   description = "Kubernetes version to use for the EKS cluster."
-  default     = "1.11"
+  default     = "1.12"
 }
 
 variable "config_output_path" {
