@@ -1,6 +1,6 @@
 resource "aws_eks_cluster" "this" {
-  enabled_cluster_log_types = "${var.cluster_enabled_log_types}"
   name                      = "${var.cluster_name}"
+  enabled_cluster_log_types = "${var.cluster_enabled_log_types}"
   role_arn                  = "${aws_iam_role.cluster.arn}"
   version                   = "${var.cluster_version}"
 
