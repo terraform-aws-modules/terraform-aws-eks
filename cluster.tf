@@ -1,7 +1,7 @@
 resource "aws_eks_cluster" "this" {
   name                      = "${var.cluster_name}"
   enabled_cluster_log_types = "${var.cluster_enabled_log_types}"
-  role_arn                  = "${aws_iam_role.cluster.arn}"
+  role_arn                  = "${local.cluster_iam_role_arn}"
   version                   = "${var.cluster_version}"
 
   vpc_config {
@@ -58,14 +58,17 @@ resource "aws_iam_role" "cluster" {
   permissions_boundary  = "${var.permissions_boundary}"
   path                  = "${var.iam_path}"
   force_detach_policies = true
+  count                 = "${var.manage_cluster_iam_resources ? 1 : 0}"
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = "${aws_iam_role.cluster.name}"
+  count      = "${var.manage_cluster_iam_resources ? 1 : 0}"
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSServicePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
   role       = "${aws_iam_role.cluster.name}"
+  count      = "${var.manage_cluster_iam_resources ? 1 : 0}"
 }

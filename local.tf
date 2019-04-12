@@ -5,6 +5,9 @@ locals {
   # to workaround terraform not supporting short circut evaluation
   cluster_security_group_id = "${coalesce(join("", aws_security_group.cluster.*.id), var.cluster_security_group_id)}"
 
+  cluster_iam_role_name = "${coalesce(join("", aws_iam_role.cluster.*.name), var.cluster_iam_role_name)}"
+  cluster_iam_role_arn  = "${coalesce(join("", aws_iam_role.cluster.*.arn), join("", data.aws_iam_role.custom_cluster_iam_role.*.arn))}"
+
   worker_security_group_id = "${coalesce(join("", aws_security_group.workers.*.id), var.worker_security_group_id)}"
   default_iam_role_id      = "${element(concat(aws_iam_role.workers.*.id, list("")), 0)}"
   kubeconfig_name          = "${var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name}"

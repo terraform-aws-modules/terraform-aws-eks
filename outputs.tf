@@ -36,12 +36,12 @@ output "config_map_aws_auth" {
 
 output "cluster_iam_role_name" {
   description = "IAM role name of the EKS cluster."
-  value       = "${aws_iam_role.cluster.name}"
+  value       = "${local.cluster_iam_role_name}"
 }
 
 output "cluster_iam_role_arn" {
   description = "IAM role ARN of the EKS cluster."
-  value       = "${aws_iam_role.cluster.arn}"
+  value       = "${local.cluster_iam_role_arn}"
 }
 
 output "kubeconfig" {

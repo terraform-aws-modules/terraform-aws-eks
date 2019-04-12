@@ -100,3 +100,8 @@ data "template_file" "launch_template_userdata" {
     kubelet_extra_args   = "${lookup(var.worker_groups_launch_template[count.index], "kubelet_extra_args", local.workers_group_launch_template_defaults["kubelet_extra_args"])}"
   }
 }
+
+data "aws_iam_role" "custom_cluster_iam_role" {
+  name  = "${var.cluster_iam_role_name}"
+  count = "${var.manage_cluster_iam_resources ? 0 : 1}"
+}

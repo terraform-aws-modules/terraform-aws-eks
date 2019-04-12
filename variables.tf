@@ -257,3 +257,13 @@ variable "cluster_endpoint_public_access" {
   description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled."
   default     = true
 }
+
+variable "manage_cluster_iam_resources" {
+  description = "Whether to let the module manage cluster IAM resources. If set to false, cluster_iam_role_name must be specified."
+  default     = true
+}
+
+variable "cluster_iam_role_name" {
+  description = "IAM role name for the cluster. Only applicable if manage_cluster_iam_resources is set to false."
+  default     = ""
+}
