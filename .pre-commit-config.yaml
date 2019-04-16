@@ -1,10 +1,10 @@
 repos:
-  - repo: git://github.com/antonbabenko/pre-commit-terraform
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.7.4
     hooks:
       - id: terraform_fmt
       - id: terraform_docs
-  - repo: git://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.0.0
     hooks:
       - id: check-merge-conflict
