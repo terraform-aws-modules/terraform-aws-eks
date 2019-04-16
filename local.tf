@@ -8,7 +8,6 @@ locals {
   worker_security_group_id = "${coalesce(join("", aws_security_group.workers.*.id), var.worker_security_group_id)}"
   default_iam_role_id      = "${element(concat(aws_iam_role.workers.*.id, list("")), 0)}"
   kubeconfig_name          = "${var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name}"
-  kubectl_command          = "${var.install_kubectl ? "${path.module}/kubectl" : "kubectl"}"
 
   workers_group_defaults_defaults = {
     name                          = "count.index"                   # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
