@@ -15,7 +15,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
- - Write your awesome change here (by @you)
+- Switch to https for the pre-commit repos (by @rothandrew)
+- Write your awesome change here (by @you)
 
 # History
 
@@ -29,8 +30,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
- - Updated vpc module version and aws provider version. (by @chenrui333)
- - Upgraded default kubernetes version from 1.11 to 1.12 (by @stijndehaes)
+- Updated vpc module version and aws provider version. (by @chenrui333)
+- Upgraded default kubernetes version from 1.11 to 1.12 (by @stijndehaes)
 
 ## [[v2.3.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.3.0...v2.3.1)] - 2019-03-26]
 
@@ -115,7 +116,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
--  Support for using AWS Launch Templates to define autoscaling groups (by @skang0601)
+- Support for using AWS Launch Templates to define autoscaling groups (by @skang0601)
 - `suspended_processes` to `worker_groups` input (by @bkmeneguello)
 - `target_group_arns` to `worker_groups` input (by @zihaoyu)
 - `force_detach_policies` to `aws_iam_role` `cluster` and `workers` (by @marky-mark)
@@ -159,7 +160,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 - allow a custom AMI to be specified as a default (by @erks)
 - bugfix for above change (by @max-rocket-internet)
-- **Breaking change** Removed support for `eks-worker-*` AMI. The cluster specifying a custom AMI based off of `eks-worker-*` AMI will have to rebuild the AMI from `amazon-eks-node-*`.  (by @erks)
+- **Breaking change** Removed support for `eks-worker-*` AMI. The cluster specifying a custom AMI based off of `eks-worker-*` AMI will have to rebuild the AMI from `amazon-eks-node-*`. (by @erks)
 - **Breaking change** Removed `kubelet_node_labels` worker group option in favor of `kubelet_extra_args`. (by @erks)
 
 ## [[v1.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.4.0...v1.5.0)] - 2018-08-30]
