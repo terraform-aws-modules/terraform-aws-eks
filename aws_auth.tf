@@ -5,10 +5,7 @@ resource "local_file" "config_map_aws_auth" {
 }
 
 resource "null_resource" "update_config_map_aws_auth" {
-  depends_on = [
-    "aws_eks_cluster.this",
-    "null_resource.install_kubectl",
-  ]
+  depends_on = ["aws_eks_cluster.this"]
 
   provisioner "local-exec" {
     working_dir = "${path.module}"
@@ -17,7 +14,7 @@ resource "null_resource" "update_config_map_aws_auth" {
 for i in `seq 1 10`; do \
 echo "${null_resource.update_config_map_aws_auth.triggers.kube_config_map_rendered}" > kube_config.yaml & \
 echo "${null_resource.update_config_map_aws_auth.triggers.config_map_rendered}" > aws_auth_configmap.yaml & \
-${local.kubectl_command} apply -f aws_auth_configmap.yaml --kubeconfig kube_config.yaml && break || \
+kubectl apply -f aws_auth_configmap.yaml --kubeconfig kube_config.yaml && break || \
 sleep 10; \
 done; \
 rm aws_auth_configmap.yaml kube_config.yaml;

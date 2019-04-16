@@ -27,11 +27,6 @@ variable "manage_aws_auth" {
   default     = true
 }
 
-variable "install_kubectl" {
-  default     = false
-  description = "Installs the kubectl in module-local"
-}
-
 variable "write_aws_auth_config" {
   description = "Whether to write the aws-auth configmap file."
   default     = true
