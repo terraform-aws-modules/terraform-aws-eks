@@ -29,7 +29,43 @@ resource "aws_autoscaling_group" "workers_launch_template" {
       }
 
       override {
-        instance_type = "${lookup(var.worker_groups_launch_template[count.index], "override_instance_type", local.workers_group_launch_template_defaults["override_instance_type"])}"
+        instance_type = "${trimspace(element(concat(distinct(split(",", lookup(var.worker_groups_launch_template[count.index], "override_instance_type", local.workers_group_launch_template_defaults["override_instance_type"]))), split("", "          ")), 0))}"
+      }
+
+      override {
+        instance_type = "${trimspace(element(concat(distinct(split(",", lookup(var.worker_groups_launch_template[count.index], "override_instance_type", local.workers_group_launch_template_defaults["override_instance_type"]))), split("", "          ")), 1))}"
+      }
+
+      override {
+        instance_type = "${trimspace(element(concat(distinct(split(",", lookup(var.worker_groups_launch_template[count.index], "override_instance_type", local.workers_group_launch_template_defaults["override_instance_type"]))), split("", "          ")), 2))}"
+      }
+
+      override {
+        instance_type = "${trimspace(element(concat(distinct(split(",", lookup(var.worker_groups_launch_template[count.index], "override_instance_type", local.workers_group_launch_template_defaults["override_instance_type"]))), split("", "          ")), 3))}"
+      }
+
+      override {
+        instance_type = "${trimspace(element(concat(distinct(split(",", lookup(var.worker_groups_launch_template[count.index], "override_instance_type", local.workers_group_launch_template_defaults["override_instance_type"]))), split("", "          ")), 4))}"
+      }
+
+      override {
+        instance_type = "${trimspace(element(concat(distinct(split(",", lookup(var.worker_groups_launch_template[count.index], "override_instance_type", local.workers_group_launch_template_defaults["override_instance_type"]))), split("", "          ")), 5))}"
+      }
+
+      override {
+        instance_type = "${trimspace(element(concat(distinct(split(",", lookup(var.worker_groups_launch_template[count.index], "override_instance_type", local.workers_group_launch_template_defaults["override_instance_type"]))), split("", "          ")), 6))}"
+      }
+
+      override {
+        instance_type = "${trimspace(element(concat(distinct(split(",", lookup(var.worker_groups_launch_template[count.index], "override_instance_type", local.workers_group_launch_template_defaults["override_instance_type"]))), split("", "          ")), 7))}"
+      }
+
+      override {
+        instance_type = "${trimspace(element(concat(distinct(split(",", lookup(var.worker_groups_launch_template[count.index], "override_instance_type", local.workers_group_launch_template_defaults["override_instance_type"]))), split("", "          ")), 8))}"
+      }
+
+      override {
+        instance_type = "${trimspace(element(concat(distinct(split(",", lookup(var.worker_groups_launch_template[count.index], "override_instance_type", local.workers_group_launch_template_defaults["override_instance_type"]))), split("", "          ")), 9))}"
       }
     }
   }

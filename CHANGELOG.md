@@ -15,7 +15,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
- - Write your awesome change here (by @you)
+ - Enable launch template to specify up to 10 Instance types for Spot Fleet (by @JasonCarter80)
 
 # History
 
