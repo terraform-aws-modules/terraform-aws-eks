@@ -15,6 +15,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+ - Add instructions on how to enable the docker bridge network (by @rothandrew)
  - Write your awesome change here (by @you)
 
 # History
