@@ -1,7 +1,8 @@
 resource "aws_eks_cluster" "this" {
-  name     = "${var.cluster_name}"
-  role_arn = "${aws_iam_role.cluster.arn}"
-  version  = "${var.cluster_version}"
+  name                      = "${var.cluster_name}"
+  enabled_cluster_log_types = "${var.cluster_enabled_log_types}"
+  role_arn                  = "${aws_iam_role.cluster.arn}"
+  version                   = "${var.cluster_version}"
 
   vpc_config {
     security_group_ids      = ["${local.cluster_security_group_id}"]
