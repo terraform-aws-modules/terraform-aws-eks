@@ -1,0 +1,8 @@
+**/.terraform/*
+.terraform
+terraform.tfstate.d/*
+terraform.tfstate.d
+
+.DS_Store
+.idea
+.history
