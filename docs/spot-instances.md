@@ -86,9 +86,15 @@ worker_group_launch_template_count = 1
 
 worker_groups_launch_template = [
   {
-    name                = "lt-1"
-    instance_type       = "m5.large"
-    kubelet_extra_args  = "--node-labels=spot=true"
+    name                                     = "spot-1"
+    instance_type                            = "m5.xlarge"
+    override_instance_type                   = "m4.xlarge"
+    spot_instance_pools                      = 2
+    on_demand_percentage_above_base_capacity = 0
+    spot_max_price                           = "0.384"
+    asg_max_size                             = 10
+    autoscaling_enabled                      = true
+    kubelet_extra_args                       = "--node-labels=spot=true"
   }
 ]
 ```
