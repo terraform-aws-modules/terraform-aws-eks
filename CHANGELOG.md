@@ -17,10 +17,10 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- Add .prettierignore file (by @rothandrew)
-- Switch to https for the pre-commit repos (by @rothandrew)
-- Add instructions on how to enable the docker bridge network (by @rothandrew)
-- Write your awesome change here (by @you)
+ - Add .prettierignore file (by @rothandrew)
+ - Switch to https for the pre-commit repos (by @rothandrew)
+ - Add instructions on how to enable the docker bridge network (by @rothandrew)
+ - Write your awesome change here (by @you)
 
 # History
 
