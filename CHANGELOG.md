@@ -11,7 +11,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Added support for custom service linked role for Auto Scaling group (by @voanhduy1512) 
+- Added outputs for `workers_user_data` and `workers_default_ami_id` (by @max-rocket-internet)
+- Added support for custom service linked role for Auto Scaling group (by @voanhduy1512)
 - Write your awesome addition here (by @you)
 
 ### Changed
