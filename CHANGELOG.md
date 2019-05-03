@@ -21,6 +21,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
  - Set default suspended processes for ASG to `AZRebalance` (by @max-rocket-internet)
  - 4 small changes to `aws_launch_template` resource (by @max-rocket-internet)
+ - (Breaking Change) Rewritten and de-duplicated code related to Launch Templates (by @max-rocket-internet)
  - Add .prettierignore file (by @rothandrew)
  - Switch to https for the pre-commit repos (by @rothandrew)
  - Add instructions on how to enable the docker bridge network (by @rothandrew)
