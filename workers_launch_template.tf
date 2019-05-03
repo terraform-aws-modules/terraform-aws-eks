@@ -13,7 +13,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
   suspended_processes     = ["${compact(split(",", coalesce(lookup(var.worker_groups_launch_template[count.index], "suspended_processes", ""), local.workers_group_defaults["suspended_processes"])))}"]
   enabled_metrics         = ["${compact(split(",", coalesce(lookup(var.worker_groups_launch_template[count.index], "enabled_metrics", ""), local.workers_group_defaults["enabled_metrics"])))}"]
   count                   = "${var.worker_group_launch_template_count}"
-  placement_group         = "${lookup(var.worker_groups[count.index], "placement_group", local.workers_group_defaults["placement_group"])}"
+  placement_group         = "${lookup(var.worker_groups_launch_template[count.index], "placement_group", local.workers_group_defaults["placement_group"])}"
 
   launch_template {
     id      = "${element(aws_launch_template.workers_launch_template.*.id, count.index)}"
@@ -29,7 +29,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
       map("key", "k8s.io/cluster-autoscaler/node-template/resources/ephemeral-storage", "value", "${lookup(var.worker_groups_launch_template[count.index], "root_volume_size", local.workers_group_defaults["root_volume_size"])}Gi", "propagate_at_launch", false)
     ),
     local.asg_tags,
-    var.worker_group_launch_template_tags[contains(keys(var.worker_group_launch_template_tags), "${lookup(var.worker_groups_launch_template[count.index], "name", count.index)}") ? "${lookup(var.worker_groups_launch_template[count.index], "name", count.index)}" : "default"])
+    var.worker_group_tags[contains(keys(var.worker_group_tags), "${lookup(var.worker_groups_launch_template[count.index], "name", count.index)}") ? "${lookup(var.worker_groups_launch_template[count.index], "name", count.index)}" : "default"])
   }"]
 
   lifecycle {
