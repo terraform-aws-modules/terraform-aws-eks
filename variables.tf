@@ -138,12 +138,6 @@ variable "worker_group_launch_template_count" {
   default     = "0"
 }
 
-variable "workers_group_launch_template_defaults" {
-  description = "Override default values for target groups. See workers_group_defaults_defaults in local.tf for valid keys."
-  type        = "map"
-  default     = {}
-}
-
 variable "worker_group_launch_template_tags" {
   description = "A map defining extra tags to be applied to the worker group template ASG."
   type        = "map"

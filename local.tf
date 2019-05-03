@@ -43,56 +43,19 @@ locals {
     target_group_arns             = ""                              # A comma delimited list of ALB target group ARNs to be associated to the ASG
     enabled_metrics               = ""                              # A comma delimited list of metrics to be collected i.e. GroupMinSize,GroupMaxSize,GroupDesiredCapacity
     placement_group               = ""                              # The name of the placement group into which to launch the instances, if any.
+    service_linked_role_arn       = ""                              # Arn of custom service linked role that Auto Scaling group will use. Useful when you have encrypted EBS
+
+    # Settings for launch templates
+    root_block_device_name            = "${data.aws_ami.eks_worker.root_device_name}" # Root device name for workers. If non is provided, will assume default AMI was used.
+    root_kms_key_id                   = ""                                            # The KMS key to use when encrypting the root storage device
+    launch_template_version           = "$Latest"                                     # The lastest version of the launch template to use in the autoscaling group
+    launch_template_placement_tenancy = "default"                                     # The placement tenancy for instances
+    launch_template_placement_group   = ""                                            # The name of the placement group into which to launch the instances, if any.
+    root_encrypted                    = ""                                            # Whether the volume should be encrypted or not
+    eni_delete                        = true                                          # Delete the ENI on termination (if set to false you will have to manually delete before destroying)
   }
 
   workers_group_defaults = "${merge(local.workers_group_defaults_defaults, var.workers_group_defaults)}"
-
-  workers_group_launch_template_defaults_defaults = {
-    name                                     = "count.index"                                 # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
-    ami_id                                   = "${data.aws_ami.eks_worker.id}"               # AMI ID for the eks workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI.
-    root_block_device_id                     = "${data.aws_ami.eks_worker.root_device_name}" # Root device name for workers. If non is provided, will assume default AMI was used.
-    asg_desired_capacity                     = "1"                                           # Desired worker capacity in the autoscaling group.
-    asg_max_size                             = "3"                                           # Maximum worker capacity in the autoscaling group.
-    asg_min_size                             = "1"                                           # Minimum worker capacity in the autoscaling group.
-    asg_force_delete                         = false                                         # Enable forced deletion for the autoscaling group.
-    instance_type                            = "m4.large"                                    # Size of the workers instances.
-    override_instance_type                   = "t3.large"                                    # Need to specify at least one additional instance type for mixed instances policy. The instance_type holds  higher priority for on demand instances.
-    on_demand_allocation_strategy            = "prioritized"                                 # Strategy to use when launching on-demand instances. Valid values: prioritized.
-    on_demand_base_capacity                  = "0"                                           # Absolute minimum amount of desired capacity that must be fulfilled by on-demand instances
-    on_demand_percentage_above_base_capacity = "100"                                         # Percentage split between on-demand and Spot instances above the base on-demand capacity
-    spot_allocation_strategy                 = "lowest-price"                                # The only valid value is lowest-price, which is also the default value. The Auto Scaling group selects the cheapest Spot pools and evenly allocates your Spot capacity across the number of Spot pools that you specify.
-    spot_instance_pools                      = 10                                            # "Number of Spot pools per availability zone to allocate capacity. EC2 Auto Scaling selects the cheapest Spot pools and evenly allocates Spot capacity across the number of Spot pools that you specify."
-    spot_max_price                           = ""                                            # Maximum price per unit hour that the user is willing to pay for the Spot instances. Default is the on-demand price
-    spot_price                               = ""                                            # Cost of spot instance.
-    placement_tenancy                        = "default"                                     # The tenancy of the instance. Valid values are "default" or "dedicated".
-    root_volume_size                         = "100"                                         # root volume size of workers instances.
-    root_volume_type                         = "gp2"                                         # root volume type of workers instances, can be 'standard', 'gp2', or 'io1'
-    root_iops                                = "0"                                           # The amount of provisioned IOPS. This must be set with a volume_type of "io1".
-    root_encrypted                           = ""                                            # root volume encryption for workers.
-    kms_key_id                               = ""                                            # KMS key ID used for encrypted block device. ASG must have access to this key. If not specified, the default KMS key will be used.
-    key_name                                 = ""                                            # The key name that should be used for the instances in the autoscaling group
-    pre_userdata                             = ""                                            # userdata to pre-append to the default userdata.
-    bootstrap_extra_args                     = ""                                            # Extra arguments passed to the bootstrap.sh script from the EKS AMI.
-    additional_userdata                      = ""                                            # userdata to append to the default userdata.
-    ebs_optimized                            = true                                          # sets whether to use ebs optimization on supported types.
-    enable_monitoring                        = true                                          # Enables/disables detailed monitoring.
-    public_ip                                = false                                         # Associate a public ip address with a worker
-    eni_delete                               = true                                          # Delete the ENI on termination (if set to false you will have to manually delete before destroying)
-    kubelet_extra_args                       = ""                                            # This string is passed directly to kubelet if set. Useful for adding labels or taints.
-    subnets                                  = "${join(",", var.subnets)}"                   # A comma delimited string of subnets to place the worker nodes in. i.e. subnet-123,subnet-456,subnet-789
-    autoscaling_enabled                      = false                                         # Sets whether policy and matching tags will be added to allow autoscaling.
-    additional_security_group_ids            = ""                                            # A comma delimited list of additional security group ids to include in worker launch config
-    protect_from_scale_in                    = false                                         # Prevent AWS from scaling in, so that cluster-autoscaler is solely responsible.
-    iam_instance_profile_name                = ""                                            # A custom IAM instance profile name. Used when manage_worker_iam_resources is set to false. Incompatible with iam_role_id.
-    iam_role_id                              = "${local.default_iam_role_id}"                # A custom IAM role id. Incompatible with iam_instance_profile_name.
-    suspended_processes                      = "AZRebalance"                                 # A comma delimited string of processes to to suspend. i.e. AZRebalance,HealthCheck,ReplaceUnhealthy
-    target_group_arns                        = ""                                            # A comma delimited list of ALB target group ARNs to be associated to the ASG
-    enabled_metrics                          = ""                                            # A comma delimited list of metrics to be collected i.e. GroupMinSize,GroupMaxSize,GroupDesiredCapacity
-    placement_group                          = ""                                            # The name of the placement group into which to launch the instances, if any.
-    service_linked_role_arn                  = ""                                            # Arn of custom service linked role that Auto Scaling group will use. Useful when you have encrypted EBS
-  }
-
-  workers_group_launch_template_defaults = "${merge(local.workers_group_launch_template_defaults_defaults, var.workers_group_launch_template_defaults)}"
 
   ebs_optimized = {
     "c1.medium"    = false
