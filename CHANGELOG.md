@@ -11,7 +11,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Added support for custom service linked role for Auto Scaling group (by @voanhduy1512) 
+- Added support for custom service linked role for Auto Scaling group (by @voanhduy1512)
+- Add cluster arn to outputs (by @alexsn)
 - Write your awesome addition here (by @you)
 
 ### Changed
