@@ -19,6 +19,12 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 # History
 
+## [[v4.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.0...v4.0.1)] - 2019-05-07]
+
+### Changed
+
+- Fix annoying typo: worker_group_xx vs worker_groups_xx (by @max-rocket-internet)
+
 ## [[v4.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v3.0.0...v4.0.0)] - 2019-05-07]
 
 ### Added
