@@ -66,10 +66,15 @@ resource "aws_launch_template" "workers_launch_template" {
   network_interfaces {
     associate_public_ip_address = "${lookup(var.worker_groups_launch_template[count.index], "public_ip", local.workers_group_launch_template_defaults["public_ip"])}"
     delete_on_termination       = "${lookup(var.worker_groups_launch_template[count.index], "eni_delete", local.workers_group_launch_template_defaults["eni_delete"])}"
-    security_groups             = ["${local.worker_security_group_id}", "${var.worker_additional_security_group_ids}", "${compact(split(",",lookup(var.worker_groups_launch_template[count.index],"additional_security_group_ids", local.workers_group_launch_template_defaults["additional_security_group_ids"])))}"]
+
+    security_groups = [
+      "${local.worker_security_group_id}",
+      "${var.worker_additional_security_group_ids}",
+      "${compact(split(",",lookup(var.worker_groups_launch_template[count.index],"additional_security_group_ids", local.workers_group_launch_template_defaults["additional_security_group_ids"])))}",
+    ]
   }
 
-  iam_instance_profile = {
+  iam_instance_profile {
     name = "${element(aws_iam_instance_profile.workers_launch_template.*.name, count.index)}"
   }
 
@@ -106,6 +111,8 @@ resource "aws_launch_template" "workers_launch_template" {
       delete_on_termination = true
     }
   }
+
+  tags = "${var.tags}"
 }
 
 resource "aws_iam_instance_profile" "workers_launch_template" {

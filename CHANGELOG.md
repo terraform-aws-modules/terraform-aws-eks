@@ -16,6 +16,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+ - 4 small changes to `aws_launch_template` resource (by @max-rocket-internet)
  - Add .prettierignore file (by @rothandrew)
  - Switch to https for the pre-commit repos (by @rothandrew)
  - Add instructions on how to enable the docker bridge network (by @rothandrew)
