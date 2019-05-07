@@ -43,8 +43,9 @@ module "my-cluster" {
 
 ## Other documentation
 
-- [Autoscaling](docs/autoscaling.md): How to enabled worker node autoscaling.
+- [Autoscaling](docs/autoscaling.md): How to enable worker node autoscaling.
 - [Enable Docker Bridge Network](docs/enable-docker-bridge-network.md): How to enable the docker bridge network when using the EKS-optimized AMI, which disables it by default.
+- [Spot instances](docs/spot-instances.md): How to use spot instances with this module.
 
 ## Release schedule
 
@@ -180,5 +181,8 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | workers\_asg\_names | Names of the autoscaling groups containing workers. |
 | workers\_default\_ami\_id | ID of the default worker group AMI |
 | workers\_user\_data | User data of worker groups |
+| workers\_launch\_template\_arns | ARNs of the worker launch templates. |
+| workers\_launch\_template\_ids | IDs of the worker launch templates. |
+| workers\_launch\_template\_latest\_versions | Latest versions of the worker launch templates. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

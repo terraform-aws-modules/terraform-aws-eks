@@ -74,6 +74,21 @@ output "workers_default_ami_id" {
   value       = "${data.aws_ami.eks_worker.id}"
 }
 
+output "workers_launch_template_ids" {
+  description = "IDs of the worker launch templates."
+  value       = "${aws_launch_template.workers_launch_template.*.id}"
+}
+
+output "workers_launch_template_arns" {
+  description = "ARNs of the worker launch templates."
+  value       = "${aws_launch_template.workers_launch_template.*.arn}"
+}
+
+output "workers_launch_template_latest_versions" {
+  description = "Latest versions of the worker launch templates."
+  value       = "${aws_launch_template.workers_launch_template.*.latest_version}"
+}
+
 output "worker_security_group_id" {
   description = "Security group ID attached to the EKS workers."
   value       = "${local.worker_security_group_id}"
