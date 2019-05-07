@@ -11,9 +11,10 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- Added support for custom service linked role for Auto Scaling group (by @voanhduy1512)
+- Add cluster arn to outputs (by @alexsn)
 - Added outputs for `workers_user_data` and `workers_default_ami_id` (by @max-rocket-internet)
 - Added doc about spot instances (by @max-rocket-internet)
-- Added support for custom service linked role for Auto Scaling group (by @voanhduy1512)
 
 ### Changed
 
