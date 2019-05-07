@@ -11,12 +11,14 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Added support for custom service linked role for Auto Scaling group (by @voanhduy1512) 
+- Added doc about spot instances (by @max-rocket-internet)
+- Added support for custom service linked role for Auto Scaling group (by @voanhduy1512)
 - Write your awesome addition here (by @you)
 
 ### Changed
 
  - Set default suspended processes for ASG to `AZRebalance` (by @max-rocket-internet)
+ - 4 small changes to `aws_launch_template` resource (by @max-rocket-internet)
  - Add .prettierignore file (by @rothandrew)
  - Switch to https for the pre-commit repos (by @rothandrew)
  - Add instructions on how to enable the docker bridge network (by @rothandrew)
