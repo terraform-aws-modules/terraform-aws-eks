@@ -179,6 +179,8 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker\_security\_group\_id | Security group ID attached to the EKS workers. |
 | workers\_asg\_arns | IDs of the autoscaling groups containing workers. |
 | workers\_asg\_names | Names of the autoscaling groups containing workers. |
+| workers\_default\_ami\_id | ID of the default worker group AMI |
+| workers\_user\_data | User data of worker groups |
 | workers\_launch\_template\_arns | ARNs of the worker launch templates. |
 | workers\_launch\_template\_ids | IDs of the worker launch templates. |
 | workers\_launch\_template\_latest\_versions | Latest versions of the worker launch templates. |
