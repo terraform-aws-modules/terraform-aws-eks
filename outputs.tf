@@ -63,6 +63,31 @@ output "workers_asg_names" {
   value       = "${concat(aws_autoscaling_group.workers.*.id, aws_autoscaling_group.workers_launch_template.*.id)}"
 }
 
+output "workers_user_data" {
+  description = "User data of worker groups"
+  value       = "${concat(data.template_file.userdata.*.rendered, data.template_file.launch_template_userdata.*.rendered)}"
+}
+
+output "workers_default_ami_id" {
+  description = "ID of the default worker group AMI"
+  value       = "${data.aws_ami.eks_worker.id}"
+}
+
+output "workers_launch_template_ids" {
+  description = "IDs of the worker launch templates."
+  value       = "${aws_launch_template.workers_launch_template.*.id}"
+}
+
+output "workers_launch_template_arns" {
+  description = "ARNs of the worker launch templates."
+  value       = "${aws_launch_template.workers_launch_template.*.arn}"
+}
+
+output "workers_launch_template_latest_versions" {
+  description = "Latest versions of the worker launch templates."
+  value       = "${aws_launch_template.workers_launch_template.*.latest_version}"
+}
+
 output "worker_security_group_id" {
   description = "Security group ID attached to the EKS workers."
   value       = "${local.worker_security_group_id}"

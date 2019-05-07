@@ -45,6 +45,7 @@ module "my-cluster" {
 
 - [Autoscaling](docs/autoscaling.md): How to enable worker node autoscaling.
 - [Enable Docker Bridge Network](docs/enable-docker-bridge-network.md): How to enable the docker bridge network when using the EKS-optimized AMI, which disables it by default.
+- [Spot instances](docs/spot-instances.md): How to use spot instances with this module.
 
 ## Release schedule
 
@@ -171,12 +172,17 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | config\_map\_aws\_auth | A kubernetes configuration to authenticate to this EKS cluster. |
 | kubeconfig | kubectl config file contents for this EKS cluster. |
 | kubeconfig\_filename | The filename of the generated kubectl config. |
-| worker\_iam\_instance\_profile\_arns | default IAM instance profile ARNs for EKS worker group |
-| worker\_iam\_instance\_profile\_names | default IAM instance profile names for EKS worker group |
+| worker\_iam\_instance\_profile\_arns | default IAM instance profile ARN for EKS worker groups |
+| worker\_iam\_instance\_profile\_names | default IAM instance profile name for EKS worker groups |
 | worker\_iam\_role\_arn | default IAM role ARN for EKS worker groups |
 | worker\_iam\_role\_name | default IAM role name for EKS worker groups |
 | worker\_security\_group\_id | Security group ID attached to the EKS workers. |
 | workers\_asg\_arns | IDs of the autoscaling groups containing workers. |
 | workers\_asg\_names | Names of the autoscaling groups containing workers. |
+| workers\_default\_ami\_id | ID of the default worker group AMI |
+| workers\_user\_data | User data of worker groups |
+| workers\_launch\_template\_arns | ARNs of the worker launch templates. |
+| workers\_launch\_template\_ids | IDs of the worker launch templates. |
+| workers\_launch\_template\_latest\_versions | Latest versions of the worker launch templates. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
