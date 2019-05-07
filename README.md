@@ -163,6 +163,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 
 | Name | Description |
 |------|-------------|
+| cluster\_arn | The Amazon Resource Name (ARN) of the cluster. |
 | cluster\_certificate\_authority\_data | Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster. |
 | cluster\_endpoint | The endpoint for your EKS Kubernetes API. |
 | cluster\_iam\_role\_arn | IAM role ARN of the EKS cluster. |
@@ -181,9 +182,9 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | workers\_asg\_arns | IDs of the autoscaling groups containing workers. |
 | workers\_asg\_names | Names of the autoscaling groups containing workers. |
 | workers\_default\_ami\_id | ID of the default worker group AMI |
-| workers\_user\_data | User data of worker groups |
 | workers\_launch\_template\_arns | ARNs of the worker launch templates. |
 | workers\_launch\_template\_ids | IDs of the worker launch templates. |
 | workers\_launch\_template\_latest\_versions | Latest versions of the worker launch templates. |
+| workers\_user\_data | User data of worker groups |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
