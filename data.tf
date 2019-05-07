@@ -58,12 +58,12 @@ data "template_file" "kubeconfig" {
 }
 
 data "template_file" "aws_authenticator_env_variables" {
+  count = "${length(var.kubeconfig_aws_authenticator_env_variables)}"
+
   template = <<EOF
         - name: $${key}
           value: $${value}
 EOF
-
-  count = "${length(var.kubeconfig_aws_authenticator_env_variables)}"
 
   vars {
     value = "${element(values(var.kubeconfig_aws_authenticator_env_variables), count.index)}"
@@ -72,8 +72,8 @@ EOF
 }
 
 data "template_file" "userdata" {
-  template = "${file("${path.module}/templates/userdata.sh.tpl")}"
   count    = "${var.worker_group_count}"
+  template = "${file("${path.module}/templates/userdata.sh.tpl")}"
 
   vars {
     cluster_name         = "${aws_eks_cluster.this.name}"
@@ -87,8 +87,8 @@ data "template_file" "userdata" {
 }
 
 data "template_file" "launch_template_userdata" {
-  template = "${file("${path.module}/templates/userdata.sh.tpl")}"
   count    = "${var.worker_group_launch_template_count}"
+  template = "${file("${path.module}/templates/userdata.sh.tpl")}"
 
   vars {
     cluster_name         = "${aws_eks_cluster.this.name}"
@@ -102,8 +102,8 @@ data "template_file" "launch_template_userdata" {
 }
 
 data "template_file" "workers_launch_template_mixed" {
-  template = "${file("${path.module}/templates/userdata.sh.tpl")}"
   count    = "${var.worker_group_launch_template_mixed_count}"
+  template = "${file("${path.module}/templates/userdata.sh.tpl")}"
 
   vars {
     cluster_name         = "${aws_eks_cluster.this.name}"
@@ -117,16 +117,16 @@ data "template_file" "workers_launch_template_mixed" {
 }
 
 data "aws_iam_role" "custom_cluster_iam_role" {
-  name  = "${var.cluster_iam_role_name}"
   count = "${var.manage_cluster_iam_resources ? 0 : 1}"
+  name  = "${var.cluster_iam_role_name}"
 }
 
 data "aws_iam_instance_profile" "custom_worker_group_iam_instance_profile" {
-  name  = "${lookup(var.worker_groups[count.index], "iam_instance_profile_name", local.workers_group_defaults["iam_instance_profile_name"])}"
   count = "${var.manage_worker_iam_resources ? 0 : var.worker_group_count}"
+  name  = "${lookup(var.worker_groups[count.index], "iam_instance_profile_name", local.workers_group_defaults["iam_instance_profile_name"])}"
 }
 
 data "aws_iam_instance_profile" "custom_worker_group_launch_template_iam_instance_profile" {
-  name  = "${lookup(var.worker_groups_launch_template[count.index], "iam_instance_profile_name", local.workers_group_defaults["iam_instance_profile_name"])}"
   count = "${var.manage_worker_iam_resources ? 0 : var.worker_group_launch_template_count}"
+  name  = "${lookup(var.worker_groups_launch_template[count.index], "iam_instance_profile_name", local.workers_group_defaults["iam_instance_profile_name"])}"
 }
