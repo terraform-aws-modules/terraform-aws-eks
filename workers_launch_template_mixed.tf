@@ -1,6 +1,7 @@
 # Worker Groups using Launch Templates with mixed instances policy
 
 resource "aws_autoscaling_group" "workers_launch_template_mixed" {
+  count                   = "${var.worker_group_launch_template_mixed_count}"
   name_prefix             = "${aws_eks_cluster.this.name}-${lookup(var.worker_group_launch_template_mixed[count.index], "name", count.index)}"
   desired_capacity        = "${lookup(var.worker_group_launch_template_mixed[count.index], "asg_desired_capacity", local.workers_group_defaults["asg_desired_capacity"])}"
   max_size                = "${lookup(var.worker_group_launch_template_mixed[count.index], "asg_max_size", local.workers_group_defaults["asg_max_size"])}"
@@ -12,8 +13,7 @@ resource "aws_autoscaling_group" "workers_launch_template_mixed" {
   protect_from_scale_in   = "${lookup(var.worker_group_launch_template_mixed[count.index], "protect_from_scale_in", local.workers_group_defaults["protect_from_scale_in"])}"
   suspended_processes     = ["${compact(split(",", coalesce(lookup(var.worker_group_launch_template_mixed[count.index], "suspended_processes", ""), local.workers_group_defaults["suspended_processes"])))}"]
   enabled_metrics         = ["${compact(split(",", coalesce(lookup(var.worker_group_launch_template_mixed[count.index], "enabled_metrics", ""), local.workers_group_defaults["enabled_metrics"])))}"]
-  count                   = "${var.worker_group_launch_template_mixed_count}"
-  placement_group         = "${lookup(var.worker_groups[count.index], "placement_group", local.workers_group_defaults["placement_group"])}"
+  placement_group         = "${lookup(var.worker_group_launch_template_mixed[count.index], "placement_group", local.workers_group_defaults["placement_group"])}"
 
   mixed_instances_policy {
     instances_distribution {
@@ -68,6 +68,7 @@ resource "aws_autoscaling_group" "workers_launch_template_mixed" {
 }
 
 resource "aws_launch_template" "workers_launch_template_mixed" {
+  count       = "${var.worker_group_launch_template_mixed_count}"
   name_prefix = "${aws_eks_cluster.this.name}-${lookup(var.worker_group_launch_template_mixed[count.index], "name", count.index)}"
 
   network_interfaces {
@@ -76,8 +77,8 @@ resource "aws_launch_template" "workers_launch_template_mixed" {
     security_groups             = ["${local.worker_security_group_id}", "${var.worker_additional_security_group_ids}", "${compact(split(",",lookup(var.worker_group_launch_template_mixed[count.index],"additional_security_group_ids", local.workers_group_defaults["additional_security_group_ids"])))}"]
   }
 
-  iam_instance_profile = {
-    name = "${element(aws_iam_instance_profile.workers_launch_template_mixed.*.name, count.index)}"
+  iam_instance_profile {
+    name = "${element(coalescelist(aws_iam_instance_profile.workers_launch_template_mixed.*.name, data.aws_iam_instance_profile.custom_worker_group_launch_template_mixed_iam_instance_profile.*.name), count.index)}"
   }
 
   image_id      = "${lookup(var.worker_group_launch_template_mixed[count.index], "ami_id", local.workers_group_defaults["ami_id"])}"
@@ -95,12 +96,6 @@ resource "aws_launch_template" "workers_launch_template_mixed" {
     group_name = "${lookup(var.worker_group_launch_template_mixed[count.index], "launch_template_placement_group", local.workers_group_defaults["launch_template_placement_group"])}"
   }
 
-  count = "${var.worker_group_launch_template_mixed_count}"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
   block_device_mappings {
     device_name = "${lookup(var.worker_group_launch_template_mixed[count.index], "root_block_device_name", local.workers_group_defaults["root_block_device_name"])}"
 
@@ -113,11 +108,15 @@ resource "aws_launch_template" "workers_launch_template_mixed" {
       delete_on_termination = true
     }
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_iam_instance_profile" "workers_launch_template_mixed" {
+  count       = "${var.worker_group_launch_template_mixed_count}"
   name_prefix = "${aws_eks_cluster.this.name}"
   role        = "${lookup(var.worker_group_launch_template_mixed[count.index], "iam_role_id",  lookup(local.workers_group_defaults, "iam_role_id"))}"
-  count       = "${var.worker_group_launch_template_mixed_count}"
   path        = "${var.iam_path}"
 }
