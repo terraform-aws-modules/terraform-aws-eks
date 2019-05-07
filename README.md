@@ -45,6 +45,7 @@ module "my-cluster" {
 
 - [Autoscaling](docs/autoscaling.md): How to enable worker node autoscaling.
 - [Enable Docker Bridge Network](docs/enable-docker-bridge-network.md): How to enable the docker bridge network when using the EKS-optimized AMI, which disables it by default.
+- [Spot instances](docs/spot-instances.md): How to use spot instances with this module.
 
 ## Release schedule
 
