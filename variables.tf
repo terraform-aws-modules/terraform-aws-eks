@@ -132,6 +132,23 @@ variable "worker_groups_launch_template" {
   ]
 }
 
+variable "worker_group_launch_template_mixed" {
+  description = "A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys."
+  type        = "list"
+
+  default = [
+    {
+      "name" = "default"
+    },
+  ]
+}
+
+variable "worker_group_launch_template_mixed_count" {
+  description = "The number of maps contained within the worker_group_launch_template_mixed list."
+  type        = "string"
+  default     = "0"
+}
+
 variable "worker_group_launch_template_count" {
   description = "The number of maps contained within the worker_groups_launch_template list."
   type        = "string"

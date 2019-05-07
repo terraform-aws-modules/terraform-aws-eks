@@ -55,12 +55,12 @@ output "kubeconfig_filename" {
 
 output "workers_asg_arns" {
   description = "IDs of the autoscaling groups containing workers."
-  value       = "${concat(aws_autoscaling_group.workers.*.arn, aws_autoscaling_group.workers_launch_template.*.arn)}"
+  value       = "${concat(aws_autoscaling_group.workers.*.arn, aws_autoscaling_group.workers_launch_template.*.arn, aws_autoscaling_group.workers_launch_template_mixed.*.arn)}"
 }
 
 output "workers_asg_names" {
   description = "Names of the autoscaling groups containing workers."
-  value       = "${concat(aws_autoscaling_group.workers.*.id, aws_autoscaling_group.workers_launch_template.*.id)}"
+  value       = "${concat(aws_autoscaling_group.workers.*.id, aws_autoscaling_group.workers_launch_template.*.id, aws_autoscaling_group.workers_launch_template_mixed.*.id)}"
 }
 
 output "workers_user_data" {
@@ -105,10 +105,10 @@ output "worker_iam_instance_profile_names" {
 
 output "worker_iam_role_name" {
   description = "default IAM role name for EKS worker groups"
-  value       = "${element(coalescelist(aws_iam_role.workers.*.name, data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_name, data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_name), 0)}"
+  value       = "${element(coalescelist(aws_iam_role.workers.*.name, data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_name, data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_name, data.aws_iam_instance_profile.custom_worker_group_launch_template_mixed_iam_instance_profile.*.role_name), 0)}"
 }
 
 output "worker_iam_role_arn" {
   description = "default IAM role ARN for EKS worker groups"
-  value       = "${element(coalescelist(aws_iam_role.workers.*.arn, data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_arn, data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_arn), 0)}"
+  value       = "${element(coalescelist(aws_iam_role.workers.*.arn, data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_arn, data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_arn, data.aws_iam_instance_profile.custom_worker_group_launch_template_mixed_iam_instance_profile.*.role_arn), 0)}"
 }

@@ -1,6 +1,7 @@
 # Worker Groups using Launch Templates
 
 resource "aws_autoscaling_group" "workers_launch_template" {
+  count                   = "${var.worker_group_launch_template_count}"
   name_prefix             = "${aws_eks_cluster.this.name}-${lookup(var.worker_groups_launch_template[count.index], "name", count.index)}"
   desired_capacity        = "${lookup(var.worker_groups_launch_template[count.index], "asg_desired_capacity", local.workers_group_defaults["asg_desired_capacity"])}"
   max_size                = "${lookup(var.worker_groups_launch_template[count.index], "asg_max_size", local.workers_group_defaults["asg_max_size"])}"
@@ -12,7 +13,6 @@ resource "aws_autoscaling_group" "workers_launch_template" {
   protect_from_scale_in   = "${lookup(var.worker_groups_launch_template[count.index], "protect_from_scale_in", local.workers_group_defaults["protect_from_scale_in"])}"
   suspended_processes     = ["${compact(split(",", coalesce(lookup(var.worker_groups_launch_template[count.index], "suspended_processes", ""), local.workers_group_defaults["suspended_processes"])))}"]
   enabled_metrics         = ["${compact(split(",", coalesce(lookup(var.worker_groups_launch_template[count.index], "enabled_metrics", ""), local.workers_group_defaults["enabled_metrics"])))}"]
-  count                   = "${var.worker_group_launch_template_count}"
   placement_group         = "${lookup(var.worker_groups_launch_template[count.index], "placement_group", local.workers_group_defaults["placement_group"])}"
 
   launch_template {
@@ -34,12 +34,12 @@ resource "aws_autoscaling_group" "workers_launch_template" {
 
   lifecycle {
     create_before_destroy = true
-
-    ignore_changes = ["desired_capacity"]
+    ignore_changes        = ["desired_capacity"]
   }
 }
 
 resource "aws_launch_template" "workers_launch_template" {
+  count       = "${var.worker_group_launch_template_count}"
   name_prefix = "${aws_eks_cluster.this.name}-${lookup(var.worker_groups_launch_template[count.index], "name", count.index)}"
 
   network_interfaces {
@@ -72,12 +72,6 @@ resource "aws_launch_template" "workers_launch_template" {
     group_name = "${lookup(var.worker_groups_launch_template[count.index], "launch_template_placement_group", local.workers_group_defaults["launch_template_placement_group"])}"
   }
 
-  count = "${var.worker_group_launch_template_count}"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
   block_device_mappings {
     device_name = "${lookup(var.worker_groups_launch_template[count.index], "root_block_device_name", local.workers_group_defaults["root_block_device_name"])}"
 
@@ -92,11 +86,15 @@ resource "aws_launch_template" "workers_launch_template" {
   }
 
   tags = "${var.tags}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_iam_instance_profile" "workers_launch_template" {
+  count       = "${var.manage_worker_iam_resources ? var.worker_group_launch_template_count : 0}"
   name_prefix = "${aws_eks_cluster.this.name}"
   role        = "${lookup(var.worker_groups_launch_template[count.index], "iam_role_id",  lookup(local.workers_group_defaults, "iam_role_id"))}"
-  count       = "${var.manage_worker_iam_resources ? var.worker_group_launch_template_count : 0}"
   path        = "${var.iam_path}"
 }

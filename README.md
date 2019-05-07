@@ -148,6 +148,8 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker\_create\_security\_group | Whether to create a security group for the workers or attach the workers to `worker_security_group_id`. | string | `"true"` | no |
 | worker\_group\_count | The number of maps contained within the worker_groups list. | string | `"1"` | no |
 | worker\_group\_launch\_template\_count | The number of maps contained within the worker_groups_launch_template list. | string | `"0"` | no |
+| worker\_group\_launch\_template\_mixed | A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys. | list | `[ { "name": "default" } ]` | no |
+| worker\_group\_launch\_template\_mixed\_count | The number of maps contained within the worker_group_launch_template_mixed list. | string | `"0"` | no |
 | worker\_group\_tags | A map defining extra tags to be applied to the worker group ASG. | map | `{ "default": [] }` | no |
 | worker\_groups | A list of maps defining worker group configurations to be defined using AWS Launch Configurations. See workers_group_defaults for valid keys. | list | `[ { "name": "default" } ]` | no |
 | worker\_groups\_launch\_template | A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys. | list | `[ { "name": "default" } ]` | no |

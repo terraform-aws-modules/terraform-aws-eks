@@ -58,12 +58,12 @@ data "template_file" "kubeconfig" {
 }
 
 data "template_file" "aws_authenticator_env_variables" {
+  count = "${length(var.kubeconfig_aws_authenticator_env_variables)}"
+
   template = <<EOF
         - name: $${key}
           value: $${value}
 EOF
-
-  count = "${length(var.kubeconfig_aws_authenticator_env_variables)}"
 
   vars {
     value = "${element(values(var.kubeconfig_aws_authenticator_env_variables), count.index)}"
@@ -72,8 +72,8 @@ EOF
 }
 
 data "template_file" "userdata" {
-  template = "${file("${path.module}/templates/userdata.sh.tpl")}"
   count    = "${var.worker_group_count}"
+  template = "${file("${path.module}/templates/userdata.sh.tpl")}"
 
   vars {
     cluster_name         = "${aws_eks_cluster.this.name}"
@@ -87,8 +87,23 @@ data "template_file" "userdata" {
 }
 
 data "template_file" "launch_template_userdata" {
-  template = "${file("${path.module}/templates/userdata.sh.tpl")}"
   count    = "${var.worker_group_launch_template_count}"
+  template = "${file("${path.module}/templates/userdata.sh.tpl")}"
+
+  vars {
+    cluster_name         = "${aws_eks_cluster.this.name}"
+    endpoint             = "${aws_eks_cluster.this.endpoint}"
+    cluster_auth_base64  = "${aws_eks_cluster.this.certificate_authority.0.data}"
+    pre_userdata         = "${lookup(var.worker_groups_launch_template[count.index], "pre_userdata", local.workers_group_defaults["pre_userdata"])}"
+    additional_userdata  = "${lookup(var.worker_groups_launch_template[count.index], "additional_userdata", local.workers_group_defaults["additional_userdata"])}"
+    bootstrap_extra_args = "${lookup(var.worker_groups_launch_template[count.index], "bootstrap_extra_args", local.workers_group_defaults["bootstrap_extra_args"])}"
+    kubelet_extra_args   = "${lookup(var.worker_groups_launch_template[count.index], "kubelet_extra_args", local.workers_group_defaults["kubelet_extra_args"])}"
+  }
+}
+
+data "template_file" "workers_launch_template_mixed" {
+  count    = "${var.worker_group_launch_template_mixed_count}"
+  template = "${file("${path.module}/templates/userdata.sh.tpl")}"
 
   vars {
     cluster_name         = "${aws_eks_cluster.this.name}"
@@ -102,16 +117,21 @@ data "template_file" "launch_template_userdata" {
 }
 
 data "aws_iam_role" "custom_cluster_iam_role" {
-  name  = "${var.cluster_iam_role_name}"
   count = "${var.manage_cluster_iam_resources ? 0 : 1}"
+  name  = "${var.cluster_iam_role_name}"
 }
 
 data "aws_iam_instance_profile" "custom_worker_group_iam_instance_profile" {
-  name  = "${lookup(var.worker_groups[count.index], "iam_instance_profile_name", local.workers_group_defaults["iam_instance_profile_name"])}"
   count = "${var.manage_worker_iam_resources ? 0 : var.worker_group_count}"
+  name  = "${lookup(var.worker_groups[count.index], "iam_instance_profile_name", local.workers_group_defaults["iam_instance_profile_name"])}"
 }
 
 data "aws_iam_instance_profile" "custom_worker_group_launch_template_iam_instance_profile" {
-  name  = "${lookup(var.worker_groups_launch_template[count.index], "iam_instance_profile_name", local.workers_group_defaults["iam_instance_profile_name"])}"
   count = "${var.manage_worker_iam_resources ? 0 : var.worker_group_launch_template_count}"
+  name  = "${lookup(var.worker_groups_launch_template[count.index], "iam_instance_profile_name", local.workers_group_defaults["iam_instance_profile_name"])}"
+}
+
+data "aws_iam_instance_profile" "custom_worker_group_launch_template_mixed_iam_instance_profile" {
+  count = "${var.manage_worker_iam_resources ? 0 : var.worker_group_launch_template_mixed_count}"
+  name  = "${lookup(var.worker_group_launch_template_mixed[count.index], "iam_instance_profile_name", local.workers_group_defaults["iam_instance_profile_name"])}"
 }
