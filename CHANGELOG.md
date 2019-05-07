@@ -7,7 +7,19 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v3.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v3.0.0...HEAD)] - 2019-05-??]
+## [[v4.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.0...HEAD)] - 2019-06-??]
+
+### Added
+
+- Write your awesome addition here (by @you)
+
+### Changed
+
+- Write your awesome change here (by @you)
+
+# History
+
+## [[v4.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v3.0.0...v4.0.0)] - 2019-05-07]
 
 ### Added
 
@@ -20,15 +32,12 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
- - Set default suspended processes for ASG to `AZRebalance` (by @max-rocket-internet)
- - 4 small changes to `aws_launch_template` resource (by @max-rocket-internet)
- - (Breaking Change) Rewritten and de-duplicated code related to Launch Templates (by @max-rocket-internet)
- - Add .prettierignore file (by @rothandrew)
- - Switch to https for the pre-commit repos (by @rothandrew)
- - Add instructions on how to enable the docker bridge network (by @rothandrew)
- - Write your awesome change here (by @you)
-
-# History
+- Set default suspended processes for ASG to `AZRebalance` (by @max-rocket-internet)
+- 4 small changes to `aws_launch_template` resource (by @max-rocket-internet)
+- (Breaking Change) Rewritten and de-duplicated code related to Launch Templates (by @max-rocket-internet)
+- Add .prettierignore file (by @rothandrew)
+- Switch to https for the pre-commit repos (by @rothandrew)
+- Add instructions on how to enable the docker bridge network (by @rothandrew)
 
 ## [[v3.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.3.1...v3.0.0)] - 2019-04-15]
 
