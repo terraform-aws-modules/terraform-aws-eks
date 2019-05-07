@@ -100,3 +100,18 @@ data "template_file" "launch_template_userdata" {
     kubelet_extra_args   = "${lookup(var.worker_groups_launch_template[count.index], "kubelet_extra_args", local.workers_group_launch_template_defaults["kubelet_extra_args"])}"
   }
 }
+
+data "aws_iam_role" "custom_cluster_iam_role" {
+  name  = "${var.cluster_iam_role_name}"
+  count = "${var.manage_cluster_iam_resources ? 0 : 1}"
+}
+
+data "aws_iam_instance_profile" "custom_worker_group_iam_instance_profile" {
+  name  = "${lookup(var.worker_groups[count.index], "iam_instance_profile_name", local.workers_group_defaults["iam_instance_profile_name"])}"
+  count = "${var.manage_worker_iam_resources ? 0 : var.worker_group_count}"
+}
+
+data "aws_iam_instance_profile" "custom_worker_group_launch_template_iam_instance_profile" {
+  name  = "${lookup(var.worker_groups_launch_template[count.index], "iam_instance_profile_name", local.workers_group_launch_template_defaults["iam_instance_profile_name"])}"
+  count = "${var.manage_worker_iam_resources ? 0 : var.worker_group_launch_template_count}"
+}

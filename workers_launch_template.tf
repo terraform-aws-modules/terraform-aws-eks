@@ -75,7 +75,7 @@ resource "aws_launch_template" "workers_launch_template" {
   }
 
   iam_instance_profile {
-    name = "${element(aws_iam_instance_profile.workers_launch_template.*.name, count.index)}"
+    name = "${element(coalescelist(aws_iam_instance_profile.workers_launch_template.*.name, data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.name), count.index)}"
   }
 
   image_id      = "${lookup(var.worker_groups_launch_template[count.index], "ami_id", local.workers_group_launch_template_defaults["ami_id"])}"
@@ -118,6 +118,6 @@ resource "aws_launch_template" "workers_launch_template" {
 resource "aws_iam_instance_profile" "workers_launch_template" {
   name_prefix = "${aws_eks_cluster.this.name}"
   role        = "${lookup(var.worker_groups_launch_template[count.index], "iam_role_id",  lookup(local.workers_group_launch_template_defaults, "iam_role_id"))}"
-  count       = "${var.worker_group_launch_template_count}"
+  count       = "${var.manage_worker_iam_resources ? var.worker_group_launch_template_count : 0}"
   path        = "${var.iam_path}"
 }

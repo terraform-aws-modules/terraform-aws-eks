@@ -35,12 +35,12 @@ output "config_map_aws_auth" {
 
 output "cluster_iam_role_name" {
   description = "IAM role name of the EKS cluster."
-  value       = "${aws_iam_role.cluster.name}"
+  value       = "${local.cluster_iam_role_name}"
 }
 
 output "cluster_iam_role_arn" {
   description = "IAM role ARN of the EKS cluster."
-  value       = "${aws_iam_role.cluster.arn}"
+  value       = "${local.cluster_iam_role_arn}"
 }
 
 output "kubeconfig" {
@@ -105,10 +105,10 @@ output "worker_iam_instance_profile_names" {
 
 output "worker_iam_role_name" {
   description = "default IAM role name for EKS worker groups"
-  value       = "${aws_iam_role.workers.name}"
+  value       = "${element(coalescelist(aws_iam_role.workers.*.name, data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_name, data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_name), 0)}"
 }
 
 output "worker_iam_role_arn" {
   description = "default IAM role ARN for EKS worker groups"
-  value       = "${aws_iam_role.workers.arn}"
+  value       = "${element(coalescelist(aws_iam_role.workers.*.arn, data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_arn, data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_arn), 0)}"
 }
