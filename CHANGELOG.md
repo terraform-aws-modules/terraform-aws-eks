@@ -13,10 +13,14 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 - Added support for custom service linked role for Auto Scaling group (by @voanhduy1512)
 - Added support for custom IAM roles for cluster and workers (by @erks)
-- Write your awesome addition here (by @you)
+- Add cluster arn to outputs (by @alexsn)
+- Added outputs for `workers_user_data` and `workers_default_ami_id` (by @max-rocket-internet)
+- Added doc about spot instances (by @max-rocket-internet)
 
 ### Changed
 
+ - Set default suspended processes for ASG to `AZRebalance` (by @max-rocket-internet)
+ - 4 small changes to `aws_launch_template` resource (by @max-rocket-internet)
  - Add .prettierignore file (by @rothandrew)
  - Switch to https for the pre-commit repos (by @rothandrew)
  - Add instructions on how to enable the docker bridge network (by @rothandrew)
