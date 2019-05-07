@@ -1,6 +1,6 @@
 # Using spot instances
 
-Spot instances usually cost around 30-70% less than an on-demand instance. So using them for your EKS workloads can save a lot of money but requires some special considerations as they will be terminated with only 2 minutes warning.
+Spot instances usually cost around 30-70% less than an on-demand instance. So using them for your EKS workloads can save a lot of money but requires some special considerations as they could be terminated with only 2 minutes warning.
 
 You need to install a daemonset to catch the 2 minute warning before termination. This will ensure the node is gracefully drained before termination. You can install the [k8s-spot-termination-handler](https://github.com/kube-aws/kube-spot-termination-notice-handler) for this. There's a [Helm chart](https://github.com/helm/charts/tree/master/stable/k8s-spot-termination-handler):
 
@@ -88,6 +88,7 @@ Launch Template support is a recent addition to both AWS and this module. It mig
       override_instance_type_4 = "r5.large"
       spot_instance_pools      = 3
       asg_max_size             = 5
+      asg_desired_size         = 5
       autoscaling_enabled      = true
       kubelet_extra_args       = "--node-labels=kubernetes.io/lifecycle=spot"
     }
