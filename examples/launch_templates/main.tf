@@ -14,7 +14,7 @@ provider "random" {
 data "aws_availability_zones" "available" {}
 
 locals {
-  cluster_name = "test-eks-${random_string.suffix.result}"
+  cluster_name = "test-eks-lt-${random_string.suffix.result}"
 }
 
 resource "random_string" "suffix" {
@@ -25,7 +25,7 @@ resource "random_string" "suffix" {
 module "vpc" {
   source         = "terraform-aws-modules/vpc/aws"
   version        = "1.60.0"
-  name           = "test-vpc"
+  name           = "test-vpc-lt"
   cidr           = "10.0.0.0/16"
   azs            = ["${data.aws_availability_zones.available.names}"]
   public_subnets = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
@@ -48,11 +48,13 @@ module "eks" {
       name                 = "worker-group-1"
       instance_type        = "t2.small"
       asg_desired_capacity = 2
+      public_ip            = true
     },
     {
       name                 = "worker-group-2"
       instance_type        = "t2.medium"
       asg_desired_capacity = 1
+      public_ip            = true
     },
   ]
 }

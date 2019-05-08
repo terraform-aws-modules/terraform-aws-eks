@@ -14,7 +14,7 @@ provider "random" {
 data "aws_availability_zones" "available" {}
 
 locals {
-  cluster_name = "test-eks-${random_string.suffix.result}"
+  cluster_name = "test-eks-spot-${random_string.suffix.result}"
 }
 
 resource "random_string" "suffix" {
@@ -25,7 +25,7 @@ resource "random_string" "suffix" {
 module "vpc" {
   source         = "terraform-aws-modules/vpc/aws"
   version        = "1.60.0"
-  name           = "test-vpc"
+  name           = "test-vpc-spot"
   cidr           = "10.0.0.0/16"
   azs            = ["${data.aws_availability_zones.available.names}"]
   public_subnets = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
@@ -52,8 +52,9 @@ module "eks" {
       override_instance_type_4 = "r5.large"
       spot_instance_pools      = 4
       asg_max_size             = 5
-      asg_desired_size         = 5
+      asg_desired_capacity     = 5
       kubelet_extra_args       = "--node-labels=kubernetes.io/lifecycle=spot"
+      public_ip                = true
     },
   ]
 }
