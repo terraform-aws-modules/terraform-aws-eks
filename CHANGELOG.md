@@ -19,6 +19,15 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 # History
 
+## [[v4.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.0...v4.0.1)] - 2019-05-07]
+
+### Changed
+
+- Added 2 new examples, also tidy up basic example (by @max-rocket-internet)
+- Updates to travis, PR template (by @max-rocket-internet)
+- Fix typo in data.tf (by @max-rocket-internet)
+- Add missing launch template items in `aws_auth.tf` (by @max-rocket-internet)
+
 ## [[v4.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.0...v4.0.1)] - 2019-05-07]
 
 ### Changed

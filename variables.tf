@@ -39,7 +39,7 @@ variable "write_aws_auth_config" {
 }
 
 variable "map_accounts" {
-  description = "Additional AWS account numbers to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format."
+  description = "Additional AWS account numbers to add to the aws-auth configmap. See examples/basic/variables.tf for example format."
   type        = "list"
   default     = []
 }
@@ -51,7 +51,7 @@ variable "map_accounts_count" {
 }
 
 variable "map_roles" {
-  description = "Additional IAM roles to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format."
+  description = "Additional IAM roles to add to the aws-auth configmap. See examples/basic/variables.tf for example format."
   type        = "list"
   default     = []
 }
@@ -63,7 +63,7 @@ variable "map_roles_count" {
 }
 
 variable "map_users" {
-  description = "Additional IAM users to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format."
+  description = "Additional IAM users to add to the aws-auth configmap. See examples/basic/variables.tf for example format."
   type        = "list"
   default     = []
 }

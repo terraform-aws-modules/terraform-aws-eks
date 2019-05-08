@@ -19,7 +19,7 @@ Read the [AWS docs on EKS to get connected to the k8s dashboard](https://docs.aw
 
 ## Usage example
 
-A full example leveraging other community modules is contained in the [examples/eks_test_fixture directory](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_test_fixture). Here's the gist of using it via the Terraform registry:
+A full example leveraging other community modules is contained in the [examples/basic directory](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/basic). Here's the gist of using it via the Terraform registry:
 
 ```hcl
 module "my-cluster" {
@@ -89,11 +89,6 @@ Report issues/questions/feature requests on in the [issues](https://github.com/t
 
 Full contributing [guidelines are covered here](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/CONTRIBUTING.md).
 
-## IAM Permissions
-
-Testing and using this repo requires a minimum set of IAM permissions. Test permissions
-are listed in the [eks_test_fixture README](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_test_fixture/README.md).
-
 ## Change log
 
 The [changelog](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/CHANGELOG.md) captures all important release notes.
@@ -133,11 +128,11 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | manage\_aws\_auth | Whether to apply the aws-auth configmap file. | string | `"true"` | no |
 | manage\_cluster\_iam\_resources | Whether to let the module manage cluster IAM resources. If set to false, cluster_iam_role_name must be specified. | string | `"true"` | no |
 | manage\_worker\_iam\_resources | Whether to let the module manage worker IAM resources. If set to false, iam_instance_profile_name must be specified for workers. | string | `"true"` | no |
-| map\_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `[]` | no |
+| map\_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | list | `[]` | no |
 | map\_accounts\_count | The count of accounts in the map_accounts list. | string | `"0"` | no |
-| map\_roles | Additional IAM roles to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `[]` | no |
+| map\_roles | Additional IAM roles to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | list | `[]` | no |
 | map\_roles\_count | The count of roles in the map_roles list. | string | `"0"` | no |
-| map\_users | Additional IAM users to add to the aws-auth configmap. See examples/eks_test_fixture/variables.tf for example format. | list | `[]` | no |
+| map\_users | Additional IAM users to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | list | `[]` | no |
 | map\_users\_count | The count of roles in the map_users list. | string | `"0"` | no |
 | permissions\_boundary | If provided, all IAM roles will be created with this permissions boundary attached. | string | `""` | no |
 | subnets | A list of subnets to place the EKS cluster and workers within. | list | n/a | yes |

@@ -14,7 +14,7 @@ output "kubectl_config" {
 }
 
 output "config_map_aws_auth" {
-  description = ""
+  description = "A kubernetes configuration to authenticate to this EKS cluster."
   value       = "${module.eks.config_map_aws_auth}"
 }
 
