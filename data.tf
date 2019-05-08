@@ -109,10 +109,10 @@ data "template_file" "workers_launch_template_mixed" {
     cluster_name         = "${aws_eks_cluster.this.name}"
     endpoint             = "${aws_eks_cluster.this.endpoint}"
     cluster_auth_base64  = "${aws_eks_cluster.this.certificate_authority.0.data}"
-    pre_userdata         = "${lookup(var.worker_groups_launch_template[count.index], "pre_userdata", local.workers_group_defaults["pre_userdata"])}"
-    additional_userdata  = "${lookup(var.worker_groups_launch_template[count.index], "additional_userdata", local.workers_group_defaults["additional_userdata"])}"
-    bootstrap_extra_args = "${lookup(var.worker_groups_launch_template[count.index], "bootstrap_extra_args", local.workers_group_defaults["bootstrap_extra_args"])}"
-    kubelet_extra_args   = "${lookup(var.worker_groups_launch_template[count.index], "kubelet_extra_args", local.workers_group_defaults["kubelet_extra_args"])}"
+    pre_userdata         = "${lookup(var.worker_groups_launch_template_mixed[count.index], "pre_userdata", local.workers_group_defaults["pre_userdata"])}"
+    additional_userdata  = "${lookup(var.worker_groups_launch_template_mixed[count.index], "additional_userdata", local.workers_group_defaults["additional_userdata"])}"
+    bootstrap_extra_args = "${lookup(var.worker_groups_launch_template_mixed[count.index], "bootstrap_extra_args", local.workers_group_defaults["bootstrap_extra_args"])}"
+    kubelet_extra_args   = "${lookup(var.worker_groups_launch_template_mixed[count.index], "kubelet_extra_args", local.workers_group_defaults["kubelet_extra_args"])}"
   }
 }
 
