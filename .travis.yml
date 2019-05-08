@@ -34,19 +34,15 @@ script:
 - terraform init
 - terraform fmt -check=true
 - terraform validate -var "region=${AWS_REGION}" -var "vpc_id=vpc-123456" -var "subnets=[\"subnet-12345a\"]" -var "workers_ami_id=ami-123456" -var "cluster_ingress_cidrs=[]" -var "cluster_name=test_cluster"
-# - docker run --rm -v $(pwd):/app/ --workdir=/app/ -t wata727/tflint --error-with-issues
-- cd examples/eks_test_fixture
-- terraform init
-- terraform fmt -check=true
-- terraform validate
-- cd -
+- |
+  for example in $(find examples -maxdepth 1 -mindepth 1 -type d); do
+  cd $example
+  terraform init
+  terraform fmt -check=true
+  terraform validate
+  cd -
+  done
 - terraform -v
-# - bundle exec kitchen test --destroy always
-# deploy:
-#   provider: script
-#   script: ci/deploy.sh
-#   on:
-#     branch: master
 
 notifications:
   email:
