@@ -87,6 +87,8 @@ The following IAM policy is the minimum needed to execute the module from the te
         "eks:DeleteCluster",
         "eks:DescribeCluster",
         "eks:ListClusters",
+        "eks:UpdateClusterConfig",
+        "eks:DescribeUpdate",
         "iam:AddRoleToInstanceProfile",
         "iam:AttachRolePolicy",
         "iam:CreateInstanceProfile",
