@@ -79,7 +79,7 @@ Launch Template support is a recent addition to both AWS and this module. It mig
 
   worker_group_launch_template_mixed_count = 1
 
-  worker_group_launch_template_mixed = [
+  worker_groups_launch_template_mixed = [
     {
       name                     = "spot-1"
       override_instance_type_1 = "m5.large"
