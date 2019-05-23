@@ -105,70 +105,61 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     )
   }
 
-  # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
-  # force an interpolation expression to be interpreted as a list by wrapping it
-  # in an extra set of list brackets. That form was supported for compatibilty in
-  # v0.11, but is no longer supported in Terraform v0.12.
-  #
-  # If the expression in the following list itself returns a list, remove the
-  # brackets to avoid interpretation as a list of lists. If the expression
-  # returns a single list item then leave it as-is and remove this TODO comment.
-  tags = [
-    concat(
-      [
-        {
-          "key" = "Name"
-          "value" = "${aws_eks_cluster.this.name}-${lookup(
-            var.worker_groups_launch_template[count.index],
-            "name",
-            count.index,
-          )}-eks_asg"
-          "propagate_at_launch" = true
-        },
-        {
-          "key"                 = "kubernetes.io/cluster/${aws_eks_cluster.this.name}"
-          "value"               = "owned"
-          "propagate_at_launch" = true
-        },
-        {
-          "key" = "k8s.io/cluster-autoscaler/${lookup(
-            var.worker_groups_launch_template[count.index],
-            "autoscaling_enabled",
-            local.workers_group_defaults["autoscaling_enabled"],
-          ) == 1 ? "enabled" : "disabled"}"
-          "value"               = "true"
-          "propagate_at_launch" = false
-        },
-        {
-          "key"                 = "k8s.io/cluster-autoscaler/${aws_eks_cluster.this.name}"
-          "value"               = ""
-          "propagate_at_launch" = false
-        },
-        {
-          "key" = "k8s.io/cluster-autoscaler/node-template/resources/ephemeral-storage"
-          "value" = "${lookup(
-            var.worker_groups_launch_template[count.index],
-            "root_volume_size",
-            local.workers_group_defaults["root_volume_size"],
-          )}Gi"
-          "propagate_at_launch" = false
-        },
-      ],
-      local.asg_tags,
-      var.worker_group_tags[contains(
-        keys(var.worker_group_tags),
-        lookup(
+  tags = concat(
+    [
+      {
+        "key" = "Name"
+        "value" = "${aws_eks_cluster.this.name}-${lookup(
           var.worker_groups_launch_template[count.index],
           "name",
           count.index,
-        ),
-        ) ? lookup(
+        )}-eks_asg"
+        "propagate_at_launch" = true
+      },
+      {
+        "key"                 = "kubernetes.io/cluster/${aws_eks_cluster.this.name}"
+        "value"               = "owned"
+        "propagate_at_launch" = true
+      },
+      {
+        "key" = "k8s.io/cluster-autoscaler/${lookup(
+          var.worker_groups_launch_template[count.index],
+          "autoscaling_enabled",
+          local.workers_group_defaults["autoscaling_enabled"],
+        ) == 1 ? "enabled" : "disabled"}"
+        "value"               = "true"
+        "propagate_at_launch" = false
+      },
+      {
+        "key"                 = "k8s.io/cluster-autoscaler/${aws_eks_cluster.this.name}"
+        "value"               = ""
+        "propagate_at_launch" = false
+      },
+      {
+        "key" = "k8s.io/cluster-autoscaler/node-template/resources/ephemeral-storage"
+        "value" = "${lookup(
+          var.worker_groups_launch_template[count.index],
+          "root_volume_size",
+          local.workers_group_defaults["root_volume_size"],
+        )}Gi"
+        "propagate_at_launch" = false
+      },
+    ],
+    local.asg_tags,
+    var.worker_group_tags[contains(
+      keys(var.worker_group_tags),
+      lookup(
         var.worker_groups_launch_template[count.index],
         "name",
         count.index,
-      ) : "default"],
-    ),
-  ]
+      ),
+      ) ? lookup(
+      var.worker_groups_launch_template[count.index],
+      "name",
+      count.index,
+    ) : "default"],
+  )
+
 
   lifecycle {
     create_before_destroy = true
