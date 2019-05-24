@@ -4,7 +4,7 @@ variable "region" {
 
 variable "map_accounts" {
   description = "Additional AWS account numbers to add to the aws-auth configmap."
-  type        = "list"
+  type        = list(string)
 
   default = [
     "777777777777",
@@ -14,13 +14,13 @@ variable "map_accounts" {
 
 variable "map_accounts_count" {
   description = "The count of accounts in the map_accounts list."
-  type        = "string"
+  type        = number
   default     = 2
 }
 
 variable "map_roles" {
   description = "Additional IAM roles to add to the aws-auth configmap."
-  type        = "list"
+  type        = list(map(string))
 
   default = [
     {
@@ -33,13 +33,13 @@ variable "map_roles" {
 
 variable "map_roles_count" {
   description = "The count of roles in the map_roles list."
-  type        = "string"
+  type        = number
   default     = 1
 }
 
 variable "map_users" {
   description = "Additional IAM users to add to the aws-auth configmap."
-  type        = "list"
+  type        = list(map(string))
 
   default = [
     {
@@ -57,6 +57,7 @@ variable "map_users" {
 
 variable "map_users_count" {
   description = "The count of roles in the map_users list."
-  type        = "string"
+  type        = number
   default     = 2
 }
+
