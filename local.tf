@@ -1,5 +1,5 @@
 locals {
-  asg_tags = [null_resource.tags_as_list_of_maps.*.triggers]
+  asg_tags = null_resource.tags_as_list_of_maps.*.triggers
 
   # Followed recommendation http://67bricks.com/blog/?p=85
   # to workaround terraform not supporting short circut evaluation

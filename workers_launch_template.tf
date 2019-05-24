@@ -30,12 +30,9 @@ resource "aws_autoscaling_group" "workers_launch_template" {
   target_group_arns = compact(
     split(
       ",",
-      coalesce(
-        lookup(
-          var.worker_groups_launch_template[count.index],
-          "target_group_arns",
-          "",
-        ),
+      lookup(
+        var.worker_groups_launch_template[count.index],
+        "target_group_arns",
         local.workers_group_defaults["target_group_arns"],
       ),
     ),
@@ -77,12 +74,9 @@ resource "aws_autoscaling_group" "workers_launch_template" {
   enabled_metrics = compact(
     split(
       ",",
-      coalesce(
-        lookup(
-          var.worker_groups_launch_template[count.index],
-          "enabled_metrics",
-          "",
-        ),
+      lookup(
+        var.worker_groups_launch_template[count.index],
+        "enabled_metrics",
         local.workers_group_defaults["enabled_metrics"],
       ),
     ),
@@ -187,7 +181,7 @@ resource "aws_launch_template" "workers_launch_template" {
       local.workers_group_defaults["eni_delete"],
     )
 
-    security_groups = [
+    security_groups = flatten([
       local.worker_security_group_id,
       var.worker_additional_security_group_ids,
       compact(
@@ -200,7 +194,7 @@ resource "aws_launch_template" "workers_launch_template" {
           ),
         ),
       ),
-    ]
+    ])
   }
 
   iam_instance_profile {
