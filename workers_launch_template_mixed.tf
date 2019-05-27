@@ -30,12 +30,9 @@ resource "aws_autoscaling_group" "workers_launch_template_mixed" {
   target_group_arns = compact(
     split(
       ",",
-      coalesce(
-        lookup(
-          var.worker_groups_launch_template_mixed[count.index],
-          "target_group_arns",
-          "",
-        ),
+      lookup(
+        var.worker_groups_launch_template_mixed[count.index],
+        "target_group_arns",
         local.workers_group_defaults["target_group_arns"],
       ),
     ),
@@ -47,12 +44,9 @@ resource "aws_autoscaling_group" "workers_launch_template_mixed" {
   )
   vpc_zone_identifier = split(
     ",",
-    coalesce(
-      lookup(
-        var.worker_groups_launch_template_mixed[count.index],
-        "subnets",
-        "",
-      ),
+    lookup(
+      var.worker_groups_launch_template_mixed[count.index],
+      "subnets",
       local.workers_group_defaults["subnets"],
     ),
   )
@@ -64,12 +58,9 @@ resource "aws_autoscaling_group" "workers_launch_template_mixed" {
   suspended_processes = compact(
     split(
       ",",
-      coalesce(
-        lookup(
-          var.worker_groups_launch_template_mixed[count.index],
-          "suspended_processes",
-          "",
-        ),
+      lookup(
+        var.worker_groups_launch_template_mixed[count.index],
+        "suspended_processes",
         local.workers_group_defaults["suspended_processes"],
       ),
     ),
@@ -77,12 +68,9 @@ resource "aws_autoscaling_group" "workers_launch_template_mixed" {
   enabled_metrics = compact(
     split(
       ",",
-      coalesce(
-        lookup(
-          var.worker_groups_launch_template_mixed[count.index],
-          "enabled_metrics",
-          "",
-        ),
+      lookup(
+        var.worker_groups_launch_template_mixed[count.index],
+        "enabled_metrics",
         local.workers_group_defaults["enabled_metrics"],
       ),
     ),

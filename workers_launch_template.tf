@@ -44,12 +44,9 @@ resource "aws_autoscaling_group" "workers_launch_template" {
   )
   vpc_zone_identifier = split(
     ",",
-    coalesce(
-      lookup(
-        var.worker_groups_launch_template[count.index],
-        "subnets",
-        "",
-      ),
+    lookup(
+      var.worker_groups_launch_template[count.index],
+      "subnets",
       local.workers_group_defaults["subnets"],
     ),
   )
@@ -61,12 +58,9 @@ resource "aws_autoscaling_group" "workers_launch_template" {
   suspended_processes = compact(
     split(
       ",",
-      coalesce(
-        lookup(
-          var.worker_groups_launch_template[count.index],
-          "suspended_processes",
-          "",
-        ),
+      lookup(
+        var.worker_groups_launch_template[count.index],
+        "suspended_processes",
         local.workers_group_defaults["suspended_processes"],
       ),
     ),

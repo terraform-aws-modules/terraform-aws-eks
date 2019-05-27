@@ -26,11 +26,12 @@ resource "aws_autoscaling_group" "workers" {
   target_group_arns = compact(
     split(
       ",",
-      coalesce(
-        lookup(var.worker_groups[count.index], "target_group_arns", ""),
-        local.workers_group_defaults["target_group_arns"],
-      ),
-    ),
+      lookup(
+        var.worker_groups[count.index],
+        "target_group_arns",
+        local.workers_group_defaults["target_group_arns"]
+      )
+    )
   )
   service_linked_role_arn = lookup(
     var.worker_groups[count.index],
@@ -40,8 +41,9 @@ resource "aws_autoscaling_group" "workers" {
   launch_configuration = element(aws_launch_configuration.workers.*.id, count.index)
   vpc_zone_identifier = split(
     ",",
-    coalesce(
-      lookup(var.worker_groups[count.index], "subnets", ""),
+    lookup(
+      var.worker_groups[count.index],
+      "subnets",
       local.workers_group_defaults["subnets"],
     ),
   )
@@ -53,8 +55,9 @@ resource "aws_autoscaling_group" "workers" {
   suspended_processes = compact(
     split(
       ",",
-      coalesce(
-        lookup(var.worker_groups[count.index], "suspended_processes", ""),
+      lookup(
+        var.worker_groups[count.index],
+        "suspended_processes",
         local.workers_group_defaults["suspended_processes"],
       ),
     ),
@@ -62,8 +65,9 @@ resource "aws_autoscaling_group" "workers" {
   enabled_metrics = compact(
     split(
       ",",
-      coalesce(
-        lookup(var.worker_groups[count.index], "enabled_metrics", ""),
+      lookup(
+        var.worker_groups[count.index],
+        "enabled_metrics",
         local.workers_group_defaults["enabled_metrics"],
       ),
     ),
