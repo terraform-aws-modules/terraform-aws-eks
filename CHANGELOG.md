@@ -11,7 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Write your awesome addition here (by @you)
+- Update EBS optimized instances type (by @gloutsch)
 
 ### Changed
 
