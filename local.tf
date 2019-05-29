@@ -63,8 +63,9 @@ locals {
     on_demand_base_capacity                  = "0"            # Absolute minimum amount of desired capacity that must be fulfilled by on-demand instances
     on_demand_percentage_above_base_capacity = "0"            # Percentage split between on-demand and Spot instances above the base on-demand capacity
     spot_allocation_strategy                 = "lowest-price" # The only valid value is lowest-price, which is also the default value. The Auto Scaling group selects the cheapest Spot pools and evenly allocates your Spot capacity across the number of Spot pools that you specify.
-    spot_instance_pools                      = 10             # "Number of Spot pools per availability zone to allocate capacity. EC2 Auto Scaling selects the cheapest Spot pools and evenly allocates Spot capacity across the number of Spot pools that you specify."
+    spot_instance_pools                      = 10             # Number of Spot pools per availability zone to allocate capacity. EC2 Auto Scaling selects the cheapest Spot pools and evenly allocates Spot capacity across the number of Spot pools that you specify.
     spot_max_price                           = ""             # Maximum price per unit hour that the user is willing to pay for the Spot instances. Default is the on-demand price
+    enabled_metrics                          = []             # A list of metrics to collect. The allowed values are GroupMinSize, GroupMaxSize, GroupDesiredCapacity, GroupInServiceInstances, GroupPendingInstances, GroupStandbyInstances, GroupTerminatingInstances, GroupTotalInstances.
   }
 
   workers_group_defaults = "${merge(local.workers_group_defaults_defaults, var.workers_group_defaults)}"

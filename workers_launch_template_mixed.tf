@@ -65,6 +65,8 @@ resource "aws_autoscaling_group" "workers_launch_template_mixed" {
     create_before_destroy = true
     ignore_changes        = ["desired_capacity"]
   }
+
+  enabled_metrics = ["${lookup(var.worker_groups_launch_template_mixed[count.index], "enabled_metrics", local.workers_group_defaults["enabled_metrics"])}"]
 }
 
 resource "aws_launch_template" "workers_launch_template_mixed" {
