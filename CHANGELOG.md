@@ -11,7 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Write your awesome addition here (by @you)
+- Add enabled_metrics parameters on mixed instances autoscaling group (by @gloutsch)
 
 ### Changed
 
