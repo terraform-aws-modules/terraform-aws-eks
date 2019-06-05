@@ -76,6 +76,6 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSServicePolicy" {
   role       = "${aws_iam_role.cluster.name}"
 }
 
-resource "random_id" "name" {
+resource "random_id" "rnd11" {
   byte_length = 11
 }

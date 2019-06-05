@@ -1,15 +1,15 @@
 locals {
   asg_tags = ["${null_resource.tags_as_list_of_maps.*.triggers}"]
 
-  iam_role_name = "${var.cluster_name}-${random_id.name.dec}"
+  iam_role_name = "${var.cluster_name}-${random_id.rnd11.dec}"
 
   # tags_iam_role = "${merge(var.tags, map("Name", "${local.iam_role_name}"))}"
 
   # Followed recommendation http://67bricks.com/blog/?p=85
   # to workaround terraform not supporting short circut evaluation
   cluster_security_group_id = "${coalesce(join("", aws_security_group.cluster.*.id), var.cluster_security_group_id)}"
-  cluster_iam_role_name = "${coalesce(join("", aws_iam_role.cluster.*.name), var.cluster_iam_role_name)}"
-  cluster_iam_role_arn  = "${coalesce(join("", aws_iam_role.cluster.*.arn), join("", data.aws_iam_role.custom_cluster_iam_role.*.arn))}"
+  cluster_iam_role_name    = "${coalesce(join("", aws_iam_role.cluster.*.name), var.cluster_iam_role_name)}"
+  cluster_iam_role_arn     = "${coalesce(join("", aws_iam_role.cluster.*.arn), join("", data.aws_iam_role.custom_cluster_iam_role.*.arn))}"
   worker_security_group_id = "${coalesce(join("", aws_security_group.workers.*.id), var.worker_security_group_id)}"
   default_iam_role_id      = "${element(concat(aws_iam_role.workers.*.id, list("")), 0)}"
   kubeconfig_name          = "${var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name}"
