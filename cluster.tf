@@ -59,6 +59,7 @@ resource "aws_iam_role" "cluster" {
   permissions_boundary  = "${var.permissions_boundary}"
   path                  = "${var.iam_path}"
   force_detach_policies = true
+  tags                  = "${local.tags_iam_role}"
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
@@ -71,4 +72,8 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSServicePolicy" {
   count      = "${var.manage_cluster_iam_resources ? 1 : 0}"
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
   role       = "${aws_iam_role.cluster.name}"
+}
+
+resource "random_id" "name" {
+  byte_length = 11
 }

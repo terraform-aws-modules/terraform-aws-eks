@@ -1,6 +1,9 @@
 locals {
   asg_tags = ["${null_resource.tags_as_list_of_maps.*.triggers}"]
 
+  tags_iam_role = "${merge(var.tags, map("Name", "${local.iam_role_name}"))}"
+  iam_role_name = "${var.cluster_name}-${random_id.name.dec}"
+
   # Followed recommendation http://67bricks.com/blog/?p=85
   # to workaround terraform not supporting short circut evaluation
   cluster_security_group_id = "${coalesce(join("", aws_security_group.cluster.*.id), var.cluster_security_group_id)}"

@@ -12,6 +12,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Update EBS optimized instances type (by @gloutsch)
+- added tagging for iam role created in `./cluster.tf` (@camilosantana)
 
 ### Changed
 
