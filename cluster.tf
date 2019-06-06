@@ -60,8 +60,6 @@ resource "aws_iam_role" "cluster" {
   path                  = "${var.iam_path}"
   force_detach_policies = true
   tags                  = "${var.tags}"
-
-  # tags                  = "${local.tags_iam_role}"
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {

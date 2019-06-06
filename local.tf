@@ -3,16 +3,16 @@ locals {
 
   iam_role_name = "${var.cluster_name}-${random_id.rnd11.dec}"
 
-  # tags_iam_role = "${merge(var.tags, map("Name", "${local.iam_role_name}"))}"
-
   # Followed recommendation http://67bricks.com/blog/?p=85
   # to workaround terraform not supporting short circut evaluation
   cluster_security_group_id = "${coalesce(join("", aws_security_group.cluster.*.id), var.cluster_security_group_id)}"
+
   cluster_iam_role_name    = "${coalesce(join("", aws_iam_role.cluster.*.name), var.cluster_iam_role_name)}"
   cluster_iam_role_arn     = "${coalesce(join("", aws_iam_role.cluster.*.arn), join("", data.aws_iam_role.custom_cluster_iam_role.*.arn))}"
   worker_security_group_id = "${coalesce(join("", aws_security_group.workers.*.id), var.worker_security_group_id)}"
   default_iam_role_id      = "${element(concat(aws_iam_role.workers.*.id, list("")), 0)}"
   kubeconfig_name          = "${var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name}"
+
   workers_group_defaults_defaults = {
     name                          = "count.index"                   # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
     ami_id                        = "${data.aws_ami.eks_worker.id}" # AMI ID for the eks workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI.
@@ -67,7 +67,9 @@ locals {
     spot_instance_pools                      = 10             # "Number of Spot pools per availability zone to allocate capacity. EC2 Auto Scaling selects the cheapest Spot pools and evenly allocates Spot capacity across the number of Spot pools that you specify."
     spot_max_price                           = ""             # Maximum price per unit hour that the user is willing to pay for the Spot instances. Default is the on-demand price
   }
+
   workers_group_defaults = "${merge(local.workers_group_defaults_defaults, var.workers_group_defaults)}"
+
   ebs_optimized = {
     "c1.medium"    = false
     "c1.xlarge"    = true
