@@ -4,6 +4,11 @@ variable "cluster_enabled_log_types" {
   type        = "list"
 }
 
+variable "cluster_log_retention_in_days" {
+  default     = "0"
+  description = "Number of days to retain log events. Default retention - 'Never Expire'"
+}
+
 variable "cluster_name" {
   description = "Name of the EKS cluster. Also used as a prefix in names of related resources."
 }

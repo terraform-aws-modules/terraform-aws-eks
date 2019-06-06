@@ -12,6 +12,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Update EBS optimized instances type (by @gloutsch)
+- Enable log retention for cloudwatch log groups (by @yuriipolishchuk)
+
 
 ### Changed
 
