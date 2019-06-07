@@ -101,7 +101,7 @@ resource "aws_autoscaling_group" "workers" {
       },
       {
         "key"                 = "k8s.io/cluster-autoscaler/${aws_eks_cluster.this.name}"
-        "value"               = ""
+        "value"               = aws_eks_cluster.this.name
         "propagate_at_launch" = false
       },
       {

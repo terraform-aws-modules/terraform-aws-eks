@@ -11,10 +11,12 @@ locals {
   cluster_iam_role_name = coalesce(
     join("", aws_iam_role.cluster.*.name),
     var.cluster_iam_role_name,
+    "aws-eks"
   )
   cluster_iam_role_arn = coalesce(
     join("", aws_iam_role.cluster.*.arn),
     join("", data.aws_iam_role.custom_cluster_iam_role.*.arn),
+    "aws-eks"
   )
 
   worker_security_group_id = coalesce(

@@ -122,6 +122,7 @@ output "worker_iam_role_name" {
       data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_name,
       data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_name,
       data.aws_iam_instance_profile.custom_worker_group_launch_template_mixed_iam_instance_profile.*.role_name,
+      [""]
     ),
     0,
   )
@@ -135,6 +136,7 @@ output "worker_iam_role_arn" {
       data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_arn,
       data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_arn,
       data.aws_iam_instance_profile.custom_worker_group_launch_template_mixed_iam_instance_profile.*.role_arn,
+      [""]
     ),
     0,
   )

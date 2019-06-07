@@ -74,6 +74,7 @@ data "template_file" "worker_role_arns" {
       coalescelist(
         aws_iam_instance_profile.workers.*.role,
         data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_name,
+        [""]
       ),
       count.index,
     )}"
