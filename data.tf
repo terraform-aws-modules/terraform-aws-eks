@@ -12,6 +12,11 @@ data "aws_iam_policy_document" "workers_assume_role_policy" {
       type        = "Service"
       identifiers = ["ec2.amazonaws.com"]
     }
+
+    principals {
+      type        = "AWS"
+      identifiers = "${var.workers_assume_role_policy_principals_aws_identifiers}"
+    }
   }
 }
 

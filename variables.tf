@@ -274,3 +274,8 @@ variable "manage_worker_iam_resources" {
   description = "Whether to let the module manage worker IAM resources. If set to false, iam_instance_profile_name must be specified for workers."
   default     = true
 }
+
+variable workers_assume_role_policy_principals_aws_identifiers {
+  description = "Additional assume role for aws identifiers"
+  default     = []
+}
