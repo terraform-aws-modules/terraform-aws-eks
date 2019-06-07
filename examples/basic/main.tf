@@ -132,4 +132,8 @@ module "eks" {
   map_users_count                      = "${var.map_users_count}"
   map_accounts                         = "${var.map_accounts}"
   map_accounts_count                   = "${var.map_accounts_count}"
+
+  workers_assume_role_policy_principals_aws_identifiers = [
+    "arn:aws:iam::1234567890:role/kiam-server",
+  ]
 }
