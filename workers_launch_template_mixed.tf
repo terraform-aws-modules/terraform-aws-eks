@@ -183,7 +183,7 @@ resource "aws_autoscaling_group" "workers_launch_template_mixed" {
           var.worker_groups_launch_template_mixed[count.index],
           "autoscaling_enabled",
           local.workers_group_defaults["autoscaling_enabled"],
-        ) == 1 ? "enabled" : "disabled"}"
+        ) ? "enabled" : "disabled"}"
         "value"               = "true"
         "propagate_at_launch" = false
       },
