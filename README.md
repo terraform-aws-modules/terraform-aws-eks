@@ -152,6 +152,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker\_sg\_ingress\_from\_port | Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443). | string | `"1025"` | no |
 | workers\_additional\_policies | Additional policies to be added to workers | list | `[]` | no |
 | workers\_additional\_policies\_count |  | string | `"0"` | no |
+| workers\_assume\_role\_policy\_principals\_aws\_identifiers | Additional assume role for aws identifiers | list | `<list>` | no |
 | workers\_group\_defaults | Override default values for target groups. See workers_group_defaults_defaults in local.tf for valid keys. | map | `{}` | no |
 | write\_aws\_auth\_config | Whether to write the aws-auth configmap file. | string | `"true"` | no |
 | write\_kubeconfig | Whether to write a Kubectl config file containing the cluster configuration. Saved to `config_output_path`. | string | `"true"` | no |
