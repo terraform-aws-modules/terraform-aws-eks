@@ -16,6 +16,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Fix toggle for IAM instance profile creation for mixed launch templates (by @jnozo)
+- Added new variable for worker's assume role about AWS principals (by @toughrogrammer)
 
 # History
 
