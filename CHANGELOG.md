@@ -11,6 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- Added Termination Policy Option to worker ASGs (by @undeadops)
 - Update EBS optimized instances type (by @gloutsch)
 
 ### Changed
