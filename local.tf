@@ -44,6 +44,7 @@ locals {
     enabled_metrics               = ""                              # A comma delimited list of metrics to be collected i.e. GroupMinSize,GroupMaxSize,GroupDesiredCapacity
     placement_group               = ""                              # The name of the placement group into which to launch the instances, if any.
     service_linked_role_arn       = ""                              # Arn of custom service linked role that Auto Scaling group will use. Useful when you have encrypted EBS
+    termination_policies          = ""                              # A comma delimited list of policies to decide how the instances in the auto scale group should be terminated. 
 
     # Settings for launch templates
     root_block_device_name            = "${data.aws_ami.eks_worker.root_device_name}" # Root device name for workers. If non is provided, will assume default AMI was used.
