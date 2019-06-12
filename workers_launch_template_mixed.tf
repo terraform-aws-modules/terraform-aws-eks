@@ -14,6 +14,7 @@ resource "aws_autoscaling_group" "workers_launch_template_mixed" {
   suspended_processes     = ["${compact(split(",", coalesce(lookup(var.worker_groups_launch_template_mixed[count.index], "suspended_processes", ""), local.workers_group_defaults["suspended_processes"])))}"]
   enabled_metrics         = ["${compact(split(",", coalesce(lookup(var.worker_groups_launch_template_mixed[count.index], "enabled_metrics", ""), local.workers_group_defaults["enabled_metrics"])))}"]
   placement_group         = "${lookup(var.worker_groups_launch_template_mixed[count.index], "placement_group", local.workers_group_defaults["placement_group"])}"
+  termination_policies    = ["${compact(split(",", coalesce(lookup(var.worker_groups_launch_template_mixed[count.index], "termination_policies", ""), local.workers_group_defaults["termination_policies"])))}"]
 
   mixed_instances_policy {
     instances_distribution {
@@ -53,7 +54,7 @@ resource "aws_autoscaling_group" "workers_launch_template_mixed" {
     list(
       map("key", "Name", "value", "${aws_eks_cluster.this.name}-${lookup(var.worker_groups_launch_template_mixed[count.index], "name", count.index)}-eks_asg", "propagate_at_launch", true),
       map("key", "kubernetes.io/cluster/${aws_eks_cluster.this.name}", "value", "owned", "propagate_at_launch", true),
-      map("key", "k8s.io/cluster-autoscaler/${lookup(var.worker_groups_launch_template_mixed[count.index], "autoscaling_enabled", local.workers_group_defaults["autoscaling_enabled"]) == 1 ? "enabled" : "disabled"  }", "value", "true", "propagate_at_launch", false),
+      map("key", "k8s.io/cluster-autoscaler/${lookup(var.worker_groups_launch_template_mixed[count.index], "autoscaling_enabled", local.workers_group_defaults["autoscaling_enabled"]) == 1 ? "enabled" : "disabled"}", "value", "true", "propagate_at_launch", false),
       map("key", "k8s.io/cluster-autoscaler/${aws_eks_cluster.this.name}", "value", "", "propagate_at_launch", false),
       map("key", "k8s.io/cluster-autoscaler/node-template/resources/ephemeral-storage", "value", "${lookup(var.worker_groups_launch_template_mixed[count.index], "root_volume_size", local.workers_group_defaults["root_volume_size"])}Gi", "propagate_at_launch", false)
     ),
@@ -74,7 +75,7 @@ resource "aws_launch_template" "workers_launch_template_mixed" {
   network_interfaces {
     associate_public_ip_address = "${lookup(var.worker_groups_launch_template_mixed[count.index], "public_ip", local.workers_group_defaults["public_ip"])}"
     delete_on_termination       = "${lookup(var.worker_groups_launch_template_mixed[count.index], "eni_delete", local.workers_group_defaults["eni_delete"])}"
-    security_groups             = ["${local.worker_security_group_id}", "${var.worker_additional_security_group_ids}", "${compact(split(",",lookup(var.worker_groups_launch_template_mixed[count.index],"additional_security_group_ids", local.workers_group_defaults["additional_security_group_ids"])))}"]
+    security_groups             = ["${local.worker_security_group_id}", "${var.worker_additional_security_group_ids}", "${compact(split(",", lookup(var.worker_groups_launch_template_mixed[count.index], "additional_security_group_ids", local.workers_group_defaults["additional_security_group_ids"])))}"]
   }
 
   iam_instance_profile {
@@ -117,6 +118,6 @@ resource "aws_launch_template" "workers_launch_template_mixed" {
 resource "aws_iam_instance_profile" "workers_launch_template_mixed" {
   count       = "${var.manage_worker_iam_resources ? var.worker_group_launch_template_mixed_count : 0}"
   name_prefix = "${aws_eks_cluster.this.name}"
-  role        = "${lookup(var.worker_groups_launch_template_mixed[count.index], "iam_role_id",  lookup(local.workers_group_defaults, "iam_role_id"))}"
+  role        = "${lookup(var.worker_groups_launch_template_mixed[count.index], "iam_role_id", lookup(local.workers_group_defaults, "iam_role_id"))}"
   path        = "${var.iam_path}"
 }
