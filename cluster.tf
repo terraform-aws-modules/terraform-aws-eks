@@ -67,6 +67,7 @@ resource "aws_iam_role" "cluster" {
   permissions_boundary  = "${var.permissions_boundary}"
   path                  = "${var.iam_path}"
   force_detach_policies = true
+  tags                  = "${var.tags}"
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
