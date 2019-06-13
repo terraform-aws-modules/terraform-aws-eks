@@ -13,7 +13,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 - Added Termination Policy Option to worker ASGs (by @undeadops)
 - Update EBS optimized instances type (by @gloutsch)
-- added tagging for iam role created in `./cluster.tf` (@camilosantana)
+- Added tagging for iam role created in `./cluster.tf` (@camilosantana)
+- Enable log retention for cloudwatch log groups (by @yuriipolishchuk)
 
 ### Changed
 
