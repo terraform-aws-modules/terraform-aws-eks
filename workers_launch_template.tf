@@ -80,16 +80,11 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     "placement_group",
     local.workers_group_defaults["placement_group"],
   )
-  termination_policies = [
-    compact(
-      split(",",
-        coalesce(
-          lookup(var.worker_groups[count.index], "termination_policies", ""),
-          local.workers_group_defaults["termination_policies"]
-        )
-      )
+  termination_policies = compact(
+    split(",",
+      lookup(var.worker_groups_launch_template[count.index], "termination_policies", local.workers_group_defaults["termination_policies"]),
     )
-  ]
+  )
 
   launch_template {
     id = element(
