@@ -114,6 +114,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster\_endpoint\_private\_access | Indicates whether or not the Amazon EKS private API server endpoint is enabled. | string | `"false"` | no |
 | cluster\_endpoint\_public\_access | Indicates whether or not the Amazon EKS public API server endpoint is enabled. | string | `"true"` | no |
 | cluster\_iam\_role\_name | IAM role name for the cluster. Only applicable if manage_cluster_iam_resources is set to false. | string | `""` | no |
+| cluster\_log\_retention\_in\_days | Number of days to retain log events. Default retention - 90 days | string | `"90"` | no |
 | cluster\_name | Name of the EKS cluster. Also used as a prefix in names of related resources. | string | n/a | yes |
 | cluster\_security\_group\_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32. | string | `""` | no |
 | cluster\_version | Kubernetes version to use for the EKS cluster. | string | `"1.12"` | no |
