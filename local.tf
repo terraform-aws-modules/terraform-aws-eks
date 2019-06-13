@@ -23,7 +23,7 @@ locals {
     join("", aws_security_group.workers.*.id),
     var.worker_security_group_id,
   )
-  default_iam_role_id = element(concat(aws_iam_role.workers.*.id, [""]), 0)
+  default_iam_role_id = concat(aws_iam_role.workers.*.id, [""])[0]
   kubeconfig_name     = var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name
 
   workers_group_defaults_defaults = {
@@ -58,6 +58,7 @@ locals {
     enabled_metrics               = ""                         # A comma delimited list of metrics to be collected i.e. GroupMinSize,GroupMaxSize,GroupDesiredCapacity
     placement_group               = ""                         # The name of the placement group into which to launch the instances, if any.
     service_linked_role_arn       = ""                         # Arn of custom service linked role that Auto Scaling group will use. Useful when you have encrypted EBS
+    termination_policies          = ""                         # A comma delimited list of policies to decide how the instances in the auto scale group should be terminated.
     # Settings for launch templates
     root_block_device_name            = data.aws_ami.eks_worker.root_device_name # Root device name for workers. If non is provided, will assume default AMI was used.
     root_kms_key_id                   = ""                                       # The KMS key to use when encrypting the root storage device
@@ -157,12 +158,18 @@ locals {
     "m4.4xlarge"   = true
     "m4.10xlarge"  = true
     "m4.16xlarge"  = true
+    "m5a.large"    = true
+    "m5a.xlarge"   = true
+    "m5a.2xlarge"  = true
+    "m5a.4xlarge"  = true
+    "m5a.12xlarge" = true
+    "m5a.24xlarge" = true
     "m5.large"     = true
     "m5.xlarge"    = true
     "m5.2xlarge"   = true
     "m5.4xlarge"   = true
-    "m5.9xlarge"   = true
-    "m5.18xlarge"  = true
+    "m5.12xlarge"  = true
+    "m5.24xlarge"  = true
     "m5d.large"    = true
     "m5d.xlarge"   = true
     "m5d.2xlarge"  = true
@@ -186,6 +193,18 @@ locals {
     "r4.4xlarge"   = true
     "r4.8xlarge"   = true
     "r4.16xlarge"  = true
+    "r5a.large"    = true
+    "r5a.xlarge"   = true
+    "r5a.2xlarge"  = true
+    "r5a.4xlarge"  = true
+    "r5a.12xlarge" = true
+    "r5a.24xlarge" = true
+    "r5.large"     = true
+    "r5.xlarge"    = true
+    "r5.2xlarge"   = true
+    "r5.4xlarge"   = true
+    "r5.12xlarge"  = true
+    "r5.24xlarge"  = true
     "t1.micro"     = false
     "t2.nano"      = false
     "t2.micro"     = false
@@ -194,6 +213,13 @@ locals {
     "t2.large"     = false
     "t2.xlarge"    = false
     "t2.2xlarge"   = false
+    "t3a.nano"     = true
+    "t3a.micro"    = true
+    "t3a.small"    = true
+    "t3a.medium"   = true
+    "t3a.large"    = true
+    "t3a.xlarge"   = true
+    "t3a.2xlarge"  = true
     "t3.nano"      = true
     "t3.micro"     = true
     "t3.small"     = true
