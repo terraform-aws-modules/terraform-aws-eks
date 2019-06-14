@@ -5,8 +5,9 @@ variable "cluster_enabled_log_types" {
 }
 
 variable "cluster_log_retention_in_days" {
-  default     = "90"
+  default     = 90
   description = "Number of days to retain log events. Default retention - 90 days."
+  type        = number
 }
 
 variable "cluster_name" {
