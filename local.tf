@@ -26,6 +26,10 @@ locals {
   default_iam_role_id = concat(aws_iam_role.workers.*.id, [""])[0]
   kubeconfig_name     = var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name
 
+  worker_group_count                       = length(var.worker_groups)
+  worker_group_launch_template_count       = length(var.worker_groups_launch_template)
+  worker_group_launch_template_mixed_count = length(var.worker_groups_launch_template_mixed)
+
   workers_group_defaults_defaults = {
     name                          = "count.index"              # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
     ami_id                        = data.aws_ami.eks_worker.id # AMI ID for the eks workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI.

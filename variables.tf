@@ -56,34 +56,16 @@ variable "map_accounts" {
   default     = []
 }
 
-variable "map_accounts_count" {
-  description = "The count of accounts in the map_accounts list."
-  type        = number
-  default     = 0
-}
-
 variable "map_roles" {
   description = "Additional IAM roles to add to the aws-auth configmap. See examples/basic/variables.tf for example format."
   type        = list(map(string))
   default     = []
 }
 
-variable "map_roles_count" {
-  description = "The count of roles in the map_roles list."
-  type        = number
-  default     = 0
-}
-
 variable "map_users" {
   description = "Additional IAM users to add to the aws-auth configmap. See examples/basic/variables.tf for example format."
   type        = list(map(string))
   default     = []
-}
-
-variable "map_users_count" {
-  description = "The count of roles in the map_users list."
-  type        = number
-  default     = 0
 }
 
 variable "subnets" {
@@ -104,19 +86,8 @@ variable "vpc_id" {
 
 variable "worker_groups" {
   description = "A list of maps defining worker group configurations to be defined using AWS Launch Configurations. See workers_group_defaults for valid keys."
-  type        = list(map(string))
-
-  default = [
-    {
-      "name" = "default"
-    },
-  ]
-}
-
-variable "worker_group_count" {
-  description = "The number of maps contained within the worker_groups list."
-  type        = number
-  default     = 1
+  type        = list(any)
+  default     = []
 }
 
 variable "workers_group_defaults" {
@@ -137,35 +108,13 @@ variable "worker_group_tags" {
 variable "worker_groups_launch_template" {
   description = "A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys."
   type        = list(map(string))
-
-  default = [
-    {
-      "name" = "default"
-    },
-  ]
+  default     = []
 }
 
 variable "worker_groups_launch_template_mixed" {
   description = "A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys."
   type        = list(map(string))
-
-  default = [
-    {
-      "name" = "default"
-    },
-  ]
-}
-
-variable "worker_group_launch_template_mixed_count" {
-  description = "The number of maps contained within the worker_groups_launch_template_mixed list."
-  type        = number
-  default     = 0
-}
-
-variable "worker_group_launch_template_count" {
-  description = "The number of maps contained within the worker_groups_launch_template list."
-  type        = number
-  default     = 0
+  default     = []
 }
 
 variable "worker_security_group_id" {
@@ -196,12 +145,6 @@ variable "workers_additional_policies" {
   description = "Additional policies to be added to workers"
   type        = list(string)
   default     = []
-}
-
-variable "workers_additional_policies_count" {
-  description = "The number of additional policies to be added to workers"
-  type        = number
-  default     = 0
 }
 
 variable "kubeconfig_aws_authenticator_command" {

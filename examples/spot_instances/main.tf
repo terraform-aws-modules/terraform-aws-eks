@@ -42,8 +42,6 @@ module "eks" {
   cluster_name                             = local.cluster_name
   subnets                                  = module.vpc.public_subnets
   vpc_id                                   = module.vpc.vpc_id
-  worker_group_count                       = 0
-  worker_group_launch_template_mixed_count = 1
 
   worker_groups_launch_template_mixed = [
     {

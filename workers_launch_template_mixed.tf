@@ -1,7 +1,7 @@
 # Worker Groups using Launch Templates with mixed instances policy
 
 resource "aws_autoscaling_group" "workers_launch_template_mixed" {
-  count = var.worker_group_launch_template_mixed_count
+  count = local.worker_group_launch_template_mixed_count
   name_prefix = "${aws_eks_cluster.this.name}-${lookup(
     var.worker_groups_launch_template_mixed[count.index],
     "name",
@@ -229,7 +229,7 @@ resource "aws_autoscaling_group" "workers_launch_template_mixed" {
 }
 
 resource "aws_launch_template" "workers_launch_template_mixed" {
-  count = var.worker_group_launch_template_mixed_count
+  count = local.worker_group_launch_template_mixed_count
   name_prefix = "${aws_eks_cluster.this.name}-${lookup(
     var.worker_groups_launch_template_mixed[count.index],
     "name",
@@ -372,7 +372,7 @@ resource "aws_launch_template" "workers_launch_template_mixed" {
 }
 
 resource "aws_iam_instance_profile" "workers_launch_template_mixed" {
-  count       = var.manage_worker_iam_resources ? var.worker_group_launch_template_mixed_count : 0
+  count       = var.manage_worker_iam_resources ? local.worker_group_launch_template_mixed_count : 0
   name_prefix = aws_eks_cluster.this.name
   role = lookup(
     var.worker_groups_launch_template_mixed[count.index],

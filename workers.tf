@@ -1,7 +1,7 @@
 # Worker Groups using Launch Configurations
 
 resource "aws_autoscaling_group" "workers" {
-  count       = var.worker_group_count
+  count       = local.worker_group_count
   name_prefix = "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
   desired_capacity = lookup(
     var.worker_groups[count.index],
@@ -133,7 +133,7 @@ resource "aws_autoscaling_group" "workers" {
 }
 
 resource "aws_launch_configuration" "workers" {
-  count       = var.worker_group_count
+  count       = local.worker_group_count
   name_prefix = "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
   associate_public_ip_address = lookup(
     var.worker_groups[count.index],
@@ -309,7 +309,7 @@ resource "aws_iam_role" "workers" {
 }
 
 resource "aws_iam_instance_profile" "workers" {
-  count       = var.manage_worker_iam_resources ? var.worker_group_count : 0
+  count       = var.manage_worker_iam_resources ? local.worker_group_count : 0
   name_prefix = aws_eks_cluster.this.name
   role = lookup(
     var.worker_groups[count.index],
@@ -339,7 +339,7 @@ resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryRea
 }
 
 resource "aws_iam_role_policy_attachment" "workers_additional_policies" {
-  count      = var.manage_worker_iam_resources ? var.workers_additional_policies_count : 0
+  count      = var.manage_worker_iam_resources ? length(var.workers_additional_policies) : 0
   role       = aws_iam_role.workers[0].name
   policy_arn = var.workers_additional_policies[count.index]
 }
