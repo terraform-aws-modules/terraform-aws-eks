@@ -27,8 +27,6 @@ Notes:
 Example worker group configuration that uses an ASG with launch configuration for each worker group:
 
 ```hcl
-  worker_group_count = 3
-
   worker_groups = [
     {
       name                = "on-demand-1"
@@ -64,8 +62,6 @@ Example worker group configuration that uses an ASG with launch configuration fo
 Launch Template support is a recent addition to both AWS and this module. It might not be as tried and tested but it's more suitable for spot instances as it allowed multiple instance types in the same worker group:
 
 ```hcl
-  worker_group_count = 1
-
   worker_groups = [
     {
       name                = "on-demand-1"
@@ -76,8 +72,6 @@ Launch Template support is a recent addition to both AWS and this module. It mig
       suspended_processes = "AZRebalance"
     }
   ]
-
-  worker_group_launch_template_mixed_count = 1
 
   worker_groups_launch_template_mixed = [
     {
