@@ -27,63 +27,45 @@ resource "aws_autoscaling_group" "workers_launch_template_mixed" {
     "asg_force_delete",
     local.workers_group_defaults["asg_force_delete"],
   )
-  target_group_arns = compact(
-    split(
-      ",",
-      lookup(
-        var.worker_groups_launch_template_mixed[count.index],
-        "target_group_arns",
-        local.workers_group_defaults["target_group_arns"],
-      ),
-    ),
+  target_group_arns = lookup(
+    var.worker_groups_launch_template_mixed[count.index],
+    "target_group_arns",
+    local.workers_group_defaults["target_group_arns"]
   )
   service_linked_role_arn = lookup(
     var.worker_groups_launch_template_mixed[count.index],
     "service_linked_role_arn",
     local.workers_group_defaults["service_linked_role_arn"],
   )
-  vpc_zone_identifier = split(
-    ",",
-    lookup(
-      var.worker_groups_launch_template_mixed[count.index],
-      "subnets",
-      local.workers_group_defaults["subnets"],
-    ),
+  vpc_zone_identifier = lookup(
+    var.worker_groups_launch_template_mixed[count.index],
+    "subnets",
+    local.workers_group_defaults["subnets"]
   )
   protect_from_scale_in = lookup(
     var.worker_groups_launch_template_mixed[count.index],
     "protect_from_scale_in",
     local.workers_group_defaults["protect_from_scale_in"],
   )
-  suspended_processes = compact(
-    split(
-      ",",
-      lookup(
-        var.worker_groups_launch_template_mixed[count.index],
-        "suspended_processes",
-        local.workers_group_defaults["suspended_processes"],
-      ),
-    ),
+  suspended_processes = lookup(
+    var.worker_groups_launch_template_mixed[count.index],
+    "suspended_processes",
+    local.workers_group_defaults["suspended_processes"]
   )
-  enabled_metrics = compact(
-    split(
-      ",",
-      lookup(
-        var.worker_groups_launch_template_mixed[count.index],
-        "enabled_metrics",
-        local.workers_group_defaults["enabled_metrics"],
-      ),
-    ),
+  enabled_metrics = lookup(
+    var.worker_groups_launch_template_mixed[count.index],
+    "enabled_metrics",
+    local.workers_group_defaults["enabled_metrics"]
   )
   placement_group = lookup(
     var.worker_groups_launch_template_mixed[count.index],
     "placement_group",
     local.workers_group_defaults["placement_group"],
   )
-  termination_policies = compact(
-    split(",",
-      lookup(var.worker_groups_launch_template_mixed[count.index], "termination_policies", local.workers_group_defaults["termination_policies"]),
-    )
+  termination_policies = lookup(
+    var.worker_groups_launch_template_mixed[count.index],
+    "termination_policies",
+    local.workers_group_defaults["termination_policies"]
   )
 
   mixed_instances_policy {
@@ -250,15 +232,10 @@ resource "aws_launch_template" "workers_launch_template_mixed" {
     security_groups = flatten([
       local.worker_security_group_id,
       var.worker_additional_security_group_ids,
-      compact(
-        split(
-          ",",
-          lookup(
-            var.worker_groups_launch_template_mixed[count.index],
-            "additional_security_group_ids",
-            local.workers_group_defaults["additional_security_group_ids"],
-          ),
-        ),
+      lookup(
+        var.worker_groups_launch_template_mixed[count.index],
+        "additional_security_group_ids",
+        local.workers_group_defaults["additional_security_group_ids"]
       )
     ])
   }

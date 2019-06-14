@@ -51,18 +51,18 @@ locals {
     enable_monitoring             = true                       # Enables/disables detailed monitoring.
     public_ip                     = false                      # Associate a public ip address with a worker
     kubelet_extra_args            = ""                         # This string is passed directly to kubelet if set. Useful for adding labels or taints.
-    subnets                       = join(",", var.subnets)     # A comma delimited string of subnets to place the worker nodes in. i.e. subnet-123,subnet-456,subnet-789
+    subnets                       = var.subnets                # A list of subnets to place the worker nodes in. i.e. ["subnet-123", "subnet-456", "subnet-789"]
     autoscaling_enabled           = false                      # Sets whether policy and matching tags will be added to allow autoscaling.
-    additional_security_group_ids = ""                         # A comma delimited list of additional security group ids to include in worker launch config
+    additional_security_group_ids = []                         # A list of additional security group ids to include in worker launch config
     protect_from_scale_in         = false                      # Prevent AWS from scaling in, so that cluster-autoscaler is solely responsible.
     iam_instance_profile_name     = ""                         # A custom IAM instance profile name. Used when manage_worker_iam_resources is set to false. Incompatible with iam_role_id.
     iam_role_id                   = local.default_iam_role_id  # A custom IAM role id. Incompatible with iam_instance_profile_name.
-    suspended_processes           = "AZRebalance"              # A comma delimited string of processes to to suspend. i.e. AZRebalance,HealthCheck,ReplaceUnhealthy
-    target_group_arns             = ""                         # A comma delimited list of ALB target group ARNs to be associated to the ASG
-    enabled_metrics               = ""                         # A comma delimited list of metrics to be collected i.e. GroupMinSize,GroupMaxSize,GroupDesiredCapacity
+    suspended_processes           = ["AZRebalance"]            # A list of processes to to suspend. i.e. ["AZRebalance", "HealthCheck", "ReplaceUnhealthy"]
+    target_group_arns             = []                         # A list of ALB target group ARNs to be associated to the ASG
+    enabled_metrics               = []                         # A list of metrics to be collected i.e. ["GroupMinSize", "GroupMaxSize", "GroupDesiredCapacity"]
     placement_group               = ""                         # The name of the placement group into which to launch the instances, if any.
     service_linked_role_arn       = ""                         # Arn of custom service linked role that Auto Scaling group will use. Useful when you have encrypted EBS
-    termination_policies          = ""                         # A comma delimited list of policies to decide how the instances in the auto scale group should be terminated.
+    termination_policies          = []                         # A list of policies to decide how the instances in the auto scale group should be terminated.
     # Settings for launch templates
     root_block_device_name            = data.aws_ami.eks_worker.root_device_name # Root device name for workers. If non is provided, will assume default AMI was used.
     root_kms_key_id                   = ""                                       # The KMS key to use when encrypting the root storage device
