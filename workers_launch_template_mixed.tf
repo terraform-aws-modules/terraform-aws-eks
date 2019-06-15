@@ -112,37 +112,18 @@ resource "aws_autoscaling_group" "workers_launch_template_mixed" {
         )
       }
 
-      override {
-        instance_type = lookup(
+      dynamic "override" {
+        for_each = lookup(
           var.worker_groups_launch_template_mixed[count.index],
-          "override_instance_type_1",
-          local.workers_group_defaults["override_instance_type_1"],
+          "override_instance_types",
+          local.workers_group_defaults["override_instance_types"]
         )
+
+        content {
+          instance_type = override.value
+        }
       }
 
-      override {
-        instance_type = lookup(
-          var.worker_groups_launch_template_mixed[count.index],
-          "override_instance_type_2",
-          local.workers_group_defaults["override_instance_type_2"],
-        )
-      }
-
-      override {
-        instance_type = lookup(
-          var.worker_groups_launch_template_mixed[count.index],
-          "override_instance_type_3",
-          local.workers_group_defaults["override_instance_type_3"],
-        )
-      }
-
-      override {
-        instance_type = lookup(
-          var.worker_groups_launch_template_mixed[count.index],
-          "override_instance_type_4",
-          local.workers_group_defaults["override_instance_type_4"],
-        )
-      }
     }
   }
 
