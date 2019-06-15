@@ -327,6 +327,8 @@ resource "aws_launch_template" "workers_launch_template_mixed" {
     }
   }
 
+  tags = var.tags
+
   lifecycle {
     create_before_destroy = true
   }
