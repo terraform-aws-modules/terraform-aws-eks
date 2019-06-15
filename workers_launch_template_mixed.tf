@@ -187,18 +187,11 @@ resource "aws_autoscaling_group" "workers_launch_template_mixed" {
       },
     ],
     local.asg_tags,
-    var.worker_group_tags[contains(
-      keys(var.worker_group_tags),
-      lookup(
-        var.worker_groups_launch_template_mixed[count.index],
-        "name",
-        count.index,
-      ),
-      ) ? lookup(
+    lookup(
       var.worker_groups_launch_template_mixed[count.index],
-      "name",
-      count.index,
-    ) : "default"],
+      "tags",
+      local.workers_group_defaults["tags"]
+    )
   )
 
   lifecycle {

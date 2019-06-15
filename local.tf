@@ -32,6 +32,7 @@ locals {
 
   workers_group_defaults_defaults = {
     name                          = "count.index"              # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
+    tags                          = []                         # A list of map defining extra tags to be applied to the worker group ASG.
     ami_id                        = data.aws_ami.eks_worker.id # AMI ID for the eks workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI.
     asg_desired_capacity          = "1"                        # Desired worker capacity in the autoscaling group.
     asg_max_size                  = "3"                        # Maximum worker capacity in the autoscaling group.

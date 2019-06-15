@@ -102,10 +102,11 @@ resource "aws_autoscaling_group" "workers" {
       },
     ],
     local.asg_tags,
-    var.worker_group_tags[contains(
-      keys(var.worker_group_tags),
-      lookup(var.worker_groups[count.index], "name", count.index),
-    ) ? lookup(var.worker_groups[count.index], "name", count.index) : "default"],
+    lookup(
+      var.worker_groups[count.index],
+      "tags",
+      local.workers_group_defaults["tags"]
+    )
   )
 
   lifecycle {

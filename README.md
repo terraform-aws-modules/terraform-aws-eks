@@ -32,6 +32,11 @@ module "my-cluster" {
     {
       instance_type = "m4.large"
       asg_max_size  = 5
+      tags = {
+        key                 = "foo"
+        value               = "bar"
+        propagate_at_launch = true
+      }
     }
   ]
 
@@ -139,7 +144,6 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker\_additional\_security\_group\_ids | A list of additional security group ids to attach to worker instances | list | `[]` | no |
 | worker\_ami\_name\_filter | Additional name filter for AWS EKS worker AMI. Default behaviour will get latest for the cluster_version but could be set to a release from amazon-eks-ami, e.g. "v20190220" | string | `"v*"` | no |
 | worker\_create\_security\_group | Whether to create a security group for the workers or attach the workers to `worker_security_group_id`. | string | `"true"` | no |
-| worker\_group\_tags | A map defining extra tags to be applied to the worker group ASG. | map | `{ "default": [] }` | no |
 | worker\_groups | A list of maps defining worker group configurations to be defined using AWS Launch Configurations. See workers_group_defaults for valid keys. | list | `[ { "name": "default" } ]` | no |
 | worker\_groups\_launch\_template | A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys. | list | `[ { "name": "default" } ]` | no |
 | worker\_groups\_launch\_template\_mixed | A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys. | list | `[ { "name": "default" } ]` | no |

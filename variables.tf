@@ -86,7 +86,7 @@ variable "vpc_id" {
 
 variable "worker_groups" {
   description = "A list of maps defining worker group configurations to be defined using AWS Launch Configurations. See workers_group_defaults for valid keys."
-  type        = list(any)
+  type        = any
   default     = []
 }
 
@@ -96,24 +96,15 @@ variable "workers_group_defaults" {
   default     = {}
 }
 
-variable "worker_group_tags" {
-  description = "A map defining extra tags to be applied to the worker group ASG."
-  type        = map(list(map(string)))
-
-  default = {
-    default = []
-  }
-}
-
 variable "worker_groups_launch_template" {
   description = "A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys."
-  type        = list(any)
+  type        = any
   default     = []
 }
 
 variable "worker_groups_launch_template_mixed" {
   description = "A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys."
-  type        = list(any)
+  type        = any
   default     = []
 }
 
