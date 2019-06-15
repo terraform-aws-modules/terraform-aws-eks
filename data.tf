@@ -80,14 +80,8 @@ EOF
 
 
   vars = {
-    value = element(
-      values(var.kubeconfig_aws_authenticator_env_variables),
-      count.index,
-    )
-    key = element(
-      keys(var.kubeconfig_aws_authenticator_env_variables),
-      count.index,
-    )
+    value = values(var.kubeconfig_aws_authenticator_env_variables)[count.index]
+    key = keys(var.kubeconfig_aws_authenticator_env_variables)[count.index]
   }
 }
 

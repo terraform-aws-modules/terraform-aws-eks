@@ -69,10 +69,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
   )
 
   launch_template {
-    id = element(
-      aws_launch_template.workers_launch_template.*.id,
-      count.index,
-    )
+    id = aws_launch_template.workers_launch_template.*.id[count.index]
     version = lookup(
       var.worker_groups_launch_template[count.index],
       "launch_template_version",
@@ -174,13 +171,10 @@ resource "aws_launch_template" "workers_launch_template" {
   }
 
   iam_instance_profile {
-    name = element(
-      coalescelist(
-        aws_iam_instance_profile.workers_launch_template.*.name,
-        data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.name,
-      ),
-      count.index,
-    )
+    name = coalescelist(
+      aws_iam_instance_profile.workers_launch_template.*.name,
+      data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.name,
+    )[count.index]
   }
 
   image_id = lookup(
@@ -199,10 +193,7 @@ resource "aws_launch_template" "workers_launch_template" {
     local.workers_group_defaults["key_name"],
   )
   user_data = base64encode(
-    element(
-      data.template_file.launch_template_userdata.*.rendered,
-      count.index,
-    ),
+    data.template_file.launch_template_userdata.*.rendered[count.index],
   )
   ebs_optimized = lookup(
     var.worker_groups_launch_template[count.index],

@@ -50,7 +50,7 @@ output "kubeconfig" {
 
 output "kubeconfig_filename" {
   description = "The filename of the generated kubectl config."
-  value       = element(concat(local_file.kubeconfig.*.filename, [""]), 0)
+  value       = concat(local_file.kubeconfig.*.filename, [""])[0]
 }
 
 output "workers_asg_arns" {
@@ -116,29 +116,23 @@ output "worker_iam_instance_profile_names" {
 
 output "worker_iam_role_name" {
   description = "default IAM role name for EKS worker groups"
-  value = element(
-    coalescelist(
-      aws_iam_role.workers.*.name,
-      data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_name,
-      data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_name,
-      data.aws_iam_instance_profile.custom_worker_group_launch_template_mixed_iam_instance_profile.*.role_name,
-      [""]
-    ),
-    0,
-  )
+  value = coalescelist(
+    aws_iam_role.workers.*.name,
+    data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_name,
+    data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_name,
+    data.aws_iam_instance_profile.custom_worker_group_launch_template_mixed_iam_instance_profile.*.role_name,
+    [""]
+  )[0]
 }
 
 output "worker_iam_role_arn" {
   description = "default IAM role ARN for EKS worker groups"
-  value = element(
-    coalescelist(
-      aws_iam_role.workers.*.arn,
-      data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_arn,
-      data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_arn,
-      data.aws_iam_instance_profile.custom_worker_group_launch_template_mixed_iam_instance_profile.*.role_arn,
-      [""]
-    ),
-    0,
-  )
+  value = coalescelist(
+    aws_iam_role.workers.*.arn,
+    data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_arn,
+    data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_arn,
+    data.aws_iam_instance_profile.custom_worker_group_launch_template_mixed_iam_instance_profile.*.role_arn,
+    [""]
+  )[0]
 }
 

@@ -33,7 +33,7 @@ resource "aws_autoscaling_group" "workers" {
     "service_linked_role_arn",
     local.workers_group_defaults["service_linked_role_arn"],
   )
-  launch_configuration = element(aws_launch_configuration.workers.*.id, count.index)
+  launch_configuration = aws_launch_configuration.workers.*.id[count.index]
   vpc_zone_identifier = lookup(
     var.worker_groups[count.index],
     "subnets",
@@ -131,13 +131,10 @@ resource "aws_launch_configuration" "workers" {
       local.workers_group_defaults["additional_security_group_ids"]
     )
   ])
-  iam_instance_profile = element(
-    coalescelist(
-      aws_iam_instance_profile.workers.*.id,
-      data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.name,
-    ),
-    count.index,
-  )
+  iam_instance_profile = coalescelist(
+    aws_iam_instance_profile.workers.*.id,
+    data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.name,
+  )[count.index]
   image_id = lookup(
     var.worker_groups[count.index],
     "ami_id",
@@ -153,7 +150,7 @@ resource "aws_launch_configuration" "workers" {
     "key_name",
     local.workers_group_defaults["key_name"],
   )
-  user_data_base64 = base64encode(element(data.template_file.userdata.*.rendered, count.index))
+  user_data_base64 = base64encode(data.template_file.userdata.*.rendered[count.index])
   ebs_optimized = lookup(
     var.worker_groups[count.index],
     "ebs_optimized",
@@ -325,8 +322,8 @@ resource "null_resource" "tags_as_list_of_maps" {
   count = length(keys(var.tags))
 
   triggers = {
-    key                 = element(keys(var.tags), count.index)
-    value               = element(values(var.tags), count.index)
+    key                 = keys(var.tags)[count.index]
+    value               = values(var.tags)[count.index]
     propagate_at_launch = "true"
   }
 }
