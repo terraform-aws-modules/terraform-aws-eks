@@ -15,6 +15,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Update EBS optimized instances type (by @gloutsch)
 - Added tagging for iam role created in `./cluster.tf` (@camilosantana)
 - Enable log retention for cloudwatch log groups (by @yuriipolishchuk)
+- Enable encryption for cloudwatch log groups (by @till-krauss)
 
 ### Changed
 
