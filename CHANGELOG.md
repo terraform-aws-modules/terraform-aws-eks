@@ -28,6 +28,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Added tagging for iam role created in `./cluster.tf` (@camilosantana)
 - Enable log retention for cloudwatch log groups (by @yuriipolishchuk)
 - Update to EKS 1.13 (by @gloutsch)
+- Enable encryption for cloudwatch log groups (by @till-krauss)
 
 ### Changed
 
