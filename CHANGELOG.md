@@ -7,7 +7,19 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v5.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.2...HEAD)] - 2019-06-??]
+## [[v5.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.0.0...HEAD)] - 2019-06-??]
+
+### Added
+
+ - Write your awesome addition here (by @you)
+
+### Changed
+
+ - Write your awesome change here (by @you)
+
+# History
+
+## [[v5.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.2...v5.0.0)] - 2019-05-07]
 
 ### Added
 
@@ -25,9 +37,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Change override instance_types to list (by @nauxliu on behalf of RightCapital)
 - Fix toggle for IAM instance profile creation for mixed launch templates (by @jnozo)
 
-# History
-
-## [[v4.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.0...v4.0.1)] - 2019-05-07]
+## [[v4.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.1...v4.0.2)] - 2019-05-07]
 
 ### Changed
 
