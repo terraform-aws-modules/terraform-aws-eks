@@ -11,6 +11,18 @@ provider "random" {
   version = "~> 2.1"
 }
 
+provider "local" {
+  version = "~> 1.2"
+}
+
+provider "null" {
+  version = "~> 2.1"
+}
+
+provider "template" {
+  version = "~> 2.1"
+}
+
 data "aws_availability_zones" "available" {
 }
 
@@ -71,8 +83,8 @@ resource "aws_security_group" "all_worker_mgmt" {
 }
 
 module "vpc" {
-  source             = "terraform-aws-modules/vpc/aws"
-  version            = "2.6.0"
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "2.6.0"
 
   name               = "test-vpc"
   cidr               = "10.0.0.0/16"
@@ -107,7 +119,7 @@ module "eks" {
     GithubOrg   = "terraform-aws-modules"
   }
 
-  vpc_id             = module.vpc.vpc_id
+  vpc_id = module.vpc.vpc_id
 
   worker_groups = [
     {
@@ -131,4 +143,3 @@ module "eks" {
   map_users                            = var.map_users
   map_accounts                         = var.map_accounts
 }
-
