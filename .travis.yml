@@ -23,7 +23,7 @@ install:
 - bundle install
 
 before_script:
-- export TERRAFORM_VERSION=0.11.14
+- export TERRAFORM_VERSION=0.12.2
 - curl --silent --output terraform.zip "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
 - unzip terraform.zip ; rm -f terraform.zip; chmod +x terraform
 - mkdir -p ${HOME}/bin ; export PATH=${PATH}:${HOME}/bin; mv terraform ${HOME}/bin/

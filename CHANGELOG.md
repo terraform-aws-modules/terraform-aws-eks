@@ -7,7 +7,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v4.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.0...HEAD)] - 2019-06-??]
+## [[v5.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.2...HEAD)] - 2019-06-??]
 
 ### Added
 
@@ -18,6 +18,11 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- Finally, Terraform 0.12 support, [Upgrade Guide](https://github.com/terraform-aws-modules/terraform-aws-eks/pull/394) (by @alex-goncharov @nauxliu @timboven)
+- All the xx_count variables have been removed (by @nauxliu on behalf of RightCapital)
+- Use actual lists in the workers group maps instead of strings with commas (by @nauxliu on behalf of RightCapital)
+- Move variable `worker_group_tags` to workers group's attribute `tags` (by @nauxliu on behalf of RightCapital)
+- Change override instance_types to list (by @nauxliu on behalf of RightCapital)
 - Fix toggle for IAM instance profile creation for mixed launch templates (by @jnozo)
 
 # History
