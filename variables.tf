@@ -9,6 +9,11 @@ variable "cluster_log_kms_key_id" {
   description = "If provided, the log group will be encrypted with the corresponding KMS key. Please verify that logs has the permission to use the key (https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html)."
 }
 
+variable "cluster_log_kms_key_id" {
+  default     = ""
+  description = "If provided, the log group will be encrypted with the corresponding KMS key. Please verify that logs has the permission to use the key (https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html)."
+}
+
 variable "cluster_log_retention_in_days" {
   default     = 90
   description = "Number of days to retain log events. Default retention - 90 days."
