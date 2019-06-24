@@ -58,7 +58,7 @@ locals {
     protect_from_scale_in         = false                      # Prevent AWS from scaling in, so that cluster-autoscaler is solely responsible.
     iam_instance_profile_name     = ""                         # A custom IAM instance profile name. Used when manage_worker_iam_resources is set to false. Incompatible with iam_role_id.
     iam_role_id                   = local.default_iam_role_id  # A custom IAM role id. Incompatible with iam_instance_profile_name.
-    suspended_processes           = ["AZRebalance"]            # A list of processes to to suspend. i.e. ["AZRebalance", "HealthCheck", "ReplaceUnhealthy"]
+    suspended_processes           = ["AZRebalance"]            # A list of processes to suspend. i.e. ["AZRebalance", "HealthCheck", "ReplaceUnhealthy"]
     target_group_arns             = []                         # A list of ALB target group ARNs to be associated to the ASG
     enabled_metrics               = []                         # A list of metrics to be collected i.e. ["GroupMinSize", "GroupMaxSize", "GroupDesiredCapacity"]
     placement_group               = ""                         # The name of the placement group into which to launch the instances, if any.
