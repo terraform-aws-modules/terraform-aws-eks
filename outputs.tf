@@ -45,7 +45,7 @@ output "cluster_iam_role_arn" {
 
 output "cloudwatch_log_group_name" {
   description = "Name of cloudwatch log group created"
-  value       = aws_cloudwatch_log_group.this.name
+  value       = aws_cloudwatch_log_group.this.*.name
 }
 
 output "kubeconfig" {
