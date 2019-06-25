@@ -222,10 +222,10 @@ resource "aws_launch_template" "workers_launch_template" {
   }
 
   instance_market_options {
-    market_type =   lookup(
-        var.worker_groups_launch_template[count.index],
-        "use_spot_instances",
-        local.workers_group_defaults["use_spot_instances"]) ? "spot" : null
+    market_type = lookup(
+      var.worker_groups_launch_template[count.index],
+      "use_spot_instances",
+    local.workers_group_defaults["use_spot_instances"]) ? "spot" : null
   }
 
   block_device_mappings {
