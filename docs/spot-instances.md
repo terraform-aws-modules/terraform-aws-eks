@@ -88,6 +88,4 @@ Launch Template support is a recent addition to both AWS and this module. It mig
 
 ## Important issues
 
-- https://github.com/terraform-aws-modules/terraform-aws-eks/issues/360
-- https://github.com/terraform-providers/terraform-provider-aws/issues/8475
 - https://github.com/kubernetes/autoscaler/issues/1133
