@@ -1,4 +1,6 @@
-    - rolearn: ${role_arn}
-      username: ${username}
+    %{ for map_role in map_roles }
+    - rolearn: ${map_role.role_arn}
+      username: ${map_role.username}
       groups:
-        - ${group}
+        ${indent(8, yamlencode(map_role.groups))}
+    %{ endfor }

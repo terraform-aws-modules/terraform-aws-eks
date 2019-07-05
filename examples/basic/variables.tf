@@ -20,7 +20,7 @@ variable "map_roles" {
     {
       role_arn = "arn:aws:iam::66666666666:role/role1"
       username = "role1"
-      group    = "system:masters"
+      groups   = ["system:masters"]
     },
   ]
 }
@@ -33,12 +33,12 @@ variable "map_users" {
     {
       user_arn = "arn:aws:iam::66666666666:user/user1"
       username = "user1"
-      group    = "system:masters"
+      groups   = ["system:masters"]
     },
     {
       user_arn = "arn:aws:iam::66666666666:user/user2"
       username = "user2"
-      group    = "system:masters"
+      groups   = ["system:masters"]
     },
   ]
 }
