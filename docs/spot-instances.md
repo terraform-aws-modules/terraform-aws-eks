@@ -34,7 +34,7 @@ Example worker group configuration that uses an ASG with launch configuration fo
       asg_max_size        = 1
       autoscaling_enabled = true
       kubelet_extra_args  = "--node-labels=kubernetes.io/lifecycle=normal"
-      suspended_processes = "AZRebalance"
+      suspended_processes = ["AZRebalance"]
     },
     {
       name                = "spot-1"
@@ -43,7 +43,7 @@ Example worker group configuration that uses an ASG with launch configuration fo
       asg_max_size        = 20
       autoscaling_enabled = true
       kubelet_extra_args  = "--node-labels=kubernetes.io/lifecycle=spot"
-      suspended_processes = "AZRebalance"
+      suspended_processes = ["AZRebalance"]
     },
     {
       name                = "spot-2"
@@ -52,7 +52,7 @@ Example worker group configuration that uses an ASG with launch configuration fo
       asg_max_size        = 20
       autoscaling_enabled = true
       kubelet_extra_args  = "--node-labels=kubernetes.io/lifecycle=spot"
-      suspended_processes = "AZRebalance"
+      suspended_processes = ["AZRebalance"]
     }
   ]
 ```
@@ -69,7 +69,7 @@ Launch Template support is a recent addition to both AWS and this module. It mig
       asg_max_size        = 10
       autoscaling_enabled = true
       kubelet_extra_args  = "--node-labels=spot=false"
-      suspended_processes = "AZRebalance"
+      suspended_processes = ["AZRebalance"]
     }
   ]
 
