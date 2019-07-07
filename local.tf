@@ -49,6 +49,7 @@ locals {
     bootstrap_extra_args          = ""                         # Extra arguments passed to the bootstrap.sh script from the EKS AMI.
     additional_userdata           = ""                         # userdata to append to the default userdata.
     ebs_optimized                 = true                       # sets whether to use ebs optimization on supported types.
+    cpu_credits                   = "standard"                 # T2/T3 unlimited mode, can be 'standard' or 'unlimited'. Used 'standard' mode as default to avoid paying higher costs
     enable_monitoring             = true                       # Enables/disables detailed monitoring.
     public_ip                     = false                      # Associate a public ip address with a worker
     kubelet_extra_args            = ""                         # This string is passed directly to kubelet if set. Useful for adding labels or taints.
