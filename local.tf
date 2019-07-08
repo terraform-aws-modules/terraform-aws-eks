@@ -73,13 +73,13 @@ locals {
     root_encrypted                    = ""                                       # Whether the volume should be encrypted or not
     eni_delete                        = true                                     # Delete the ENI on termination (if set to false you will have to manually delete before destroying)
     # Settings for launch templates with mixed instances policy
-    override_instance_types                  = ["m5.large", "c5.large", "t3.large", "r5.large"] # A list of override instance types for mixed instances policy
-    on_demand_allocation_strategy            = "prioritized"                                    # Strategy to use when launching on-demand instances. Valid values: prioritized.
-    on_demand_base_capacity                  = "0"                                              # Absolute minimum amount of desired capacity that must be fulfilled by on-demand instances
-    on_demand_percentage_above_base_capacity = "0"                                              # Percentage split between on-demand and Spot instances above the base on-demand capacity
-    spot_allocation_strategy                 = "lowest-price"                                   # The only valid value is lowest-price, which is also the default value. The Auto Scaling group selects the cheapest Spot pools and evenly allocates your Spot capacity across the number of Spot pools that you specify.
-    spot_instance_pools                      = 10                                               # "Number of Spot pools per availability zone to allocate capacity. EC2 Auto Scaling selects the cheapest Spot pools and evenly allocates Spot capacity across the number of Spot pools that you specify."
-    spot_max_price                           = ""                                               # Maximum price per unit hour that the user is willing to pay for the Spot instances. Default is the on-demand price
+    override_instance_types                  = ["m5.large", "m5a.large", "m5d.large", "m5ad.large"] # A list of override instance types for mixed instances policy
+    on_demand_allocation_strategy            = "prioritized"                                        # Strategy to use when launching on-demand instances. Valid values: prioritized.
+    on_demand_base_capacity                  = "0"                                                  # Absolute minimum amount of desired capacity that must be fulfilled by on-demand instances
+    on_demand_percentage_above_base_capacity = "0"                                                  # Percentage split between on-demand and Spot instances above the base on-demand capacity
+    spot_allocation_strategy                 = "lowest-price"                                       # The only valid value is lowest-price, which is also the default value. The Auto Scaling group selects the cheapest Spot pools and evenly allocates your Spot capacity across the number of Spot pools that you specify.
+    spot_instance_pools                      = 10                                                   # "Number of Spot pools per availability zone to allocate capacity. EC2 Auto Scaling selects the cheapest Spot pools and evenly allocates Spot capacity across the number of Spot pools that you specify."
+    spot_max_price                           = ""                                                   # Maximum price per unit hour that the user is willing to pay for the Spot instances. Default is the on-demand price
   }
 
   workers_group_defaults = merge(

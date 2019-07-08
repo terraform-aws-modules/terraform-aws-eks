@@ -17,6 +17,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+ - Update default override instance types to work with Cluster Autoscaler (by @nauxliu on behalf of RightCapital)
  - Write your awesome change here (by @you)
 
 # History
