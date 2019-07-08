@@ -49,7 +49,6 @@ locals {
     bootstrap_extra_args          = ""                         # Extra arguments passed to the bootstrap.sh script from the EKS AMI.
     additional_userdata           = ""                         # userdata to append to the default userdata.
     ebs_optimized                 = true                       # sets whether to use ebs optimization on supported types.
-    cpu_credits                   = "standard"                 # T2/T3 unlimited mode, can be 'standard' or 'unlimited'. Used 'standard' mode as default to avoid paying higher costs
     enable_monitoring             = true                       # Enables/disables detailed monitoring.
     public_ip                     = false                      # Associate a public ip address with a worker
     kubelet_extra_args            = ""                         # This string is passed directly to kubelet if set. Useful for adding labels or taints.
@@ -73,6 +72,7 @@ locals {
     launch_template_placement_group   = ""                                       # The name of the placement group into which to launch the instances, if any.
     root_encrypted                    = ""                                       # Whether the volume should be encrypted or not
     eni_delete                        = true                                     # Delete the ENI on termination (if set to false you will have to manually delete before destroying)
+    cpu_credits                       = "standard"                               # T2/T3 unlimited mode, can be 'standard' or 'unlimited'. Used 'standard' mode as default to avoid paying higher costs
     # Settings for launch templates with mixed instances policy
     override_instance_types                  = ["m5.large", "c5.large", "t3.large", "r5.large"] # A list of override instance types for mixed instances policy
     on_demand_allocation_strategy            = "prioritized"                                    # Strategy to use when launching on-demand instances. Valid values: prioritized.
