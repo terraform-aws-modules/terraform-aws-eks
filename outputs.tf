@@ -43,6 +43,11 @@ output "cluster_iam_role_arn" {
   value       = local.cluster_iam_role_arn
 }
 
+output "cloudwatch_log_group_name" {
+  description = "Name of cloudwatch log group created"
+  value       = aws_cloudwatch_log_group.this.*.name
+}
+
 output "kubeconfig" {
   description = "kubectl config file contents for this EKS cluster."
   value       = data.template_file.kubeconfig.rendered

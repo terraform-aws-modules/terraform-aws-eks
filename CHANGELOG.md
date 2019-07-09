@@ -12,10 +12,12 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
  - Option to set a KMS key for the log group and encrypt it (by @till-krauss)
+ - Output the name of the cloudwatch log group (by @gbooth27)
  - Write your awesome addition here (by @you)
 
 ### Changed
 
+ - Update default override instance types to work with Cluster Autoscaler (by @nauxliu on behalf of RightCapital)
  - Write your awesome change here (by @you)
 
 # History
