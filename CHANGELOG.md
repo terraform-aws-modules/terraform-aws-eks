@@ -13,6 +13,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
  - Option to set a KMS key for the log group and encrypt it (by @till-krauss)
  - Output the name of the cloudwatch log group (by @gbooth27)
+ - Added `cpu_credits` param for the workers defined in `worker_groups_launch_template` (by @a-shink)
  - Write your awesome addition here (by @you)
 
 ### Changed
