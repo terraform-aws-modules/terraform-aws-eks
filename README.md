@@ -32,11 +32,11 @@ module "my-cluster" {
     {
       instance_type = "m4.large"
       asg_max_size  = 5
-      tags = {
+      tags = [{
         key                 = "foo"
         value               = "bar"
         propagate_at_launch = true
-      }
+      }]
     }
   ]
 
