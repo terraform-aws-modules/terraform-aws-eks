@@ -27,3 +27,7 @@ To install the chart, simply run helm with the `--values` option:
 ```
 helm install stable/cluster-autoscaler --values=path/to/your/values-file.yaml
 ```
+
+## See More
+
+[Using AutoScalingGroup MixedInstancesPolicy](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md#using-autoscalinggroup-mixedinstancespolicy)

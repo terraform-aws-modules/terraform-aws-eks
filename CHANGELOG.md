@@ -7,17 +7,121 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v2.3.0?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.0...HEAD)] - 2019-03-??]
+## [[v5.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.0.0...HEAD)] - 2019-06-??]
 
 ### Added
 
-- Write your awesome addition here (by @you)
+ - Option to set a KMS key for the log group and encrypt it (by @till-krauss)
+ - Output the name of the cloudwatch log group (by @gbooth27)
+ - Added `cpu_credits` param for the workers defined in `worker_groups_launch_template` (by @a-shink)
+ - Write your awesome addition here (by @you)
 
 ### Changed
 
+ - Update default override instance types to work with Cluster Autoscaler (by @nauxliu on behalf of RightCapital)
  - Write your awesome change here (by @you)
 
 # History
+
+## [[v5.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.2...v5.0.0)] - 2019-05-07]
+
+### Added
+
+- Added Termination Policy Option to worker ASGs (by @undeadops)
+- Update EBS optimized instances type (by @gloutsch)
+- Added tagging for iam role created in `./cluster.tf` (@camilosantana)
+- Enable log retention for cloudwatch log groups (by @yuriipolishchuk)
+- Update to EKS 1.13 (by @gloutsch)
+
+### Changed
+
+- Finally, Terraform 0.12 support, [Upgrade Guide](https://github.com/terraform-aws-modules/terraform-aws-eks/pull/394) (by @alex-goncharov @nauxliu @timboven)
+- All the xx_count variables have been removed (by @nauxliu on behalf of RightCapital)
+- Use actual lists in the workers group maps instead of strings with commas (by @nauxliu on behalf of RightCapital)
+- Move variable `worker_group_tags` to workers group's attribute `tags` (by @nauxliu on behalf of RightCapital)
+- Change override instance_types to list (by @nauxliu on behalf of RightCapital)
+- Fix toggle for IAM instance profile creation for mixed launch templates (by @jnozo)
+
+## [[v4.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.1...v4.0.2)] - 2019-05-07]
+
+### Changed
+
+- Added 2 new examples, also tidy up basic example (by @max-rocket-internet)
+- Updates to travis, PR template (by @max-rocket-internet)
+- Fix typo in data.tf (by @max-rocket-internet)
+- Add missing launch template items in `aws_auth.tf` (by @max-rocket-internet)
+
+## [[v4.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.0...v4.0.1)] - 2019-05-07]
+
+### Changed
+
+- Fix annoying typo: worker_group_xx vs worker_groups_xx (by @max-rocket-internet)
+
+## [[v4.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v3.0.0...v4.0.0)] - 2019-05-07]
+
+### Added
+
+- Added support for custom service linked role for Auto Scaling group (by @voanhduy1512)
+- Added support for custom IAM roles for cluster and workers (by @erks)
+- Added cluster ARN to outputs (by @alexsn)
+- Added outputs for `workers_user_data` and `workers_default_ami_id` (by @max-rocket-internet)
+- Added doc about spot instances (by @max-rocket-internet)
+- Added new worker group option with a mixed instances policy (by @max-rocket-internet)
+
+### Changed
+
+- Set default suspended processes for ASG to `AZRebalance` (by @max-rocket-internet)
+- 4 small changes to `aws_launch_template` resource (by @max-rocket-internet)
+- (Breaking Change) Rewritten and de-duplicated code related to Launch Templates (by @max-rocket-internet)
+- Add .prettierignore file (by @rothandrew)
+- Switch to https for the pre-commit repos (by @rothandrew)
+- Add instructions on how to enable the docker bridge network (by @rothandrew)
+
+## [[v3.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.3.1...v3.0.0)] - 2019-04-15]
+
+### Added
+
+- Fixed: Ability to destroy clusters due to security groups being attached to ENI's (by @whiskeyjimbo)
+- Added outputs for worker IAM instance profile(s) (by @soapergem)
+- Added support for cluster logging via the `cluster_enabled_log_types` variable (by @sc250024)
+
+### Changed
+
+ - Updated vpc module version and aws provider version. (by @chenrui333)
+ - Upgraded default kubernetes version from 1.11 to 1.12 (by @stijndehaes)
+
+## [[v2.3.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.3.0...v2.3.1)] - 2019-03-26]
+
+### Added
+
+- Added support for eks public and private endpoints (by @stijndehaes)
+- Added minimum inbound traffic rule to the cluster worker security group as per the [EKS security group requirements](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html) (by @sc250024)
+
+### Changed
+
+- (Breaking Change) Replaced `enable_docker_bridge` with a generic option called `bootstrap_extra_args` to resolve [310](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/310) (by @max-rocket-internet)
+
+## [[v2.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.1...v2.3.0)] - 2019-03-20]
+
+### Added
+
+- Allow additional policies to be attached to worker nodes (by @rottenbytes)
+- Ability to specify a placement group for each worker group (by @matheuss)
+- "k8s.io/cluster-autoscaler/{cluster-name}" and "k8s.io/cluster-autoscaler/node-template/resources/ephemeral-storage" tags for autoscaling groups (by @tbarrella)
+- Added "ec2:DescribeLaunchTemplateVersions" action to worker instance role (by @skang0601)
+- Adding ebs encryption for workers launched using workers_launch_template (by @russki)
+- Added output for generated kubeconfig filename (by @syst0m)
+- Added outputs for cluster role ARN and name (by @spingel)
+- Added optional name filter variable to be able to pin worker AMI to a release (by @max-rocket-internet)
+- Added `--enable-docker-bridge` option for bootstrap.sh in AMI (by @michaelmccord)
+
+## [[v2.2.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.1...v2.2.2)] - 2019-02-25]
+
+### Added
+
+- Ability to specify a path for IAM roles (by @tekn0ir)
+
+## [[v2.2.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.0...v2.2.1)] - 2019-02-18]
 
 ## [[v2.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.1.0...v2.2.0)] - 2019-02-07]
 
