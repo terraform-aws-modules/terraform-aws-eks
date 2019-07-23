@@ -81,6 +81,7 @@ locals {
     spot_allocation_strategy                 = "lowest-price"                                       # The only valid value is lowest-price, which is also the default value. The Auto Scaling group selects the cheapest Spot pools and evenly allocates your Spot capacity across the number of Spot pools that you specify.
     spot_instance_pools                      = 10                                                   # "Number of Spot pools per availability zone to allocate capacity. EC2 Auto Scaling selects the cheapest Spot pools and evenly allocates Spot capacity across the number of Spot pools that you specify."
     spot_max_price                           = ""                                                   # Maximum price per unit hour that the user is willing to pay for the Spot instances. Default is the on-demand price
+    market_type                              = null                                                 # set to "spot" to use spot instances without defining pools
   }
 
   workers_group_defaults = merge(
