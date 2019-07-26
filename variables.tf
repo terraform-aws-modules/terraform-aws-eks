@@ -63,7 +63,7 @@ variable "map_accounts" {
 variable "map_roles" {
   description = "Additional IAM roles to add to the aws-auth configmap. See examples/basic/variables.tf for example format."
   type = list(object({
-    role_arn = string
+    rolearn  = string
     username = string
     groups   = list(string)
   }))
@@ -73,7 +73,7 @@ variable "map_roles" {
 variable "map_users" {
   description = "Additional IAM users to add to the aws-auth configmap. See examples/basic/variables.tf for example format."
   type = list(object({
-    user_arn = string
+    userarn  = string
     username = string
     groups   = list(string)
   }))

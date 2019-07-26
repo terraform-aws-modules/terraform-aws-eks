@@ -95,14 +95,8 @@ data "template_file" "config_map_aws_auth" {
         ),
       ),
     )
-    map_users = templatefile("${path.module}/templates/config-map-aws-auth-map_users.yaml.tpl", {
-      map_users = var.map_users
-    }),
-    map_roles = templatefile("${path.module}/templates/config-map-aws-auth-map_roles.yaml.tpl", {
-      map_roles = var.map_roles
-    })
-    map_accounts = templatefile("${path.module}/templates/config-map-aws-auth-map_accounts.yaml.tpl", {
-      map_accounts = var.map_accounts
-    })
+    map_users = yamlencode(var.map_users),
+    map_roles = yamlencode(var.map_roles),
+    map_accounts = yamlencode(var.map_accounts)
   }
 }

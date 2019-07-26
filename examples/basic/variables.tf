@@ -18,7 +18,7 @@ variable "map_roles" {
 
   default = [
     {
-      role_arn = "arn:aws:iam::66666666666:role/role1"
+      rolearn  = "arn:aws:iam::66666666666:role/role1"
       username = "role1"
       groups   = ["system:masters"]
     },
@@ -31,12 +31,12 @@ variable "map_users" {
 
   default = [
     {
-      user_arn = "arn:aws:iam::66666666666:user/user1"
+      userarn  = "arn:aws:iam::66666666666:user/user1"
       username = "user1"
       groups   = ["system:masters"]
     },
     {
-      user_arn = "arn:aws:iam::66666666666:user/user2"
+      userarn  = "arn:aws:iam::66666666666:user/user2"
       username = "user2"
       groups   = ["system:masters"]
     },
