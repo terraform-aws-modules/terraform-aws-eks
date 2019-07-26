@@ -7,7 +7,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v5.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.0.0...HEAD)] - 2019-06-??]
+## [[v6.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.0.0...HEAD)] - 2019-07-??]
 
 ### Added
 
