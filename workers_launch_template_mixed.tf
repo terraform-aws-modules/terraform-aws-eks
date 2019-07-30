@@ -322,7 +322,7 @@ resource "aws_launch_template" "workers_launch_template_mixed" {
     tags = merge(
       {
         "Name" = "${aws_eks_cluster.this.name}-${lookup(
-          var.worker_groups_launch_template[count.index],
+          var.worker_groups_launch_template_mixed[count.index],
           "name",
           count.index,
         )}-eks_asg"
@@ -348,4 +348,3 @@ resource "aws_iam_instance_profile" "workers_launch_template_mixed" {
   )
   path = var.iam_path
 }
-
