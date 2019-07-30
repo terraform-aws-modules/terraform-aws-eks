@@ -229,14 +229,6 @@ resource "aws_launch_template" "workers_launch_template" {
     )
   }
 
-  instance_market_options {
-    market_type = lookup(
-      var.worker_groups_launch_template[count.index],
-      "market_type",
-      local.workers_group_defaults["market_type"],
-    )
-  }
-
   block_device_mappings {
     device_name = lookup(
       var.worker_groups_launch_template[count.index],
@@ -306,4 +298,3 @@ resource "aws_iam_instance_profile" "workers_launch_template" {
   )
   path = var.iam_path
 }
-
