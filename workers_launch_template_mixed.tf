@@ -325,7 +325,7 @@ resource "aws_launch_template" "workers_launch_template_mixed" {
           var.worker_groups_launch_template[count.index],
           "name",
           count.index,
-          )}-eks_asg"
+        )}-eks_asg"
       },
       var.tags,
     )
