@@ -19,6 +19,12 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 # History
 
+## [[v5.1.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.1.0...v5.1.1)] - 2019-07-30]
+
+### Added
+
+ - Added new tag in `worker.tf` with autoscaling_enabled = true flag (by @insider89)
+
 ## [[v5.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.0.0...v5.1.0)] - 2019-07-30]
 
 ### Added
