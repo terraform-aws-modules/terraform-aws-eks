@@ -274,6 +274,21 @@ resource "aws_launch_template" "workers_launch_template" {
     }
   }
 
+  tag_specifications {
+    resource_type = "volume"
+
+    tags = merge(
+      {
+        "Name" = "${aws_eks_cluster.this.name}-${lookup(
+          var.worker_groups_launch_template[count.index],
+          "name",
+          count.index,
+        )}-eks_asg"
+      },
+      var.tags,
+    )
+  }
+
   tags = var.tags
 
   lifecycle {
