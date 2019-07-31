@@ -7,25 +7,34 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v6.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.0.0...HEAD)] - 2019-07-??]
+## [[v6.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.1.0...HEAD)] - 2019-07-??]
+
+### Added
+
+ - Write your awesome addition here (by @you)
+
+### Changed
+
+ - Support map users and roles to multiple groups (by @nauxliu)
+ - Write your awesome change here (by @you)
+
+# History
+
+## [[v5.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.0.0...v5.1.0)] - 2019-07-30]
 
 ### Added
 
  - Option to set a KMS key for the log group and encrypt it (by @till-krauss)
  - Output the name of the cloudwatch log group (by @gbooth27)
- - Option to use spot instances with launch templates without defining pools, especially useful for GPU instance types (@onur-sam-gtn-ai)
  - Added `cpu_credits` param for the workers defined in `worker_groups_launch_template` (by @a-shink)
- - Write your awesome addition here (by @you)
+ - Added support for EBS Volumes tag in `worker_groups_launch_template` and `workers_launch_template_mixed.tf` (by @sppwf)
 
 ### Changed
 
  - Update default override instance types to work with Cluster Autoscaler (by @nauxliu on behalf of RightCapital)
- - Support map users and roles to multiple groups (by @nauxliu on behalf of RightCapital)
- - Write your awesome change here (by @you)
+ - Examples now specify `enable_dns_hostnames = true`, as per [EKS documentation](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html) (by @karolinepauls)
 
-# History
-
-## [[v5.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.2...v5.0.0)] - 2019-05-07]
+## [[v5.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.2...v5.0.0)] - 2019-06-19]
 
 ### Added
 
