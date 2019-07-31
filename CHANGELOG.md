@@ -11,6 +11,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+ - Added support for log group tag in `./cluster.tf` (@lucas-giaco)
+ - Added support for workers iam role tag in `./workers.tf` (@lucas-giaco)
  - Write your awesome addition here (by @you)
 
 ### Changed
@@ -25,6 +27,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
  - Option to set a KMS key for the log group and encrypt it (by @till-krauss)
  - Output the name of the cloudwatch log group (by @gbooth27)
+ - Option to use spot instances with launch templates without defining pools, especially useful for GPU instance types (@onur-sam-gtn-ai)
  - Added `cpu_credits` param for the workers defined in `worker_groups_launch_template` (by @a-shink)
  - Added support for EBS Volumes tag in `worker_groups_launch_template` and `workers_launch_template_mixed.tf` (by @sppwf)
 
