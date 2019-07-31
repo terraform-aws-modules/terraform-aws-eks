@@ -38,6 +38,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
  - Output the name of the cloudwatch log group (by @gbooth27)
  - Added `cpu_credits` param for the workers defined in `worker_groups_launch_template` (by @a-shink)
  - Added support for EBS Volumes tag in `worker_groups_launch_template` and `workers_launch_template_mixed.tf` (by @sppwf)
+ - Basic example now tags networks correctly, as per [ELB documentation](https://docs.aws.amazon.com/eks/latest/userguide/load-balancing.html) and [ALB documentation](https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html) (by @karolinepauls)
 
 ### Changed
 
