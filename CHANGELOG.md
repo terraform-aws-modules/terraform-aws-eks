@@ -11,7 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
- - Write your awesome addition here (by @you)
+ - Added `market_type` to `workers_launch_template.tf` allow the usage of spot nodegroups without mixed instances policy.
 
 ### Changed
 
