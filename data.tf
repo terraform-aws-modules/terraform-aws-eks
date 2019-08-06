@@ -81,17 +81,17 @@ EOF
 
   vars = {
     value = values(var.kubeconfig_aws_authenticator_env_variables)[count.index]
-    key = keys(var.kubeconfig_aws_authenticator_env_variables)[count.index]
+    key   = keys(var.kubeconfig_aws_authenticator_env_variables)[count.index]
   }
 }
 
 data "template_file" "userdata" {
-  count = local.worker_group_count
+  count    = local.worker_group_count
   template = file("${path.module}/templates/userdata.sh.tpl")
 
   vars = {
-    cluster_name = aws_eks_cluster.this.name
-    endpoint = aws_eks_cluster.this.endpoint
+    cluster_name        = aws_eks_cluster.this.name
+    endpoint            = aws_eks_cluster.this.endpoint
     cluster_auth_base64 = aws_eks_cluster.this.certificate_authority[0].data
     pre_userdata = lookup(
       var.worker_groups[count.index],
@@ -117,12 +117,12 @@ data "template_file" "userdata" {
 }
 
 data "template_file" "launch_template_userdata" {
-  count = local.worker_group_launch_template_count
+  count    = local.worker_group_launch_template_count
   template = file("${path.module}/templates/userdata.sh.tpl")
 
   vars = {
-    cluster_name = aws_eks_cluster.this.name
-    endpoint = aws_eks_cluster.this.endpoint
+    cluster_name        = aws_eks_cluster.this.name
+    endpoint            = aws_eks_cluster.this.endpoint
     cluster_auth_base64 = aws_eks_cluster.this.certificate_authority[0].data
     pre_userdata = lookup(
       var.worker_groups_launch_template[count.index],
@@ -148,12 +148,12 @@ data "template_file" "launch_template_userdata" {
 }
 
 data "template_file" "workers_launch_template_mixed" {
-  count = local.worker_group_launch_template_mixed_count
+  count    = local.worker_group_launch_template_mixed_count
   template = file("${path.module}/templates/userdata.sh.tpl")
 
   vars = {
-    cluster_name = aws_eks_cluster.this.name
-    endpoint = aws_eks_cluster.this.endpoint
+    cluster_name        = aws_eks_cluster.this.name
+    endpoint            = aws_eks_cluster.this.endpoint
     cluster_auth_base64 = aws_eks_cluster.this.certificate_authority[0].data
     pre_userdata = lookup(
       var.worker_groups_launch_template_mixed[count.index],
@@ -180,7 +180,7 @@ data "template_file" "workers_launch_template_mixed" {
 
 data "aws_iam_role" "custom_cluster_iam_role" {
   count = var.manage_cluster_iam_resources ? 0 : 1
-  name = var.cluster_iam_role_name
+  name  = var.cluster_iam_role_name
 }
 
 data "aws_iam_instance_profile" "custom_worker_group_iam_instance_profile" {
