@@ -12,6 +12,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
  - Write your awesome addition here (by @you)
+ - Added `required_providers` to enforce provider minimum versions (by @dpiddockcmp)
 
 ### Changed
 
