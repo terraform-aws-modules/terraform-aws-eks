@@ -11,6 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+ - Added `market_type` to `workers_launch_template.tf` allow the usage of spot nodegroups without mixed instances policy.
  - Added support for log group tag in `./cluster.tf` (@lucas-giaco)
  - Added support for workers iam role tag in `./workers.tf` (@lucas-giaco)
  - Write your awesome addition here (by @you)

@@ -56,6 +56,7 @@ locals {
     root_encrypted                    = ""                                       # Whether the volume should be encrypted or not
     eni_delete                        = true                                     # Delete the ENI on termination (if set to false you will have to manually delete before destroying)
     cpu_credits                       = "standard"                               # T2/T3 unlimited mode, can be 'standard' or 'unlimited'. Used 'standard' mode as default to avoid paying higher costs
+    market_type                       = null
     # Settings for launch templates with mixed instances policy
     override_instance_types                  = ["m5.large", "m5a.large", "m5d.large", "m5ad.large"] # A list of override instance types for mixed instances policy
     on_demand_allocation_strategy            = "prioritized"                                        # Strategy to use when launching on-demand instances. Valid values: prioritized.

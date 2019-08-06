@@ -84,6 +84,18 @@ Launch Template support is a recent addition to both AWS and this module. It mig
       kubelet_extra_args       = "--node-labels=kubernetes.io/lifecycle=spot"
     }
   ]
+
+  worker_groups_launch_template = [
+    {
+      name                     = "spot-2"
+      instance_type            = "m4.xlarge"
+      asg_max_size             = 5
+      asg_desired_size         = 5
+      autoscaling_enabled      = true
+      kubelet_extra_args       = "--node-labels=kubernetes.io/lifecycle=spot"
+      market_type              = "spot"
+    }
+  ]
 ```
 
 ## Important issues
