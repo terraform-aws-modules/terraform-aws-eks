@@ -286,6 +286,7 @@ resource "aws_iam_role" "workers" {
   permissions_boundary  = var.permissions_boundary
   path                  = var.iam_path
   force_detach_policies = true
+  tags                  = var.tags
 }
 
 resource "aws_iam_instance_profile" "workers" {

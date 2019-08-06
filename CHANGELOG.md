@@ -11,6 +11,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+ - Added support for log group tag in `./cluster.tf` (@lucas-giaco)
+ - Added support for workers iam role tag in `./workers.tf` (@lucas-giaco)
  - Write your awesome addition here (by @you)
  - Added `required_providers` to enforce provider minimum versions (by @dpiddockcmp)
 
