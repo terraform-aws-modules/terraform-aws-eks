@@ -2,11 +2,17 @@
 
 resource "aws_autoscaling_group" "workers_launch_template_mixed" {
   count = local.worker_group_launch_template_mixed_count
-  name_prefix = "${aws_eks_cluster.this.name}-${lookup(
-    var.worker_groups_launch_template_mixed[count.index],
-    "name",
-    count.index,
-  )}"
+  name_prefix = join(
+    "-",
+    compact(
+      [
+        aws_eks_cluster.this.name,
+        lookup(var.worker_groups_launch_template_mixed[count.index], "name", count.index),
+        lookup(var.worker_groups_launch_template_mixed[count.index], "asg_recreate_on_change", local.workers_group_defaults["asg_recreate_on_change"]) ? random_pet.workers_launch_template_mixed[count.index].id : ""
+      ]
+    )
+  )
+
   desired_capacity = lookup(
     var.worker_groups_launch_template_mixed[count.index],
     "asg_desired_capacity",
@@ -335,6 +341,25 @@ resource "aws_launch_template" "workers_launch_template_mixed" {
 
   lifecycle {
     create_before_destroy = true
+  }
+}
+
+resource "random_pet" "workers_launch_template_mixed" {
+  count = local.worker_group_launch_template_mixed_count
+
+  separator = "-"
+  length    = 2
+
+  keepers = {
+    lt_name = join(
+      "-",
+      compact(
+        [
+          aws_launch_template.workers_launch_template_mixed[count.index].name,
+          aws_launch_template.workers_launch_template_mixed[count.index].latest_version
+        ]
+      )
+    )
   }
 }
 
