@@ -95,8 +95,8 @@ data "template_file" "config_map_aws_auth" {
         ),
       ),
     )
-    map_users = yamlencode(var.map_users),
-    map_roles = yamlencode(var.map_roles),
+    map_users    = yamlencode(var.map_users),
+    map_roles    = yamlencode(var.map_roles),
     map_accounts = yamlencode(var.map_accounts)
   }
 }
