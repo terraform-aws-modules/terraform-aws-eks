@@ -27,8 +27,8 @@ EOS
 
   triggers = {
     kube_config_map_rendered = data.template_file.kubeconfig.rendered
-    config_map_rendered = data.template_file.config_map_aws_auth.rendered
-    endpoint = aws_eks_cluster.this.endpoint
+    config_map_rendered      = data.template_file.config_map_aws_auth.rendered
+    endpoint                 = aws_eks_cluster.this.endpoint
   }
 }
 
@@ -36,7 +36,7 @@ data "aws_caller_identity" "current" {
 }
 
 data "template_file" "launch_template_mixed_worker_role_arns" {
-  count = local.worker_group_launch_template_mixed_count
+  count    = local.worker_group_launch_template_mixed_count
   template = file("${path.module}/templates/worker-role.tpl")
 
   vars = {
@@ -51,7 +51,7 @@ data "template_file" "launch_template_mixed_worker_role_arns" {
 }
 
 data "template_file" "launch_template_worker_role_arns" {
-  count = local.worker_group_launch_template_count
+  count    = local.worker_group_launch_template_count
   template = file("${path.module}/templates/worker-role.tpl")
 
   vars = {
@@ -66,7 +66,7 @@ data "template_file" "launch_template_worker_role_arns" {
 }
 
 data "template_file" "worker_role_arns" {
-  count = local.worker_group_count
+  count    = local.worker_group_count
   template = file("${path.module}/templates/worker-role.tpl")
 
   vars = {

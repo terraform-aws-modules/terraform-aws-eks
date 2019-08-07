@@ -7,18 +7,29 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v6.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.1.0...HEAD)] - 2019-07-??]
+## [[v6.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.1.0...HEAD)] - 2019-08-??]
 
 ### Added
 
+ - Added `market_type` to `workers_launch_template.tf` allow the usage of spot nodegroups without mixed instances policy.
+ - Added support for log group tag in `./cluster.tf` (@lucas-giaco)
+ - Added support for workers iam role tag in `./workers.tf` (@lucas-giaco)
  - Write your awesome addition here (by @you)
+ - Added `required_providers` to enforce provider minimum versions (by @dpiddockcmp)
 
 ### Changed
 
  - Support map users and roles to multiple groups (by @nauxliu)
+ - Fixed errors sometimes happening during destroy due to usage of coalesce() in local.tf (by @petrikero)
  - Write your awesome change here (by @you)
 
 # History
+
+## [[v5.1.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.1.0...v5.1.1)] - 2019-07-30]
+
+### Added
+
+ - Added new tag in `worker.tf` with autoscaling_enabled = true flag (by @insider89)
 
 ## [[v5.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.0.0...v5.1.0)] - 2019-07-30]
 
