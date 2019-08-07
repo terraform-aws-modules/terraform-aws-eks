@@ -6,8 +6,8 @@ metadata:
 data:
   mapRoles: |
 ${worker_role_arn}
-    ${indent(4, map_roles)}
+  ${indent(2, map_roles)}
   mapUsers: |
-    ${indent(4, map_users)}
+  ${indent(2, map_users)}
   mapAccounts: |
-    ${indent(4, map_accounts)}
+  ${indent(2, map_accounts)}
