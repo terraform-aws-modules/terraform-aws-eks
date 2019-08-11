@@ -56,6 +56,10 @@ module "eks" {
   subnets      = module.vpc.public_subnets
   vpc_id       = module.vpc.vpc_id
 
+  kubeconfig_aws_authenticator_env_variables = {
+    AWS_PROFILE = "${var.profile}"
+  }
+
   worker_groups_launch_template = [
     {
       name                 = "worker-group-1"

@@ -5,6 +5,7 @@ terraform {
 provider "aws" {
   version = ">= 2.11"
   region  = var.region
+  profile = var.profile
 }
 
 provider "random" {
@@ -119,6 +120,10 @@ module "eks" {
     Environment = "test"
     GithubRepo  = "terraform-aws-eks"
     GithubOrg   = "terraform-aws-modules"
+  }
+
+  kubeconfig_aws_authenticator_env_variables = {
+    AWS_PROFILE = "${var.profile}"
   }
 
   vpc_id = module.vpc.vpc_id
