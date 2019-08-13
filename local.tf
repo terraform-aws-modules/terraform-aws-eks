@@ -1,5 +1,12 @@
 locals {
-  asg_tags = null_resource.tags_as_list_of_maps.*.triggers
+  asg_tags = [
+    for item in keys(var.tags) :
+    map(
+      "key", item,
+      "value", element(values(var.tags), index(keys(var.tags), item)),
+      "propagate_at_launch", "true"
+    )
+  ]
 
   cluster_security_group_id = var.cluster_create_security_group ? aws_security_group.cluster[0].id : var.cluster_security_group_id
   cluster_iam_role_name     = var.manage_cluster_iam_resources ? aws_iam_role.cluster[0].name : var.cluster_iam_role_name
