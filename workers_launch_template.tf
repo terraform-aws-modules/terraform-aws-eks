@@ -145,16 +145,6 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     }
   }
 
-  /*  
-  launch_template {
-    id = aws_launch_template.workers_launch_template.*.id[count.index]
-    version = lookup(
-      var.worker_groups_launch_template[count.index],
-      "launch_template_version",
-      local.workers_group_defaults["launch_template_version"],
-    )
-  }
-*/
   tags = concat(
     [
       {
