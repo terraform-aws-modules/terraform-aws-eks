@@ -64,10 +64,19 @@ module "eks" {
       public_ip            = true
     },
     {
-      name                 = "worker-group-2"
+      name                 = "worker-spot-1"
       instance_type        = "t2.medium"
       asg_desired_capacity = 1
       public_ip            = true
+      market_type          = "spot"
     },
+    {
+      name                          = "worker-mixed-1"
+      on_demand_allocation_strategy = "prioritized"
+      override_instance_types       = ["t3.small", "t3.micro"]
+      instance_type                 = "t2.medium"
+      asg_desired_capacity          = 1
+      public_ip                     = true
+    }
   ]
 }

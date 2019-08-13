@@ -16,6 +16,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
  - Added support for workers iam role tag in `./workers.tf` (@lucas-giaco)
  - Write your awesome addition here (by @you)
  - Added `required_providers` to enforce provider minimum versions (by @dpiddockcmp)
+ - Added support for Mixed Instance ASG using `worker_groups_launch_template` variable  (by @sppwf)
+ - Changed ASG Tags generation using terraform 12 `for` utility  (by @sppwf)
 
 ### Changed
 
