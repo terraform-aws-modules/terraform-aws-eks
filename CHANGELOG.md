@@ -14,8 +14,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
  - Added `market_type` to `workers_launch_template.tf` allow the usage of spot nodegroups without mixed instances policy.
  - Added support for log group tag in `./cluster.tf` (@lucas-giaco)
  - Added support for workers iam role tag in `./workers.tf` (@lucas-giaco)
- - Write your awesome addition here (by @you)
  - Added `required_providers` to enforce provider minimum versions (by @dpiddockcmp)
+ - Updated `local.spot_allocation_strategy` docstring to indicate availability of new `capacity-optimized` option. (by @sc250024)
 
 ### Changed
 
