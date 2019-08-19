@@ -7,7 +7,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v5.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.1.0...HEAD)] - 2019-08-??]
+## [[v6.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.1.0...HEAD)] - 2019-08-??]
 
 ### Added
 
@@ -19,6 +19,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+ - Support map users and roles to multiple groups (by @nauxliu)
  - Fixed errors sometimes happening during destroy due to usage of coalesce() in local.tf (by @petrikero)
  - Write your awesome change here (by @you)
 
