@@ -16,6 +16,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
  - Added support for workers iam role tag in `./workers.tf` (@lucas-giaco)
  - Added `required_providers` to enforce provider minimum versions (by @dpiddockcmp)
  - Updated `local.spot_allocation_strategy` docstring to indicate availability of new `capacity-optimized` option. (by @sc250024)
+ - Added support for initial lifecycle hooks for autosacling groups (@barryib)
  - Added option to recreate ASG when LT or LC changes (by @barryib)
 
 ### Changed

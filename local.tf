@@ -21,6 +21,7 @@ locals {
     asg_max_size                  = "3"                        # Maximum worker capacity in the autoscaling group.
     asg_min_size                  = "1"                        # Minimum worker capacity in the autoscaling group.
     asg_force_delete              = false                      # Enable forced deletion for the autoscaling group.
+    asg_initial_lifecycle_hooks   = []                         # Initital lifecycle hook for the autoscaling group.
     asg_recreate_on_change        = false                      # Recreate the autoscaling group when LT or LC change.
     instance_type                 = "m4.large"                 # Size of the workers instances.
     spot_price                    = ""                         # Cost of spot instance.
