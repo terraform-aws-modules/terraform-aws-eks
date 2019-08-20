@@ -1,8 +1,17 @@
 # Worker Groups using Launch Configurations
 
 resource "aws_autoscaling_group" "workers" {
-  count       = local.worker_group_count
-  name_prefix = "${aws_eks_cluster.this.name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
+  count = local.worker_group_count
+  name_prefix = join(
+    "-",
+    compact(
+      [
+        aws_eks_cluster.this.name,
+        lookup(var.worker_groups[count.index], "name", count.index),
+        lookup(var.worker_groups[count.index], "asg_recreate_on_change", local.workers_group_defaults["asg_recreate_on_change"]) ? random_pet.workers[count.index].id : ""
+      ]
+    )
+  )
   desired_capacity = lookup(
     var.worker_groups[count.index],
     "asg_desired_capacity",
@@ -210,6 +219,25 @@ resource "aws_launch_configuration" "workers" {
   }
 }
 
+resource "random_pet" "workers" {
+  count = local.worker_group_count
+
+  separator = "-"
+  length    = 2
+
+  keepers = {
+    lt_name = join(
+      "-",
+      compact(
+        [
+          aws_launch_configuration.workers[count.index].name,
+          aws_launch_configuration.workers[count.index].latest_version
+        ]
+      )
+    )
+  }
+}
+
 resource "aws_security_group" "workers" {
   count       = var.worker_create_security_group ? 1 : 0
   name_prefix = aws_eks_cluster.this.name
@@ -390,4 +418,3 @@ data "aws_iam_policy_document" "worker_autoscaling" {
     }
   }
 }
-
