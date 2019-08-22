@@ -251,3 +251,12 @@ variable "manage_worker_iam_resources" {
   type        = bool
   default     = true
 }
+
+variable "worker_ami_name_prefix" {
+  description = "Prefix for name for AWS EKS worker AMI. Default will be using regular ami with amazon-eks-ami prefix but for gpu amis you can use amazon-eks-gpu-node"
+  type        = string
+  default     = "amazon-eks-node"
+}
+
+
+
