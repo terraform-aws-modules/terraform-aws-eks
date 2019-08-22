@@ -20,7 +20,7 @@ variable "cluster_name" {
 }
 
 variable "cluster_security_group_id" {
-  description = "If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers and provide API access to your current IP/32."
+  description = "If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers"
   type        = string
   default     = ""
 }
@@ -62,14 +62,22 @@ variable "map_accounts" {
 
 variable "map_roles" {
   description = "Additional IAM roles to add to the aws-auth configmap. See examples/basic/variables.tf for example format."
-  type        = list(map(string))
-  default     = []
+  type = list(object({
+    rolearn  = string
+    username = string
+    groups   = list(string)
+  }))
+  default = []
 }
 
 variable "map_users" {
   description = "Additional IAM users to add to the aws-auth configmap. See examples/basic/variables.tf for example format."
-  type        = list(map(string))
-  default     = []
+  type = list(object({
+    userarn  = string
+    username = string
+    groups   = list(string)
+  }))
+  default = []
 }
 
 variable "subnets" {

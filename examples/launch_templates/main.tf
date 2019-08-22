@@ -64,11 +64,10 @@ module "eks" {
       public_ip            = true
     },
     {
-      name                 = "worker-spot-1"
+      name                 = "worker-group-2"
       instance_type        = "t2.medium"
       asg_desired_capacity = 1
       public_ip            = true
-      market_type          = "spot"
     },
     {
       name                          = "worker-mixed-1"
