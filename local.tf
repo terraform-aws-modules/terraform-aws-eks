@@ -7,7 +7,7 @@ locals {
   worker_security_group_id  = var.worker_create_security_group ? aws_security_group.workers[0].id : var.worker_security_group_id
 
   default_iam_role_id = concat(aws_iam_role.workers.*.id, [""])[0]
-  kubeconfig_name     = var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name
+  kubeconfig_name     = var.kubeconfig_name == "" ? "eks_${var.cluster_name}.yaml" : var.kubeconfig_name
 
   worker_group_count                       = length(var.worker_groups)
   worker_group_launch_template_count       = length(var.worker_groups_launch_template)
