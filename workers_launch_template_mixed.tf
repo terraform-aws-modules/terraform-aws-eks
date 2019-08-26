@@ -134,7 +134,7 @@ resource "aws_autoscaling_group" "workers_launch_template_mixed" {
   }
 
   dynamic "initial_lifecycle_hook" {
-    for_each = lookup(var.worker_groups_launch_template_mixed[count.index], "asg_initial_lifecycle_hooks", local.workers_group_defaults["asg_initial_lifecycle_hooks"])
+    for_each = length(lookup(var.worker_groups_launch_template_mixed[count.index], "asg_initial_lifecycle_hooks", local.workers_group_defaults["asg_initial_lifecycle_hooks"])) > 0 ? lookup(var.worker_groups_launch_template_mixed[count.index], "asg_initial_lifecycle_hooks", local.workers_group_defaults["asg_initial_lifecycle_hooks"]) : []
     content {
       name                    = lookup(initial_lifecycle_hook.value, "name", null)
       default_result          = lookup(initial_lifecycle_hook.value, "default_result", null)
