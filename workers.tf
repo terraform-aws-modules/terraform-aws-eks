@@ -239,15 +239,7 @@ resource "random_pet" "workers" {
   length    = 2
 
   keepers = {
-    lt_name = join(
-      "-",
-      compact(
-        [
-          aws_launch_configuration.workers[count.index].name,
-          aws_launch_configuration.workers[count.index].latest_version
-        ]
-      )
-    )
+    lc_name = aws_launch_configuration.workers[count.index].name
   }
 }
 
