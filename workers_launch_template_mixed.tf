@@ -2,11 +2,17 @@
 
 resource "aws_autoscaling_group" "workers_launch_template_mixed" {
   count = local.worker_group_launch_template_mixed_count
-  name_prefix = "${aws_eks_cluster.this.name}-${lookup(
-    var.worker_groups_launch_template_mixed[count.index],
-    "name",
-    count.index,
-  )}"
+  name_prefix = join(
+    "-",
+    compact(
+      [
+        aws_eks_cluster.this.name,
+        lookup(var.worker_groups_launch_template_mixed[count.index], "name", count.index),
+        lookup(var.worker_groups_launch_template_mixed[count.index], "asg_recreate_on_change", local.workers_group_defaults["asg_recreate_on_change"]) ? random_pet.workers_launch_template_mixed[count.index].id : ""
+      ]
+    )
+  )
+
   desired_capacity = lookup(
     var.worker_groups_launch_template_mixed[count.index],
     "asg_desired_capacity",
@@ -124,6 +130,19 @@ resource "aws_autoscaling_group" "workers_launch_template_mixed" {
         }
       }
 
+    }
+  }
+
+  dynamic "initial_lifecycle_hook" {
+    for_each = lookup(var.worker_groups_launch_template_mixed[count.index], "asg_initial_lifecycle_hooks", local.workers_group_defaults["asg_initial_lifecycle_hooks"])
+    content {
+      name                    = lookup(initial_lifecycle_hook.value, "name", null)
+      default_result          = lookup(initial_lifecycle_hook.value, "default_result", null)
+      heartbeat_timeout       = lookup(initial_lifecycle_hook.value, "heartbeat_timeout", null)
+      lifecycle_transition    = lookup(initial_lifecycle_hook.value, "lifecycle_transition", null)
+      notification_metadata   = lookup(initial_lifecycle_hook.value, "notification_metadata", null)
+      notification_target_arn = lookup(initial_lifecycle_hook.value, "notification_target_arn", null)
+      role_arn                = lookup(initial_lifecycle_hook.value, "role_arn", null)
     }
   }
 
@@ -335,6 +354,25 @@ resource "aws_launch_template" "workers_launch_template_mixed" {
 
   lifecycle {
     create_before_destroy = true
+  }
+}
+
+resource "random_pet" "workers_launch_template_mixed" {
+  count = local.worker_group_launch_template_mixed_count
+
+  separator = "-"
+  length    = 2
+
+  keepers = {
+    lt_name = join(
+      "-",
+      compact(
+        [
+          aws_launch_template.workers_launch_template_mixed[count.index].name,
+          aws_launch_template.workers_launch_template_mixed[count.index].latest_version
+        ]
+      )
+    )
   }
 }
 

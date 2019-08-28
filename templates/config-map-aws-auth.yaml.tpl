@@ -6,8 +6,14 @@ metadata:
 data:
   mapRoles: |
 ${worker_role_arn}
-${map_roles}
+  %{if chomp(map_roles) != "[]" }
+    ${indent(4, map_roles)}
+  %{ endif }
+  %{if chomp(map_users) != "[]" }
   mapUsers: |
-${map_users}
+    ${indent(4, map_users)}
+  %{ endif }
+  %{if chomp(map_accounts) != "[]" }
   mapAccounts: |
-${map_accounts}
+    ${indent(4, map_accounts)}
+  %{ endif }

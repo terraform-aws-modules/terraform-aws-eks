@@ -7,22 +7,30 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v5.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.1.0...HEAD)] - 2019-08-??]
+## [[v6.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.1.0...HEAD)] - 2019-08-??]
 
 ### Added
 
  - Added `market_type` to `workers_launch_template.tf` allow the usage of spot nodegroups without mixed instances policy.
  - Added support for log group tag in `./cluster.tf` (@lucas-giaco)
  - Added support for workers iam role tag in `./workers.tf` (@lucas-giaco)
- - Write your awesome addition here (by @you)
  - Added `required_providers` to enforce provider minimum versions (by @dpiddockcmp)
+<<<<<<< HEAD
  - Added support for Mixed Instance ASG using `worker_groups_launch_template` variable  (by @sppwf)
  - Changed ASG Tags generation using terraform 12 `for` utility  (by @sppwf)
+=======
+ - Updated `local.spot_allocation_strategy` docstring to indicate availability of new `capacity-optimized` option. (by @sc250024)
+ - Added support for initial lifecycle hooks for autosacling groups (@barryib)
+ - Added option to recreate ASG when LT or LC changes (by @barryib)
+>>>>>>> upstream/master
 
 ### Changed
 
+ - Support map users and roles to multiple groups (by @nauxliu)
  - Fixed errors sometimes happening during destroy due to usage of coalesce() in local.tf (by @petrikero)
+ - Removed historical mention of adding caller's IPv4 to cluster security group (by @dpiddockcmp)
  - Write your awesome change here (by @you)
+ - Wrapped `kubelet_extra_args` in double quotes instead of singe quotes (by @nxf5025)
 
 # History
 

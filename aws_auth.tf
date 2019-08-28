@@ -95,46 +95,8 @@ data "template_file" "config_map_aws_auth" {
         ),
       ),
     )
-    map_users    = join("", data.template_file.map_users.*.rendered)
-    map_roles    = join("", data.template_file.map_roles.*.rendered)
-    map_accounts = join("", data.template_file.map_accounts.*.rendered)
+    map_users    = yamlencode(var.map_users),
+    map_roles    = yamlencode(var.map_roles),
+    map_accounts = yamlencode(var.map_accounts)
   }
 }
-
-data "template_file" "map_users" {
-  count = length(var.map_users)
-  template = file(
-    "${path.module}/templates/config-map-aws-auth-map_users.yaml.tpl",
-  )
-
-  vars = {
-    user_arn = var.map_users[count.index]["user_arn"]
-    username = var.map_users[count.index]["username"]
-    group    = var.map_users[count.index]["group"]
-  }
-}
-
-data "template_file" "map_roles" {
-  count = length(var.map_roles)
-  template = file(
-    "${path.module}/templates/config-map-aws-auth-map_roles.yaml.tpl",
-  )
-
-  vars = {
-    role_arn = var.map_roles[count.index]["role_arn"]
-    username = var.map_roles[count.index]["username"]
-    group    = var.map_roles[count.index]["group"]
-  }
-}
-
-data "template_file" "map_accounts" {
-  count = length(var.map_accounts)
-  template = file(
-    "${path.module}/templates/config-map-aws-auth-map_accounts.yaml.tpl",
-  )
-
-  vars = {
-    account_number = var.map_accounts[count.index]
-  }
-}
-

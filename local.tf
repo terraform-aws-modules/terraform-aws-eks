@@ -28,6 +28,8 @@ locals {
     asg_max_size                  = "3"                        # Maximum worker capacity in the autoscaling group.
     asg_min_size                  = "1"                        # Minimum worker capacity in the autoscaling group.
     asg_force_delete              = false                      # Enable forced deletion for the autoscaling group.
+    asg_initial_lifecycle_hooks   = []                         # Initital lifecycle hook for the autoscaling group.
+    asg_recreate_on_change        = false                      # Recreate the autoscaling group when LT or LC change.
     instance_type                 = "m4.large"                 # Size of the workers instances.
     spot_price                    = ""                         # Cost of spot instance.
     placement_tenancy             = ""                         # The tenancy of the instance. Valid values are "default" or "dedicated".
@@ -69,7 +71,7 @@ locals {
     on_demand_allocation_strategy            = null                                                 # Strategy to use when launching on-demand instances. Valid values: prioritized.
     on_demand_base_capacity                  = "0"                                                  # Absolute minimum amount of desired capacity that must be fulfilled by on-demand instances
     on_demand_percentage_above_base_capacity = "0"                                                  # Percentage split between on-demand and Spot instances above the base on-demand capacity
-    spot_allocation_strategy                 = "lowest-price"                                       # The only valid value is lowest-price, which is also the default value. The Auto Scaling group selects the cheapest Spot pools and evenly allocates your Spot capacity across the number of Spot pools that you specify.
+    spot_allocation_strategy                 = "lowest-price"                                       # Valid options are 'lowest-price' and 'capacity-optimized'. If 'lowest-price', the Auto Scaling group launches instances using the Spot pools with the lowest price, and evenly allocates your instances across the number of Spot pools. If 'capacity-optimized', the Auto Scaling group launches instances using Spot pools that are optimally chosen based on the available Spot capacity.
     spot_instance_pools                      = 10                                                   # "Number of Spot pools per availability zone to allocate capacity. EC2 Auto Scaling selects the cheapest Spot pools and evenly allocates Spot capacity across the number of Spot pools that you specify."
     spot_max_price                           = ""                                                   # Maximum price per unit hour that the user is willing to pay for the Spot instances. Default is the on-demand price
   }
