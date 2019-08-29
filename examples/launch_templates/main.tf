@@ -52,9 +52,6 @@ module "vpc" {
 
 module "eks" {
   source       = "../.."
-#  source          = "terraform-aws-modules/eks/aws"
-#  version         = "5.1.0"
-
   cluster_name = local.cluster_name
   subnets      = module.vpc.public_subnets
   vpc_id       = module.vpc.vpc_id
@@ -63,34 +60,14 @@ module "eks" {
     {
       name                 = "worker-group-1"
       instance_type        = "t2.small"
-      asg_desired_capacity = 0
-      asg_min_size         = 0
+      asg_desired_capacity = 2
       public_ip            = true
     },
     {
-<<<<<<< HEAD
-      name                 = "worker-spot-1"
-      instance_type        = "c5d.large"
-      asg_desired_capacity = 1
-      public_ip            = true
-      market_type          = "spot"
-      key_name             = "sre-keypair-eu-tn-prod-oregon"
-      pre_userdata         = file("${path.module}/pre_userdata.sh")
-=======
       name                 = "worker-group-2"
       instance_type        = "t2.medium"
       asg_desired_capacity = 1
       public_ip            = true
->>>>>>> 375af11d2a071fc470b36fcae12ac06b5ed9b134
     },
-    {
-      name                          = "worker-mixed-1"
-      on_demand_allocation_strategy = "prioritized"
-      override_instance_types       = ["t3.small", "t3.micro"]
-      instance_type                 = "t3.medium"
-      asg_desired_capacity          = 0
-      asg_min_size         = 0
-      public_ip                     = true
-    }
   ]
 }
