@@ -68,6 +68,7 @@ module "eks" {
       public_ip            = true
     },
     {
+<<<<<<< HEAD
       name                 = "worker-spot-1"
       instance_type        = "c5d.large"
       asg_desired_capacity = 1
@@ -75,6 +76,12 @@ module "eks" {
       market_type          = "spot"
       key_name             = "sre-keypair-eu-tn-prod-oregon"
       pre_userdata         = file("${path.module}/pre_userdata.sh")
+=======
+      name                 = "worker-group-2"
+      instance_type        = "t2.medium"
+      asg_desired_capacity = 1
+      public_ip            = true
+>>>>>>> 375af11d2a071fc470b36fcae12ac06b5ed9b134
     },
     {
       name                          = "worker-mixed-1"
