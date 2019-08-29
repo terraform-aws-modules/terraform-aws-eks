@@ -112,54 +112,54 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| cluster\_create\_security\_group | Whether to create a security group for the cluster or attach the cluster to `cluster\_security\_group\_id`. | bool | `"true"` | no |
+| cluster\_create\_security\_group | Whether to create a security group for the cluster or attach the cluster to `cluster_security_group_id`. | bool | `"true"` | no |
 | cluster\_create\_timeout | Timeout value when creating the EKS cluster. | string | `"15m"` | no |
 | cluster\_delete\_timeout | Timeout value when deleting the EKS cluster. | string | `"15m"` | no |
-| cluster\_enabled\_log\_types | A list of the desired control plane logging to enable. For more information, see Amazon EKS Control Plane Logging documentation \(https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html\) | list(string) | `[]` | no |
+| cluster\_enabled\_log\_types | A list of the desired control plane logging to enable. For more information, see Amazon EKS Control Plane Logging documentation (https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html) | list(string) | `[]` | no |
 | cluster\_endpoint\_private\_access | Indicates whether or not the Amazon EKS private API server endpoint is enabled. | bool | `"false"` | no |
 | cluster\_endpoint\_public\_access | Indicates whether or not the Amazon EKS public API server endpoint is enabled. | bool | `"true"` | no |
 | cluster\_iam\_role\_name | IAM role name for the cluster. Only applicable if manage\_cluster\_iam\_resources is set to false. | string | `""` | no |
-| cluster\_log\_kms\_key\_id | If a KMS Key ARN is set, this key will be used to encrypt the corresponding log group. Please be sure that the KMS Key has an appropriate key policy \(https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html\) | string | `""` | no |
+| cluster\_log\_kms\_key\_id | If a KMS Key ARN is set, this key will be used to encrypt the corresponding log group. Please be sure that the KMS Key has an appropriate key policy (https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html) | string | `""` | no |
 | cluster\_log\_retention\_in\_days | Number of days to retain log events. Default retention - 90 days. | number | `"90"` | no |
 | cluster\_name | Name of the EKS cluster. Also used as a prefix in names of related resources. | string | n/a | yes |
 | cluster\_security\_group\_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers | string | `""` | no |
 | cluster\_version | Kubernetes version to use for the EKS cluster. | string | `"1.13"` | no |
-| config\_output\_path | Where to save the Kubectl config file \(if `write\_kubeconfig = true`\). Should end in a forward slash `/` . | string | `"./"` | no |
+| config\_output\_path | Where to save the Kubectl config file (if `write_kubeconfig = true`). Should end in a forward slash `/` . | string | `"./"` | no |
 | iam\_path | If provided, all IAM roles will be created on this path. | string | `"/"` | no |
 | kubeconfig\_aws\_authenticator\_additional\_args | Any additional arguments to pass to the authenticator such as the role to assume. e.g. \["-r", "MyEksRole"\]. | list(string) | `[]` | no |
 | kubeconfig\_aws\_authenticator\_command | Command to use to fetch AWS EKS credentials. | string | `"aws-iam-authenticator"` | no |
-| kubeconfig\_aws\_authenticator\_command\_args | Default arguments passed to the authenticator command. Defaults to \[token -i $cluster\_name\]. | list(string) | `[]` | no |
-| kubeconfig\_aws\_authenticator\_env\_variables | Environment variables that should be used when executing the authenticator. e.g. \{ AWS\_PROFILE = "eks"\}. | map(string) | `{}` | no |
+| kubeconfig\_aws\_authenticator\_command\_args | Default arguments passed to the authenticator command. Defaults to [token -i $cluster_name]. | list(string) | `[]` | no |
+| kubeconfig\_aws\_authenticator\_env\_variables | Environment variables that should be used when executing the authenticator. e.g. { AWS_PROFILE = "eks"}. | map(string) | `{}` | no |
 | kubeconfig\_name | Override the default name used for items kubeconfig. | string | `""` | no |
 | local\_exec\_interpreter | Command to run for local-exec resources. Must be a shell-style interpreter. If you are on Windows Git Bash is a good choice. | list(string) | `[ "/bin/sh", "-c" ]` | no |
 | manage\_aws\_auth | Whether to apply the aws-auth configmap file. | string | `"true"` | no |
-| manage\_cluster\_iam\_resources | Whether to let the module manage cluster IAM resources. If set to false, cluster\_iam\_role\_name must be specified. | bool | `"true"` | no |
-| manage\_worker\_iam\_resources | Whether to let the module manage worker IAM resources. If set to false, iam\_instance\_profile\_name must be specified for workers. | bool | `"true"` | no |
+| manage\_cluster\_iam\_resources | Whether to let the module manage cluster IAM resources. If set to false, cluster_iam_role_name must be specified. | bool | `"true"` | no |
+| manage\_worker\_iam\_resources | Whether to let the module manage worker IAM resources. If set to false, iam_instance_profile_name must be specified for workers. | bool | `"true"` | no |
 | map\_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | list(string) | `[]` | no |
-| map\_roles | Additional IAM roles to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | object | `[]` | no |
-| map\_users | Additional IAM users to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | object | `[]` | no |
+| map\_roles | Additional IAM roles to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | list(map(string)) | `[]` | no |
+| map\_users | Additional IAM users to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | list(map(string)) | `[]` | no |
 | permissions\_boundary | If provided, all IAM roles will be created with this permissions boundary attached. | string | `""` | no |
 | subnets | A list of subnets to place the EKS cluster and workers within. | list(string) | n/a | yes |
 | tags | A map of tags to add to all resources. | map(string) | `{}` | no |
 | vpc\_id | VPC where the cluster and workers will be deployed. | string | n/a | yes |
 | worker\_additional\_security\_group\_ids | A list of additional security group ids to attach to worker instances | list(string) | `[]` | no |
 | worker\_ami\_name\_filter | Additional name filter for AWS EKS worker AMI. Default behaviour will get latest for the cluster\_version but could be set to a release from amazon-eks-ami, e.g. "v20190220" | string | `"v*"` | no |
-| worker\_create\_security\_group | Whether to create a security group for the workers or attach the workers to `worker\_security\_group\_id`. | bool | `"true"` | no |
+| worker\_create\_security\_group | Whether to create a security group for the workers or attach the workers to `worker_security_group_id`. | bool | `"true"` | no |
 | worker\_groups | A list of maps defining worker group configurations to be defined using AWS Launch Configurations. See workers\_group\_defaults for valid keys. | any | `[]` | no |
 | worker\_groups\_launch\_template | A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers\_group\_defaults for valid keys. | any | `[]` | no |
 | worker\_security\_group\_id | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster. | string | `""` | no |
-| worker\_sg\_ingress\_from\_port | Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 \(e.g. 22, 80, or 443\). | number | `"1025"` | no |
+| worker\_sg\_ingress\_from\_port | Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443). | number | `"1025"` | no |
 | workers\_additional\_policies | Additional policies to be added to workers | list(string) | `[]` | no |
 | workers\_group\_defaults | Override default values for target groups. See workers\_group\_defaults\_defaults in local.tf for valid keys. | any | `{}` | no |
 | write\_aws\_auth\_config | Whether to write the aws-auth configmap file. | bool | `"true"` | no |
-| write\_kubeconfig | Whether to write a Kubectl config file containing the cluster configuration. Saved to `config\_output\_path`. | bool | `"true"` | no |
+| write\_kubeconfig | Whether to write a Kubectl config file containing the cluster configuration. Saved to `config_output_path`. | bool | `"true"` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | cloudwatch\_log\_group\_name | Name of cloudwatch log group created |
-| cluster\_arn | The Amazon Resource Name \(ARN\) of the cluster. |
+| cluster\_arn | The Amazon Resource Name (ARN) of the cluster. |
 | cluster\_certificate\_authority\_data | Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster. |
 | cluster\_endpoint | The endpoint for your EKS Kubernetes API. |
 | cluster\_iam\_role\_arn | IAM role ARN of the EKS cluster. |
