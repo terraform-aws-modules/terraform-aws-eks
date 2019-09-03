@@ -14,6 +14,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
   suspended_processes     = ["${compact(split(",", coalesce(lookup(var.worker_groups_launch_template[count.index], "suspended_processes", ""), local.workers_group_defaults["suspended_processes"])))}"]
   enabled_metrics         = ["${compact(split(",", coalesce(lookup(var.worker_groups_launch_template[count.index], "enabled_metrics", ""), local.workers_group_defaults["enabled_metrics"])))}"]
   placement_group         = "${lookup(var.worker_groups_launch_template[count.index], "placement_group", local.workers_group_defaults["placement_group"])}"
+  termination_policies    = ["${compact(split(",", coalesce(lookup(var.worker_groups_launch_template[count.index], "termination_policies", ""), local.workers_group_defaults["termination_policies"])))}"]
 
   launch_template {
     id      = "${element(aws_launch_template.workers_launch_template.*.id, count.index)}"
