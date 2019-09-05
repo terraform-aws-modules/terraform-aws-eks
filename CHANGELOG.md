@@ -18,6 +18,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
  - Updated `local.spot_allocation_strategy` docstring to indicate availability of new `capacity-optimized` option. (by @sc250024)
  - Added support for initial lifecycle hooks for autosacling groups (@barryib)
  - Added option to recreate ASG when LT or LC changes (by @barryib)
+ - Ability to specify workers role name (by @ivanich)
 
 ### Changed
 
