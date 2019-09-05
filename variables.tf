@@ -251,3 +251,15 @@ variable "manage_worker_iam_resources" {
   type        = bool
   default     = true
 }
+
+variable "override_workers_role_name" {
+  description = "Whether to allow set the workers role name. If set to false, name_prefix is being used."
+  type        = bool
+  default     = false
+}
+
+variable "workers_role_name" {
+  description = "User defined workers role name, has effect only when override_workers_role_name set to true."
+  type        = string
+  default     = ""
+}
