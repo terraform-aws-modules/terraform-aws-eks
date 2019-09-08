@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-ruby '2.4.4'
+ruby '2.4.6'
 
 source 'https://rubygems.org/' do
   gem 'awspec', '~> 1.4.2'
