@@ -21,11 +21,12 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+ - Update to EKS 1.14 (by @nauxliu)
  - Support map users and roles to multiple groups (by @nauxliu)
  - Fixed errors sometimes happening during destroy due to usage of coalesce() in local.tf (by @petrikero)
  - Removed historical mention of adding caller's IPv4 to cluster security group (by @dpiddockcmp)
- - Write your awesome change here (by @you)
  - Wrapped `kubelet_extra_args` in double quotes instead of singe quotes (by @nxf5025)
+ - Write your awesome change here (by @you)
 
 # History
 
