@@ -135,8 +135,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | manage\_aws\_auth | Whether to apply the aws-auth configmap file. | string | `"true"` | no |
 | manage\_cluster\_iam\_resources | Whether to let the module manage cluster IAM resources. If set to false, cluster_iam_role_name must be specified. | bool | `"true"` | no |
 | manage\_worker\_iam\_resources | Whether to let the module manage worker IAM resources. If set to false, iam_instance_profile_name must be specified for workers. | bool | `"true"` | no |
-| override\_workers\_role\_name | Whether to allow set the workers role name. If set to false, name_prefix is being used. | bool | `"false"` | no |
-| workers\_role\_name | User defined workers role name, has effect only when override_workers_role_name set to true. | sting | `""` | no |
+| workers\_role\_name | User defined workers role name. | sting | `""` | no |
 | map\_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | list(string) | `[]` | no |
 | map\_roles | Additional IAM roles to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | list(map(string)) | `[]` | no |
 | map\_users | Additional IAM users to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | list(map(string)) | `[]` | no |
