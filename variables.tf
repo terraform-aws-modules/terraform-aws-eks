@@ -207,7 +207,7 @@ variable "worker_create_security_group" {
 variable "permissions_boundary" {
   description = "If provided, all IAM roles will be created with this permissions boundary attached."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "iam_path" {
