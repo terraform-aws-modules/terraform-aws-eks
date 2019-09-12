@@ -7,15 +7,11 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v4.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.0...HEAD)] - 2019-06-??]
+## [[v4.0.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.0...v4.0.2)] - 2019-09-03]
 
 ### Added
 
-- Write your awesome addition here (by @you)
-
-### Changed
-
-- Write your awesome change here (by @you)
+- Added support for termination policies for Auto Scaling group (by @nusnewob)
 
 # History
 
