@@ -251,3 +251,9 @@ variable "manage_worker_iam_resources" {
   type        = bool
   default     = true
 }
+
+variable "workers_role_name" {
+  description = "User defined workers role name."
+  type        = string
+  default     = ""
+}
