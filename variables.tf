@@ -114,12 +114,6 @@ variable "worker_groups_launch_template" {
   default     = []
 }
 
-variable "worker_groups_launch_template_mixed" {
-  description = "A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys."
-  type        = any
-  default     = []
-}
-
 variable "worker_security_group_id" {
   description = "If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster."
   type        = string

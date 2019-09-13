@@ -73,13 +73,81 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     local.workers_group_defaults["termination_policies"]
   )
 
-  launch_template {
-    id = aws_launch_template.workers_launch_template.*.id[count.index]
-    version = lookup(
-      var.worker_groups_launch_template[count.index],
-      "launch_template_version",
-      local.workers_group_defaults["launch_template_version"],
-    )
+  dynamic mixed_instances_policy {
+    iterator = item
+    for_each = (lookup(var.worker_groups_launch_template[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups_launch_template[count.index], "on_demand_allocation_strategy", null) != null) ? list(var.worker_groups_launch_template[count.index]) : []
+
+    content {
+      instances_distribution {
+        on_demand_allocation_strategy = lookup(
+          item.value,
+          "on_demand_allocation_strategy",
+          "prioritized",
+        )
+        on_demand_base_capacity = lookup(
+          item.value,
+          "on_demand_base_capacity",
+          local.workers_group_defaults["on_demand_base_capacity"],
+        )
+        on_demand_percentage_above_base_capacity = lookup(
+          item.value,
+          "on_demand_percentage_above_base_capacity",
+          local.workers_group_defaults["on_demand_percentage_above_base_capacity"],
+        )
+        spot_allocation_strategy = lookup(
+          item.value,
+          "spot_allocation_strategy",
+          local.workers_group_defaults["spot_allocation_strategy"],
+        )
+        spot_instance_pools = lookup(
+          item.value,
+          "spot_instance_pools",
+          local.workers_group_defaults["spot_instance_pools"],
+        )
+        spot_max_price = lookup(
+          item.value,
+          "spot_max_price",
+          local.workers_group_defaults["spot_max_price"],
+        )
+      }
+
+      launch_template {
+        launch_template_specification {
+          launch_template_id = aws_launch_template.workers_launch_template.*.id[count.index]
+          version = lookup(
+            var.worker_groups_launch_template[count.index],
+            "launch_template_version",
+            local.workers_group_defaults["launch_template_version"],
+          )
+        }
+
+        dynamic "override" {
+          for_each = lookup(
+            var.worker_groups_launch_template[count.index],
+            "override_instance_types",
+            local.workers_group_defaults["override_instance_types"]
+          )
+
+          content {
+            instance_type = override.value
+          }
+        }
+
+      }
+    }
+  }
+  dynamic launch_template {
+    iterator = item
+    for_each = (lookup(var.worker_groups_launch_template[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups_launch_template[count.index], "on_demand_allocation_strategy", null) != null) ? [] : list(var.worker_groups_launch_template[count.index])
+
+    content {
+      id = aws_launch_template.workers_launch_template.*.id[count.index]
+      version = lookup(
+        var.worker_groups_launch_template[count.index],
+        "launch_template_version",
+        local.workers_group_defaults["launch_template_version"],
+      )
+    }
   }
 
   dynamic "initial_lifecycle_hook" {

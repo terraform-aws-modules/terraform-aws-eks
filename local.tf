@@ -1,5 +1,12 @@
 locals {
-  asg_tags = null_resource.tags_as_list_of_maps.*.triggers
+  asg_tags = [
+    for item in keys(var.tags) :
+    map(
+      "key", item,
+      "value", element(values(var.tags), index(keys(var.tags), item)),
+      "propagate_at_launch", "true"
+    )
+  ]
 
   cluster_security_group_id = var.cluster_create_security_group ? aws_security_group.cluster[0].id : var.cluster_security_group_id
   cluster_iam_role_name     = var.manage_cluster_iam_resources ? aws_iam_role.cluster[0].name : var.cluster_iam_role_name
@@ -9,9 +16,8 @@ locals {
   default_iam_role_id = concat(aws_iam_role.workers.*.id, [""])[0]
   kubeconfig_name     = var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name
 
-  worker_group_count                       = length(var.worker_groups)
-  worker_group_launch_template_count       = length(var.worker_groups_launch_template)
-  worker_group_launch_template_mixed_count = length(var.worker_groups_launch_template_mixed)
+  worker_group_count                 = length(var.worker_groups)
+  worker_group_launch_template_count = length(var.worker_groups_launch_template)
 
   workers_group_defaults_defaults = {
     name                          = "count.index"               # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
@@ -61,7 +67,7 @@ locals {
     market_type                       = null
     # Settings for launch templates with mixed instances policy
     override_instance_types                  = ["m5.large", "m5a.large", "m5d.large", "m5ad.large"] # A list of override instance types for mixed instances policy
-    on_demand_allocation_strategy            = "prioritized"                                        # Strategy to use when launching on-demand instances. Valid values: prioritized.
+    on_demand_allocation_strategy            = null                                                 # Strategy to use when launching on-demand instances. Valid values: prioritized.
     on_demand_base_capacity                  = "0"                                                  # Absolute minimum amount of desired capacity that must be fulfilled by on-demand instances
     on_demand_percentage_above_base_capacity = "0"                                                  # Percentage split between on-demand and Spot instances above the base on-demand capacity
     spot_allocation_strategy                 = "lowest-price"                                       # Valid options are 'lowest-price' and 'capacity-optimized'. If 'lowest-price', the Auto Scaling group launches instances using the Spot pools with the lowest price, and evenly allocates your instances across the number of Spot pools. If 'capacity-optimized', the Auto Scaling group launches instances using Spot pools that are optimally chosen based on the available Spot capacity.
