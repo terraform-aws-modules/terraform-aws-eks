@@ -18,17 +18,20 @@ project adheres to [Semantic Versioning](http://semver.org/).
  - Updated `local.spot_allocation_strategy` docstring to indicate availability of new `capacity-optimized` option. (by @sc250024)
  - Added support for initial lifecycle hooks for autosacling groups (@barryib)
  - Added option to recreate ASG when LT or LC changes (by @barryib)
+ - Ability to specify workers role name (by @ivanich)
  - Added support for Mixed Instance ASG using `worker_groups_launch_template` variable  (by @sppwf)
  - Changed ASG Tags generation using terraform 12 `for` utility  (by @sppwf)
  - Removed `worker_groups_launch_template_mixed` variable (by @sppwf)
 
 ### Changed
 
+ - Update to EKS 1.14 (by @nauxliu)
  - Support map users and roles to multiple groups (by @nauxliu)
  - Fixed errors sometimes happening during destroy due to usage of coalesce() in local.tf (by @petrikero)
  - Removed historical mention of adding caller's IPv4 to cluster security group (by @dpiddockcmp)
- - Write your awesome change here (by @you)
  - Wrapped `kubelet_extra_args` in double quotes instead of singe quotes (by @nxf5025)
+ - Write your awesome change here (by @you)
+ - Make terraform plan more consistent and avoid unnecessary "(known after apply)" (by @barryib)
 
 # History
 

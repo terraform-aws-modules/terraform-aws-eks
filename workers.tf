@@ -314,7 +314,8 @@ resource "aws_security_group_rule" "workers_ingress_cluster_https" {
 
 resource "aws_iam_role" "workers" {
   count                 = var.manage_worker_iam_resources ? 1 : 0
-  name_prefix           = aws_eks_cluster.this.name
+  name_prefix           = var.workers_role_name != "" ? null : aws_eks_cluster.this.name
+  name                  = var.workers_role_name != "" ? var.workers_role_name : null
   assume_role_policy    = data.aws_iam_policy_document.workers_assume_role_policy.json
   permissions_boundary  = var.permissions_boundary
   path                  = var.iam_path
@@ -328,7 +329,7 @@ resource "aws_iam_instance_profile" "workers" {
   role = lookup(
     var.worker_groups[count.index],
     "iam_role_id",
-    local.workers_group_defaults["iam_role_id"],
+    local.default_iam_role_id,
   )
 
   path = var.iam_path

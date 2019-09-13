@@ -28,7 +28,7 @@ variable "cluster_security_group_id" {
 variable "cluster_version" {
   description = "Kubernetes version to use for the EKS cluster."
   type        = string
-  default     = "1.13"
+  default     = "1.14"
 }
 
 variable "config_output_path" {
@@ -244,4 +244,10 @@ variable "manage_worker_iam_resources" {
   description = "Whether to let the module manage worker IAM resources. If set to false, iam_instance_profile_name must be specified for workers."
   type        = bool
   default     = true
+}
+
+variable "workers_role_name" {
+  description = "User defined workers role name."
+  type        = string
+  default     = ""
 }
