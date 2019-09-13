@@ -19,6 +19,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
  - Added support for initial lifecycle hooks for autosacling groups (@barryib)
  - Added option to recreate ASG when LT or LC changes (by @barryib)
  - Ability to specify workers role name (by @ivanich)
+ - Added output for OIDC Issuer URL (by @russwhelan)
 
 ### Changed
 
