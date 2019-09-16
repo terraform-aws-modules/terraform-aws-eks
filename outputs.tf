@@ -43,6 +43,11 @@ output "cluster_iam_role_arn" {
   value       = local.cluster_iam_role_arn
 }
 
+output "cluster_oidc_issuer_url" {
+  description = "The URL on the EKS cluster OIDC Issuer"
+  value       = aws_eks_cluster.this.identity.0.oidc.0.issuer
+}
+
 output "cloudwatch_log_group_name" {
   description = "Name of cloudwatch log group created"
   value       = aws_cloudwatch_log_group.this.*.name

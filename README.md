@@ -168,6 +168,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster\_id | The name/id of the EKS cluster. |
 | cluster\_security\_group\_id | Security group ID attached to the EKS cluster. |
 | cluster\_version | The Kubernetes server version for the EKS cluster. |
+| cluster\_oidc\_issuer\_url | The URL on the EKS cluster OIDC Issuer. |
 | config\_map\_aws\_auth | A kubernetes configuration to authenticate to this EKS cluster. |
 | kubeconfig | kubectl config file contents for this EKS cluster. |
 | kubeconfig\_filename | The filename of the generated kubectl config. |

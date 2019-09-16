@@ -19,6 +19,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
  - Added support for initial lifecycle hooks for autosacling groups (@barryib)
  - Added option to recreate ASG when LT or LC changes (by @barryib)
  - Ability to specify workers role name (by @ivanich)
+ - Added output for OIDC Issuer URL (by @russwhelan)
  - Added support for Mixed Instance ASG using `worker_groups_launch_template` variable  (by @sppwf)
  - Changed ASG Tags generation using terraform 12 `for` utility  (by @sppwf)
  - Removed `worker_groups_launch_template_mixed` variable (by @sppwf)
