@@ -359,16 +359,6 @@ resource "aws_iam_role_policy_attachment" "workers_additional_policies" {
   policy_arn = var.workers_additional_policies[count.index]
 }
 
-resource "null_resource" "tags_as_list_of_maps" {
-  count = length(keys(var.tags))
-
-  triggers = {
-    key                 = keys(var.tags)[count.index]
-    value               = values(var.tags)[count.index]
-    propagate_at_launch = "true"
-  }
-}
-
 resource "aws_iam_role_policy_attachment" "workers_autoscaling" {
   count      = var.manage_worker_iam_resources ? 1 : 0
   policy_arn = aws_iam_policy.worker_autoscaling[0].arn

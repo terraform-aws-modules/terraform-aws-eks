@@ -35,21 +35,6 @@ EOS
 data "aws_caller_identity" "current" {
 }
 
-data "template_file" "launch_template_mixed_worker_role_arns" {
-  count    = local.worker_group_launch_template_mixed_count
-  template = file("${path.module}/templates/worker-role.tpl")
-
-  vars = {
-    worker_role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${element(
-      coalescelist(
-        aws_iam_instance_profile.workers_launch_template_mixed.*.role,
-        data.aws_iam_instance_profile.custom_worker_group_launch_template_mixed_iam_instance_profile.*.role_name,
-      ),
-      count.index,
-    )}"
-  }
-}
-
 data "template_file" "launch_template_worker_role_arns" {
   count    = local.worker_group_launch_template_count
   template = file("${path.module}/templates/worker-role.tpl")
@@ -91,7 +76,6 @@ data "template_file" "config_map_aws_auth" {
         concat(
           data.template_file.launch_template_worker_role_arns.*.rendered,
           data.template_file.worker_role_arns.*.rendered,
-          data.template_file.launch_template_mixed_worker_role_arns.*.rendered,
         ),
       ),
     )

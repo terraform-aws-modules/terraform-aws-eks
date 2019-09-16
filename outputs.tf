@@ -68,7 +68,6 @@ output "workers_asg_arns" {
   value = concat(
     aws_autoscaling_group.workers.*.arn,
     aws_autoscaling_group.workers_launch_template.*.arn,
-    aws_autoscaling_group.workers_launch_template_mixed.*.arn,
   )
 }
 
@@ -77,7 +76,6 @@ output "workers_asg_names" {
   value = concat(
     aws_autoscaling_group.workers.*.id,
     aws_autoscaling_group.workers_launch_template.*.id,
-    aws_autoscaling_group.workers_launch_template_mixed.*.id,
   )
 }
 
@@ -130,7 +128,6 @@ output "worker_iam_role_name" {
     aws_iam_role.workers.*.name,
     data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_name,
     data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_name,
-    data.aws_iam_instance_profile.custom_worker_group_launch_template_mixed_iam_instance_profile.*.role_name,
     [""]
   )[0]
 }
@@ -141,7 +138,6 @@ output "worker_iam_role_arn" {
     aws_iam_role.workers.*.arn,
     data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_arn,
     data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_arn,
-    data.aws_iam_instance_profile.custom_worker_group_launch_template_mixed_iam_instance_profile.*.role_arn,
     [""]
   )[0]
 }
