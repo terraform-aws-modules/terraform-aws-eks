@@ -30,8 +30,9 @@ project adheres to [Semantic Versioning](http://semver.org/).
  - Fixed errors sometimes happening during destroy due to usage of coalesce() in local.tf (by @petrikero)
  - Removed historical mention of adding caller's IPv4 to cluster security group (by @dpiddockcmp)
  - Wrapped `kubelet_extra_args` in double quotes instead of singe quotes (by @nxf5025)
- - Write your awesome change here (by @you)
  - Make terraform plan more consistent and avoid unnecessary "(known after apply)" (by @barryib)
+ - Made sure that `market_type` was correctly passed to `workers_launch_template` (by @to266)
+ - Write your awesome change here (by @you)
 
 # History
 

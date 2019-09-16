@@ -316,10 +316,9 @@ resource "aws_launch_template" "workers_launch_template" {
   }
 
   dynamic instance_market_options {
-    iterator = item
     for_each = lookup(var.worker_groups_launch_template[count.index], "market_type", null) == null ? [] : list(lookup(var.worker_groups_launch_template[count.index], "market_type", null))
     content {
-      market_type = item.value
+      market_type = instance_market_options.value
     }
   }
 
