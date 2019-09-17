@@ -53,12 +53,6 @@ module "my-cluster" {
 * [Spot instances](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/spot-instances.md): How to use spot instances with this module.
 * [IAM Permissions](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/iam-permissions.md): Minimum IAM permissions needed to setup EKS Cluster.
 
-## Release schedule
-
-Generally the maintainers will try to release the module once every 2 weeks to
-keep up with PR additions. If particularly pressing changes are added or maintainers
-come up with the spare time (hah!), release may happen more often on occasion.
-
 ## Testing
 
 This module has been packaged with [awspec](https://github.com/k1LoW/awspec) tests through [kitchen](https://kitchen.ci/) and [kitchen-terraform](https://newcontext-oss.github.io/kitchen-terraform/). To run them:
@@ -101,7 +95,8 @@ The [changelog](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/
 
 ## Authors
 
-Created and maintained by [Brandon O'Connor](https://github.com/brandoconnor) - brandon@atscale.run.
+Created by [Brandon O'Connor](https://github.com/brandoconnor) - brandon@atscale.run.
+Maintained by [Max Williams](https://github.com/max-rocket-internet)
 Many thanks to [the contributors listed here](https://github.com/terraform-aws-modules/terraform-aws-eks/graphs/contributors)!
 
 ## License
