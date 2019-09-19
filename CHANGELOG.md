@@ -11,7 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Write your awesome addition here (by @you)
+ - Added support for different workers AMI's, i.e. with GPU support (by @rvoitenko)
 
 ### Changed
 
@@ -49,7 +49,6 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
  - Added new tag in `worker.tf` with autoscaling_enabled = true flag (by @insider89)
- - Added support for different workers AMI's, i.e. with GPU support (by @rvoitenko)
 
 ## [[v5.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.0.0...v5.1.0)] - 2019-07-30]
 
