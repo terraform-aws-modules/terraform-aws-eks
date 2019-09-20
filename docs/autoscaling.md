@@ -28,6 +28,10 @@ To install the chart, simply run helm with the `--values` option:
 helm install stable/cluster-autoscaler --values=path/to/your/values-file.yaml
 ```
 
+`NOTE`
+
+There is a variable `asg_desired_capacity` given in the `local.tf` file, currently it can be used to change the desired worker(s) capacity in the autoscaling group but currently it is being ignored in terraform to reduce the [complexities](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/510#issuecomment-531700442) and the feature of scaling up and down the cluster nodes is being handled by the cluster autoscaler.
+
 ## See More
 
 [Using AutoScalingGroup MixedInstancesPolicy](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md#using-autoscalinggroup-mixedinstancespolicy)
