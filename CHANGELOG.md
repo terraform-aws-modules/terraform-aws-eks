@@ -11,7 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Write your awesome addition here (by @you)
+ - Added support for different workers AMI's, i.e. with GPU support (by @rvoitenko)
 
 ### Changed
 
