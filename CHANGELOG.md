@@ -15,7 +15,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- Write your awesome change here (by @you)
+- Use null as default value for `target_group_arns` attribute of worker autoscaling group (by @tatusl)
 
 # History
 
