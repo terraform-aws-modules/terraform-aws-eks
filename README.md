@@ -141,6 +141,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker\_additional\_security\_group\_ids | A list of additional security group ids to attach to worker instances | list(string) | `[]` | no |
 | worker\_ami\_name\_filter | Additional name filter for AWS EKS worker AMI. Default behaviour will get latest for the cluster_version but could be set to a release from amazon-eks-ami, e.g. "v20190220" | string | `"v*"` | no |
 | worker\_ami\_name\_filter\_prefix | Name prefix filter for AWS EKS worker AMI. Default behaviour will get regular EKS-Optimized AMI but could be set to a EKS-Optimized AMI with GPU Support, e.g. "amazon-eks-gpu-node", or custom AMI | string | `"amazon-eks-node"` | no |
+| worker\_asg\_create\_timeout | Timeout value when creating the worker autoscaling group. | string | `"15m"` | no |
 | worker\_create\_security\_group | Whether to create a security group for the workers or attach the workers to `worker_security_group_id`. | bool | `"true"` | no |
 | worker\_groups | A list of maps defining worker group configurations to be defined using AWS Launch Configurations. See workers_group_defaults for valid keys. | any | `[]` | no |
 | worker\_groups\_launch\_template | A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys. | any | `[]` | no |
@@ -149,7 +150,6 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | workers\_additional\_policies | Additional policies to be added to workers | list(string) | `[]` | no |
 | workers\_group\_defaults | Override default values for target groups. See workers_group_defaults_defaults in local.tf for valid keys. | any | `{}` | no |
 | workers\_role\_name | User defined workers role name. | string | `""` | no |
-| worker\_asg\_create\_timeout | User defined timeout when creating the worker autoscaling group. | string | `"15m"` | no |
 | write\_aws\_auth\_config | Whether to write the aws-auth configmap file. | bool | `"true"` | no |
 | write\_kubeconfig | Whether to write a Kubectl config file containing the cluster configuration. Saved to `config_output_path`. | bool | `"true"` | no |
 
