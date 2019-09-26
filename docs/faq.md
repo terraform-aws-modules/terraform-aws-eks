@@ -62,7 +62,7 @@ If you are not using autoscaling and really want to control the number of nodes 
 
 ## Why are nodes not recreated when the `launch_configuration`/`launch_template` is recreated?
 
-The ASG is not configured to be recreated when the launch configuration or template changes. Terraform spins up new instances and then deletes all the old instances in one go as the AWS provider team have refused to implement rolling updates of autoscaling groups. This is not good for kubernetes stability.
+By default the ASG is not configured to be recreated when the launch configuration or template changes. Terraform spins up new instances and then deletes all the old instances in one go as the AWS provider team have refused to implement rolling updates of autoscaling groups. This is not good for kubernetes stability.
 
 You need to use a process to drain and cycle the workers.
 
@@ -79,6 +79,8 @@ You are using the cluster autoscaler:
 - Cluster autoscaler will create new nodes when required
 - Repeat until all old nodes are drained
 - Cluster autoscaler will terminate the old nodes after 10-60 minutes automatically
+
+Alternatively you can set the `asg_recreate_on_change = true` worker group option to get the ASG recreated after changes to the launch configuration or template. But be aware of the risks to cluster stability mentioned above.
 
 ## `aws_auth.tf: At 2:14: Unknown token: 2:14 IDENT`
 
