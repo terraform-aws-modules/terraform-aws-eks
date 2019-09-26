@@ -15,7 +15,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
- - Write your awesome change here (by @you)
+ - Add option to enable lifecycle hooks creation (by @barryib)
 
 # History
 
