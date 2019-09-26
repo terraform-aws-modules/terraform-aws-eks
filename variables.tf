@@ -186,6 +186,12 @@ variable "cluster_create_timeout" {
   default     = "15m"
 }
 
+variable "worker_asg_create_timeout" {
+  description = "Timeout value when creating the worker autoscaling group."
+  type        = string
+  default     = "15m"
+}
+
 variable "cluster_delete_timeout" {
   description = "Timeout value when deleting the EKS cluster."
   type        = string

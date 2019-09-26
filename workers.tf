@@ -12,6 +12,7 @@ resource "aws_autoscaling_group" "workers" {
       ]
     )
   )
+  wait_for_capacity_timeout = var.worker_asg_create_timeout
   desired_capacity = lookup(
     var.worker_groups[count.index],
     "asg_desired_capacity",
