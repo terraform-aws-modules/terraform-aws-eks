@@ -4,7 +4,7 @@
 
 * [ ] bug report
 * [ ] feature request
-* [ ] support request
+* [ ] support request - read the [FAQ](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md) first!
 * [ ] kudos, thank you, warm fuzzy
 
 ## What is the current behavior?
