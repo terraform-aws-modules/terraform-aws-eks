@@ -12,10 +12,12 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Write your awesome addition here (by @you)
+- Variable to allow setting the worker ASG creation timeout (by @subos2008)
 
 ### Changed
 
  - Write your awesome change here (by @you)
+ - default worker ASG creation timeout increased to 15m (by @subos2008)
 
 # History
 
