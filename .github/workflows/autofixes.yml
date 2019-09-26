@@ -1,0 +1,46 @@
+name: Autofixers
+
+on: [pull_request_review]
+
+jobs:
+  precommit:
+    name: Pre-commit
+    runs-on: ubuntu-latest
+    container:
+      image: hashicorp/terraform:latest
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 1
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.7'
+      - name: Setup Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: '1.12'
+      - name: Install dependencies
+        run: |
+          pip3 install pre-commit
+          go get github.com/segmentio/terraform-docs
+      - name: Terraform init
+        run: |
+          terraform init
+      - name: Run pre-commit
+        run: |
+          export PATH=${PATH}:`go env GOPATH`/bin
+          pre-commit run --show-diff-on-failure --all-files
+      - name: Auto-commit changes, if any
+        if: contains(github.event.review.body, '/fix') && failure()
+        uses: stefanzweifel/git-auto-commit-action@v2.1.0
+        with:
+          commit_message: Apply pre-commit fixes
+          branch: ${{ github.event.pull_request.head.ref }}
+        env:
+          # If the default GitHub Provided token is used then a new
+          #  check run will not be triggered. This is bad because
+          #  checks are required for merging. A workaround is to
+          #  use a personal token. Ugly, but eh. Fixes it
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

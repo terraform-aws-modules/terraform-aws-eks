@@ -1,0 +1,24 @@
+name: Terraform
+
+on: [pull_request]
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    container:
+      image: hashicorp/terraform:latest
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 1
+      - name: Terraform init
+        run: |
+          terraform init
+      - name: Run tflint with review comment on PR
+        uses: reviewdog/action-tflint@v1.0.0
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-review
+
