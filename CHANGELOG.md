@@ -15,6 +15,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+ - Remove helm chart value `sslCertPath` described in `docs/autoscaling.md` (by @wi1dcard)
  - Write your awesome change here (by @you)
 
 # History
