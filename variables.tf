@@ -210,6 +210,12 @@ variable "worker_create_security_group" {
   default     = true
 }
 
+variable "worker_create_initial_lifecycle_hooks" {
+  description = "Whether to create initial lifecycle hooks provided in worker groups."
+  type        = bool
+  default     = false
+}
+
 variable "permissions_boundary" {
   description = "If provided, all IAM roles will be created with this permissions boundary attached."
   type        = string
