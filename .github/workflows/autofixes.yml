@@ -11,8 +11,6 @@ jobs:
     steps:
       - name: Clone repo
         uses: actions/checkout@master
-        with:
-          fetch-depth: 1
       - name: Setup Python
         uses: actions/setup-python@v1
         with:
