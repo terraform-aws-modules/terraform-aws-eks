@@ -8,11 +8,13 @@ Please open Issues or PRs if you think something is missing.
 
 ## Why are nodes not being registered?
 
-This is usually caused by a networking or endpoint configuration issue.
+### Networking
 
-At least one of the public or private endpoints must be enabled in order for access to the cluster to work.
+Often caused by a networking or endpoint configuration issue.
 
-Your nodes need to be able to contact the EKS endpoint. By default the module only creates a public endpoint. You should also enable the private endpoint by setting `cluster_endpoint_private_access = true` on this module.
+At least one of the cluster public or private endpoints must be enabled in order for access to the cluster to work.
+
+Your nodes need to be able to contact the EKS cluster endpoint. By default the module only creates a public endpoint. You should also enable the private endpoint by setting `cluster_endpoint_private_access = true` on this module.
 
 If you have the private endpoint enabled ensure that you also have VPC DNS enabled. Set `enable_dns_hostnames = true` on your `aws_vpc` resource or the `terraform-aws-module/vpc/aws` community module.
 
@@ -21,6 +23,16 @@ Nodes need to be able to connect to AWS services plus pull down container images
 - enable outbound public internet access:
   - Private subnets: via a NAT gateway or instance
   - Public subnets: assign public IPs to nodes
+
+### `aws-auth` ConfigMap not present
+
+The module configures the `aws-auth` ConfigMap. This is used by the cluster to grant IAM users RBAC permissions in the cluster. Sometimes the map fails to apply correctly, especially if terraform could not access the cluster endpoint during cluster creation.
+
+Confirm that the ConfigMap matches the contents of the generated `config-map-aws-auth_${cluster_name}.yaml` file. You can retrieve the live config by running the following in your terraform folder:
+`kubectl --kubeconfig=kubeconfig_* -n kube-system get cm aws-auth -o yaml`
+
+Apply the config with:
+`kubectl --kubeconfig=kubeconfig_* apply -f config-map-aws-auth_*.yaml`
 
 ## How can I work with the cluster if I disable the public endpoint?
 
