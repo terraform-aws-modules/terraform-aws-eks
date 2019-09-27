@@ -17,6 +17,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
  - Add option to enable lifecycle hooks creation (by @barryib)
  - Remove helm chart value `sslCertPath` described in `docs/autoscaling.md` (by @wi1dcard)
+ - Attaching of IAM policies for autoscaler and CNI to the worker nodes now optional (by @dpiddockcmp)
 
 # History
 
