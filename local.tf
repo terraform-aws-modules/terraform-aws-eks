@@ -21,14 +21,14 @@ locals {
 
   workers_group_defaults_defaults = {
     name                          = "count.index"               # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
-    tags                          = []                          # A list of map defining extra tags to be applied to the worker group ASG.
+    tags                          = []                          # A list of map defining extra tags to be applied to the worker group autoscaling group.
     ami_id                        = data.aws_ami.eks_worker.id  # AMI ID for the eks workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI.
     asg_desired_capacity          = "1"                         # Desired worker capacity in the autoscaling group and changing its value will not affect the autoscaling group's desired capacity because the cluster-autoscaler manages up and down scaling of the nodes. Cluster-autoscaler add nodes when pods are in pending state and remove the nodes when they are not required by modifying the desirec_capacity of the autoscaling group. Although an issue exists in which if the value of the asg_min_size is changed it modifies the value of asg_desired_capacity.
     asg_max_size                  = "3"                         # Maximum worker capacity in the autoscaling group.
     asg_min_size                  = "1"                         # Minimum worker capacity in the autoscaling group. NOTE: Change in this paramater will affect the asg_desired_capacity, like changing its value to 2 will change asg_desired_capacity value to 2 but bringing back it to 1 will not affect the asg_desired_capacity.
     asg_force_delete              = false                       # Enable forced deletion for the autoscaling group.
     asg_initial_lifecycle_hooks   = []                          # Initital lifecycle hook for the autoscaling group.
-    asg_recreate_on_change        = false                       # Recreate the autoscaling group when LT or LC change.
+    asg_recreate_on_change        = false                       # Recreate the autoscaling group when the Launch Template or Launch Configuration change.
     instance_type                 = "m4.large"                  # Size of the workers instances.
     spot_price                    = ""                          # Cost of spot instance.
     placement_tenancy             = ""                          # The tenancy of the instance. Valid values are "default" or "dedicated".
@@ -37,7 +37,7 @@ locals {
     root_iops                     = "0"                         # The amount of provisioned IOPS. This must be set with a volume_type of "io1".
     key_name                      = ""                          # The key name that should be used for the instances in the autoscaling group
     pre_userdata                  = ""                          # userdata to pre-append to the default userdata.
-    bootstrap_extra_args          = ""                          # Extra arguments passed to the bootstrap.sh script from the EKS AMI.
+    bootstrap_extra_args          = ""                          # Extra arguments passed to the bootstrap.sh script from the EKS AMI (Amazon Machine Image).
     additional_userdata           = ""                          # userdata to append to the default userdata.
     ebs_optimized                 = true                        # sets whether to use ebs optimization on supported types.
     enable_monitoring             = true                        # Enables/disables detailed monitoring.
@@ -50,7 +50,7 @@ locals {
     iam_instance_profile_name     = ""                          # A custom IAM instance profile name. Used when manage_worker_iam_resources is set to false. Incompatible with iam_role_id.
     iam_role_id                   = "local.default_iam_role_id" # A custom IAM role id. Incompatible with iam_instance_profile_name.  Literal local.default_iam_role_id will never be used but if iam_role_id is not set, the local.default_iam_role_id interpolation will be used.
     suspended_processes           = ["AZRebalance"]             # A list of processes to suspend. i.e. ["AZRebalance", "HealthCheck", "ReplaceUnhealthy"]
-    target_group_arns             = null                        # A list of ALB target group ARNs to be associated to the ASG
+    target_group_arns             = null                        # A list of Application LoadBalancer (ALB) target group ARNs to be associated to the autoscaling group
     enabled_metrics               = []                          # A list of metrics to be collected i.e. ["GroupMinSize", "GroupMaxSize", "GroupDesiredCapacity"]
     placement_group               = ""                          # The name of the placement group into which to launch the instances, if any.
     service_linked_role_arn       = ""                          # Arn of custom service linked role that Auto Scaling group will use. Useful when you have encrypted EBS
@@ -62,7 +62,7 @@ locals {
     launch_template_placement_tenancy = "default"                                # The placement tenancy for instances
     launch_template_placement_group   = ""                                       # The name of the placement group into which to launch the instances, if any.
     root_encrypted                    = ""                                       # Whether the volume should be encrypted or not
-    eni_delete                        = true                                     # Delete the ENI on termination (if set to false you will have to manually delete before destroying)
+    eni_delete                        = true                                     # Delete the Elastic Network Interface (ENI) on termination (if set to false you will have to manually delete before destroying)
     cpu_credits                       = "standard"                               # T2/T3 unlimited mode, can be 'standard' or 'unlimited'. Used 'standard' mode as default to avoid paying higher costs
     market_type                       = null
     # Settings for launch templates with mixed instances policy
