@@ -75,10 +75,10 @@ resource "aws_autoscaling_group" "workers" {
   )
 
   dynamic "initial_lifecycle_hook" {
-    for_each = lookup(var.worker_groups[count.index], "asg_initial_lifecycle_hooks", local.workers_group_defaults["asg_initial_lifecycle_hooks"])
+    for_each = var.worker_create_initial_lifecycle_hooks ? lookup(var.worker_groups[count.index], "asg_initial_lifecycle_hooks", local.workers_group_defaults["asg_initial_lifecycle_hooks"]) : []
     content {
-      name                    = lookup(initial_lifecycle_hook.value, "name", null)
-      lifecycle_transition    = lookup(initial_lifecycle_hook.value, "lifecycle_transition", null)
+      name                    = initial_lifecycle_hook.value["name"]
+      lifecycle_transition    = initial_lifecycle_hook.value["lifecycle_transition"]
       notification_metadata   = lookup(initial_lifecycle_hook.value, "notification_metadata", null)
       heartbeat_timeout       = lookup(initial_lifecycle_hook.value, "heartbeat_timeout", null)
       notification_target_arn = lookup(initial_lifecycle_hook.value, "notification_target_arn", null)
