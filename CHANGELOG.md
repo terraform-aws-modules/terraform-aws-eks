@@ -16,6 +16,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
  - Add option to enable lifecycle hooks creation (by @barryib)
+ - Remove helm chart value `sslCertPath` described in `docs/autoscaling.md` (by @wi1dcard)
 
 # History
 
