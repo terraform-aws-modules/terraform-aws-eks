@@ -14,15 +14,17 @@ Often caused by a networking or endpoint configuration issue.
 
 At least one of the cluster public or private endpoints must be enabled in order for access to the cluster to work.
 
-Your nodes need to be able to contact the EKS cluster endpoint. By default the module only creates a public endpoint. You should also enable the private endpoint by setting `cluster_endpoint_private_access = true` on this module.
+Nodes need to be able to contact the EKS cluster endpoint. By default the module only creates a public endpoint. To access this endpoint the nodes need outgoing internet access:
+- Nodes in private subnets: via a NAT gateway or instance. This will need adding along with appropriate routing rules.
+- Nodes in public subnets: assign public IPs to nodes. Set `public_ip = true` in the `worker_groups` list on this module.
 
-If you have the private endpoint enabled ensure that you also have VPC DNS enabled. Set `enable_dns_hostnames = true` on your `aws_vpc` resource or the `terraform-aws-module/vpc/aws` community module.
+Cluster private endpoint can also be enabled by setting `cluster_endpoint_private_access = true` on this module. Node calls to the endpoint stay within the VPC.
 
-Nodes need to be able to connect to AWS services plus pull down container images from repos. You can either:
-- enable endpoints to the relevant services, if only using ECR repos and for some reason cannot enable public outbound: EC2 API, ECR API, ECR DKR and S3
-- enable outbound public internet access:
-  - Private subnets: via a NAT gateway or instance
-  - Public subnets: assign public IPs to nodes
+When the private endpoint is enabled ensure that VPC DNS resolution and hostnames are also enabled:
+- If managing the VPC with Terraform: set `enable_dns_hostnames = true` and `enable_dns_support = true` on the `aws_vpc` resource. The [`terraform-aws-module/vpc/aws`](https://github.com/terraform-aws-modules/terraform-aws-vpc/) community module also has these variables.
+- Otherwise refer to the [AWS VPC docs](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-updating) and [AWS EKS Cluster Endpoint Access docs](https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html) for more information.
+
+Nodes need to be able to connect to other AWS services plus pull down container images from repos. If for some reason you cannot enable public internet access for nodes you can add VPC endpoints to the relevant services: EC2 API, ECR API, ECR DKR and S3.
 
 ### `aws-auth` ConfigMap not present
 
