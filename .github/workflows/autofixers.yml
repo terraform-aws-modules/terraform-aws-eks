@@ -13,23 +13,23 @@ jobs:
           GITHUB_REV: ${{ github.event.pull_request.head.sha }}
           GITHUB_BRANCH: ${{ github.event.pull_request.head.ref }}
           GITHUB_REPO: ${{ github.event.pull_request.head.repo.full_name }}
-      - name: Setup Python
-        uses: actions/setup-python@v1
-        with:
-          python-version: '3.7'
-      - name: Setup Go
-        uses: actions/setup-go@v1
-        with:
-          go-version: '1.12'
-      - name: Install dependencies
+      - name: Install brew
         run: |
-          pip install pre-commit
-          go get github.com/segmentio/terraform-docs
+          HOMEBREW_REPOSITORY=/home/linuxbrew/.linuxbrew
+          sudo mkdir -p /home/linuxbrew
+          sudo git clone https://github.com/Homebrew/brew "$HOMEBREW_REPOSITORY"
+          sudo mkdir -p "$HOMEBREW_REPOSITORY/Library/Taps/homebrew"
+          sudo ln -s "$PWD" "$HOMEBREW_REPOSITORY/Library/Taps/homebrew/homebrew-formula-analytics"
+          sudo chown -R "$USER" "$HOMEBREW_REPOSITORY"
+          export PATH="/home/linuxbrew/.linuxbrew/bin:/usr/local/bin:$PATH"
+          echo ::set-env name=PATH::$PATH
+      - name: Install Deps
+        run: |
+          brew install pre-commit terraform-docs terraform
       - name: Terraform init
         uses: hashicorp/terraform-github-actions/init@v0.4.0
       - name: Run pre-commit
         run: |
-          export PATH=${PATH}:`go env GOPATH`/bin
           pre-commit run --show-diff-on-failure --all-files
       - name: Auto-commit changes, if any
         if: contains(github.event.review.body, '/fix') && failure()
