@@ -7,7 +7,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v7.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.1.0...HEAD)] - 2019-??-??]
+## [[v7.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v7.0.0...HEAD)] - 2019-??-??]
 
 ### Added
 
@@ -16,6 +16,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Updated instance_profile_names and instance_profile_arns outputs to also consider launch template as well as asg (by @ankitwal)
+- **Breaking:** Configure the aws-auth configmap using the terraform kubernetes providers. Read the [docs](docs/upgrading-to-aws-auth-kubernetes-provider.md) for more info (by @sdehaes)
 
 # History
 
