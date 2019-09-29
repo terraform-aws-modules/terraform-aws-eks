@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the source for the PR
-        run: git clone --branch=$GITHUB_BRANCH" "https://github.com/${GITHUB_REPO}" . && git reset --hard "$GITHUB_REV"
+        run: git clone --branch="$GITHUB_BRANCH" "https://github.com/${GITHUB_REPO}" . && git reset --hard "$GITHUB_REV"
         env:
           GITHUB_REV: ${{ github.event.pull_request.head.sha }}
           GITHUB_BRANCH: ${{ github.event.pull_request.head.ref }}
