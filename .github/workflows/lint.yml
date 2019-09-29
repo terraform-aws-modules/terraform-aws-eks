@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@master
       - name: TFLint
         uses: docker://wata727/tflint
-  
+
   fmt:
     name: Code Format
     runs-on: ubuntu-latest
@@ -18,16 +18,30 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - run: terraform fmt --recursive -check=true
-  
+
   docs:
     name: Docs
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Install Deps
-        run: brew install pre-commit terraform-docs terraform
-      - name: Check Docs
-        run: pre-commit run --show-diff-on-failure --all-files terraform_docs
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.7'
+      - name: Setup Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: '1.12'
+      - name: Install dependencies
+        run: |
+          pip install pre-commit
+          go get github.com/segmentio/terraform-docs
+      - name: Terraform init
+        uses: hashicorp/terraform-github-actions/init@v0.4.0
+      - name: Run pre-commit
+        run: |
+          export PATH=${PATH}:`go env GOPATH`/bin
+          pre-commit run --show-diff-on-failure --all-files
 
   validate:
     name: Validate
