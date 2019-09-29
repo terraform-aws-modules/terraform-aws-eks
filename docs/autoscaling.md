@@ -12,8 +12,6 @@ The [helm chart](https://github.com/helm/charts/tree/master/stable/cluster-autos
 rbac:
   create: true
 
-sslCertPath: /etc/ssl/certs/ca-bundle.crt
-
 cloudProvider: aws
 awsRegion: YOUR_AWS_REGION
 
