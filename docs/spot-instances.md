@@ -73,6 +73,7 @@ Launch Template support is a recent addition to both AWS and this module. It mig
     }
   ]
 
+/* The variable worker_groups_launch_template_mixed is not suported from v6.0.0 onwards */
   worker_groups_launch_template_mixed = [
     {
       name                     = "spot-1"
