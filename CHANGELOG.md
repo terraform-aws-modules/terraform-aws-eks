@@ -11,6 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- Added `tags` to `aws_eks_cluster` introduced by terraform-provider-aws 2.31.0 (by @morganchristiansson)
 - Write your awesome addition here (by @you)
 
 ### Changed
