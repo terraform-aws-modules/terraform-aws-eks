@@ -342,7 +342,7 @@ resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEKS_CNI_Policy" {
-  count      = var.manage_worker_iam_resources ? 1 : 0
+  count      = var.manage_worker_iam_resources && var.attach_worker_cni_policy ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = aws_iam_role.workers[0].name
 }
@@ -360,13 +360,13 @@ resource "aws_iam_role_policy_attachment" "workers_additional_policies" {
 }
 
 resource "aws_iam_role_policy_attachment" "workers_autoscaling" {
-  count      = var.manage_worker_iam_resources ? 1 : 0
+  count      = var.manage_worker_iam_resources && var.manage_worker_autoscaling_policy && var.attach_worker_autoscaling_policy ? 1 : 0
   policy_arn = aws_iam_policy.worker_autoscaling[0].arn
   role       = aws_iam_role.workers[0].name
 }
 
 resource "aws_iam_policy" "worker_autoscaling" {
-  count       = var.manage_worker_iam_resources ? 1 : 0
+  count       = var.manage_worker_iam_resources && var.manage_worker_autoscaling_policy ? 1 : 0
   name_prefix = "eks-worker-autoscaling-${aws_eks_cluster.this.name}"
   description = "EKS worker node autoscaling policy for cluster ${aws_eks_cluster.this.name}"
   policy      = data.aws_iam_policy_document.worker_autoscaling.json

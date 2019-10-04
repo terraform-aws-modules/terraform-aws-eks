@@ -263,3 +263,21 @@ variable "workers_role_name" {
   type        = string
   default     = ""
 }
+
+variable "manage_worker_autoscaling_policy" {
+  description = "Whether to let the module manage the cluster autoscaling iam policy."
+  type        = bool
+  default     = true
+}
+
+variable "attach_worker_autoscaling_policy" {
+  description = "Whether to attach the module managed cluster autoscaling iam policy to the default worker IAM role. This requires `manage_worker_autoscaling_policy = true`"
+  type        = bool
+  default     = true
+}
+
+variable "attach_worker_cni_policy" {
+  description = "Whether to attach the Amazon managed `AmazonEKS_CNI_Policy` IAM policy to the default worker IAM role. WARNING: If set `false` the permissions must be assigned to the `aws-node` DaemonSet pods via another method or nodes will not be able to join the cluster."
+  type        = bool
+  default     = true
+}
