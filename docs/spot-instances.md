@@ -73,28 +73,17 @@ Launch Template support is a recent addition to both AWS and this module. It mig
     }
   ]
 
-  worker_groups_launch_template_mixed = [
-    {
-      name                     = "spot-1"
-      override_instance_types  = ["m5.large", "c5.large", "t3.large", "r5.large"]
-      spot_instance_pools      = 3
-      asg_max_size             = 5
-      asg_desired_size         = 5
-      autoscaling_enabled      = true
-      kubelet_extra_args       = "--node-labels=kubernetes.io/lifecycle=spot"
-    }
-  ]
 
   worker_groups_launch_template = [
     {
-      name                     = "spot-2"
-      instance_type            = "m4.xlarge"
-      asg_max_size             = 5
-      asg_desired_size         = 5
-      autoscaling_enabled      = true
-      kubelet_extra_args       = "--node-labels=kubernetes.io/lifecycle=spot"
-      market_type              = "spot"
-    }
+      name                    = "spot-1"
+      override_instance_types = ["m5.large", "m5a.large", "m5d.large", "m5ad.large"]
+      spot_instance_pools     = 4
+      asg_max_size            = 5
+      asg_desired_capacity    = 5
+      kubelet_extra_args      = "--node-labels=kubernetes.io/lifecycle=spot"
+      public_ip               = true
+    },
   ]
 ```
 
