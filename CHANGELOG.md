@@ -7,20 +7,29 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v6.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.0...HEAD)] - 2019-10-??]
+## [[v6.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.2...HEAD)] - 2019-10-??]
+
+### Added
+
+- Write your awesome addition here (by @you)
+
+### Changed
+
+ - Write your awesome change here (by @you)
+
+# History
+
+## [[v6.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.1...v6.0.2)] - 2019-10-07]
 
 ### Added
 
 - Added `tags` to `aws_eks_cluster` introduced by terraform-provider-aws 2.31.0 (by @morganchristiansson)
-- Write your awesome addition here (by @you)
 
 ### Changed
 
  - Add option to enable lifecycle hooks creation (by @barryib)
  - Remove helm chart value `sslCertPath` described in `docs/autoscaling.md` (by @wi1dcard)
  - Attaching of IAM policies for autoscaler and CNI to the worker nodes now optional (by @dpiddockcmp)
-
-# History
 
 ## [[v6.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.0...v6.0.1)] - 2019-09-25]
 
@@ -32,8 +41,6 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 - Use null as default value for `target_group_arns` attribute of worker autoscaling group (by @tatusl)
 - Output empty string when cluster identity is empty (by @tbarry)
-
-# History
 
 ## [[v6.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.1.0...v6.0.0)] - 2019-09-17]
 
