@@ -66,6 +66,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
  - Wrapped `kubelet_extra_args` in double quotes instead of singe quotes (by @nxf5025)
  - Make terraform plan more consistent and avoid unnecessary "(known after apply)" (by @barryib)
  - Made sure that `market_type` was correctly passed to `workers_launch_template` (by @to266)
+ - Changed Worker Security Group Dependancy on EKS Cluster (by @Smuggla)
 
 ## [[v5.1.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.1.0...v5.1.1)] - 2019-07-30]
 
