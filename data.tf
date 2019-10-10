@@ -1,5 +1,6 @@
 locals {
-  worker_ami_name_filter = var.worker_ami_name_filter != "" ? var.worker_ami_name_filter : "amazon-eks-node-${var.cluster_version}-v*"
+  worker_ami_name_filter         = var.worker_ami_name_filter != "" ? var.worker_ami_name_filter : "amazon-eks-node-${var.cluster_version}-v*"
+  worker_ami_name_filter_windows = var.worker_ami_name_filter_windows != "" ? var.worker_ami_name_filter_windows : "Windows_Server-2019-English-Core-EKS_Optimized-${var.cluster_version}-*"
 }
 
 data "aws_iam_policy_document" "workers_assume_role_policy" {
@@ -27,6 +28,24 @@ data "aws_ami" "eks_worker" {
 
   owners = [var.worker_ami_owner_id]
 }
+
+data "aws_ami" "eks_worker_windows" {
+  filter {
+    name   = "name"
+    values = [local.worker_ami_name_filter_windows]
+  }
+
+  filter {
+    name   = "platform"
+    values = ["windows"]
+  }
+
+  most_recent = true
+
+  # Owner ID of AWS EKS team (windows)
+  owners = [var.worker_ami_owner_id_windows]
+}
+
 
 data "aws_iam_policy_document" "cluster_assume_role_policy" {
   statement {
@@ -85,8 +104,12 @@ EOF
 }
 
 data "template_file" "userdata" {
-  count    = local.worker_group_count
-  template = file("${path.module}/templates/userdata.sh.tpl")
+  count = local.worker_group_count
+  template = file(
+    lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"]) == "windows" ?
+    "${path.module}/templates/userdata_windows.tpl" :
+    "${path.module}/templates/userdata.sh.tpl"
+  )
 
   vars = {
     cluster_name        = aws_eks_cluster.this.name
@@ -116,8 +139,12 @@ data "template_file" "userdata" {
 }
 
 data "template_file" "launch_template_userdata" {
-  count    = local.worker_group_launch_template_count
-  template = file("${path.module}/templates/userdata.sh.tpl")
+  count = local.worker_group_launch_template_count
+  template = file(
+    lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"]) == "windows" ?
+    "${path.module}/templates/userdata_windows.tpl" :
+    "${path.module}/templates/userdata.sh.tpl"
+  )
 
   vars = {
     cluster_name        = aws_eks_cluster.this.name

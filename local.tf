@@ -19,10 +19,13 @@ locals {
   worker_group_count                 = length(var.worker_groups)
   worker_group_launch_template_count = length(var.worker_groups_launch_template)
 
+  default_ami_id_linux   = data.aws_ami.eks_worker.id
+  default_ami_id_windows = data.aws_ami.eks_worker_windows.id
+
   workers_group_defaults_defaults = {
     name                          = "count.index"               # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
     tags                          = []                          # A list of map defining extra tags to be applied to the worker group autoscaling group.
-    ami_id                        = data.aws_ami.eks_worker.id  # AMI ID for the eks workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI.
+    ami_id                        = ""                          # AMI ID for the eks workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI based on platform.
     asg_desired_capacity          = "1"                         # Desired worker capacity in the autoscaling group and changing its value will not affect the autoscaling group's desired capacity because the cluster-autoscaler manages up and down scaling of the nodes. Cluster-autoscaler add nodes when pods are in pending state and remove the nodes when they are not required by modifying the desirec_capacity of the autoscaling group. Although an issue exists in which if the value of the asg_min_size is changed it modifies the value of asg_desired_capacity.
     asg_max_size                  = "3"                         # Maximum worker capacity in the autoscaling group.
     asg_min_size                  = "1"                         # Minimum worker capacity in the autoscaling group. NOTE: Change in this paramater will affect the asg_desired_capacity, like changing its value to 2 will change asg_desired_capacity value to 2 but bringing back it to 1 will not affect the asg_desired_capacity.
@@ -55,6 +58,7 @@ locals {
     placement_group               = ""                          # The name of the placement group into which to launch the instances, if any.
     service_linked_role_arn       = ""                          # Arn of custom service linked role that Auto Scaling group will use. Useful when you have encrypted EBS
     termination_policies          = []                          # A list of policies to decide how the instances in the auto scale group should be terminated.
+    platform                      = "linux"                     # Platform of workers. either "linux" or "windows"
     # Settings for launch templates
     root_block_device_name            = data.aws_ami.eks_worker.root_device_name # Root device name for workers. If non is provided, will assume default AMI was used.
     root_kms_key_id                   = ""                                       # The KMS key to use when encrypting the root storage device
