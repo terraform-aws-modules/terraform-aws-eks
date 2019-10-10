@@ -2,9 +2,6 @@ locals {
   worker_ami_name_filter = var.worker_ami_name_filter != "" ? var.worker_ami_name_filter : "amazon-eks-node-${var.cluster_version}-v*"
 }
 
-data "aws_region" "current" {
-}
-
 data "aws_iam_policy_document" "workers_assume_role_policy" {
   statement {
     sid = "EKSWorkerAssumeRole"
@@ -52,7 +49,6 @@ data "template_file" "kubeconfig" {
   vars = {
     kubeconfig_name           = local.kubeconfig_name
     endpoint                  = aws_eks_cluster.this.endpoint
-    region                    = data.aws_region.current.name
     cluster_auth_base64       = aws_eks_cluster.this.certificate_authority[0].data
     aws_authenticator_command = var.kubeconfig_aws_authenticator_command
     aws_authenticator_command_args = length(var.kubeconfig_aws_authenticator_command_args) > 0 ? "        - ${join(
