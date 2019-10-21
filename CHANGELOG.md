@@ -11,6 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- **Breaking:** Allow for specifying a custom AMI for the worker nodes. (by @bmcstdio)
 - Write your awesome addition here (by @you)
 
 ### Changed

@@ -1,3 +1,7 @@
+locals {
+  worker_ami_name_filter = var.worker_ami_name_filter != "" ? var.worker_ami_name_filter : "amazon-eks-node-${var.cluster_version}-v*"
+}
+
 data "aws_region" "current" {
 }
 
@@ -19,13 +23,12 @@ data "aws_iam_policy_document" "workers_assume_role_policy" {
 data "aws_ami" "eks_worker" {
   filter {
     name   = "name"
-    values = ["${var.worker_ami_name_filter_prefix}-${var.cluster_version}-${var.worker_ami_name_filter}"]
+    values = [local.worker_ami_name_filter]
   }
 
   most_recent = true
 
-  # Owner ID of AWS EKS team
-  owners = ["602401143452"]
+  owners = [var.worker_ami_owner_id]
 }
 
 data "aws_iam_policy_document" "cluster_assume_role_policy" {
