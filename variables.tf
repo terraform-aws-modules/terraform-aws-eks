@@ -121,15 +121,15 @@ variable "worker_security_group_id" {
 }
 
 variable "worker_ami_name_filter" {
-  description = "Additional name filter for AWS EKS worker AMI. Default behaviour will get latest for the cluster_version but could be set to a release from amazon-eks-ami, e.g. \"v20190220\""
+  description = "Name filter for AWS EKS worker AMI. If not provided, the latest official AMI for the specified 'cluster_version' is used."
   type        = string
-  default     = "v*"
+  default     = ""
 }
 
-variable "worker_ami_name_filter_prefix" {
-  description = "Name prefix filter for AWS EKS worker AMI. Default behaviour will get regular EKS-Optimized AMI but could be set to a EKS-Optimized AMI with GPU Support, e.g. \"amazon-eks-gpu-node\", or custom AMI"
+variable "worker_ami_owner_id" {
+  description = "The ID of the owner for the AMI to use for the AWS EKS workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft')."
   type        = string
-  default     = "amazon-eks-node"
+  default     = "602401143452" // The ID of the owner of the official AWS EKS AMIs.
 }
 
 variable "worker_additional_security_group_ids" {

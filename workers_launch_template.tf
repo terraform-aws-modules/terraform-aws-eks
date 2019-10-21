@@ -272,18 +272,18 @@ resource "aws_launch_template" "workers_launch_template" {
   user_data = base64encode(
     data.template_file.launch_template_userdata.*.rendered[count.index],
   )
+
   ebs_optimized = lookup(
     var.worker_groups_launch_template[count.index],
     "ebs_optimized",
-    lookup(
-      local.ebs_optimized,
+    ! contains(
+      local.ebs_optimized_not_supported,
       lookup(
         var.worker_groups_launch_template[count.index],
         "instance_type",
         local.workers_group_defaults["instance_type"],
-      ),
-      false,
-    ),
+      )
+    )
   )
 
   credit_specification {
