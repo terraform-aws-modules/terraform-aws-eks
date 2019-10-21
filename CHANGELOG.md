@@ -16,7 +16,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
- - Changed logic for setting default ebs_optimized to only require maintaining a list of instance types that don't support it (by @jeffmhastings)
+-  **Breaking:** The `kubectl` configuration file can now be fully-specified using `config_output_path`. Previously it was assumed that `config_output_path` referred to a directory and always ended with a forward slash. This is a breaking change if `config_output_path` does **not** end with a forward slash (which was advised against by the documentation).
+- Changed logic for setting default ebs_optimized to only require maintaining a list of instance types that don't support it (by @jeffmhastings)
 
 # History
 

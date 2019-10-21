@@ -32,7 +32,7 @@ variable "cluster_version" {
 }
 
 variable "config_output_path" {
-  description = "Where to save the Kubectl config file (if `write_kubeconfig = true`). Should end in a forward slash `/` ."
+  description = "Where to save the Kubectl config file (if `write_kubeconfig = true`). Assumed to be a directory if the value ends with a forward slash `/`."
   type        = string
   default     = "./"
 }
