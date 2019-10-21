@@ -80,155 +80,41 @@ locals {
     var.workers_group_defaults,
   )
 
-  ebs_optimized = {
-    "c1.medium"    = false
-    "c1.xlarge"    = true
-    "c3.large"     = false
-    "c3.xlarge"    = true
-    "c3.2xlarge"   = true
-    "c3.4xlarge"   = true
-    "c3.8xlarge"   = false
-    "c4.large"     = true
-    "c4.xlarge"    = true
-    "c4.2xlarge"   = true
-    "c4.4xlarge"   = true
-    "c4.8xlarge"   = true
-    "c5.large"     = true
-    "c5.xlarge"    = true
-    "c5.2xlarge"   = true
-    "c5.4xlarge"   = true
-    "c5.9xlarge"   = true
-    "c5.18xlarge"  = true
-    "c5d.large"    = true
-    "c5d.xlarge"   = true
-    "c5d.2xlarge"  = true
-    "c5d.4xlarge"  = true
-    "c5d.9xlarge"  = true
-    "c5d.18xlarge" = true
-    "cc2.8xlarge"  = false
-    "cr1.8xlarge"  = false
-    "d2.xlarge"    = true
-    "d2.2xlarge"   = true
-    "d2.4xlarge"   = true
-    "d2.8xlarge"   = true
-    "f1.2xlarge"   = true
-    "f1.4xlarge"   = true
-    "f1.16xlarge"  = true
-    "g2.2xlarge"   = true
-    "g2.8xlarge"   = false
-    "g3s.xlarge"   = true
-    "g3.4xlarge"   = true
-    "g3.8xlarge"   = true
-    "g3.16xlarge"  = true
-    "h1.2xlarge"   = true
-    "h1.4xlarge"   = true
-    "h1.8xlarge"   = true
-    "h1.16xlarge"  = true
-    "hs1.8xlarge"  = false
-    "i2.xlarge"    = true
-    "i2.2xlarge"   = true
-    "i2.4xlarge"   = true
-    "i2.8xlarge"   = false
-    "i3.large"     = true
-    "i3.xlarge"    = true
-    "i3.2xlarge"   = true
-    "i3.4xlarge"   = true
-    "i3.8xlarge"   = true
-    "i3.16xlarge"  = true
-    "i3.metal"     = true
-    "m1.small"     = false
-    "m1.medium"    = false
-    "m1.large"     = true
-    "m1.xlarge"    = true
-    "m2.xlarge"    = false
-    "m2.2xlarge"   = true
-    "m2.4xlarge"   = true
-    "m3.medium"    = false
-    "m3.large"     = false
-    "m3.xlarge"    = true
-    "m3.2xlarge"   = true
-    "m4.large"     = true
-    "m4.xlarge"    = true
-    "m4.2xlarge"   = true
-    "m4.4xlarge"   = true
-    "m4.10xlarge"  = true
-    "m4.16xlarge"  = true
-    "m5a.large"    = true
-    "m5a.xlarge"   = true
-    "m5a.2xlarge"  = true
-    "m5a.4xlarge"  = true
-    "m5a.12xlarge" = true
-    "m5a.24xlarge" = true
-    "m5.large"     = true
-    "m5.xlarge"    = true
-    "m5.2xlarge"   = true
-    "m5.4xlarge"   = true
-    "m5.12xlarge"  = true
-    "m5.24xlarge"  = true
-    "m5d.large"    = true
-    "m5d.xlarge"   = true
-    "m5d.2xlarge"  = true
-    "m5d.4xlarge"  = true
-    "m5d.12xlarge" = true
-    "m5d.24xlarge" = true
-    "p2.xlarge"    = true
-    "p2.8xlarge"   = true
-    "p2.16xlarge"  = true
-    "p3.2xlarge"   = true
-    "p3.8xlarge"   = true
-    "p3.16xlarge"  = true
-    "r3.large"     = false
-    "r3.xlarge"    = true
-    "r3.2xlarge"   = true
-    "r3.4xlarge"   = true
-    "r3.8xlarge"   = false
-    "r4.large"     = true
-    "r4.xlarge"    = true
-    "r4.2xlarge"   = true
-    "r4.4xlarge"   = true
-    "r4.8xlarge"   = true
-    "r4.16xlarge"  = true
-    "r5a.large"    = true
-    "r5a.xlarge"   = true
-    "r5a.2xlarge"  = true
-    "r5a.4xlarge"  = true
-    "r5a.12xlarge" = true
-    "r5a.24xlarge" = true
-    "r5.large"     = true
-    "r5.xlarge"    = true
-    "r5.2xlarge"   = true
-    "r5.4xlarge"   = true
-    "r5.12xlarge"  = true
-    "r5.24xlarge"  = true
-    "t1.micro"     = false
-    "t2.nano"      = false
-    "t2.micro"     = false
-    "t2.small"     = false
-    "t2.medium"    = false
-    "t2.large"     = false
-    "t2.xlarge"    = false
-    "t2.2xlarge"   = false
-    "t3a.nano"     = true
-    "t3a.micro"    = true
-    "t3a.small"    = true
-    "t3a.medium"   = true
-    "t3a.large"    = true
-    "t3a.xlarge"   = true
-    "t3a.2xlarge"  = true
-    "t3.nano"      = true
-    "t3.micro"     = true
-    "t3.small"     = true
-    "t3.medium"    = true
-    "t3.large"     = true
-    "t3.xlarge"    = true
-    "t3.2xlarge"   = true
-    "x1.16xlarge"  = true
-    "x1.32xlarge"  = true
-    "x1e.xlarge"   = true
-    "x1e.2xlarge"  = true
-    "x1e.4xlarge"  = true
-    "x1e.8xlarge"  = true
-    "x1e.16xlarge" = true
-    "x1e.32xlarge" = true
-  }
+  ebs_optimized_not_supported = [
+    "c1.medium",
+    "c3.8xlarge",
+    "c3.large",
+    "c5d.12xlarge",
+    "c5d.24xlarge",
+    "c5d.metal",
+    "cc2.8xlarge",
+    "cr1.8xlarge",
+    "g2.8xlarge",
+    "g4dn.metal",
+    "hs1.8xlarge",
+    "i2.8xlarge",
+    "m1.medium",
+    "m1.small",
+    "m2.xlarge",
+    "m3.large",
+    "m3.medium",
+    "m5ad.16xlarge",
+    "m5ad.8xlarge",
+    "m5dn.metal",
+    "m5n.metal",
+    "r3.8xlarge",
+    "r3.large",
+    "r5ad.16xlarge",
+    "r5ad.8xlarge",
+    "r5dn.metal",
+    "r5n.metal",
+    "t1.micro",
+    "t2.2xlarge",
+    "t2.large",
+    "t2.medium",
+    "t2.micro",
+    "t2.nano",
+    "t2.small",
+    "t2.xlarge"
+  ]
 }

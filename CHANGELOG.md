@@ -15,7 +15,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
- - Write your awesome change here (by @you)
+ - Changed logic for setting default ebs_optimized to only require maintaining a list of instance types that don't support it (by @jeffmhastings)
 
 # History
 
