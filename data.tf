@@ -90,7 +90,11 @@ EOF
 
 data "template_file" "userdata" {
   count    = local.worker_group_count
-  template = file("${path.module}/templates/userdata.sh.tpl")
+  template = lookup(
+    var.worker_groups[count.index],
+    "custom_userdata",
+    file("${path.module}/templates/userdata.sh.tpl")
+  )
 
   vars = {
     cluster_name        = aws_eks_cluster.this.name

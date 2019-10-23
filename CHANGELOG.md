@@ -12,6 +12,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - **Breaking:** Allow for specifying a custom AMI for the worker nodes. (by @bmcstdio)
+- Allow for replacing the full userdata text with a `custom_userdata` template in `worker_groups` (by @snstanton)
 - Write your awesome addition here (by @you)
 
 ### Changed

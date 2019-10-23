@@ -37,6 +37,7 @@ locals {
     root_iops                     = "0"                         # The amount of provisioned IOPS. This must be set with a volume_type of "io1".
     key_name                      = ""                          # The key name that should be used for the instances in the autoscaling group
     pre_userdata                  = ""                          # userdata to pre-append to the default userdata.
+    custom_userdata               = ""                          # alternate template to use for userdata
     bootstrap_extra_args          = ""                          # Extra arguments passed to the bootstrap.sh script from the EKS AMI (Amazon Machine Image).
     additional_userdata           = ""                          # userdata to append to the default userdata.
     ebs_optimized                 = true                        # sets whether to use ebs optimization on supported types.
