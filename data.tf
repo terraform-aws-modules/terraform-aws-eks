@@ -89,7 +89,7 @@ EOF
 }
 
 data "template_file" "userdata" {
-  count    = local.worker_group_count
+  count = local.worker_group_count
   template = lookup(
     var.worker_groups[count.index],
     "custom_userdata",
