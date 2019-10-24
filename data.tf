@@ -88,7 +88,7 @@ data "template_file" "userdata" {
   count = local.worker_group_count
   template = lookup(
     var.worker_groups[count.index],
-    "custom_userdata",
+    "userdata_template_file",
     file("${path.module}/templates/userdata.sh.tpl")
   )
 
