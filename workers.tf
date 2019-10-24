@@ -260,7 +260,7 @@ resource "aws_security_group_rule" "workers_egress_internet" {
   count             = var.worker_create_security_group ? 1 : 0
   description       = "Allow nodes all egress to the Internet."
   protocol          = "-1"
-  security_group_id = aws_security_group.workers[0].id
+  security_group_id = local.worker_security_group_id
   cidr_blocks       = ["0.0.0.0/0"]
   from_port         = 0
   to_port           = 0
@@ -271,8 +271,8 @@ resource "aws_security_group_rule" "workers_ingress_self" {
   count                    = var.worker_create_security_group ? 1 : 0
   description              = "Allow node to communicate with each other."
   protocol                 = "-1"
-  security_group_id        = aws_security_group.workers[0].id
-  source_security_group_id = aws_security_group.workers[0].id
+  security_group_id        = local.worker_security_group_id
+  source_security_group_id = local.worker_security_group_id
   from_port                = 0
   to_port                  = 65535
   type                     = "ingress"
@@ -282,7 +282,7 @@ resource "aws_security_group_rule" "workers_ingress_cluster" {
   count                    = var.worker_create_security_group ? 1 : 0
   description              = "Allow workers pods to receive communication from the cluster control plane."
   protocol                 = "tcp"
-  security_group_id        = aws_security_group.workers[0].id
+  security_group_id        = local.worker_security_group_id
   source_security_group_id = local.cluster_security_group_id
   from_port                = var.worker_sg_ingress_from_port
   to_port                  = 65535
@@ -293,7 +293,7 @@ resource "aws_security_group_rule" "workers_ingress_cluster_kubelet" {
   count                    = var.worker_create_security_group ? var.worker_sg_ingress_from_port > 10250 ? 1 : 0 : 0
   description              = "Allow workers Kubelets to receive communication from the cluster control plane."
   protocol                 = "tcp"
-  security_group_id        = aws_security_group.workers[0].id
+  security_group_id        = local.worker_security_group_id
   source_security_group_id = local.cluster_security_group_id
   from_port                = 10250
   to_port                  = 10250
@@ -304,7 +304,7 @@ resource "aws_security_group_rule" "workers_ingress_cluster_https" {
   count                    = var.worker_create_security_group ? 1 : 0
   description              = "Allow pods running extension API servers on port 443 to receive communication from cluster control plane."
   protocol                 = "tcp"
-  security_group_id        = aws_security_group.workers[0].id
+  security_group_id        = local.worker_security_group_id
   source_security_group_id = local.cluster_security_group_id
   from_port                = 443
   to_port                  = 443
