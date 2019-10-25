@@ -42,7 +42,7 @@ resource "aws_autoscaling_group" "workers" {
     "service_linked_role_arn",
     local.workers_group_defaults["service_linked_role_arn"],
   )
-  launch_configuration = aws_launch_configuration.workers.*.id[count.index]
+  launch_configuration = lookup(var.worker_groups[count.index], "launch_configuration", element(aws_launch_configuration.workers.*.id, count.index))
   vpc_zone_identifier = lookup(
     var.worker_groups[count.index],
     "subnets",
