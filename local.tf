@@ -38,6 +38,7 @@ locals {
     key_name                      = ""                          # The key name that should be used for the instances in the autoscaling group
     pre_userdata                  = ""                          # userdata to pre-append to the default userdata.
     userdata_template_file        = ""                          # alternate template to use for userdata
+    userdata_template_extra_args  = {}                          # Additional arguments to use when expanding the userdata template file
     bootstrap_extra_args          = ""                          # Extra arguments passed to the bootstrap.sh script from the EKS AMI (Amazon Machine Image).
     additional_userdata           = ""                          # userdata to append to the default userdata.
     ebs_optimized                 = true                        # sets whether to use ebs optimization on supported types.
