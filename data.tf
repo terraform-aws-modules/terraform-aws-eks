@@ -108,12 +108,15 @@ data "template_file" "userdata" {
   template = lookup(
     var.worker_groups[count.index],
     "userdata_template_file",
-    lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"]) == "windows"
-    ? "${path.module}/templates/userdata_windows.tpl"
-    : "${path.module}/templates/userdata.sh.tpl"
+    file(
+      lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"]) == "windows"
+      ? "${path.module}/templates/userdata_windows.tpl"
+      : "${path.module}/templates/userdata.sh.tpl"
+    )
   )
 
   vars = merge({
+    platform            = lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"])
     cluster_name        = aws_eks_cluster.this.name
     endpoint            = aws_eks_cluster.this.endpoint
     cluster_auth_base64 = aws_eks_cluster.this.certificate_authority[0].data
@@ -141,20 +144,25 @@ data "template_file" "userdata" {
     lookup(
       var.worker_groups[count.index],
       "userdata_template_extra_args",
-      var.workers_group_defaults["userdata_template_extra_args"]
+      local.workers_group_defaults["userdata_template_extra_args"]
     )
   )
 }
 
 data "template_file" "launch_template_userdata" {
   count = local.worker_group_launch_template_count
-  template = file(
-    lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"]) == "windows"
-    ? "${path.module}/templates/userdata_windows.tpl"
-    : "${path.module}/templates/userdata.sh.tpl"
+  template = lookup(
+    var.worker_groups_launch_template[count.index],
+    "userdata_template_file",
+    file(
+      lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"]) == "windows"
+      ? "${path.module}/templates/userdata_windows.tpl"
+      : "${path.module}/templates/userdata.sh.tpl"
+    )
   )
 
-  vars = {
+  vars = merge({
+    platform            = lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"])
     cluster_name        = aws_eks_cluster.this.name
     endpoint            = aws_eks_cluster.this.endpoint
     cluster_auth_base64 = aws_eks_cluster.this.certificate_authority[0].data
@@ -178,7 +186,13 @@ data "template_file" "launch_template_userdata" {
       "kubelet_extra_args",
       local.workers_group_defaults["kubelet_extra_args"],
     )
-  }
+    },
+    lookup(
+      var.worker_groups_launch_template[count.index],
+      "userdata_template_extra_args",
+      local.workers_group_defaults["userdata_template_extra_args"]
+    )
+  )
 }
 
 data "aws_iam_role" "custom_cluster_iam_role" {
