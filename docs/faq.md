@@ -98,3 +98,9 @@ module "eks" {
   # ...
 }
 ```
+
+## How can I use Windows workers?
+
+To enable Windows support for your EKS cluster, you should apply some configs manually. See the [Enabling Windows Support (Windows/MacOS/Linux)](https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support).
+
+Windows worker nodes requires additional cluster role (eks:kube-proxy-windows). If you are adding windows workers to existing cluster, you should apply config-map-aws-auth again.

@@ -3,3 +3,6 @@
       groups:
         - system:bootstrappers
         - system:nodes
+        %{~ if platform == "windows" ~}
+        - eks:kube-proxy-windows
+        %{~ endif ~}
