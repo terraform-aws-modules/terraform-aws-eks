@@ -47,6 +47,11 @@ data "template_file" "launch_template_worker_role_arns" {
       ),
       count.index,
     )}"
+    platform = lookup(
+      var.worker_groups_launch_template[count.index],
+      "platform",
+      local.workers_group_defaults["platform"]
+    )
   }
 }
 
@@ -63,6 +68,11 @@ data "template_file" "worker_role_arns" {
       ),
       count.index,
     )}"
+    platform = lookup(
+      var.worker_groups[count.index],
+      "platform",
+      local.workers_group_defaults["platform"]
+    )
   }
 }
 
