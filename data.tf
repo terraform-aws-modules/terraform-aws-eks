@@ -108,9 +108,9 @@ data "template_file" "userdata" {
   template = lookup(
     var.worker_groups[count.index],
     "userdata_template_file",
-    lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"]) == "windows" ?
-    "${path.module}/templates/userdata_windows.tpl" :
-    "${path.module}/templates/userdata.sh.tpl")
+    lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"]) == "windows"
+    ? "${path.module}/templates/userdata_windows.tpl"
+    : "${path.module}/templates/userdata.sh.tpl"
   )
 
   vars = merge({
@@ -141,16 +141,17 @@ data "template_file" "userdata" {
     lookup(
       var.worker_groups[count.index],
       "userdata_template_extra_args",
-      local.workers_group_defaults["userdata_template_extra_args"]
-  ))
+      var.workers_group_defaults["userdata_template_extra_args"]
+    )
+  )
 }
 
 data "template_file" "launch_template_userdata" {
   count = local.worker_group_launch_template_count
   template = file(
-    lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"]) == "windows" ?
-      "${path.module}/templates/userdata_windows.tpl" :
-      "${path.module}/templates/userdata.sh.tpl")
+    lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"]) == "windows"
+    ? "${path.module}/templates/userdata_windows.tpl"
+    : "${path.module}/templates/userdata.sh.tpl"
   )
 
   vars = {
