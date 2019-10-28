@@ -117,7 +117,11 @@ data "template_file" "userdata" {
       local.workers_group_defaults["kubelet_extra_args"],
     )
     },
-  lookup(var.worker_groups[count.index], "userdata_template_extra_args", {}))
+    lookup(
+      var.worker_groups[count.index],
+      "userdata_template_extra_args",
+      local.workers_group_defaults["userdata_template_extra_args"]
+  ))
 }
 
 data "template_file" "launch_template_userdata" {
