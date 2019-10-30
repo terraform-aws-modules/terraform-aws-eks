@@ -7,7 +7,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v6.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.1.0...HEAD)] - 2019-??-??]
+## [[v7.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.1.0...HEAD)] - 2019-??-??]
 
 ### Added
 
@@ -19,7 +19,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 # History
 
-## [[v6.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.2...v6.1.0)] - 2019-10-30]
+## [[v7.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.2...v7.0.0)] - 2019-10-30]
 
 ### Added
 
