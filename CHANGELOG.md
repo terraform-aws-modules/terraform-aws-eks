@@ -26,7 +26,6 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - **Breaking:** Allow for specifying a custom AMI for the worker nodes. (by @bmcstdio)
 - Added support for Windows workers AMIs (by @hodduc)
 - Allow for replacing the full userdata text with a `userdata_template_file` template and `userdata_template_extra_args` in `worker_groups` (by @snstanton)
-- Write your awesome addition here (by @you)
 
 ### Changed
 
@@ -34,7 +33,6 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Changed logic for setting default ebs_optimized to only require maintaining a list of instance types that don't support it (by @jeffmhastings)
 - Bumped minimum terraform version to 0.12.2 to prevent an error on yamlencode function (by @toadjaune)
 - Access conditional resource using join function in combination with splat syntax (by @miguelaferreira)
-
 
 ## [[v6.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.1...v6.0.2)] - 2019-10-07]
 
