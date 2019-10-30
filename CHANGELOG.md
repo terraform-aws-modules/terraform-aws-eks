@@ -7,7 +7,19 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v6.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.2...HEAD)] - 2019-10-??]
+## [[v6.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.1.0...HEAD)] - 2019-??-??]
+
+### Added
+
+- Write your awesome addition here (by @you)
+
+### Changed
+
+- Write your awesome change here (by @you)
+
+# History
+
+## [[v6.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.2...v6.1.0)] - 2019-10-30]
 
 ### Added
 
@@ -23,7 +35,6 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Bumped minimum terraform version to 0.12.2 to prevent an error on yamlencode function (by @toadjaune)
 - Access conditional resource using join function in combination with splat syntax (by @miguelaferreira)
 
-# History
 
 ## [[v6.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.1...v6.0.2)] - 2019-10-07]
 
