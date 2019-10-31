@@ -1,7 +1,7 @@
 # Worker Groups using Launch Templates
 
 resource "aws_autoscaling_group" "workers_launch_template" {
-  count = (local.worker_group_launch_template_count * local.enabled)
+  count = (local.worker_group_launch_template_count * var.enabled)
   name_prefix = join(
     "-",
     compact(
@@ -218,7 +218,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
 }
 
 resource "aws_launch_template" "workers_launch_template" {
-  count = (local.worker_group_launch_template_count * local.enabled)
+  count = (local.worker_group_launch_template_count * var.enabled)
   name_prefix = "${aws_eks_cluster.this.name}-${lookup(
     var.worker_groups_launch_template[count.index],
     "name",
@@ -382,7 +382,7 @@ resource "aws_launch_template" "workers_launch_template" {
 }
 
 resource "random_pet" "workers_launch_template" {
-  count = (local.worker_group_launch_template_count * && local.enabled)
+  count = (local.worker_group_launch_template_count * var.enabled)
 
   separator = "-"
   length    = 2
@@ -401,7 +401,7 @@ resource "random_pet" "workers_launch_template" {
 }
 
 resource "aws_iam_instance_profile" "workers_launch_template" {
-  count       = var.manage_worker_iam_resources ? (local.worker_group_launch_template_count * local.enabled) : 0
+  count       = var.manage_worker_iam_resources ? (local.worker_group_launch_template_count * var.enabled) : 0
   name_prefix = aws_eks_cluster.this.name
   role = lookup(
     var.worker_groups_launch_template[count.index],
