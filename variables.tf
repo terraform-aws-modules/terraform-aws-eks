@@ -293,3 +293,9 @@ variable "attach_worker_cni_policy" {
   type        = bool
   default     = true
 }
+
+variable "enabled" {
+  description = "Destroy-time flag. If set to "false", the count will be set to "0" on all resources."
+  type        = bool
+  default     = true
+}
