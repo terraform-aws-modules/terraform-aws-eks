@@ -67,15 +67,15 @@ data "template_file" "kubeconfig" {
 
   vars = {
     kubeconfig_name           = local.kubeconfig_name
-    endpoint                  = aws_eks_cluster.this.endpoint
-    cluster_auth_base64       = aws_eks_cluster.this.certificate_authority[0].data
+    endpoint                  = aws_eks_cluster.this[0].endpoint
+    cluster_auth_base64       = aws_eks_cluster.this[0].certificate_authority[0].data
     aws_authenticator_command = var.kubeconfig_aws_authenticator_command
     aws_authenticator_command_args = length(var.kubeconfig_aws_authenticator_command_args) > 0 ? "        - ${join(
       "\n        - ",
       var.kubeconfig_aws_authenticator_command_args,
       )}" : "        - ${join(
       "\n        - ",
-      formatlist("\"%s\"", ["token", "-i", aws_eks_cluster.this.name]),
+      formatlist("\"%s\"", ["token", "-i", aws_eks_cluster.this[0].name]),
     )}"
     aws_authenticator_additional_args = length(var.kubeconfig_aws_authenticator_additional_args) > 0 ? "        - ${join(
       "\n        - ",
@@ -117,9 +117,9 @@ data "template_file" "userdata" {
 
   vars = merge({
     platform            = lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"])
-    cluster_name        = aws_eks_cluster.this.name
-    endpoint            = aws_eks_cluster.this.endpoint
-    cluster_auth_base64 = aws_eks_cluster.this.certificate_authority[0].data
+    cluster_name        = aws_eks_cluster.this[count.index].name
+    endpoint            = aws_eks_cluster.this[count.index].endpoint
+    cluster_auth_base64 = aws_eks_cluster.this[count.index].certificate_authority[0].data
     pre_userdata = lookup(
       var.worker_groups[count.index],
       "pre_userdata",
@@ -163,9 +163,9 @@ data "template_file" "launch_template_userdata" {
 
   vars = merge({
     platform            = lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"])
-    cluster_name        = aws_eks_cluster.this.name
-    endpoint            = aws_eks_cluster.this.endpoint
-    cluster_auth_base64 = aws_eks_cluster.this.certificate_authority[0].data
+    cluster_name        = aws_eks_cluster.this[count.index].name
+    endpoint            = aws_eks_cluster.this[count.index].endpoint
+    cluster_auth_base64 = aws_eks_cluster.this[count.index].certificate_authority[0].data
     pre_userdata = lookup(
       var.worker_groups_launch_template[count.index],
       "pre_userdata",
