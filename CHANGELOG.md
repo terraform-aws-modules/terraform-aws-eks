@@ -11,7 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Write your awesome addition here (by @you)
+- Test against minimum versions specified in `versions.tf` (by @dpiddockcmp)
 
 ### Changed
 
