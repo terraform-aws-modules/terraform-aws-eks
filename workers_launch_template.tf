@@ -401,7 +401,7 @@ resource "random_pet" "workers_launch_template" {
 }
 
 resource "aws_iam_instance_profile" "workers_launch_template" {
-  count       = var.manage_worker_iam_resources ? (local.worker_group_launch_template_count * var.enabled) : 0
+  count       = var.manage_worker_iam_resources && var.enabled ? local.worker_group_launch_template_count : 0
   name_prefix = aws_eks_cluster.this[count.index].name
   role = lookup(
     var.worker_groups_launch_template[count.index],
