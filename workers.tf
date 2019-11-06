@@ -6,7 +6,7 @@ resource "aws_autoscaling_group" "workers" {
     "-",
     compact(
       [
-        aws_eks_cluster.this.name,
+        lookup(var.worker_groups[count.index], "name_prefix", aws_eks_cluster.this.name),
         lookup(var.worker_groups[count.index], "name", count.index),
         lookup(var.worker_groups[count.index], "asg_recreate_on_change", local.workers_group_defaults["asg_recreate_on_change"]) ? random_pet.workers[count.index].id : ""
       ]
