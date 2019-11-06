@@ -227,6 +227,20 @@ data "template_cloudinit_config" "worker_group_cloudinit_config" {
     content_type = "text/x-shellscript"
     content      = data.template_file.userdata.*.rendered[count.index]
   }
+
+  dynamic "part" {
+    for_each = lookup(
+      var.worker_groups[count.index],
+      "userdata_parts",
+      local.workers_group_defaults["userdata_parts"],
+    )
+    content {
+      content      = lookup(part.value, "content", null)
+      content_type = lookup(part.value, "content_type", null)
+      filename     = lookup(part.value, "filename", null)
+      merge_type   = lookup(part.value, "merge_type", null)
+    }
+  }
 }
 
 data "template_cloudinit_config" "worker_group_launch_template_cloudinit_config" {
@@ -237,5 +251,19 @@ data "template_cloudinit_config" "worker_group_launch_template_cloudinit_config"
   part {
     content_type = "text/x-shellscript"
     content      = data.template_file.launch_template_userdata.*.rendered[count.index]
+  }
+
+  dynamic "part" {
+    for_each = lookup(
+      var.worker_groups_launch_template[count.index],
+      "userdata_parts",
+      local.workers_group_defaults["userdata_parts"],
+    )
+    content {
+      content      = lookup(part.value, "content", null)
+      content_type = lookup(part.value, "content_type", null)
+      filename     = lookup(part.value, "filename", null)
+      merge_type   = lookup(part.value, "merge_type", null)
+    }
   }
 }
