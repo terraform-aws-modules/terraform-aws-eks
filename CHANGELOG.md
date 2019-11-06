@@ -12,6 +12,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Test against minimum versions specified in `versions.tf` (by @dpiddockcmp)
+- Added support for customizing userdata with `userdata_parts` list in `worker_groups` and `worker_groups_launch_template` (by @thomas_brx)
 
 ### Changed
 
