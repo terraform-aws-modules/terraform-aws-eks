@@ -217,3 +217,25 @@ data "aws_iam_instance_profile" "custom_worker_group_launch_template_iam_instanc
     local.workers_group_defaults["iam_instance_profile_name"],
   )
 }
+
+data "template_cloudinit_config" "worker_group_cloudinit_config" {
+  count         = local.worker_group_count
+  base64_encode = true
+  gzip          = false
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = data.template_file.userdata.*.rendered[count.index]
+  }
+}
+
+data "template_cloudinit_config" "worker_group_launch_template_cloudinit_config" {
+  count         = local.worker_group_launch_template_count
+  base64_encode = true
+  gzip          = false
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = data.template_file.launch_template_userdata.*.rendered[count.index]
+  }
+}

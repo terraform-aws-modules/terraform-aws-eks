@@ -269,9 +269,7 @@ resource "aws_launch_template" "workers_launch_template" {
     "key_name",
     local.workers_group_defaults["key_name"],
   )
-  user_data = base64encode(
-    data.template_file.launch_template_userdata.*.rendered[count.index],
-  )
+  user_data = data.template_cloudinit_config.worker_group_launch_template_cloudinit_config.*.rendered[count.index]
 
   ebs_optimized = lookup(
     var.worker_groups_launch_template[count.index],
