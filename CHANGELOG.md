@@ -15,7 +15,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- Write your awesome change here (by @you)
+- Updated instance_profile_names and instance_profile_arns outputs to also consider launch template as well as asg (by @ankitwal)
 
 # History
 

@@ -114,12 +114,18 @@ output "worker_security_group_id" {
 
 output "worker_iam_instance_profile_arns" {
   description = "default IAM instance profile ARN for EKS worker groups"
-  value       = aws_iam_instance_profile.workers.*.arn
+  value = concat(
+    aws_iam_instance_profile.workers.*.arn,
+    aws_iam_instance_profile.workers_launch_template.*.arn
+  )
 }
 
 output "worker_iam_instance_profile_names" {
   description = "default IAM instance profile name for EKS worker groups"
-  value       = aws_iam_instance_profile.workers.*.name
+  value = concat(
+    aws_iam_instance_profile.workers.*.name,
+    aws_iam_instance_profile.workers_launch_template.*.name
+  )
 }
 
 output "worker_iam_role_name" {
