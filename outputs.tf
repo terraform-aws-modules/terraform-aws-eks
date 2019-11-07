@@ -15,7 +15,7 @@ output "cluster_certificate_authority_data" {
 
 output "cluster_endpoint" {
   description = "The endpoint for your EKS Kubernetes API."
-  value       = element(concat(flatten(aws_eks_cluster.this[0].endpoint), list("")), 0)
+  value       = element(concat(aws_eks_cluster.this[*].endpoint, list("")), 0)
 }
 
 output "cluster_version" {
