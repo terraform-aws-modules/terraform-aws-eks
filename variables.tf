@@ -295,7 +295,7 @@ variable "attach_worker_cni_policy" {
 }
 
 variable "enabled" {
-  description = "Destroy-time flag. If set to `false`, the count will be set to `0` on all resources."
+  description = "Controls if EKS resources should be created (it affects almost all resources)"
   type        = bool
   default     = true
 }
