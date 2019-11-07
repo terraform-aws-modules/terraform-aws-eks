@@ -368,11 +368,12 @@ resource "aws_iam_policy" "worker_autoscaling" {
   count       = var.manage_worker_iam_resources && var.manage_worker_autoscaling_policy && var.enabled ? 1 : 0
   name_prefix = "eks-worker-autoscaling-${aws_eks_cluster.this[count.index].name}"
   description = "EKS worker node autoscaling policy for cluster ${aws_eks_cluster.this[count.index].name}"
-  policy      = data.aws_iam_policy_document.worker_autoscaling.json
+  policy      = data.aws_iam_policy_document.worker_autoscaling[0].json
   path        = var.iam_path
 }
 
 data "aws_iam_policy_document" "worker_autoscaling" {
+  count = var.manage_worker_iam_resources && var.manage_worker_autoscaling_policy && var.enabled ? 1 : 0
   statement {
     sid    = "eksWorkerAutoscalingAll"
     effect = "Allow"

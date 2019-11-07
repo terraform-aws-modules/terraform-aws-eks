@@ -30,7 +30,7 @@ output "cluster_security_group_id" {
 
 output "config_map_aws_auth" {
   description = "A kubernetes configuration to authenticate to this EKS cluster."
-  value       = data.template_file.config_map_aws_auth.rendered
+  value       = concat(data.template_file.config_map_aws_auth[*].rendered, [""])[0]
 }
 
 output "cluster_iam_role_name" {
@@ -55,7 +55,7 @@ output "cloudwatch_log_group_name" {
 
 output "kubeconfig" {
   description = "kubectl config file contents for this EKS cluster."
-  value       = data.template_file.kubeconfig.rendered
+  value       = concat(data.template_file.kubeconfig[*].rendered, [""])[0]
 }
 
 output "kubeconfig_filename" {
