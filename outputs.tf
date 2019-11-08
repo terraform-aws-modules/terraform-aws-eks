@@ -1,26 +1,26 @@
 output "cluster_id" {
   description = "The name/id of the EKS cluster."
-  value       = aws_eks_cluster.this.id
+  value       = aws_eks_cluster.this.0.id
 }
 
 output "cluster_arn" {
   description = "The Amazon Resource Name (ARN) of the cluster."
-  value       = aws_eks_cluster.this.arn
+  value       = aws_eks_cluster.this.0.arn
 }
 
 output "cluster_certificate_authority_data" {
   description = "Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster."
-  value       = aws_eks_cluster.this.certificate_authority[0].data
+  value       = aws_eks_cluster.this.0.certificate_authority[0].data
 }
 
 output "cluster_endpoint" {
   description = "The endpoint for your EKS Kubernetes API."
-  value       = aws_eks_cluster.this.endpoint
+  value       = aws_eks_cluster.this.0.endpoint
 }
 
 output "cluster_version" {
   description = "The Kubernetes server version for the EKS cluster."
-  value       = aws_eks_cluster.this.version
+  value       = aws_eks_cluster.this.0.version
 }
 
 output "cluster_security_group_id" {
@@ -30,7 +30,7 @@ output "cluster_security_group_id" {
 
 output "config_map_aws_auth" {
   description = "A kubernetes configuration to authenticate to this EKS cluster."
-  value       = data.template_file.config_map_aws_auth.rendered
+  value       = data.template_file.config_map_aws_auth.0.rendered
 }
 
 output "cluster_iam_role_name" {
@@ -45,7 +45,7 @@ output "cluster_iam_role_arn" {
 
 output "cluster_oidc_issuer_url" {
   description = "The URL on the EKS cluster OIDC Issuer"
-  value       = concat(aws_eks_cluster.this.identity.*.oidc.0.issuer, [""])[0]
+  value       = concat(aws_eks_cluster.this.0.identity.*.oidc.0.issuer, [""])[0]
 }
 
 output "cloudwatch_log_group_name" {
@@ -55,7 +55,7 @@ output "cloudwatch_log_group_name" {
 
 output "kubeconfig" {
   description = "kubectl config file contents for this EKS cluster."
-  value       = data.template_file.kubeconfig.rendered
+  value       = data.template_file.kubeconfig.0.rendered
 }
 
 output "kubeconfig_filename" {
@@ -89,7 +89,7 @@ output "workers_user_data" {
 
 output "workers_default_ami_id" {
   description = "ID of the default worker group AMI"
-  value       = data.aws_ami.eks_worker.id
+  value       = data.aws_ami.eks_worker.0.id
 }
 
 output "workers_launch_template_ids" {

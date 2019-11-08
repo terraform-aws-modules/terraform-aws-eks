@@ -12,6 +12,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Test against minimum versions specified in `versions.tf` (by @dpiddockcmp)
+- Allow for conditionally creating the AWS EKS cluster and associated resources via `create_cluster` (by @bmcstdio)
 
 ### Changed
 

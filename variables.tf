@@ -37,6 +37,12 @@ variable "config_output_path" {
   default     = "./"
 }
 
+variable "create_cluster" {
+  default     = true
+  description = "Whether to actually create the AWS EKS cluster and the associated resources (can be thought of as a 'count' attribute)."
+  type        = bool
+}
+
 variable "write_kubeconfig" {
   description = "Whether to write a Kubectl config file containing the cluster configuration. Saved to `config_output_path`."
   type        = bool

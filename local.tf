@@ -19,8 +19,8 @@ locals {
   worker_group_count                 = length(var.worker_groups)
   worker_group_launch_template_count = length(var.worker_groups_launch_template)
 
-  default_ami_id_linux   = data.aws_ami.eks_worker.id
-  default_ami_id_windows = data.aws_ami.eks_worker_windows.id
+  default_ami_id_linux   = data.aws_ami.eks_worker.0.id
+  default_ami_id_windows = data.aws_ami.eks_worker_windows.0.id
 
   workers_group_defaults_defaults = {
     name                          = "count.index"               # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
@@ -62,14 +62,14 @@ locals {
     termination_policies          = []                          # A list of policies to decide how the instances in the auto scale group should be terminated.
     platform                      = "linux"                     # Platform of workers. either "linux" or "windows"
     # Settings for launch templates
-    root_block_device_name            = data.aws_ami.eks_worker.root_device_name # Root device name for workers. If non is provided, will assume default AMI was used.
-    root_kms_key_id                   = ""                                       # The KMS key to use when encrypting the root storage device
-    launch_template_version           = "$Latest"                                # The lastest version of the launch template to use in the autoscaling group
-    launch_template_placement_tenancy = "default"                                # The placement tenancy for instances
-    launch_template_placement_group   = ""                                       # The name of the placement group into which to launch the instances, if any.
-    root_encrypted                    = ""                                       # Whether the volume should be encrypted or not
-    eni_delete                        = true                                     # Delete the Elastic Network Interface (ENI) on termination (if set to false you will have to manually delete before destroying)
-    cpu_credits                       = "standard"                               # T2/T3 unlimited mode, can be 'standard' or 'unlimited'. Used 'standard' mode as default to avoid paying higher costs
+    root_block_device_name            = data.aws_ami.eks_worker.0.root_device_name # Root device name for workers. If non is provided, will assume default AMI was used.
+    root_kms_key_id                   = ""                                         # The KMS key to use when encrypting the root storage device
+    launch_template_version           = "$Latest"                                  # The lastest version of the launch template to use in the autoscaling group
+    launch_template_placement_tenancy = "default"                                  # The placement tenancy for instances
+    launch_template_placement_group   = ""                                         # The name of the placement group into which to launch the instances, if any.
+    root_encrypted                    = ""                                         # Whether the volume should be encrypted or not
+    eni_delete                        = true                                       # Delete the Elastic Network Interface (ENI) on termination (if set to false you will have to manually delete before destroying)
+    cpu_credits                       = "standard"                                 # T2/T3 unlimited mode, can be 'standard' or 'unlimited'. Used 'standard' mode as default to avoid paying higher costs
     market_type                       = null
     # Settings for launch templates with mixed instances policy
     override_instance_types                  = ["m5.large", "m5a.large", "m5d.large", "m5ad.large"] # A list of override instance types for mixed instances policy

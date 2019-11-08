@@ -4,6 +4,7 @@ locals {
 }
 
 data "aws_iam_policy_document" "workers_assume_role_policy" {
+  count = var.create_cluster ? 1 : 0
   statement {
     sid = "EKSWorkerAssumeRole"
 
@@ -19,6 +20,7 @@ data "aws_iam_policy_document" "workers_assume_role_policy" {
 }
 
 data "aws_ami" "eks_worker" {
+  count = var.create_cluster ? 1 : 0
   filter {
     name   = "name"
     values = [local.worker_ami_name_filter]
@@ -30,6 +32,7 @@ data "aws_ami" "eks_worker" {
 }
 
 data "aws_ami" "eks_worker_windows" {
+  count = var.create_cluster ? 1 : 0
   filter {
     name   = "name"
     values = [local.worker_ami_name_filter_windows]
@@ -48,6 +51,7 @@ data "aws_ami" "eks_worker_windows" {
 
 
 data "aws_iam_policy_document" "cluster_assume_role_policy" {
+  count = var.create_cluster ? 1 : 0
   statement {
     sid = "EKSClusterAssumeRole"
 
@@ -63,19 +67,20 @@ data "aws_iam_policy_document" "cluster_assume_role_policy" {
 }
 
 data "template_file" "kubeconfig" {
+  count    = var.create_cluster ? 1 : 0
   template = file("${path.module}/templates/kubeconfig.tpl")
 
   vars = {
     kubeconfig_name           = local.kubeconfig_name
-    endpoint                  = aws_eks_cluster.this.endpoint
-    cluster_auth_base64       = aws_eks_cluster.this.certificate_authority[0].data
+    endpoint                  = aws_eks_cluster.this.0.endpoint
+    cluster_auth_base64       = aws_eks_cluster.this.0.certificate_authority[0].data
     aws_authenticator_command = var.kubeconfig_aws_authenticator_command
     aws_authenticator_command_args = length(var.kubeconfig_aws_authenticator_command_args) > 0 ? "        - ${join(
       "\n        - ",
       var.kubeconfig_aws_authenticator_command_args,
       )}" : "        - ${join(
       "\n        - ",
-      formatlist("\"%s\"", ["token", "-i", aws_eks_cluster.this.name]),
+      formatlist("\"%s\"", ["token", "-i", aws_eks_cluster.this.0.name]),
     )}"
     aws_authenticator_additional_args = length(var.kubeconfig_aws_authenticator_additional_args) > 0 ? "        - ${join(
       "\n        - ",
@@ -89,7 +94,7 @@ data "template_file" "kubeconfig" {
 }
 
 data "template_file" "aws_authenticator_env_variables" {
-  count = length(var.kubeconfig_aws_authenticator_env_variables)
+  count = var.create_cluster ? length(var.kubeconfig_aws_authenticator_env_variables) : 0
 
   template = <<EOF
         - name: $${key}
@@ -104,7 +109,7 @@ EOF
 }
 
 data "template_file" "userdata" {
-  count = local.worker_group_count
+  count = var.create_cluster ? local.worker_group_count : 0
   template = lookup(
     var.worker_groups[count.index],
     "userdata_template_file",
@@ -117,9 +122,9 @@ data "template_file" "userdata" {
 
   vars = merge({
     platform            = lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"])
-    cluster_name        = aws_eks_cluster.this.name
-    endpoint            = aws_eks_cluster.this.endpoint
-    cluster_auth_base64 = aws_eks_cluster.this.certificate_authority[0].data
+    cluster_name        = aws_eks_cluster.this.0.name
+    endpoint            = aws_eks_cluster.this.0.endpoint
+    cluster_auth_base64 = aws_eks_cluster.this.0.certificate_authority[0].data
     pre_userdata = lookup(
       var.worker_groups[count.index],
       "pre_userdata",
@@ -150,7 +155,7 @@ data "template_file" "userdata" {
 }
 
 data "template_file" "launch_template_userdata" {
-  count = local.worker_group_launch_template_count
+  count = var.create_cluster ? local.worker_group_launch_template_count : 0
   template = lookup(
     var.worker_groups_launch_template[count.index],
     "userdata_template_file",
@@ -163,9 +168,9 @@ data "template_file" "launch_template_userdata" {
 
   vars = merge({
     platform            = lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"])
-    cluster_name        = aws_eks_cluster.this.name
-    endpoint            = aws_eks_cluster.this.endpoint
-    cluster_auth_base64 = aws_eks_cluster.this.certificate_authority[0].data
+    cluster_name        = aws_eks_cluster.this.0.name
+    endpoint            = aws_eks_cluster.this.0.endpoint
+    cluster_auth_base64 = aws_eks_cluster.this.0.certificate_authority[0].data
     pre_userdata = lookup(
       var.worker_groups_launch_template[count.index],
       "pre_userdata",
@@ -196,12 +201,12 @@ data "template_file" "launch_template_userdata" {
 }
 
 data "aws_iam_role" "custom_cluster_iam_role" {
-  count = var.manage_cluster_iam_resources ? 0 : 1
+  count = var.create_cluster ? (var.manage_cluster_iam_resources ? 0 : 1) : 0
   name  = var.cluster_iam_role_name
 }
 
 data "aws_iam_instance_profile" "custom_worker_group_iam_instance_profile" {
-  count = var.manage_worker_iam_resources ? 0 : local.worker_group_count
+  count = var.create_cluster ? (var.manage_worker_iam_resources ? 0 : local.worker_group_count) : 0
   name = lookup(
     var.worker_groups[count.index],
     "iam_instance_profile_name",
@@ -210,7 +215,7 @@ data "aws_iam_instance_profile" "custom_worker_group_iam_instance_profile" {
 }
 
 data "aws_iam_instance_profile" "custom_worker_group_launch_template_iam_instance_profile" {
-  count = var.manage_worker_iam_resources ? 0 : local.worker_group_launch_template_count
+  count = var.create_cluster ? (var.manage_worker_iam_resources ? 0 : local.worker_group_launch_template_count) : 0
   name = lookup(
     var.worker_groups_launch_template[count.index],
     "iam_instance_profile_name",
