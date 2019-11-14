@@ -7,19 +7,32 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v6.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.2...HEAD)] - 2019-10-??]
+## [[v7.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.1.0...HEAD)] - 2019-??-??]
+
+### Added
+
+- Test against minimum versions specified in `versions.tf` (by @dpiddockcmp)
+
+### Changed
+
+- Updated instance_profile_names and instance_profile_arns outputs to also consider launch template as well as asg (by @ankitwal)
+
+# History
+
+## [[v7.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.2...v7.0.0)] - 2019-10-30]
 
 ### Added
 
 - **Breaking:** Allow for specifying a custom AMI for the worker nodes. (by @bmcstdio)
-- Write your awesome addition here (by @you)
+- Added support for Windows workers AMIs (by @hodduc)
+- Allow for replacing the full userdata text with a `userdata_template_file` template and `userdata_template_extra_args` in `worker_groups` (by @snstanton)
 
 ### Changed
 
 -  **Breaking:** The `kubectl` configuration file can now be fully-specified using `config_output_path`. Previously it was assumed that `config_output_path` referred to a directory and always ended with a forward slash. This is a breaking change if `config_output_path` does **not** end with a forward slash (which was advised against by the documentation).
 - Changed logic for setting default ebs_optimized to only require maintaining a list of instance types that don't support it (by @jeffmhastings)
-
-# History
+- Bumped minimum terraform version to 0.12.2 to prevent an error on yamlencode function (by @toadjaune)
+- Access conditional resource using join function in combination with splat syntax (by @miguelaferreira)
 
 ## [[v6.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.1...v6.0.2)] - 2019-10-07]
 

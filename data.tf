@@ -1,5 +1,6 @@
 locals {
-  worker_ami_name_filter = var.worker_ami_name_filter != "" ? var.worker_ami_name_filter : "amazon-eks-node-${var.cluster_version}-v*"
+  worker_ami_name_filter         = var.worker_ami_name_filter != "" ? var.worker_ami_name_filter : "amazon-eks-node-${var.cluster_version}-v*"
+  worker_ami_name_filter_windows = var.worker_ami_name_filter_windows != "" ? var.worker_ami_name_filter_windows : "Windows_Server-2019-English-Core-EKS_Optimized-${var.cluster_version}-*"
 }
 
 data "aws_iam_policy_document" "workers_assume_role_policy" {
@@ -27,6 +28,24 @@ data "aws_ami" "eks_worker" {
 
   owners = [var.worker_ami_owner_id]
 }
+
+data "aws_ami" "eks_worker_windows" {
+  filter {
+    name   = "name"
+    values = [local.worker_ami_name_filter_windows]
+  }
+
+  filter {
+    name   = "platform"
+    values = ["windows"]
+  }
+
+  most_recent = true
+
+  # Owner ID of AWS EKS team (windows)
+  owners = [var.worker_ami_owner_id_windows]
+}
+
 
 data "aws_iam_policy_document" "cluster_assume_role_policy" {
   statement {
@@ -85,10 +104,19 @@ EOF
 }
 
 data "template_file" "userdata" {
-  count    = local.worker_group_count
-  template = file("${path.module}/templates/userdata.sh.tpl")
+  count = local.worker_group_count
+  template = lookup(
+    var.worker_groups[count.index],
+    "userdata_template_file",
+    file(
+      lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"]) == "windows"
+      ? "${path.module}/templates/userdata_windows.tpl"
+      : "${path.module}/templates/userdata.sh.tpl"
+    )
+  )
 
-  vars = {
+  vars = merge({
+    platform            = lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"])
     cluster_name        = aws_eks_cluster.this.name
     endpoint            = aws_eks_cluster.this.endpoint
     cluster_auth_base64 = aws_eks_cluster.this.certificate_authority[0].data
@@ -112,14 +140,29 @@ data "template_file" "userdata" {
       "kubelet_extra_args",
       local.workers_group_defaults["kubelet_extra_args"],
     )
-  }
+    },
+    lookup(
+      var.worker_groups[count.index],
+      "userdata_template_extra_args",
+      local.workers_group_defaults["userdata_template_extra_args"]
+    )
+  )
 }
 
 data "template_file" "launch_template_userdata" {
-  count    = local.worker_group_launch_template_count
-  template = file("${path.module}/templates/userdata.sh.tpl")
+  count = local.worker_group_launch_template_count
+  template = lookup(
+    var.worker_groups_launch_template[count.index],
+    "userdata_template_file",
+    file(
+      lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"]) == "windows"
+      ? "${path.module}/templates/userdata_windows.tpl"
+      : "${path.module}/templates/userdata.sh.tpl"
+    )
+  )
 
-  vars = {
+  vars = merge({
+    platform            = lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"])
     cluster_name        = aws_eks_cluster.this.name
     endpoint            = aws_eks_cluster.this.endpoint
     cluster_auth_base64 = aws_eks_cluster.this.certificate_authority[0].data
@@ -143,7 +186,13 @@ data "template_file" "launch_template_userdata" {
       "kubelet_extra_args",
       local.workers_group_defaults["kubelet_extra_args"],
     )
-  }
+    },
+    lookup(
+      var.worker_groups_launch_template[count.index],
+      "userdata_template_extra_args",
+      local.workers_group_defaults["userdata_template_extra_args"]
+    )
+  )
 }
 
 data "aws_iam_role" "custom_cluster_iam_role" {
