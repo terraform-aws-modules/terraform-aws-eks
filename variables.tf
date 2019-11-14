@@ -294,7 +294,7 @@ variable "attach_worker_cni_policy" {
   default     = true
 }
 
-variable "enabled" {
+variable "create_cluster" {
   description = "Controls if EKS resources should be created (it affects almost all resources)"
   type        = bool
   default     = true
