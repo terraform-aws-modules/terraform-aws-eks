@@ -42,7 +42,6 @@ data "aws_ami" "eks_worker_windows" {
 
   most_recent = true
 
-  # Owner ID of AWS EKS team (windows)
   owners = [var.worker_ami_owner_id_windows]
 }
 
