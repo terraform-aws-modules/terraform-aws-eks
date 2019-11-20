@@ -17,6 +17,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 - Updated instance_profile_names and instance_profile_arns outputs to also consider launch template as well as asg (by @ankitwal)
 - Fix deprecated interpolation-only expression (by @angelabad)
+- Fix broken terraform plan/apply on a cluster < 1.14 (by @hodduc)
 
 # History
 
