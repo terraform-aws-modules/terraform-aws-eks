@@ -11,6 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- Test against minimum versions specified in `versions.tf` (by @dpiddockcmp)
 - Added destroy-time flag (by @syst0m)
 
 ### Changed
