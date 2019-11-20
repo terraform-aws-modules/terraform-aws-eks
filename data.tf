@@ -118,9 +118,9 @@ data "template_file" "userdata" {
 
   vars = merge({
     platform            = lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"])
-    cluster_name        = aws_eks_cluster.this[count.index].name
-    endpoint            = aws_eks_cluster.this[count.index].endpoint
-    cluster_auth_base64 = aws_eks_cluster.this[count.index].certificate_authority[0].data
+    cluster_name        = aws_eks_cluster.this[0].name
+    endpoint            = aws_eks_cluster.this[0].endpoint
+    cluster_auth_base64 = aws_eks_cluster.this[0].certificate_authority[0].data
     pre_userdata = lookup(
       var.worker_groups[count.index],
       "pre_userdata",
