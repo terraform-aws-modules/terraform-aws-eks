@@ -16,6 +16,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Updated instance_profile_names and instance_profile_arns outputs to also consider launch template as well as asg (by @ankitwal)
+- Updated application of `aws-auth` configmap to create `kube_config.yaml` and `aws_auth_configmap.yaml` in sequence (and not parallel) to `kubectl apply` (by @knittingdev)
+- Exit with error code when `aws-auth` configmap is unable to be updated (by @knittingdev)
 - Fix deprecated interpolation-only expression (by @angelabad)
 - Fix broken terraform plan/apply on a cluster < 1.14 (by @hodduc)
 
