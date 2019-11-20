@@ -25,19 +25,19 @@ resource "aws_eks_node_group" "workers" {
   )
 
   scaling_config {
-    desired_capacity = lookup(
+    desired_size = lookup(
       var.worker_group_managed_node_groups[count.index],
-      "asg_desired_capacity",
+      "node_group_desired_capacity",
       local.workers_group_defaults["asg_desired_capacity"],
     )
     max_size = lookup(
       var.worker_group_managed_node_groups[count.index],
-      "asg_max_size",
+      "node_group_max_capacity",
       local.workers_group_defaults["asg_max_size"],
     )
     min_size = lookup(
       var.worker_group_managed_node_groups[count.index],
-      "asg_min_size",
+      "node_group_min_capacity",
       local.workers_group_defaults["asg_min_size"],
     )
   }
@@ -58,7 +58,11 @@ resource "aws_eks_node_group" "workers" {
     "instance_type",
     local.workers_group_defaults["instance_type"],
   )]
-  labels = {}
+  labels = lookup(
+  var.worker_group_managed_node_groups[count.index],
+  "node_group_k8s_labels",
+  local.workers_group_defaults["node_group_k8s_labels"],
+  )
   release_version = lookup(
     var.worker_group_managed_node_groups[count.index],
     "ami_release_version",
