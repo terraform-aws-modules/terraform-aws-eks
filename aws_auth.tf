@@ -1,11 +1,11 @@
 resource "local_file" "config_map_aws_auth" {
-  count    = var.write_aws_auth_config && var.create_cluster ? 1 : 0
+  count    = var.write_aws_auth_config && var.create_eks ? 1 : 0
   content  = data.template_file.config_map_aws_auth[0].rendered
   filename = "${var.config_output_path}config-map-aws-auth_${var.cluster_name}.yaml"
 }
 
 resource "null_resource" "update_config_map_aws_auth" {
-  count      = var.manage_aws_auth && var.create_cluster ? 1 : 0
+  count      = var.manage_aws_auth && var.create_eks ? 1 : 0
   depends_on = [aws_eks_cluster.this]
 
   provisioner "local-exec" {
@@ -77,7 +77,7 @@ data "template_file" "worker_role_arns" {
 }
 
 data "template_file" "config_map_aws_auth" {
-  count    = var.create_cluster ? 1 : 0
+  count    = var.create_eks ? 1 : 0
   template = file("${path.module}/templates/config-map-aws-auth.yaml.tpl")
 
   vars = {

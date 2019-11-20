@@ -63,7 +63,7 @@ data "aws_iam_policy_document" "cluster_assume_role_policy" {
 }
 
 data "template_file" "kubeconfig" {
-  count    = var.create_cluster ? 1 : 0
+  count    = var.create_eks ? 1 : 0
   template = file("${path.module}/templates/kubeconfig.tpl")
 
   vars = {
