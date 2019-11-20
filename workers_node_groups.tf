@@ -59,9 +59,9 @@ resource "aws_eks_node_group" "workers" {
     local.workers_group_defaults["instance_type"],
   )]
   labels = lookup(
-  var.worker_group_managed_node_groups[count.index],
-  "node_group_k8s_labels",
-  local.workers_group_defaults["node_group_k8s_labels"],
+    var.worker_group_managed_node_groups[count.index],
+    "node_group_k8s_labels",
+    local.workers_group_defaults["node_group_k8s_labels"],
   )
   release_version = lookup(
     var.worker_group_managed_node_groups[count.index],
