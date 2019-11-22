@@ -1,3 +1,51 @@
+resource "aws_iam_role" "managed_node_groups" {
+  count                 = local.worker_group_managed_node_group_count > 0 ? 1 : 0
+  name                  = "${var.workers_role_name != "" ? var.workers_role_name : aws_eks_cluster.this.name}-managed-node-groups"
+  assume_role_policy    = data.aws_iam_policy_document.workers_assume_role_policy.json
+  permissions_boundary  = var.permissions_boundary
+  path                  = var.iam_path
+  force_detach_policies = true
+  tags                  = var.tags
+}
+
+resource "aws_iam_role_policy_attachment" "managed_node_groups_AmazonEKSWorkerNodePolicy" {
+  count      = local.worker_group_managed_node_group_count > 0 ? 1 : 0
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+  role       = aws_iam_role.managed_node_groups[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "managed_node_groups_AmazonEKS_CNI_Policy" {
+  count      = local.worker_group_managed_node_group_count > 0 ? 1 : 0
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  role       = aws_iam_role.managed_node_groups[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "managed_node_groups_AmazonEC2ContainerRegistryReadOnly" {
+  count      = local.worker_group_managed_node_group_count > 0 ? 1 : 0
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  role       = aws_iam_role.managed_node_groups[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "managed_node_groups_additional_policies" {
+  count      = local.worker_group_managed_node_group_count > 0 ? length(var.workers_additional_policies) : 0
+  role       = aws_iam_role.managed_node_groups[0].name
+  policy_arn = var.workers_additional_policies[count.index]
+}
+
+resource "aws_iam_role_policy_attachment" "managed_node_groups_autoscaling" {
+  count      = var.manage_worker_autoscaling_policy && var.attach_worker_autoscaling_policy && local.worker_group_managed_node_group_count > 0 ? 1 : 0
+  policy_arn = aws_iam_policy.managed_node_groups_autoscaling[0].arn
+  role       = aws_iam_role.managed_node_groups[0].name
+}
+
+resource "aws_iam_policy" "managed_node_groups_autoscaling" {
+  count       = var.manage_worker_autoscaling_policy && local.worker_group_managed_node_group_count > 0 ? 1 : 0
+  name_prefix = "eks-worker-autoscaling-${aws_eks_cluster.this.name}"
+  description = "EKS worker node autoscaling policy for cluster ${aws_eks_cluster.this.name}"
+  policy      = data.aws_iam_policy_document.worker_autoscaling.json
+  path        = var.iam_path
+}
+
 resource "aws_eks_node_group" "workers" {
   count = local.worker_group_managed_node_group_count
 
@@ -13,11 +61,8 @@ resource "aws_eks_node_group" "workers" {
     )
   )
 
-  node_role_arn = lookup(
-    var.worker_group_managed_node_groups[count.index],
-    "iam_role_id",
-    local.default_iam_role_id,
-  )
+  node_role_arn = lookup(var.worker_group_managed_node_groups[count.index], "iam_role_arn", aws_iam_role.managed_node_groups[0].arn)
+
   subnet_ids = lookup(
     var.worker_group_managed_node_groups[count.index],
     "subnets",
@@ -82,6 +127,11 @@ resource "aws_eks_node_group" "workers" {
     )
   }
 
-  tags    = var.tags
+  tags = lookup(
+    var.worker_group_managed_node_groups[count.index],
+    "node_group_additional_tags",
+    local.workers_group_defaults["node_group_additional_tags"],
+  )
+
   version = aws_eks_cluster.this.version
 }
