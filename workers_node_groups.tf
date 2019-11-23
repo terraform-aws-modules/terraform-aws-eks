@@ -122,6 +122,10 @@ resource "aws_eks_node_group" "workers" {
     )
     source_security_group_ids = lookup(
       var.worker_group_managed_node_groups[count.index],
+      "key_name",
+      local.workers_group_defaults["key_name"],
+      ) == "" ? [] : lookup(
+      var.worker_group_managed_node_groups[count.index],
       "source_security_group_ids",
       local.workers_group_defaults["source_security_group_id"],
     )
