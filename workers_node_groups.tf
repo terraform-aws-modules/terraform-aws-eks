@@ -46,6 +46,37 @@ resource "aws_iam_policy" "managed_node_groups_autoscaling" {
   path        = var.iam_path
 }
 
+resource "random_pet" "managed_node_groups" {
+  count = local.worker_group_managed_node_group_count
+
+  separator = "-"
+  length    = 2
+
+  keepers = {
+    ec2_ssh_key = lookup(
+      var.worker_group_managed_node_groups[count.index],
+      "key_name",
+      local.workers_group_defaults["key_name"],
+    )
+
+    source_security_group_ids = join("-", compact(lookup(
+      var.worker_group_managed_node_groups[count.index],
+      "source_security_group_ids",
+      local.workers_group_defaults["source_security_group_id"],
+    )))
+
+    node_group_name = join(
+      "-",
+      compact(
+        [
+          aws_eks_cluster.this.name,
+          lookup(var.worker_group_managed_node_groups[count.index], "name", count.index),
+        ]
+      )
+    )
+  }
+}
+
 resource "aws_eks_node_group" "workers" {
   count = local.worker_group_managed_node_group_count
 
@@ -60,7 +91,7 @@ resource "aws_eks_node_group" "workers" {
       [
         aws_eks_cluster.this.name,
         lookup(var.worker_group_managed_node_groups[count.index], "name", count.index),
-        lookup(var.worker_group_managed_node_groups[count.index], "asg_recreate_on_change", local.workers_group_defaults["asg_recreate_on_change"]) ? random_pet.workers[count.index].id : ""
+        random_pet.managed_node_groups[count.index].id
       ]
     )
   )
