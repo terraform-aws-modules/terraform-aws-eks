@@ -49,6 +49,10 @@ resource "aws_iam_policy" "managed_node_groups_autoscaling" {
 resource "aws_eks_node_group" "workers" {
   count = local.worker_group_managed_node_group_count
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   cluster_name = aws_eks_cluster.this.name
   node_group_name = join(
     "-",
