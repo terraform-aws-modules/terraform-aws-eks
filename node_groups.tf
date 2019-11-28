@@ -48,22 +48,18 @@ resource "aws_iam_policy" "node_groups_autoscaling" {
 }
 
 resource "random_pet" "node_groups" {
-  count = local.worker_group_managed_node_group_count
+  for_each = local.node_groups
 
   separator = "-"
   length    = 2
 
   keepers = {
-    ec2_ssh_key = lookup(
-      var.node_groups[count.index],
-      "key_name",
-      local.workers_group_defaults["key_name"],
-    )
+    instance_type = lookup(each.value, "instance_type", local.workers_group_defaults["instance_type"])
 
-    source_security_group_ids = join("-", compact(lookup(
-      var.node_groups[count.index],
-      "source_security_group_ids",
-      local.workers_group_defaults["source_security_group_id"],
+    ec2_ssh_key = lookup(each.value, "key_name", local.workers_group_defaults["key_name"])
+
+    source_security_group_ids = join("-", compact(
+      lookup(each.value, "source_security_group_ids", local.workers_group_defaults["source_security_group_id"]
     )))
 
     node_group_name = join(
@@ -71,7 +67,7 @@ resource "random_pet" "node_groups" {
       compact(
         [
           aws_eks_cluster.this.name,
-          lookup(var.node_groups[count.index], "name", count.index),
+          each.value["name"],
         ]
       )
     )
@@ -92,7 +88,7 @@ resource "aws_eks_node_group" "workers" {
       [
         aws_eks_cluster.this.name,
         lookup(var.node_groups[count.index], "name", count.index),
-        random_pet.node_groups[count.index].id
+        random_pet.node_groups[lookup(var.node_groups[count.index], "name", count.index)]
       ]
     )
   )

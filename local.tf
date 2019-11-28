@@ -134,5 +134,6 @@ locals {
     "t2.xlarge"
   ]
 
-  node_groups = { for node_group in var.node_groups : obj.name => obj }
+  node_groups = { for node_group in var.node_groups : node_group["name"] => node_group }
+
 }
