@@ -27,9 +27,10 @@ resource "aws_iam_role_policy_attachment" "managed_node_groups_AmazonEC2Containe
 }
 
 resource "aws_iam_role_policy_attachment" "managed_node_groups_additional_policies" {
-  count      = local.worker_group_managed_node_group_count > 0 ? length(var.workers_additional_policies) : 0
+  for_each = toset(var.workers_additional_policies)
+
   role       = aws_iam_role.managed_node_groups[0].name
-  policy_arn = var.workers_additional_policies[count.index]
+  policy_arn = each.key
 }
 
 resource "aws_iam_role_policy_attachment" "managed_node_groups_autoscaling" {
