@@ -48,20 +48,20 @@ resource "aws_iam_policy" "managed_node_groups_autoscaling" {
 }
 
 resource "random_pet" "managed_node_groups" {
-  for_each = toset(var.worker_group_managed_node_groups)
+  count = local.worker_group_managed_node_group_count
 
   separator = "-"
   length    = 2
 
   keepers = {
     ec2_ssh_key = lookup(
-      each.key,
+      var.worker_group_managed_node_groups[count.index],
       "key_name",
       local.workers_group_defaults["key_name"],
     )
 
     source_security_group_ids = join("-", compact(lookup(
-      each.key,
+      var.worker_group_managed_node_groups[count.index],
       "source_security_group_ids",
       local.workers_group_defaults["source_security_group_id"],
     )))
@@ -71,7 +71,7 @@ resource "random_pet" "managed_node_groups" {
       compact(
         [
           aws_eks_cluster.this.name,
-          lookup(each.key, "name", count.index),
+          lookup(var.worker_group_managed_node_groups[count.index], "name", count.index),
         ]
       )
     )
