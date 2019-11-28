@@ -296,6 +296,6 @@ variable "attach_worker_cni_policy" {
 
 variable "worker_group_managed_node_groups" {
   description = "A list of maps defining worker group configurations to be defined using AWS EKS Managed Node Groups. See workers_group_defaults for valid keys."
-  type        = any
+  type        = list(any)
   default     = []
 }
