@@ -137,6 +137,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | map\_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | list(string) | `[]` | no |
 | map\_roles | Additional IAM roles to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | object | `[]` | no |
 | map\_users | Additional IAM users to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | object | `[]` | no |
+| node\_groups | A list of maps defining node group configurations to be defined using AWS EKS Managed Node Groups. See workers_group_defaults for valid keys. | any | `[]` | no |
 | permissions\_boundary | If provided, all IAM roles will be created with this permissions boundary attached. | string | `"null"` | no |
 | subnets | A list of subnets to place the EKS cluster and workers within. | list(string) | n/a | yes |
 | tags | A map of tags to add to all resources. | map(string) | `{}` | no |
@@ -148,7 +149,6 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker\_ami\_owner\_id\_windows | The ID of the owner for the AMI to use for the AWS EKS Windows workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft'). | string | `"801119661308"` | no |
 | worker\_create\_initial\_lifecycle\_hooks | Whether to create initial lifecycle hooks provided in worker groups. | bool | `"false"` | no |
 | worker\_create\_security\_group | Whether to create a security group for the workers or attach the workers to `worker_security_group_id`. | bool | `"true"` | no |
-| worker\_group\_managed\_node\_groups | A list of maps defining worker group configurations to be defined using AWS EKS Managed Node Groups. See workers_group_defaults for valid keys. | list(any) | `[]` | no |
 | worker\_groups | A list of maps defining worker group configurations to be defined using AWS Launch Configurations. See workers_group_defaults for valid keys. | any | `[]` | no |
 | worker\_groups\_launch\_template | A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys. | any | `[]` | no |
 | worker\_security\_group\_id | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the EKS cluster. | string | `""` | no |

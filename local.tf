@@ -18,7 +18,7 @@ locals {
 
   worker_group_count                    = length(var.worker_groups)
   worker_group_launch_template_count    = length(var.worker_groups_launch_template)
-  worker_group_managed_node_group_count = length(var.worker_group_managed_node_groups)
+  worker_group_managed_node_group_count = length(var.node_groups)
 
   default_ami_id_linux   = data.aws_ami.eks_worker.id
   default_ami_id_windows = data.aws_ami.eks_worker_windows.id
@@ -133,4 +133,6 @@ locals {
     "t2.small",
     "t2.xlarge"
   ]
+
+  node_groups = { for node_group in var.node_groups : obj.name => obj }
 }

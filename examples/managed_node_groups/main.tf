@@ -76,7 +76,7 @@ module "eks" {
 
   vpc_id = module.vpc.vpc_id
 
-  worker_group_managed_node_groups = [
+  node_groups = [
     {
       name = "example"
 
