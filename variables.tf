@@ -48,12 +48,6 @@ variable "manage_aws_auth" {
   default     = true
 }
 
-variable "write_aws_auth_config" {
-  description = "Whether to write the aws-auth configmap file."
-  type        = bool
-  default     = true
-}
-
 variable "map_accounts" {
   description = "Additional AWS account numbers to add to the aws-auth configmap. See examples/basic/variables.tf for example format."
   type        = list(string)
