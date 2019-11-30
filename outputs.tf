@@ -1,26 +1,26 @@
 output "cluster_id" {
   description = "The name/id of the EKS cluster."
-  value       = element(concat(aws_eks_cluster.this.*.id, list("")), 0)
+  value       = aws_eks_cluster.this.id
 }
 
 output "cluster_arn" {
   description = "The Amazon Resource Name (ARN) of the cluster."
-  value       = element(concat(aws_eks_cluster.this.*.arn, list("")), 0)
+  value       = aws_eks_cluster.this.arn
 }
 
 output "cluster_certificate_authority_data" {
   description = "Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster."
-  value       = element(concat(aws_eks_cluster.this[*].certificate_authority[0].data, list("")), 0)
+  value       = aws_eks_cluster.this.certificate_authority[0].data
 }
 
 output "cluster_endpoint" {
   description = "The endpoint for your EKS Kubernetes API."
-  value       = element(concat(aws_eks_cluster.this[*].endpoint, list("")), 0)
+  value       = aws_eks_cluster.this.endpoint
 }
 
 output "cluster_version" {
   description = "The Kubernetes server version for the EKS cluster."
-  value       = element(concat(aws_eks_cluster.this.*.version, list("")), 0)
+  value       = aws_eks_cluster.this.version
 }
 
 output "cluster_security_group_id" {
@@ -30,7 +30,7 @@ output "cluster_security_group_id" {
 
 output "config_map_aws_auth" {
   description = "A kubernetes configuration to authenticate to this EKS cluster."
-  value       = concat(data.template_file.config_map_aws_auth[*].rendered, [""])[0]
+  value       = kubernetes_config_map.aws_auth.*
 }
 
 output "cluster_iam_role_name" {
@@ -45,7 +45,7 @@ output "cluster_iam_role_arn" {
 
 output "cluster_oidc_issuer_url" {
   description = "The URL on the EKS cluster OIDC Issuer"
-  value       = concat(aws_eks_cluster.this.0.identity.*.oidc.0.issuer, [""])[0]
+  value       = concat(aws_eks_cluster.this.identity.*.oidc.0.issuer, [""])[0]
 }
 
 output "cloudwatch_log_group_name" {
@@ -55,7 +55,7 @@ output "cloudwatch_log_group_name" {
 
 output "kubeconfig" {
   description = "kubectl config file contents for this EKS cluster."
-  value       = concat(data.template_file.kubeconfig[*].rendered, [""])[0]
+  value       = data.template_file.kubeconfig.rendered
 }
 
 output "kubeconfig_filename" {

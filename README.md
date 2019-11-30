@@ -18,30 +18,38 @@ Read the [AWS docs on EKS to get connected to the k8s dashboard](https://docs.aw
 
 ## Usage example
 
-A full example leveraging other community modules is contained in the [examples/basic directory](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/basic). Here's the gist of using it via the Terraform registry:
+A full example leveraging other community modules is contained in the [examples/basic directory](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/basic).
 
 ```hcl
+data "aws_eks_cluster" "cluster" {
+  name = module.eks.cluster_id
+}
+
+data "aws_eks_cluster_auth" "cluster" {
+  name = module.eks.cluster_id
+}
+
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.cluster.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+  token                  = data.aws_eks_cluster_auth.cluster.token
+  load_config_file       = false
+  version                = "~> 1.9"
+}
+
 module "my-cluster" {
-  source       = "terraform-aws-modules/eks/aws"
-  cluster_name = "my-cluster"
-  subnets      = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
-  vpc_id       = "vpc-1234556abcdef"
+  source          = "terraform-aws-modules/eks/aws"
+  cluster_name    = "my-cluster"
+  cluster_version = "1.14"
+  subnets         = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
+  vpc_id          = "vpc-1234556abcdef"
 
   worker_groups = [
     {
       instance_type = "m4.large"
       asg_max_size  = 5
-      tags = [{
-        key                 = "foo"
-        value               = "bar"
-        propagate_at_launch = true
-      }]
     }
   ]
-
-  tags = {
-    environment = "test"
-  }
 }
 ```
 ## Conditional creation
@@ -109,7 +117,7 @@ The [changelog](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/
 ## Authors
 
 Created by [Brandon O'Connor](https://github.com/brandoconnor) - brandon@atscale.run.
-Maintained by [Max Williams](https://github.com/max-rocket-internet)
+Maintained by [Max Williams](https://github.com/max-rocket-internet) and [Thierno IB. BARRY](https://github.com/barryib).
 Many thanks to [the contributors listed here](https://github.com/terraform-aws-modules/terraform-aws-eks/graphs/contributors)!
 
 ## License
