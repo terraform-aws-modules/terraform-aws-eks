@@ -108,7 +108,7 @@ EOF
 }
 
 data "template_file" "userdata" {
-  count = local.worker_group_count
+  count = var.create_eks ? local.worker_group_count : 0
   template = lookup(
     var.worker_groups[count.index],
     "userdata_template_file",
@@ -154,7 +154,7 @@ data "template_file" "userdata" {
 }
 
 data "template_file" "launch_template_userdata" {
-  count = local.worker_group_launch_template_count
+  count = var.create_eks ? local.worker_group_launch_template_count : 0
   template = lookup(
     var.worker_groups_launch_template[count.index],
     "userdata_template_file",
