@@ -12,6 +12,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Test against minimum versions specified in `versions.tf` (by @dpiddockcmp)
 - Support for AWS EKS Managed Node Groups. (by @wmorgan6796)
 - Updated instance_profile_names and instance_profile_arns outputs to also consider launch template as well as asg (by @ankitwal)
+- Added a if check on `aws-auth` configmap when map_roles is empty. 
 - **Breaking:** Configure the aws-auth configmap using the terraform kubernetes providers. Read the [docs](docs/upgrading-to-aws-auth-kubernetes-provider.md) for more info (by @sdehaes)
 - Updated application of `aws-auth` configmap to create `kube_config.yaml` and `aws_auth_configmap.yaml` in sequence (and not parallel) to `kubectl apply` (by @knittingdev)
 - Exit with error code when `aws-auth` configmap is unable to be updated (by @knittingdev)
