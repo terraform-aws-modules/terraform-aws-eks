@@ -18,6 +18,11 @@ output "cluster_endpoint" {
   value       = "${aws_eks_cluster.this.endpoint}"
 }
 
+output "cluster_oidc_issuer_url" {
+  description = "The URL on the EKS cluster OIDC Issuer"
+  value       = "${aws_eks_cluster.this.identity.0.oidc.0.issuer}"
+}
+
 output "cluster_version" {
   description = "The Kubernetes server version for the EKS cluster."
   value       = "${aws_eks_cluster.this.version}"
