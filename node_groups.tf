@@ -71,9 +71,9 @@ resource "aws_eks_node_group" "workers" {
 
   node_group_name = join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id])
 
-  cluster_name    = var.cluster_name
-  node_role_arn   = lookup(each.value, "iam_role_arn", aws_iam_role.node_groups[0].arn)
-  subnet_ids      = lookup(each.value, "subnets", local.workers_group_defaults["subnets"])
+  cluster_name  = var.cluster_name
+  node_role_arn = lookup(each.value, "iam_role_arn", aws_iam_role.node_groups[0].arn)
+  subnet_ids    = lookup(each.value, "subnets", local.workers_group_defaults["subnets"])
 
   scaling_config {
     desired_size = lookup(each.value, "node_group_desired_capacity", local.workers_group_defaults["asg_desired_capacity"])
