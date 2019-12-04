@@ -14,31 +14,38 @@ Read the [AWS docs on EKS to get connected to the k8s dashboard](https://docs.aw
 * You want to create an EKS cluster and an autoscaling group of workers for the cluster.
 * You want these resources to exist within security groups that allow communication and coordination. These can be user provided or created within the module.
 * You've created a Virtual Private Cloud (VPC) and subnets where you intend to put the EKS resources. The VPC satisfies [EKS requirements](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html).
-* If `manage_aws_auth = true`, it's required that both [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl) (>=1.10) and [`aws-iam-authenticator`](https://github.com/kubernetes-sigs/aws-iam-authenticator#4-set-up-kubectl-to-use-authentication-tokens-provided-by-aws-iam-authenticator-for-kubernetes) are installed and on your shell's PATH.
 
 ## Usage example
 
 A full example leveraging other community modules is contained in the [examples/basic directory](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/basic).
 
 ```hcl
+variable "create_eks" {
+  default     = true
+  description = "Set to false to skip creating EKS cluster (Useful for multi-workspace, .tfvars based project layouts)."
+}
+
 data "aws_eks_cluster" "cluster" {
-  name = module.eks.cluster_id
+  count = var.create_eks ? 1 : 0
+  name  = module.eks.cluster_id
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = module.eks.cluster_id
+  count = var.create_eks ? 1 : 0
+  name  = module.eks.cluster_id
 }
 
 provider "kubernetes" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
-  token                  = data.aws_eks_cluster_auth.cluster.token
+  host                   = element(concat(data.aws_eks_cluster.cluster[*].endpoint, list("")), 0)
+  cluster_ca_certificate = base64decode(element(concat(data.aws_eks_cluster.cluster[*].certificate_authority.0.data, list("")), 0))
+  token                  = element(concat(data.aws_eks_cluster_auth.cluster[*].token, list("")), 0)
   load_config_file       = false
-  version                = "~> 1.9"
+  version                = "~> 1.10"
 }
 
 module "my-cluster" {
   source          = "terraform-aws-modules/eks/aws"
+  create_eks      = var.create_eks
   cluster_name    = "my-cluster"
   cluster_version = "1.14"
   subnets         = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]

@@ -2,6 +2,11 @@ variable "region" {
   default = "us-west-2"
 }
 
+variable "create_eks" {
+  default     = true
+  description = "Set to false to skip creating EKS cluster."
+}
+
 variable "map_accounts" {
   description = "Additional AWS account numbers to add to the aws-auth configmap."
   type        = list(string)
