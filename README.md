@@ -145,6 +145,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | map\_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | list(string) | `[]` | no |
 | map\_roles | Additional IAM roles to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | object | `[]` | no |
 | map\_users | Additional IAM users to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | object | `[]` | no |
+| node\_groups | A list of maps defining node group configurations to be defined using AWS EKS Managed Node Groups. See workers_group_defaults for valid keys. | any | `[]` | no |
 | permissions\_boundary | If provided, all IAM roles will be created with this permissions boundary attached. | string | `"null"` | no |
 | subnets | A list of subnets to place the EKS cluster and workers within. | list(string) | n/a | yes |
 | tags | A map of tags to add to all resources. | map(string) | `{}` | no |

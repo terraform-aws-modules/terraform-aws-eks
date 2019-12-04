@@ -16,8 +16,9 @@ locals {
   default_iam_role_id = concat(aws_iam_role.workers.*.id, [""])[0]
   kubeconfig_name     = var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name
 
-  worker_group_count                 = length(var.worker_groups)
-  worker_group_launch_template_count = length(var.worker_groups_launch_template)
+  worker_group_count                    = length(var.worker_groups)
+  worker_group_launch_template_count    = length(var.worker_groups_launch_template)
+  worker_group_managed_node_group_count = length(var.node_groups)
 
   default_ami_id_linux   = data.aws_ami.eks_worker.id
   default_ami_id_windows = data.aws_ami.eks_worker_windows.id
@@ -79,6 +80,15 @@ locals {
     spot_allocation_strategy                 = "lowest-price"                                       # Valid options are 'lowest-price' and 'capacity-optimized'. If 'lowest-price', the Auto Scaling group launches instances using the Spot pools with the lowest price, and evenly allocates your instances across the number of Spot pools. If 'capacity-optimized', the Auto Scaling group launches instances using Spot pools that are optimally chosen based on the available Spot capacity.
     spot_instance_pools                      = 10                                                   # "Number of Spot pools per availability zone to allocate capacity. EC2 Auto Scaling selects the cheapest Spot pools and evenly allocates Spot capacity across the number of Spot pools that you specify."
     spot_max_price                           = ""                                                   # Maximum price per unit hour that the user is willing to pay for the Spot instances. Default is the on-demand price
+    ami_type                                 = "AL2_x86_64"                                         # AMI Type to use for the Managed Node Groups. Can be either: AL2_x86_64 or AL2_x86_64_GPU
+    ami_release_version                      = ""                                                   # AMI Release Version of the Managed Node Groups
+    source_security_group_id                 = []                                                   # Source Security Group IDs to allow SSH Access to the Nodes. NOTE: IF LEFT BLANK, AND A KEY IS SPECIFIED, THE SSH PORT WILL BE OPENNED TO THE WORLD
+    node_group_k8s_labels                    = {}                                                   # Kubernetes Labels to apply to the nodes within the Managed Node Group
+    node_group_desired_capacity              = 1                                                    # Desired capacity of the Node Group
+    node_group_min_capacity                  = 1                                                    # Min capacity of the Node Group (Minimum value allowed is 1)
+    node_group_max_capacity                  = 3                                                    # Max capacity of the Node Group
+    node_group_iam_role_arn                  = ""                                                   # IAM role to use for Managed Node Groups instead of default one created by the automation
+    node_group_additional_tags               = {}                                                   # Additional tags to be applied to the Node Groups
   }
 
   workers_group_defaults = merge(
@@ -123,4 +133,7 @@ locals {
     "t2.small",
     "t2.xlarge"
   ]
+
+  node_groups = { for node_group in var.node_groups : node_group["name"] => node_group }
+
 }

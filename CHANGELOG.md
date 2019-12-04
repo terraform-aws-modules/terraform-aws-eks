@@ -10,12 +10,14 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ## [[v7.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v7.0.0...HEAD)] - 2019-??-??]
 
 - Test against minimum versions specified in `versions.tf` (by @dpiddockcmp)
+- Support for AWS EKS Managed Node Groups. (by @wmorgan6796)
 - Updated instance_profile_names and instance_profile_arns outputs to also consider launch template as well as asg (by @ankitwal)
 - **Breaking:** Configure the aws-auth configmap using the terraform kubernetes providers. Read the [docs](docs/upgrading-to-aws-auth-kubernetes-provider.md) for more info (by @sdehaes)
 - Updated application of `aws-auth` configmap to create `kube_config.yaml` and `aws_auth_configmap.yaml` in sequence (and not parallel) to `kubectl apply` (by @knittingdev)
 - Exit with error code when `aws-auth` configmap is unable to be updated (by @knittingdev)
 - Fix deprecated interpolation-only expression (by @angelabad)
 - Fix broken terraform plan/apply on a cluster < 1.14 (by @hodduc)
+- Updated required version of AWS Provider to >= v2.38.0 for Managed Node Groups (by @wmorgan6796)
 
 #### Important notes
 

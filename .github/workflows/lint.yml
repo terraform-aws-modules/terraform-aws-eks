@@ -56,7 +56,7 @@ jobs:
     name: Minimum version check
     runs-on: ubuntu-latest
     container:
-      image: hashicorp/terraform:0.12.2
+      image: hashicorp/terraform:0.12.6
     steps:
       - uses: actions/checkout@master
       - name: Validate Code
