@@ -54,9 +54,30 @@ module "my-cluster" {
 ```
 ## Conditional creation
 
-Sometimes you need to have a way to create EKS resources conditionally but Terraform does not allow to use `count` inside `module` block, so the solution is to specify argument `create_eks`.
+Sometimes you need to have a way to create EKS resources conditionally but Terraform does not allow to use `count` inside `module` block, so the solution is to specify argument `create_eks`. 
+
+Using this feature _and_ having `manage_aws_auth=true` (the default) requires to set up the kubernetes provider in a way that allows the data sources to not exist.
 
 ```hcl
+data "aws_eks_cluster" "cluster" {
+  count = var.create_eks ? 1 : 0
+  name  = module.eks.cluster_id
+}
+
+data "aws_eks_cluster_auth" "cluster" {
+  count = var.create_eks ? 1 : 0
+  name  = module.eks.cluster_id
+}
+
+# In case of not creating the cluster, this will be an incompletely configured, unused provider, which poses no problem.
+provider "kubernetes" {
+  host                   = element(concat(data.aws_eks_cluster.cluster[*].endpoint, list("")), 0)
+  cluster_ca_certificate = base64decode(element(concat(data.aws_eks_cluster.cluster[*].certificate_authority.0.data, list("")), 0))
+  token                  = element(concat(data.aws_eks_cluster_auth.cluster[*].token, list("")), 0)
+  load_config_file       = false
+  version                = "~> 1.10"
+}
+
 # This cluster will not be created
 module "eks" {
   source = "terraform-aws-modules/eks/aws"
