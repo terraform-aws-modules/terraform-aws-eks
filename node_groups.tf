@@ -1,6 +1,6 @@
 resource "aws_iam_role" "node_groups" {
-  count                 = local.worker_group_managed_node_group_count > 0 ? 1 : 0
-  name                  = "${var.workers_role_name != "" ? var.workers_role_name : aws_eks_cluster.this.name}-managed-node-groups"
+  count                 = var.create_eks && local.worker_group_managed_node_group_count > 0 ? 1 : 0
+  name                  = "${var.workers_role_name != "" ? var.workers_role_name : aws_eks_cluster.this[0].name}-managed-node-groups"
   assume_role_policy    = data.aws_iam_policy_document.workers_assume_role_policy.json
   permissions_boundary  = var.permissions_boundary
   path                  = var.iam_path
@@ -9,46 +9,46 @@ resource "aws_iam_role" "node_groups" {
 }
 
 resource "aws_iam_role_policy_attachment" "node_groups_AmazonEKSWorkerNodePolicy" {
-  count      = local.worker_group_managed_node_group_count > 0 ? 1 : 0
+  count      = var.create_eks && local.worker_group_managed_node_group_count > 0 ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.node_groups[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "node_groups_AmazonEKS_CNI_Policy" {
-  count      = local.worker_group_managed_node_group_count > 0 ? 1 : 0
+  count      = var.create_eks && local.worker_group_managed_node_group_count > 0 ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = aws_iam_role.node_groups[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "node_groups_AmazonEC2ContainerRegistryReadOnly" {
-  count      = local.worker_group_managed_node_group_count > 0 ? 1 : 0
+  count      = var.create_eks && local.worker_group_managed_node_group_count > 0 ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.node_groups[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "node_groups_additional_policies" {
-  for_each = toset(var.workers_additional_policies)
+  for_each = var.create_eks && local.worker_group_managed_node_group_count > 0 ? toset(var.workers_additional_policies) : []
 
   role       = aws_iam_role.node_groups[0].name
   policy_arn = each.key
 }
 
 resource "aws_iam_role_policy_attachment" "node_groups_autoscaling" {
-  count      = var.manage_worker_autoscaling_policy && var.attach_worker_autoscaling_policy && local.worker_group_managed_node_group_count > 0 ? 1 : 0
+  count      = var.create_eks && var.manage_worker_autoscaling_policy && var.attach_worker_autoscaling_policy && local.worker_group_managed_node_group_count > 0 ? 1 : 0
   policy_arn = aws_iam_policy.node_groups_autoscaling[0].arn
   role       = aws_iam_role.node_groups[0].name
 }
 
 resource "aws_iam_policy" "node_groups_autoscaling" {
-  count       = var.manage_worker_autoscaling_policy && local.worker_group_managed_node_group_count > 0 ? 1 : 0
-  name_prefix = "eks-worker-autoscaling-${aws_eks_cluster.this.name}"
-  description = "EKS worker node autoscaling policy for cluster ${aws_eks_cluster.this.name}"
-  policy      = data.aws_iam_policy_document.worker_autoscaling.json
+  count       = var.create_eks && var.manage_worker_autoscaling_policy && local.worker_group_managed_node_group_count > 0 ? 1 : 0
+  name_prefix = "eks-worker-autoscaling-${aws_eks_cluster.this[0].name}"
+  description = "EKS worker node autoscaling policy for cluster ${aws_eks_cluster.this[0].name}"
+  policy      = data.aws_iam_policy_document.worker_autoscaling[0].json
   path        = var.iam_path
 }
 
 resource "random_pet" "node_groups" {
-  for_each = local.node_groups
+  for_each = var.create_eks ? local.node_groups : {}
 
   separator = "-"
   length    = 2
@@ -67,7 +67,7 @@ resource "random_pet" "node_groups" {
 }
 
 resource "aws_eks_node_group" "workers" {
-  for_each = local.node_groups
+  for_each = var.create_eks ? local.node_groups : {}
 
   node_group_name = join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id])
 
@@ -93,7 +93,7 @@ resource "aws_eks_node_group" "workers" {
     source_security_group_ids = lookup(each.value, "key_name", "") != "" ? lookup(each.value, "source_security_group_ids", []) : null
   }
 
-  version = aws_eks_cluster.this.version
+  version = aws_eks_cluster.this[0].version
 
   tags = lookup(each.value, "node_group_additional_tags", null)
 
