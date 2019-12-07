@@ -19,6 +19,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Fix deprecated interpolation-only expression (by @angelabad)
 - Fix broken terraform plan/apply on a cluster < 1.14 (by @hodduc)
 - Updated required version of AWS Provider to >= v2.38.0 for Managed Node Groups (by @wmorgan6796)
+- Updated minimum version of Terraform to avoid a bug (by @dpiddockcmp)
 
 #### Important notes
 
