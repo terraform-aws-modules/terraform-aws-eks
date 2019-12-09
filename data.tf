@@ -66,19 +66,20 @@ data "aws_iam_policy_document" "cluster_assume_role_policy" {
 }
 
 data "template_file" "kubeconfig" {
+  count    = var.create_eks ? 1 : 0
   template = file("${path.module}/templates/kubeconfig.tpl")
 
   vars = {
     kubeconfig_name           = local.kubeconfig_name
-    endpoint                  = aws_eks_cluster.this.endpoint
-    cluster_auth_base64       = aws_eks_cluster.this.certificate_authority[0].data
+    endpoint                  = aws_eks_cluster.this[0].endpoint
+    cluster_auth_base64       = aws_eks_cluster.this[0].certificate_authority[0].data
     aws_authenticator_command = var.kubeconfig_aws_authenticator_command
     aws_authenticator_command_args = length(var.kubeconfig_aws_authenticator_command_args) > 0 ? "        - ${join(
       "\n        - ",
       var.kubeconfig_aws_authenticator_command_args,
       )}" : "        - ${join(
       "\n        - ",
-      formatlist("\"%s\"", ["token", "-i", aws_eks_cluster.this.name]),
+      formatlist("\"%s\"", ["token", "-i", aws_eks_cluster.this[0].name]),
     )}"
     aws_authenticator_additional_args = length(var.kubeconfig_aws_authenticator_additional_args) > 0 ? "        - ${join(
       "\n        - ",
@@ -107,7 +108,7 @@ EOF
 }
 
 data "template_file" "userdata" {
-  count = local.worker_group_count
+  count = var.create_eks ? local.worker_group_count : 0
   template = lookup(
     var.worker_groups[count.index],
     "userdata_template_file",
@@ -120,9 +121,9 @@ data "template_file" "userdata" {
 
   vars = merge({
     platform            = lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"])
-    cluster_name        = aws_eks_cluster.this.name
-    endpoint            = aws_eks_cluster.this.endpoint
-    cluster_auth_base64 = aws_eks_cluster.this.certificate_authority[0].data
+    cluster_name        = aws_eks_cluster.this[0].name
+    endpoint            = aws_eks_cluster.this[0].endpoint
+    cluster_auth_base64 = aws_eks_cluster.this[0].certificate_authority[0].data
     pre_userdata = lookup(
       var.worker_groups[count.index],
       "pre_userdata",
@@ -153,7 +154,7 @@ data "template_file" "userdata" {
 }
 
 data "template_file" "launch_template_userdata" {
-  count = local.worker_group_launch_template_count
+  count = var.create_eks ? local.worker_group_launch_template_count : 0
   template = lookup(
     var.worker_groups_launch_template[count.index],
     "userdata_template_file",
@@ -166,9 +167,9 @@ data "template_file" "launch_template_userdata" {
 
   vars = merge({
     platform            = lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"])
-    cluster_name        = aws_eks_cluster.this.name
-    endpoint            = aws_eks_cluster.this.endpoint
-    cluster_auth_base64 = aws_eks_cluster.this.certificate_authority[0].data
+    cluster_name        = aws_eks_cluster.this[0].name
+    endpoint            = aws_eks_cluster.this[0].endpoint
+    cluster_auth_base64 = aws_eks_cluster.this[0].certificate_authority[0].data
     pre_userdata = lookup(
       var.worker_groups_launch_template[count.index],
       "pre_userdata",

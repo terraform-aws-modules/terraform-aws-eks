@@ -52,6 +52,40 @@ module "my-cluster" {
   ]
 }
 ```
+## Conditional creation
+
+Sometimes you need to have a way to create EKS resources conditionally but Terraform does not allow to use `count` inside `module` block, so the solution is to specify argument `create_eks`. 
+
+Using this feature _and_ having `manage_aws_auth=true` (the default) requires to set up the kubernetes provider in a way that allows the data sources to not exist.
+
+```hcl
+data "aws_eks_cluster" "cluster" {
+  count = var.create_eks ? 1 : 0
+  name  = module.eks.cluster_id
+}
+
+data "aws_eks_cluster_auth" "cluster" {
+  count = var.create_eks ? 1 : 0
+  name  = module.eks.cluster_id
+}
+
+# In case of not creating the cluster, this will be an incompletely configured, unused provider, which poses no problem.
+provider "kubernetes" {
+  host                   = element(concat(data.aws_eks_cluster.cluster[*].endpoint, list("")), 0)
+  cluster_ca_certificate = base64decode(element(concat(data.aws_eks_cluster.cluster[*].certificate_authority.0.data, list("")), 0))
+  token                  = element(concat(data.aws_eks_cluster_auth.cluster[*].token, list("")), 0)
+  load_config_file       = false
+  version                = "~> 1.10"
+}
+
+# This cluster will not be created
+module "eks" {
+  source = "terraform-aws-modules/eks/aws"
+
+  create_eks = false
+  # ... omitted
+}
+```
 
 ## Other documentation
 
@@ -131,6 +165,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster\_security\_group\_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the workers | string | `""` | no |
 | cluster\_version | Kubernetes version to use for the EKS cluster. | string | `"1.14"` | no |
 | config\_output\_path | Where to save the Kubectl config file (if `write_kubeconfig = true`). Assumed to be a directory if the value ends with a forward slash `/`. | string | `"./"` | no |
+| create\_eks | Controls if EKS resources should be created (it affects almost all resources) | bool | `"true"` | no |
 | iam\_path | If provided, all IAM roles will be created on this path. | string | `"/"` | no |
 | kubeconfig\_aws\_authenticator\_additional\_args | Any additional arguments to pass to the authenticator such as the role to assume. e.g. ["-r", "MyEksRole"]. | list(string) | `[]` | no |
 | kubeconfig\_aws\_authenticator\_command | Command to use to fetch AWS EKS credentials. | string | `"aws-iam-authenticator"` | no |
@@ -164,7 +199,6 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | workers\_additional\_policies | Additional policies to be added to workers | list(string) | `[]` | no |
 | workers\_group\_defaults | Override default values for target groups. See workers_group_defaults_defaults in local.tf for valid keys. | any | `{}` | no |
 | workers\_role\_name | User defined workers role name. | string | `""` | no |
-| write\_aws\_auth\_config | Whether to write the aws-auth configmap file. | bool | `"true"` | no |
 | write\_kubeconfig | Whether to write a Kubectl config file containing the cluster configuration. Saved to `config_output_path`. | bool | `"true"` | no |
 
 ## Outputs

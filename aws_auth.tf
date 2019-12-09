@@ -2,7 +2,7 @@ data "aws_caller_identity" "current" {
 }
 
 data "template_file" "launch_template_worker_role_arns" {
-  count    = local.worker_group_launch_template_count
+  count    = var.create_eks ? local.worker_group_launch_template_count : 0
   template = file("${path.module}/templates/worker-role.tpl")
 
   vars = {
@@ -22,7 +22,7 @@ data "template_file" "launch_template_worker_role_arns" {
 }
 
 data "template_file" "worker_role_arns" {
-  count    = local.worker_group_count
+  count    = var.create_eks ? local.worker_group_count : 0
   template = file("${path.module}/templates/worker-role.tpl")
 
   vars = {
@@ -43,7 +43,7 @@ data "template_file" "worker_role_arns" {
 }
 
 resource "kubernetes_config_map" "aws_auth" {
-  count = var.manage_aws_auth ? 1 : 0
+  count = var.create_eks && var.manage_aws_auth ? 1 : 0
 
   metadata {
     name      = "aws-auth"

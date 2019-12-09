@@ -48,12 +48,6 @@ variable "manage_aws_auth" {
   default     = true
 }
 
-variable "write_aws_auth_config" {
-  description = "Whether to write the aws-auth configmap file."
-  type        = bool
-  default     = true
-}
-
 variable "map_accounts" {
   description = "Additional AWS account numbers to add to the aws-auth configmap. See examples/basic/variables.tf for example format."
   type        = list(string)
@@ -290,6 +284,12 @@ variable "attach_worker_autoscaling_policy" {
 
 variable "attach_worker_cni_policy" {
   description = "Whether to attach the Amazon managed `AmazonEKS_CNI_Policy` IAM policy to the default worker IAM role. WARNING: If set `false` the permissions must be assigned to the `aws-node` DaemonSet pods via another method or nodes will not be able to join the cluster."
+  type        = bool
+  default     = true
+}
+
+variable "create_eks" {
+  description = "Controls if EKS resources should be created (it affects almost all resources)"
   type        = bool
   default     = true
 }
