@@ -22,6 +22,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Fix broken terraform plan/apply on a cluster < 1.14 (by @hodduc)
 - Updated required version of AWS Provider to >= v2.38.0 for Managed Node Groups (by @wmorgan6796)
 - Updated minimum version of Terraform to avoid a bug (by @dpiddockcmp)
+- Fix idempotency issues for node groups with no remote_access configuration (by @jeffmhastings)
 
 #### Important notes
 
