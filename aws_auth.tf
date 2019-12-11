@@ -48,7 +48,7 @@ data "template_file" "node_group_arns" {
 
   vars = {
     worker_role_arn = lookup(var.node_groups[count.index], "iam_role_arn", aws_iam_role.node_groups[0].arn)
-    platform        = "linux"
+    platform        = "linux" # Hardcoded because the EKS API currently only supports linux for managed node groups
   }
 }
 
