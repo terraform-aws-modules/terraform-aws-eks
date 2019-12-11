@@ -48,7 +48,7 @@ data "template_file" "node_group_arns" {
 
   vars = {
     worker_role_arn = lookup(var.node_groups[count.index], "iam_role_arn", aws_iam_role.node_groups[0].arn)
-    platform = "linux"
+    platform        = "linux"
   }
 }
 
@@ -61,12 +61,12 @@ resource "kubernetes_config_map" "aws_auth" {
   }
 
   data = {
-    mapRoles    = <<EOF
+    mapRoles = <<EOF
 ${join("", distinct(concat(data.template_file.launch_template_worker_role_arns.*.rendered, data.template_file.worker_role_arns.*.rendered, data.template_file.node_group_arns.*.rendered
 )))}
 %{if length(var.map_roles) != 0}${yamlencode(var.map_roles)}%{endif}
     EOF
-    mapUsers    = yamlencode(var.map_users)
-    mapAccounts = yamlencode(var.map_accounts)
-  }
+mapUsers    = yamlencode(var.map_users)
+mapAccounts = yamlencode(var.map_accounts)
+}
 }
