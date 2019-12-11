@@ -9,17 +9,13 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v7.0.0...HEAD)] - 2019-??-??]
 
-- Test against minimum versions specified in `versions.tf` (by @dpiddockcmp)
 - Added flag `create_eks` to conditionally create resources (by @syst0m / @tbeijen)
 - Support for AWS EKS Managed Node Groups. (by @wmorgan6796)
-- Updated instance_profile_names and instance_profile_arns outputs to also consider launch template as well as asg (by @ankitwal)
-- Added a if check on `aws-auth` configmap when map_roles is empty. 
-- **Breaking:** Configure the aws-auth configmap using the terraform kubernetes providers. Read the [docs](docs/upgrading-to-aws-auth-kubernetes-provider.md) for more info (by @sdehaes)
+- Added a if check on `aws-auth` configmap when `map_roles` is empty (by @shanmugakarna)
+- **Breaking:** Configure the aws-auth configmap using the terraform kubernetes providers. See Important notes below for upgrade notes (by @sdehaes)
 - Removed no longer used variable `write_aws_auth_config` (by @tbeijen)
-- Updated application of `aws-auth` configmap to create `kube_config.yaml` and `aws_auth_configmap.yaml` in sequence (and not parallel) to `kubectl apply` (by @knittingdev)
 - Exit with error code when `aws-auth` configmap is unable to be updated (by @knittingdev)
 - Fix deprecated interpolation-only expression (by @angelabad)
-- Fix broken terraform plan/apply on a cluster < 1.14 (by @hodduc)
 - Updated required version of AWS Provider to >= v2.38.0 for Managed Node Groups (by @wmorgan6796)
 - Updated minimum version of Terraform to avoid a bug (by @dpiddockcmp)
 - Fix aws-auth config map for managed node groups (by @wbertelsen)
@@ -29,7 +25,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 The way the `aws-auth` configmap in the `kube-system` namespaces is managed has been changed. Before this was managed via kubectl using a null resources. This was changed to be managed by the terraform Kubernetes provider.
 
 To upgrade you have to add the kubernetes provider to the place you are calling the module. You can see examples in
-the [examples](../examples) folder. Then you should import the configmap into Terraform:
+the [examples](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/93636625740c63fd89ad8bc60ad180761288c54d/examples) folder. Then you should import the configmap into Terraform:
 
 ```
 terraform import module.cluster1.kubernetes_config_map.aws_auth[0] kube-system/aws-auth
@@ -39,13 +35,20 @@ You could also delete the aws-auth config map before doing an apply but this mea
 
 # History
 
+## [[v7.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v7.0.1...v7.0.0)] - 2019-12-11]
+
+- Test against minimum versions specified in `versions.tf` (by @dpiddockcmp)
+- Updated `instance_profile_names` and `instance_profile_arns` outputs to also consider launch template as well as asg (by @ankitwal)
+- Fix broken terraform plan/apply on a cluster < 1.14 (by @hodduc)
+- Updated application of `aws-auth` configmap to create `kube_config.yaml` and `aws_auth_configmap.yaml` in sequence (and not parallel) to `kubectl apply` (by @knittingdev)
+
 ## [[v7.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.2...v7.0.0)] - 2019-10-30]
 
 - **Breaking:** Allow for specifying a custom AMI for the worker nodes. (by @bmcstdio)
 - Added support for Windows workers AMIs (by @hodduc)
 - Allow for replacing the full userdata text with a `userdata_template_file` template and `userdata_template_extra_args` in `worker_groups` (by @snstanton)
--  **Breaking:** The `kubectl` configuration file can now be fully-specified using `config_output_path`. Previously it was assumed that `config_output_path` referred to a directory and always ended with a forward slash. This is a breaking change if `config_output_path` does **not** end with a forward slash (which was advised against by the documentation).
-- Changed logic for setting default ebs_optimized to only require maintaining a list of instance types that don't support it (by @jeffmhastings)
+-  **Breaking:** The `kubectl` configuration file can now be fully-specified using `config_output_path`. Previously it was assumed that `config_output_path` referred to a directory and always ended with a forward slash. This is a breaking change if `config_output_path` does **not** end with a forward slash (which was advised against by the documentation). (by @joshuaspence)
+- Changed logic for setting default `ebs_optimized` to only require maintaining a list of instance types that don't support it (by @jeffmhastings)
 - Bumped minimum terraform version to 0.12.2 to prevent an error on yamlencode function (by @toadjaune)
 - Access conditional resource using join function in combination with splat syntax (by @miguelaferreira)
 
