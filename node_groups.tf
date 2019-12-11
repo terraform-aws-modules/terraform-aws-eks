@@ -87,10 +87,19 @@ resource "aws_eks_node_group" "workers" {
   labels          = lookup(each.value, "node_group_k8s_labels", null)
   release_version = lookup(each.value, "ami_release_version", null)
 
-  # This sometimes breaks idempotency as described in https://github.com/terraform-providers/terraform-provider-aws/issues/11063
-  remote_access {
-    ec2_ssh_key               = lookup(each.value, "key_name", "") != "" ? each.value["key_name"] : null
-    source_security_group_ids = lookup(each.value, "key_name", "") != "" ? lookup(each.value, "source_security_group_ids", []) : null
+  dynamic "remote_access" {
+    for_each = [
+      for node_group in [each.value] : {
+        ec2_ssh_key               = node_group["key_name"]
+        source_security_group_ids = lookup(node_group, "source_security_group_ids", [])
+      }
+      if lookup(node_group, "key_name", "") != ""
+    ]
+
+    content {
+      ec2_ssh_key               = remote_access.value["ec2_ssh_key"]
+      source_security_group_ids = remote_access.value["source_security_group_ids"]
+    }
   }
 
   version = aws_eks_cluster.this[0].version
