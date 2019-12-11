@@ -9,17 +9,13 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v7.0.0...HEAD)] - 2019-??-??]
 
-- Test against minimum versions specified in `versions.tf` (by @dpiddockcmp)
 - Added flag `create_eks` to conditionally create resources (by @syst0m / @tbeijen)
 - Support for AWS EKS Managed Node Groups. (by @wmorgan6796)
-- Updated `instance_profile_names` and `instance_profile_arns` outputs to also consider launch template as well as asg (by @ankitwal)
 - Added a if check on `aws-auth` configmap when `map_roles` is empty (by @shanmugakarna)
 - **Breaking:** Configure the aws-auth configmap using the terraform kubernetes providers. See Important notes below for upgrade notes (by @sdehaes)
 - Removed no longer used variable `write_aws_auth_config` (by @tbeijen)
-- Updated application of `aws-auth` configmap to create `kube_config.yaml` and `aws_auth_configmap.yaml` in sequence (and not parallel) to `kubectl apply` (by @knittingdev)
 - Exit with error code when `aws-auth` configmap is unable to be updated (by @knittingdev)
 - Fix deprecated interpolation-only expression (by @angelabad)
-- Fix broken terraform plan/apply on a cluster < 1.14 (by @hodduc)
 - Updated required version of AWS Provider to >= v2.38.0 for Managed Node Groups (by @wmorgan6796)
 - Updated minimum version of Terraform to avoid a bug (by @dpiddockcmp)
 
@@ -37,6 +33,13 @@ terraform import module.cluster1.kubernetes_config_map.aws_auth[0] kube-system/a
 You could also delete the aws-auth config map before doing an apply but this means you need to the apply with the **same user/role that created the cluster**.
 
 # History
+
+## [[v7.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v7.0.1...v7.0.0)] - 2019-12-11]
+
+- Test against minimum versions specified in `versions.tf` (by @dpiddockcmp)
+- Updated `instance_profile_names` and `instance_profile_arns` outputs to also consider launch template as well as asg (by @ankitwal)
+- Fix broken terraform plan/apply on a cluster < 1.14 (by @hodduc)
+- Updated application of `aws-auth` configmap to create `kube_config.yaml` and `aws_auth_configmap.yaml` in sequence (and not parallel) to `kubectl apply` (by @knittingdev)
 
 ## [[v7.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.2...v7.0.0)] - 2019-10-30]
 
