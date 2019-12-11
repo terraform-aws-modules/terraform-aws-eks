@@ -28,7 +28,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 The way the `aws-auth` configmap in the `kube-system` namespaces is managed has been changed. Before this was managed via kubectl using a null resources. This was changed to be managed by the terraform Kubernetes provider.
 
 To upgrade you have to add the kubernetes provider to the place you are calling the module. You can see examples in
-the [examples](../examples) folder. Then you should import the configmap into Terraform:
+the [examples](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/93636625740c63fd89ad8bc60ad180761288c54d/examples) folder. Then you should import the configmap into Terraform:
 
 ```
 terraform import module.cluster1.kubernetes_config_map.aws_auth[0] kube-system/aws-auth
