@@ -204,18 +204,6 @@ variable "local_exec_interpreter" {
   default     = ["/bin/sh", "-c"]
 }
 
-variable "cluster_create_security_group" {
-  description = "Whether to create a security group for the cluster or attach the cluster to `cluster_security_group_id`."
-  type        = bool
-  default     = true
-}
-
-variable "worker_create_security_group" {
-  description = "Whether to create a security group for the workers or attach the workers to `worker_security_group_id`."
-  type        = bool
-  default     = true
-}
-
 variable "worker_create_initial_lifecycle_hooks" {
   description = "Whether to create initial lifecycle hooks provided in worker groups."
   type        = bool
