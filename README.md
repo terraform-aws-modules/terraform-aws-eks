@@ -178,6 +178,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | local\_exec\_interpreter | Command to run for local-exec resources. Must be a shell-style interpreter. If you are on Windows Git Bash is a good choice. | list(string) | `[ "/bin/sh", "-c" ]` | no |
 | manage\_aws\_auth | Whether to apply the aws-auth configmap file. | string | `"true"` | no |
 | manage\_cluster\_iam\_resources | Whether to let the module manage cluster IAM resources. If set to false, cluster_iam_role_name must be specified. | bool | `"true"` | no |
+| manage\_fargate\_iam\_resources | Whether to let the module manage Fargate IAM resources. If set to false, fargate_iam_role_name must be specified. | bool | `"true"` | no |
 | manage\_worker\_autoscaling\_policy | Whether to let the module manage the cluster autoscaling iam policy. | bool | `"true"` | no |
 | manage\_worker\_iam\_resources | Whether to let the module manage worker IAM resources. If set to false, iam_instance_profile_name must be specified for workers. | bool | `"true"` | no |
 | map\_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | list(string) | `[]` | no |
