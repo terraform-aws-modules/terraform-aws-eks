@@ -3,9 +3,9 @@ resource "aws_eks_fargate_profile" "workers" {
   
   fargate_profile_name = join("-", [var.cluster_name, each.key, random_pet.fargate_profiles[each.key].id])
 
-  cluster_name = var.cluster_name
+  cluster_name           = var.cluster_name
   pod_execution_role_arn = lookup(each.value, "iam_role_arn", aws_iam_role.fargate[0].arn)
-  subnet_ids = lookup(each.value, "subnets", local.fargate_profiles_defaults["subnets"])
+  subnet_ids             = lookup(each.value, "subnets", local.fargate_profiles_defaults["subnets"])
 
   selector {
     namespace = lookup(each.value, "namespace", local.fargate_profiles_defaults["namespace"])
