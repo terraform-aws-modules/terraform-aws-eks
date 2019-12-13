@@ -19,6 +19,7 @@ locals {
   worker_group_count                    = length(var.worker_groups)
   worker_group_launch_template_count    = length(var.worker_groups_launch_template)
   worker_group_managed_node_group_count = length(var.node_groups)
+  fargate_profiles_count                = length(var.fargate_profiles)
 
   default_ami_id_linux   = data.aws_ami.eks_worker.id
   default_ami_id_windows = data.aws_ami.eks_worker_windows.id
@@ -96,6 +97,19 @@ locals {
     var.workers_group_defaults,
   )
 
+  fargate_profiles_defaults_defaults = {
+    name      = "count.index"
+    subnets   = var.subnets
+    namespace = "default"
+    labels    = {}
+    tags      = []
+  }
+
+  fargate_profiles_defaults = merge(
+    local.fargate_profiles_defaults_defaults,
+    var.fargate_profiles_defaults,
+  )
+
   ebs_optimized_not_supported = [
     "c1.medium",
     "c3.8xlarge",
@@ -135,14 +149,6 @@ locals {
   ]
 
   node_groups = { for node_group in var.node_groups : node_group["name"] => node_group }
-
-  fargate_profiles_count = length(var.fargate_profiles)
   
   fargate_profiles = { for fargate_profile in var.fargate_profiles : fargate_profile["name"] => fargate_profile }
-  
-  fargate_profiles_defaults = {
-    subnets   = var.subnets
-    namespace = "default"
-    labels    = ""
-  }
 }

@@ -1,5 +1,5 @@
 resource "aws_eks_fargate_profile" "workers" {
-  for_each = var.create_eks ? local.fargate_profiles : {}
+  for_each = local.fargate_profiles
   
   fargate_profile_name = join("-", [var.cluster_name, each.key, random_pet.fargate_profiles[each.key].id])
 
@@ -9,18 +9,24 @@ resource "aws_eks_fargate_profile" "workers" {
 
   selector {
     namespace = lookup(each.value, "namespace", local.fargate_profiles_defaults["namespace"])
+    labels    = lookup(each.value, "labels", local.fargate_profiles_defaults["labels"])
   }
 
   lifecycle {
-    create_before_destroy = false
+    create_before_destroy = true
   }
 }
 
 resource "random_pet" "fargate_profiles" {
-  for_each = var.create_eks ? local.fargate_profiles : {}
+  for_each = local.fargate_profiles
 
   separator = "-"
   length    = 2
+
+  keepers = {
+    fargate_profile_name = join("-", [var.cluster_name, each.value["name"]])
+    namespace            = lookup(each.value, "namespace", local.fargate_profiles_defaults["namespace"])
+  }
 }
 
 resource "aws_iam_role" "fargate" {
