@@ -20,6 +20,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Updated minimum version of Terraform to avoid a bug (by @dpiddockcmp)
 - Fix cluster_oidc_issuer_url output from list to string (by @chewvader)
 - Fix idempotency issues for node groups with no remote_access configuration (by @jeffmhastings)
+- Support for AWS EKS Fargate Profiles. (by @kamirendawkins)
 
 #### Important notes
 

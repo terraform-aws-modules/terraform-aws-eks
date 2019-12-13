@@ -12,7 +12,7 @@ resource "aws_eks_fargate_profile" "workers" {
   }
 
   lifecycle {
-    create_before_destroy = true
+    create_before_destroy = false
   }
 }
 
