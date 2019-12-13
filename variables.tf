@@ -258,6 +258,18 @@ variable "cluster_iam_role_name" {
   default     = ""
 }
 
+variable "manage_fargate_iam_resources" {
+  description = "Whether to let the module manage Fargate IAM resources. If set to false, fargate_iam_role_name must be specified."
+  type        = bool
+  default     = true
+}
+
+variable "fargate_iam_role_name" {
+  description = "User defined fargate profiles role name."
+  type        = string
+  default     = ""
+}
+
 variable "manage_worker_iam_resources" {
   description = "Whether to let the module manage worker IAM resources. If set to false, iam_instance_profile_name must be specified for workers."
   type        = bool
@@ -296,6 +308,12 @@ variable "create_eks" {
 
 variable "node_groups" {
   description = "A list of maps defining node group configurations to be defined using AWS EKS Managed Node Groups. See workers_group_defaults for valid keys."
+  type        = any
+  default     = []
+}
+
+variable "fargate_profiles" {
+  description = "A list of maps defining fargate profiles. See fargate_profiles_defaults for valid keys."
   type        = any
   default     = []
 }

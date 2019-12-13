@@ -136,4 +136,13 @@ locals {
 
   node_groups = { for node_group in var.node_groups : node_group["name"] => node_group }
 
+  fargate_profiles_count = length(var.fargate_profiles)
+  
+  fargate_profiles = { for fargate_profile in var.fargate_profiles : fargate_profile["name"] => fargate_profile }
+  
+  fargate_profiles_defaults = {
+    subnets   = var.subnets
+    namespace = "default"
+    labels    = ""
+  }
 }

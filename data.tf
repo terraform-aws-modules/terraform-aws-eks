@@ -65,6 +65,21 @@ data "aws_iam_policy_document" "cluster_assume_role_policy" {
   }
 }
 
+data "aws_iam_policy_document" "fargate_assume_role_policy" {
+  statement {
+    sid = "EKSFargateAssumeRole"
+
+    actions = [
+      "sts:AssumeRole",
+    ]
+
+    principals {
+      type = "Service"
+      identifiers = ["eks-fargate-pods.amazonaws.com"]
+    }
+  }
+}
+
 data "template_file" "kubeconfig" {
   count    = var.create_eks ? 1 : 0
   template = file("${path.module}/templates/kubeconfig.tpl")
