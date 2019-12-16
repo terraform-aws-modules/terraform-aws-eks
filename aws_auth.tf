@@ -41,6 +41,7 @@ data "template_file" "worker_role_arns" {
     )
   }
 }
+<<<<<<< HEAD
 
 data "template_file" "node_group_arns" {
   count    = var.create_eks ? local.worker_group_managed_node_group_count : 0
@@ -52,6 +53,11 @@ data "template_file" "node_group_arns" {
   }
 }
 
+=======
+locals {
+  kubeconfig_filename = concat(local_file.kubeconfig.*.filename, [""])[0]
+}
+>>>>>>> fixup missing local for kubeconfig_filename
 resource "null_resource" "wait_for_kubernetes" {
   depends_on = [local_file.kubeconfig]
   provisioner "local-exec" {
