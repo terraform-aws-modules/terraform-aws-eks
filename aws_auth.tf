@@ -52,7 +52,17 @@ data "template_file" "node_group_arns" {
   }
 }
 
+resource "null_resource" "wait_for_kubernetes" {
+  depends_on = [local_file.kubeconfig]
+  provisioner "local-exec" {
+    command = <<EOT
+    until kubectl version --kubeconfig ${local.kubeconfig_filename} >/dev/null; do sleep 4; done
+  EOT
+  }
+}
+
 resource "kubernetes_config_map" "aws_auth" {
+  depends_on = [null_resource.wait_for_kubernetes]
   count = var.create_eks && var.manage_aws_auth ? 1 : 0
 
   metadata {
