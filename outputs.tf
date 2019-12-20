@@ -165,3 +165,14 @@ output "node_groups_iam_role_arns" {
     node_group.node_group_name => node_group.node_role_arn
   }
 }
+
+output "node_groups" {
+  value = [
+    for worker in aws_eks_node_group.workers:
+    { 
+      arn = worker["arn"], 
+      id = worker["arn"], 
+      status = worker["status"], 
+    }
+  ]
+}
