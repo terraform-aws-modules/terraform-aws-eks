@@ -21,6 +21,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Fix cluster_oidc_issuer_url output from list to string (by @chewvader)
 - Fix idempotency issues for node groups with no remote_access configuration (by @jeffmhastings)
 - Added support to create IAM OpenID Connect Identity Provider to enable EKS Identity Roles for Service Accounts (IRSA). (by @alaa)
+- **Breaking:** Change logic of security group whitelisting. Will always whitelist worker security group on control plane security group either provide one or create new one. See Important notes below for upgrade notes (by @ryanooi)
 
 #### Important notes
 
@@ -34,6 +35,12 @@ terraform import module.cluster1.kubernetes_config_map.aws_auth[0] kube-system/a
 ```
 
 You could also delete the aws-auth config map before doing an apply but this means you need to the apply with the **same user/role that created the cluster**.
+
+For security group whitelisting change. After upgrade, have to remove `cluster_create_security_group` and `worker_create_security_group` variable. If you have whitelist worker security group before, you will have to delete it(and apply again) or import it.
+
+```
+terraform import module.eks.aws_security_group_rule.cluster_https_worker_ingress <CONTROL_PLANE_SECURITY_GROUP_ID>_ingress_tcp_443_443_<WORKER_SECURITY_GROUP_ID>
+```
 
 # History
 
