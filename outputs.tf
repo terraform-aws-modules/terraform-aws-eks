@@ -157,3 +157,11 @@ output "worker_autoscaling_policy_arn" {
   description = "ARN of the worker autoscaling IAM policy if `manage_worker_autoscaling_policy = true`"
   value       = concat(aws_iam_policy.worker_autoscaling[*].arn, [""])[0]
 }
+
+output "node_groups_iam_role_arns" {
+  description = "IAM role ARNs for EKS node groups"
+  value = {
+    for node_group in aws_eks_node_group.workers :
+    node_group.node_group_name => node_group.node_role_arn
+  }
+}
