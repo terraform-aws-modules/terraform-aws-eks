@@ -152,7 +152,6 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 |------|-------------|:----:|:-----:|:-----:|
 | attach\_worker\_autoscaling\_policy | Whether to attach the module managed cluster autoscaling iam policy to the default worker IAM role. This requires `manage_worker_autoscaling_policy = true` | bool | `"true"` | no |
 | attach\_worker\_cni\_policy | Whether to attach the Amazon managed `AmazonEKS_CNI_Policy` IAM policy to the default worker IAM role. WARNING: If set `false` the permissions must be assigned to the `aws-node` DaemonSet pods via another method or nodes will not be able to join the cluster. | bool | `"true"` | no |
-| cluster\_create\_security\_group | Whether to create a security group for the cluster or attach the cluster to `cluster_security_group_id`. | bool | `"true"` | no |
 | cluster\_create\_timeout | Timeout value when creating the EKS cluster. | string | `"15m"` | no |
 | cluster\_delete\_timeout | Timeout value when deleting the EKS cluster. | string | `"15m"` | no |
 | cluster\_enabled\_log\_types | A list of the desired control plane logging to enable. For more information, see Amazon EKS Control Plane Logging documentation (https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html) | list(string) | `[]` | no |
@@ -166,6 +165,8 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster\_version | Kubernetes version to use for the EKS cluster. | string | `"1.14"` | no |
 | config\_output\_path | Where to save the Kubectl config file (if `write_kubeconfig = true`). Assumed to be a directory if the value ends with a forward slash `/`. | string | `"./"` | no |
 | create\_eks | Controls if EKS resources should be created (it affects almost all resources) | bool | `"true"` | no |
+| eks\_oidc\_root\_ca\_thumbprint | Thumbprint of Root CA for EKS OIDC, Valid until 2037 | string | `"9e99a48a9960b14926bb7f3b02e22da2b0ab7280"` | no |
+| enable\_irsa | Whether to create OpenID Connect Provider for EKS to enable IRSA | bool | `"false"` | no |
 | iam\_path | If provided, all IAM roles will be created on this path. | string | `"/"` | no |
 | kubeconfig\_aws\_authenticator\_additional\_args | Any additional arguments to pass to the authenticator such as the role to assume. e.g. ["-r", "MyEksRole"]. | list(string) | `[]` | no |
 | kubeconfig\_aws\_authenticator\_command | Command to use to fetch AWS EKS credentials. | string | `"aws-iam-authenticator"` | no |
@@ -191,7 +192,6 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker\_ami\_owner\_id | The ID of the owner for the AMI to use for the AWS EKS workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft'). | string | `"602401143452"` | no |
 | worker\_ami\_owner\_id\_windows | The ID of the owner for the AMI to use for the AWS EKS Windows workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft'). | string | `"801119661308"` | no |
 | worker\_create\_initial\_lifecycle\_hooks | Whether to create initial lifecycle hooks provided in worker groups. | bool | `"false"` | no |
-| worker\_create\_security\_group | Whether to create a security group for the workers or attach the workers to `worker_security_group_id`. | bool | `"true"` | no |
 | worker\_groups | A list of maps defining worker group configurations to be defined using AWS Launch Configurations. See workers_group_defaults for valid keys. | any | `[]` | no |
 | worker\_groups\_launch\_template | A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys. | any | `[]` | no |
 | worker\_security\_group\_id | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the EKS cluster. | string | `""` | no |
@@ -218,6 +218,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | config\_map\_aws\_auth | A kubernetes configuration to authenticate to this EKS cluster. |
 | kubeconfig | kubectl config file contents for this EKS cluster. |
 | kubeconfig\_filename | The filename of the generated kubectl config. |
+| node\_groups\_iam\_role\_arns | IAM role ARNs for EKS node groups |
 | worker\_autoscaling\_policy\_arn | ARN of the worker autoscaling IAM policy if `manage_worker_autoscaling_policy = true` |
 | worker\_autoscaling\_policy\_name | Name of the worker autoscaling IAM policy if `manage_worker_autoscaling_policy = true` |
 | worker\_iam\_instance\_profile\_arns | default IAM instance profile ARN for EKS worker groups |

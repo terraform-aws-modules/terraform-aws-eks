@@ -204,18 +204,6 @@ variable "local_exec_interpreter" {
   default     = ["/bin/sh", "-c"]
 }
 
-variable "cluster_create_security_group" {
-  description = "Whether to create a security group for the cluster or attach the cluster to `cluster_security_group_id`."
-  type        = bool
-  default     = true
-}
-
-variable "worker_create_security_group" {
-  description = "Whether to create a security group for the workers or attach the workers to `worker_security_group_id`."
-  type        = bool
-  default     = true
-}
-
 variable "worker_create_initial_lifecycle_hooks" {
   description = "Whether to create initial lifecycle hooks provided in worker groups."
   type        = bool
@@ -298,4 +286,16 @@ variable "node_groups" {
   description = "A list of maps defining node group configurations to be defined using AWS EKS Managed Node Groups. See workers_group_defaults for valid keys."
   type        = any
   default     = []
+}
+
+variable "enable_irsa" {
+  description = "Whether to create OpenID Connect Provider for EKS to enable IRSA"
+  type        = bool
+  default     = false
+}
+
+variable "eks_oidc_root_ca_thumbprint" {
+  type        = string
+  description = "Thumbprint of Root CA for EKS OIDC, Valid until 2037"
+  default     = "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
 }
