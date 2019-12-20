@@ -21,6 +21,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Fix cluster_oidc_issuer_url output from list to string (by @chewvader)
 - Fix idempotency issues for node groups with no remote_access configuration (by @jeffmhastings)
 - Added support to create IAM OpenID Connect Identity Provider to enable EKS Identity Roles for Service Accounts (IRSA). (by @alaa)
+- Adding node group iam role arns to outputs. (by @mukgupta)
 - **Breaking:** Change logic of security group whitelisting. Will always whitelist worker security group on control plane security group either provide one or create new one. See Important notes below for upgrade notes (by @ryanooi)
 
 #### Important notes
