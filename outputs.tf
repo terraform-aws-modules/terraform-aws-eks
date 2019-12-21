@@ -173,6 +173,7 @@ output "node_groups" {
       arn = worker["arn"], 
       id = worker["arn"], 
       status = worker["status"], 
+      resources = worker["resources"],
     }
   ]
 }
