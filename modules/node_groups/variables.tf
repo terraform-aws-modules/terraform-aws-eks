@@ -19,6 +19,11 @@ variable "workers_group_defaults" {
   type        = any
 }
 
+variable "role_name" {
+  description = "Custom name for IAM role. Otherwise one will be generated"
+  type        = string
+}
+
 variable "node_groups" {
   description = "map of maps of node groups to create. See default for valid keys and type. See source for extra comments"
   type        = any

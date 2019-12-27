@@ -1,6 +1,7 @@
 resource "aws_iam_role" "node_groups" {
   count                 = local.create_iam ? 1 : 0
-  name                  = "${var.workers_role_name != "" ? var.workers_role_name : aws_eks_cluster.this[0].name}-managed-node-groups"
+  name_prefix           = var.role_name != "" ? null : "${var.cluster_name}-managed-node-groups-"
+  name                  = var.role_name != "" ? var.role_name : null
   assume_role_policy    = data.aws_iam_policy_document.workers_assume_role_policy.json
   permissions_boundary  = var.permissions_boundary
   path                  = var.iam_path

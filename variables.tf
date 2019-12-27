@@ -258,6 +258,12 @@ variable "workers_role_name" {
   default     = ""
 }
 
+variable "node_groups_role_name" {
+  description = "User defined node groups role name. Otherwise one will be generated"
+  type        = string
+  default     = ""
+}
+
 variable "manage_worker_autoscaling_policy" {
   description = "Whether to let the module manage the cluster autoscaling iam policy."
   type        = bool
