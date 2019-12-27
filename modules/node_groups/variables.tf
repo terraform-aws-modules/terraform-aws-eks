@@ -14,6 +14,31 @@ variable "cluster_version" {
   type        = string
 }
 
+variable "manage_worker_iam_resources" {
+  description = "Whether to let the module manage worker IAM resources. If set to false, iam_instance_profile_name must be specified for workers."
+  type        = bool
+}
+
+variable "manage_worker_autoscaling_policy" {
+  description = "Whether to let the module manage the cluster autoscaling iam policy."
+  type        = bool
+}
+
+variable "attach_worker_autoscaling_policy" {
+  description = "Whether to attach the module managed cluster autoscaling iam policy to the default worker IAM role. This requires `manage_worker_autoscaling_policy = true`"
+  type        = bool
+}
+
+variable "worker_autoscaling_policy_arn" {
+  description = "ARN of the worker autoscaling policy."
+  type        = string
+}
+
+variable "workers_additional_policies" {
+  description = "Additional policies to be added to workers"
+  type        = list(string)
+}
+
 variable "workers_group_defaults" {
   description = "Workers group defaults from parent"
   type        = any
@@ -22,6 +47,21 @@ variable "workers_group_defaults" {
 variable "role_name" {
   description = "Custom name for IAM role. Otherwise one will be generated"
   type        = string
+}
+
+variable "permissions_boundary" {
+  description = "If provided, all IAM roles will be created with this permissions boundary attached."
+  type        = string
+}
+
+variable "iam_path" {
+  description = "If provided, all IAM roles will be created on this path."
+  type        = string
+}
+
+variable "tags" {
+  description = "A map of trags to add to all resources"
+  type        = map(string)
 }
 
 variable "node_groups" {

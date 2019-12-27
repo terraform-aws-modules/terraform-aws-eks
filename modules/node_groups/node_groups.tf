@@ -15,7 +15,7 @@ resource "aws_eks_node_group" "workers" {
 
   ami_type        = lookup(each.value, "ami_type", null)
   disk_size       = lookup(each.value, "root_volume_size", null)
-  instance_types  = [lookup(each.value, "instance_type", null)]
+  instance_types  = lookup(each.value, "instance_type", null) != null ? [each.value["instance_type"]] : null
   labels          = lookup(each.value, "k8s_labels", null)
   release_version = lookup(each.value, "ami_release_version", null)
 
@@ -34,7 +34,7 @@ resource "aws_eks_node_group" "workers" {
     }
   }
 
-  version = aws_eks_cluster.this[0].version
+  version = var.cluster_version
 
   tags = lookup(each.value, "additional_tags", null)
 
