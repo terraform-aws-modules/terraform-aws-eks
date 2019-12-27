@@ -289,9 +289,9 @@ variable "create_eks" {
 }
 
 variable "node_groups" {
-  description = "A list of maps defining node group configurations to be defined using AWS EKS Managed Node Groups. See workers_group_defaults for valid keys."
+  description = "Map of map of node groups to create. See node_groups variable in the node_groups submodule for more details"
   type        = any
-  default     = []
+  default     = {}
 }
 
 variable "enable_irsa" {
