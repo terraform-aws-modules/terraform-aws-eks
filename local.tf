@@ -16,9 +16,8 @@ locals {
   default_iam_role_id = concat(aws_iam_role.workers.*.id, [""])[0]
   kubeconfig_name     = var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name
 
-  worker_group_count                    = length(var.worker_groups)
-  worker_group_launch_template_count    = length(var.worker_groups_launch_template)
-  worker_group_managed_node_group_count = length(var.node_groups)
+  worker_group_count                 = length(var.worker_groups)
+  worker_group_launch_template_count = length(var.worker_groups_launch_template)
 
   default_ami_id_linux   = data.aws_ami.eks_worker.id
   default_ami_id_windows = data.aws_ami.eks_worker_windows.id
@@ -133,7 +132,4 @@ locals {
     "t2.small",
     "t2.xlarge"
   ]
-
-  node_groups = { for node_group in var.node_groups : node_group["name"] => node_group }
-
 }

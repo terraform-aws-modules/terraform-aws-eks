@@ -1,5 +1,5 @@
 resource "aws_eks_node_group" "workers" {
-  for_each = var.create_eks ? local.node_groups : {}
+  for_each = local.node_groups
 
   node_group_name = join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id])
 
