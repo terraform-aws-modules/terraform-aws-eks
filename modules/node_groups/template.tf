@@ -1,5 +1,5 @@
 data "template_file" "node_group_arns" {
-  for_each = local.node_groups
+  for_each = local.node_groups_keys
   template = file("${path.module}/../../templates/worker-role.tpl")
 
   vars = {
