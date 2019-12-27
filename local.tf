@@ -81,7 +81,7 @@ locals {
     spot_max_price                           = ""                                                   # Maximum price per unit hour that the user is willing to pay for the Spot instances. Default is the on-demand price
     ami_type                                 = "AL2_x86_64"                                         # AMI Type to use for the Managed Node Groups. Can be either: AL2_x86_64 or AL2_x86_64_GPU
     ami_release_version                      = ""                                                   # AMI Release Version of the Managed Node Groups
-    source_security_group_id                 = []                                                   # Source Security Group IDs to allow SSH Access to the Nodes. NOTE: IF LEFT BLANK, AND A KEY IS SPECIFIED, THE SSH PORT WILL BE OPENNED TO THE WORLD
+    source_security_group_ids                = []                                                   # Source Security Group IDs to allow SSH Access to the Nodes. NOTE: IF LEFT BLANK, AND A KEY IS SPECIFIED, THE SSH PORT WILL BE OPENNED TO THE WORLD
     node_group_k8s_labels                    = {}                                                   # Kubernetes Labels to apply to the nodes within the Managed Node Group
     node_group_desired_capacity              = 1                                                    # Desired capacity of the Node Group
     node_group_min_capacity                  = 1                                                    # Min capacity of the Node Group (Minimum value allowed is 1)

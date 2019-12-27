@@ -5,18 +5,18 @@ resource "aws_eks_node_group" "workers" {
 
   cluster_name  = var.cluster_name
   node_role_arn = lookup(each.value, "iam_role_arn", aws_iam_role.node_groups[0].arn)
-  subnet_ids    = lookup(each.value, "subnets", local.workers_group_defaults["subnets"])
+  subnet_ids    = lookup(each.value, "subnets", var.workers_group_defaults["subnets"])
 
   scaling_config {
-    desired_size = lookup(each.value, "node_group_desired_capacity", local.workers_group_defaults["asg_desired_capacity"])
-    max_size     = lookup(each.value, "node_group_max_capacity", local.workers_group_defaults["asg_max_size"])
-    min_size     = lookup(each.value, "node_group_min_capacity", local.workers_group_defaults["asg_min_size"])
+    desired_size = lookup(each.value, "desired_capacity", var.workers_group_defaults["asg_desired_capacity"])
+    max_size     = lookup(each.value, "max_capacity", var.workers_group_defaults["asg_max_size"])
+    min_size     = lookup(each.value, "min_capacity", var.workers_group_defaults["asg_min_size"])
   }
 
   ami_type        = lookup(each.value, "ami_type", null)
   disk_size       = lookup(each.value, "root_volume_size", null)
   instance_types  = [lookup(each.value, "instance_type", null)]
-  labels          = lookup(each.value, "node_group_k8s_labels", null)
+  labels          = lookup(each.value, "k8s_labels", null)
   release_version = lookup(each.value, "ami_release_version", null)
 
   dynamic "remote_access" {
@@ -36,7 +36,7 @@ resource "aws_eks_node_group" "workers" {
 
   version = aws_eks_cluster.this[0].version
 
-  tags = lookup(each.value, "node_group_additional_tags", null)
+  tags = lookup(each.value, "additional_tags", null)
 
   lifecycle {
     create_before_destroy = true
