@@ -60,30 +60,34 @@ variable "iam_path" {
 }
 
 variable "tags" {
-  description = "A map of trags to add to all resources"
+  description = "A map of tags to add to all resources"
   type        = map(string)
 }
 
-variable "node_groups" {
+variable "node_groups_defaults" {
   description = "map of maps of node groups to create. See default for valid keys and type. See source for extra comments"
   type        = any
 
   # This will be always be overriden by the value from the top level module
   default = {
-    example_ng = {
-      iam_role_arn              = ""           # IAM Role ARN for workers. If unset: locally created managed
-      subnets                   = [""]         # Subnets to contain workers. If unset: uses parent's local.workers_group_defaults[subnets]
-      desired_capacity          = 0            # Desired number of workers. If unset: uses parent's local.workers_group_defaults[asg_desired_capacity]
-      max_capacity              = 0            # Max number of workers. If unset: uses parent's local.workers_group_defaults[asg_max_size]
-      min_capacity              = 0            # Min number of workers. If unset: uses parent's local.workers_group_defaults[asg_min_size]
-      ami_type                  = ""           # AMI type. See Terraform docs. If unset: falls back to provider default behavior
-      root_volume_size          = 0            # Workers' disk size. If unset: falls back to provider default behavior
-      instance_type             = ""           # Workers' instance type. If unset: falls back to provider default behavior
-      k8s_labels                = { key = "" } # Map of Kubernetes labels. If unset: no extra labels set
-      ami_release_version       = ""           # AMI version of workers. If unset: falls back to provider default behavior
-      key_name                  = ""           # Key name for workers. If unset: key_name is not used and remote management access disabled
-      source_security_group_ids = [""]         # List of source security groups for remote access to workers. If unset and key_name is specified: THE REMOTE ACCESS PORT WILL BE OPENED TO THE WORLD
-      additional_tags           = { key = "" } # Additional tags to apply to node_group. If unset: none
-    }
+    iam_role_arn              = ""           # IAM Role ARN for workers. If unset: locally created and managed
+    subnets                   = [""]         # Subnets to contain workers. If unset: uses `var.workers_group_defaults[subnets]`
+    desired_capacity          = 0            # Desired number of workers. If unset: uses `var.workers_group_defaults[asg_desired_capacity]`
+    max_capacity              = 0            # Max number of workers. If unset: uses `var.workers_group_defaults[asg_max_size]`
+    min_capacity              = 0            # Min number of workers. If unset: uses `var.workers_group_defaults[asg_min_size]`
+    ami_type                  = ""           # AMI type. See Terraform docs. If unset: falls back to provider default behavior
+    disk_size                 = 0            # Workers' disk size. If unset: falls back to provider default behavior
+    instance_type             = ""           # Workers' instance type. If unset: falls back to provider default behavior
+    k8s_labels                = { key = "" } # Map of Kubernetes labels. If unset: no extra labels set
+    ami_release_version       = ""           # AMI version of workers. If unset: falls back to provider default behavior
+    key_name                  = ""           # Key name for workers. If unset: key_name is not used and remote management access disabled
+    source_security_group_ids = [""]         # List of source security groups for remote access to workers. If unset and key_name is specified: THE REMOTE ACCESS PORT WILL BE OPENED TO THE WORLD
+    additional_tags           = { key = "" } # Additional tags to apply to node_group. If unset: only `var.tags` applied
   }
+}
+
+variable "node_groups" {
+  description = "Map of maps of `eks_node_groups` to create. See `node_groups_defaults` for valid keys and types."
+  type        = any
+  default     = {}
 }

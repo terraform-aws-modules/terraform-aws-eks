@@ -92,6 +92,11 @@ module "eks" {
 
   vpc_id = module.vpc.vpc_id
 
+  node_groups_defaults = {
+    ami_type  = "AL2_x86_64"
+    disk_size = 50
+  }
+
   node_groups = {
     example = {
       desired_capacity = 1

@@ -13,5 +13,6 @@ module "node_groups" {
   permissions_boundary             = var.permissions_boundary
   iam_path                         = var.iam_path
   tags                             = var.tags
+  node_groups_defaults             = var.node_groups_defaults
   node_groups                      = var.node_groups
 }
