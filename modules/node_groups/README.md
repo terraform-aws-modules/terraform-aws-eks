@@ -17,10 +17,11 @@ Helper submodule to create and manage resources related to `eks_node_groups`.
 | iam\_path | If provided, all IAM roles will be created on this path. | string | n/a | yes |
 | manage\_worker\_autoscaling\_policy | Whether to let the module manage the cluster autoscaling iam policy. | bool | n/a | yes |
 | manage\_worker\_iam\_resources | Whether to let the module manage worker IAM resources. If set to false, iam_instance_profile_name must be specified for workers. | bool | n/a | yes |
-| node\_groups | map of maps of node groups to create. See default for valid keys and type. See source for extra comments | any | `{ "example_ng": [ { "additional_tags": [ { "key": "" } ], "ami_release_version": "", "ami_type": "", "desired_capacity": 0, "iam_role_arn": "", "instance_type": "", "k8s_labels": [ { "key": "" } ], "key_name": "", "max_capacity": 0, "min_capacity": 0, "root_volume_size": 0, "source_security_group_ids": [ "" ], "subnets": [ "" ] } ] }` | no |
+| node\_groups | Map of maps of `eks_node_groups` to create. See `node_groups_defaults` for valid keys and types. | any | `{}` | no |
+| node\_groups\_defaults | map of maps of node groups to create. See default for valid keys and type. See source for extra comments | any | `{ "additional_tags": [ { "key": "" } ], "ami_release_version": "", "ami_type": "", "desired_capacity": 0, "disk_size": 0, "iam_role_arn": "", "instance_type": "", "k8s_labels": [ { "key": "" } ], "key_name": "", "max_capacity": 0, "min_capacity": 0, "source_security_group_ids": [ "" ], "subnets": [ "" ] }` | no |
 | permissions\_boundary | If provided, all IAM roles will be created with this permissions boundary attached. | string | n/a | yes |
 | role\_name | Custom name for IAM role. Otherwise one will be generated | string | n/a | yes |
-| tags | A map of trags to add to all resources | map(string) | n/a | yes |
+| tags | A map of tags to add to all resources | map(string) | n/a | yes |
 | worker\_autoscaling\_policy\_arn | ARN of the worker autoscaling policy. | string | n/a | yes |
 | workers\_additional\_policies | Additional policies to be added to workers | list(string) | n/a | yes |
 | workers\_group\_defaults | Workers group defaults from parent | any | n/a | yes |
