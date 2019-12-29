@@ -11,7 +11,7 @@ data "aws_iam_policy_document" "assume_role_policy" {
 
 resource "aws_iam_role" "node_groups" {
   count                 = local.create_iam ? 1 : 0
-  name_prefix           = var.role_name != "" ? null : "${var.cluster_name}-managed-node-groups-"
+  name_prefix           = var.role_name != "" ? null : substr("${var.cluster_name}-node-groups-", 0, 32)
   name                  = var.role_name != "" ? var.role_name : null
   assume_role_policy    = data.aws_iam_policy_document.assume_role_policy.json
   permissions_boundary  = var.permissions_boundary
