@@ -77,10 +77,10 @@ variable "node_groups_defaults" {
     min_capacity              = 0            # Min number of workers. If unset: uses `var.workers_group_defaults[asg_min_size]`
     ami_type                  = ""           # AMI type. See Terraform docs. If unset: falls back to provider default behavior
     disk_size                 = 0            # Workers' disk size. If unset: falls back to provider default behavior
-    instance_type             = ""           # Workers' instance type. If unset: falls back to provider default behavior
+    instance_type             = ""           # Workers' instance type. If unset: uses `var.workers_group_defaults[instance_type]`
     k8s_labels                = { key = "" } # Map of Kubernetes labels. If unset: no extra labels set
     ami_release_version       = ""           # AMI version of workers. If unset: falls back to provider default behavior
-    key_name                  = ""           # Key name for workers. If unset: key_name is not used and remote management access disabled
+    key_name                  = ""           # Key name for workers. Set to empty string to disable remote access. If unset: uses `var.workers_group_defaults[key_name]`
     source_security_group_ids = [""]         # List of source security groups for remote access to workers. If unset and key_name is specified: THE REMOTE ACCESS PORT WILL BE OPENED TO THE WORLD
     additional_tags           = { key = "" } # Additional tags to apply to node_group. If unset: only `var.tags` applied
   }
