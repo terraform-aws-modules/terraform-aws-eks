@@ -48,6 +48,11 @@ output "cluster_oidc_issuer_url" {
   value       = flatten(concat(aws_eks_cluster.this[*].identity[*].oidc.0.issuer, [""]))[0]
 }
 
+output "cluster_oidc_connect_provider_arn" {
+  description = "The ARN of the IAM OpenID Connect provider"
+  value       = flatten(concat(aws_iam_openid_connect_provider.oidc_provider[*].arn, [""]))[0]
+}
+
 output "cloudwatch_log_group_name" {
   description = "Name of cloudwatch log group created"
   value       = aws_cloudwatch_log_group.this[*].name

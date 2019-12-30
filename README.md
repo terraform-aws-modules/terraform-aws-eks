@@ -54,7 +54,7 @@ module "my-cluster" {
 ```
 ## Conditional creation
 
-Sometimes you need to have a way to create EKS resources conditionally but Terraform does not allow to use `count` inside `module` block, so the solution is to specify argument `create_eks`. 
+Sometimes you need to have a way to create EKS resources conditionally but Terraform does not allow to use `count` inside `module` block, so the solution is to specify argument `create_eks`.
 
 Using this feature _and_ having `manage_aws_auth=true` (the default) requires to set up the kubernetes provider in a way that allows the data sources to not exist.
 
@@ -212,6 +212,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster\_iam\_role\_arn | IAM role ARN of the EKS cluster. |
 | cluster\_iam\_role\_name | IAM role name of the EKS cluster. |
 | cluster\_id | The name/id of the EKS cluster. |
+| cluster\_oidc\_connect\_provider\_arn | The ARN of the IAM OpenID Connect provider |
 | cluster\_oidc\_issuer\_url | The URL on the EKS cluster OIDC Issuer |
 | cluster\_security\_group\_id | Security group ID attached to the EKS cluster. |
 | cluster\_version | The Kubernetes server version for the EKS cluster. |
