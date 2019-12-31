@@ -49,3 +49,111 @@ resource "random_string" "suffix" {
   length  = 8
   special = false
 }
+
+resource "kubernetes_namespace" "datascience_namespace" {
+  depends_on = [aws_eks_cluster.eks]
+  metadata {
+    name = "datascience"
+  }
+}
+
+resource "kubernetes_role_binding" "datascience_dev_admin_rolebinding" {
+  depends_on = [aws_eks_cluster.eks, kubernetes_namespace.datascience_namespace]
+
+  metadata {
+    name      = "allow-dev-admins"
+    namespace = "datascience"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "admin"
+  }
+  subject {
+    kind      = "Group"
+    name      = "dev-admin"
+    api_group = "rbac.authorization.k8s.io"
+  }
+}
+
+resource "kubernetes_namespace" "monitoring_namespace" {
+  depends_on = [aws_eks_cluster.eks]
+  metadata {
+    name = "monitoring"
+  }
+}
+
+resource "kubernetes_priority_class" "monitoring_critical_priority_class" {
+  depends_on = ["kubernetes_namespace.monitoring_namespace"]
+  metadata {
+    name = "log-node-critical"
+  }
+
+  value = 1000000
+  globalDefault = false
+  description = "These pods must be running to support logging"
+}
+
+resource "kubernetes_role" "monitoring_port_forwarding_role" {
+  depends_on = ["kubernetes_namespace.monitoring_namespace"]
+  metadata {
+    name = "allow-port-forwarding"
+    namespace = "monitoring"
+  }
+
+  rule {
+    api_groups     = [""]
+    resources      = ["pods", "pods/log", "pods/portforward"]
+    verbs          = ["get", "list", "watch"]
+  }
+}
+
+resource "kubernetes_role_binding" "dev_admin_rolebinding" {
+  count = "${var.environment == "production" ? 0 : 1 }"
+  depends_on = ["kubernetes_namespace.monitoring_namespace"]
+  metadata {
+    name      = "terraform-example"
+    namespace = "default"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "Role"
+    name      = "admin"
+  }
+  subject {
+    kind      = "User"
+    name      = "admin"
+    api_group = "rbac.authorization.k8s.io"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "default"
+    namespace = "kube-system"
+  }
+  subject {
+    kind      = "Group"
+    name      = "system:masters"
+    api_group = "rbac.authorization.k8s.io"
+  }
+}
+
+resource "k8s_manifest" "dev_admin_rolebinding" {
+
+  depends_on = ["k8s_manifest.monitoring_namespace"]
+
+  content = <<EOF
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: allow-dev-admins
+  namespace: monitoring
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: allow-port-forwarding
+subjects:
+- kind: Group
+  name: dev-admin
+  apiGroup: rbac.authorization.k8s.io
+EOF
+}

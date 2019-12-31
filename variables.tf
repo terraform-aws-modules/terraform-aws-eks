@@ -1,4 +1,16 @@
 
+variable "promotion_registry" {
+    description = "Promotion Docker Registry (ECR) to pull image from"
+    type = string
+    default = "077588356682.dkr.ecr.us-east-1.amazonaws.com"
+}
+
+variable "private_proxy" {
+    description = "private_proxy hostname. Used for k8s dashboard ingress"
+    type = string
+    default = ""
+}
+
 variable "aws_profile" {
   description = "AWS Profile to use for provider"
   type = string
