@@ -23,6 +23,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Fix aws-auth config map for managed node groups (by @wbertelsen)
 - Added support to create IAM OpenID Connect Identity Provider to enable EKS Identity Roles for Service Accounts (IRSA). (by @alaa)
 - Adding node group iam role arns to outputs. (by @mukgupta)
+- Added the OIDC Provider ARN to outputs. (by @eytanhanig)
 - **Breaking:** Change logic of security group whitelisting. Will always whitelist worker security group on control plane security group either provide one or create new one. See Important notes below for upgrade notes (by @ryanooi)
 
 #### Important notes

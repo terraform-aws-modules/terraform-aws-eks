@@ -219,6 +219,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | kubeconfig | kubectl config file contents for this EKS cluster. |
 | kubeconfig\_filename | The filename of the generated kubectl config. |
 | node\_groups\_iam\_role\_arns | IAM role ARNs for EKS node groups |
+| oidc\_provider\_arn | The ARN of the OIDC Provider if `enable_irsa = true`. |
 | worker\_autoscaling\_policy\_arn | ARN of the worker autoscaling IAM policy if `manage_worker_autoscaling_policy = true` |
 | worker\_autoscaling\_policy\_name | Name of the worker autoscaling IAM policy if `manage_worker_autoscaling_policy = true` |
 | worker\_iam\_instance\_profile\_arns | default IAM instance profile ARN for EKS worker groups |
