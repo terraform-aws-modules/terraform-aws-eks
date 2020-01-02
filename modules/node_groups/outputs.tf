@@ -3,7 +3,12 @@ output "iam_role_arns" {
   value       = { for k, v in aws_eks_node_group.workers : k => v.node_role_arn }
 }
 
-output "aws_auth_snippet" {
-  description = "Snippet for use in aws_auth ConfigMap"
-  value       = distinct([for k, v in data.template_file.node_group_arns : v.rendered])
+output "aws_auth_roles" {
+  description = "Roles for use in aws_auth ConfigMap"
+  value = [
+    for k, v in local.node_groups_expanded : {
+      worker_role_arn = lookup(v, "iam_role_arn", var.default_iam_role_arn)
+      platform        = "linux"
+    }
+  ]
 }

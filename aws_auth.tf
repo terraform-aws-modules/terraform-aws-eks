@@ -42,6 +42,13 @@ data "template_file" "worker_role_arns" {
   }
 }
 
+data "template_file" "node_group_arns" {
+  count    = var.create_eks ? length(module.node_groups.aws_auth_roles) : 0
+  template = file("${path.module}/templates/worker-role.tpl")
+
+  vars = module.node_groups.aws_auth_roles[count.index]
+}
+
 resource "kubernetes_config_map" "aws_auth" {
   count = var.create_eks && var.manage_aws_auth ? 1 : 0
 
@@ -52,7 +59,7 @@ resource "kubernetes_config_map" "aws_auth" {
 
   data = {
     mapRoles = <<EOF
-${join("", distinct(concat(data.template_file.launch_template_worker_role_arns.*.rendered, data.template_file.worker_role_arns.*.rendered, module.node_groups.aws_auth_snippet
+${join("", distinct(concat(data.template_file.launch_template_worker_role_arns.*.rendered, data.template_file.worker_role_arns.*.rendered, data.template_file.node_group_arns.*.rendered
 )))}
 %{if length(var.map_roles) != 0}${yamlencode(var.map_roles)}%{endif}
     EOF
