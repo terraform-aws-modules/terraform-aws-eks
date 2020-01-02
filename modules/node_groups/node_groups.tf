@@ -16,7 +16,6 @@ resource "aws_eks_node_group" "workers" {
   ami_type        = lookup(random_pet.node_groups[each.key].keepers, "ami_type", null)
   disk_size       = lookup(random_pet.node_groups[each.key].keepers, "disk_size", null)
   instance_types  = [random_pet.node_groups[each.key].keepers.instance_type]
-  labels          = lookup(local.node_groups_expanded[each.key], "k8s_labels", null)
   release_version = lookup(local.node_groups_expanded[each.key], "ami_release_version", null)
 
   dynamic "remote_access" {
@@ -33,9 +32,15 @@ resource "aws_eks_node_group" "workers" {
 
   version = var.cluster_version
 
+  labels = merge(
+    lookup(var.node_groups_defaults, "k8s_labels", {}),
+    lookup(var.node_groups[each.key], "k8s_labels", {})
+  )
+
   tags = merge(
     var.tags,
-    lookup(local.node_groups_expanded[each.key], "additional_tags", {}),
+    lookup(var.node_groups_defaults, "additional_tags", {}),
+    lookup(var.node_groups[each.key], "additional_tags", {}),
   )
 
   lifecycle {
