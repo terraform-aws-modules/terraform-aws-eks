@@ -29,6 +29,6 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | Name | Description |
 |------|-------------|
 | aws\_auth\_roles | Roles for use in aws_auth ConfigMap |
-| iam\_role\_arns | IAM role ARNs for EKS node groups. Map, keyed by var.node_groups keys |
+| node\_groups | Outputs from EKS node groups. Map of maps, keyed by var.node_groups keys |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
