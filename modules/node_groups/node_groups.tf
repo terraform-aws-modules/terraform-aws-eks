@@ -15,18 +15,15 @@ resource "aws_eks_node_group" "workers" {
 
   ami_type        = lookup(local.node_groups_expanded[each.key], "ami_type", null)
   disk_size       = lookup(local.node_groups_expanded[each.key], "disk_size", null)
-  instance_types  = [lookup(local.node_groups_expanded[each.key], "instance_type", var.workers_group_defaults["instance_type"])]
+  instance_types  = [random_pet.node_groups[each.key].keepers.instance_type]
   labels          = lookup(local.node_groups_expanded[each.key], "k8s_labels", null)
   release_version = lookup(local.node_groups_expanded[each.key], "ami_release_version", null)
 
   dynamic "remote_access" {
-    for_each = [
-      for node_group in [local.node_groups_expanded[each.key]] : {
-        ec2_ssh_key               = lookup(node_group, "key_name", var.workers_group_defaults["key_name"])
-        source_security_group_ids = lookup(node_group, "source_security_group_ids", [])
-      }
-      if lookup(node_group, "key_name", var.workers_group_defaults["key_name"]) != ""
-    ]
+    for_each = random_pet.node_groups[each.key].keepers.ec2_ssh_key != "" ? [{
+      ec2_ssh_key               = random_pet.node_groups[each.key].keepers.ec2_ssh_key
+      source_security_group_ids = lookup(local.node_groups_expanded[each.key], "source_security_group_ids", [])
+    }] : []
 
     content {
       ec2_ssh_key               = remote_access.value["ec2_ssh_key"]
