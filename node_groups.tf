@@ -1,6 +1,8 @@
 # Hack to ensure ordering of resource creation. Do not create node_groups
 # before other resources are ready. Removes race conditions
 data "null_data_source" "node_groups" {
+  count = var.create_eks ? 1 : 0
+
   inputs = {
     cluster_name = var.cluster_name
 
@@ -18,7 +20,7 @@ data "null_data_source" "node_groups" {
 module "node_groups" {
   source                 = "./modules/node_groups"
   create_eks             = var.create_eks
-  cluster_name           = data.null_data_source.node_groups.outputs["cluster_name"]
+  cluster_name           = coalescelist(data.null_data_source.node_groups[*].outputs["cluster_name"], [""])[0]
   cluster_version        = coalescelist(aws_eks_cluster.this[*].version, [""])[0]
   default_iam_role_arn   = coalescelist(aws_iam_role.workers[*].arn, [""])[0]
   workers_group_defaults = local.workers_group_defaults
