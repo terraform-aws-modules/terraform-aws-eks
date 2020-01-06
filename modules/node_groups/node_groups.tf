@@ -30,7 +30,7 @@ resource "aws_eks_node_group" "workers" {
     }
   }
 
-  version = var.cluster_version
+  version = lookup(local.node_groups_expanded[each.key], "version", null)
 
   labels = merge(
     lookup(var.node_groups_defaults, "k8s_labels", {}),

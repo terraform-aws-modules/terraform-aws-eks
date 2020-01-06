@@ -9,11 +9,6 @@ variable "cluster_name" {
   type        = string
 }
 
-variable "cluster_version" {
-  description = "Kubernetes version of parent cluster"
-  type        = string
-}
-
 variable "default_iam_role_arn" {
   description = "ARN of the default IAM worker role to use if one is not specified in the node_groups"
   type        = string

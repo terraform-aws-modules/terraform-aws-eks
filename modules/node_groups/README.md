@@ -30,6 +30,7 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | min\_capacity | Min number of workers | number | `var.workers_group_defaults[asg_min_size]` |
 | source\_security\_group\_ids | Source security groups for remote access to workers | list(string) | If key\_name is specified: THE REMOTE ACCESS WILL BE OPENED TO THE WORLD |
 | subnets | Subnets to contain workers | list(string) | `var.workers_group_defaults[subnets]` |
+| version | Kubernetes version | string | Provider default behavior |
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
@@ -37,7 +38,6 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | cluster\_name | Name of parent cluster | string | n/a | yes |
-| cluster\_version | Kubernetes version of parent cluster | string | n/a | yes |
 | create\_eks | Controls if EKS resources should be created (it affects almost all resources) | bool | `"true"` | no |
 | default\_iam\_role\_arn | ARN of the default IAM worker role to use if one is not specified in the node_groups | string | n/a | yes |
 | node\_groups | Map of maps of `eks_node_groups` to create. See "`node_groups` and `node_groups_defaults` keys" section in README.md for more details | any | `{}` | no |
