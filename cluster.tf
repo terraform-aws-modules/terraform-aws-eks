@@ -31,6 +31,11 @@ resource "aws_eks_cluster" "this" {
     aws_iam_role_policy_attachment.cluster_AmazonEKSServicePolicy,
     aws_cloudwatch_log_group.this
   ]
+  provisioner "local-exec" {
+    command = <<EOT
+    until curl -k ${aws_eks_cluster.this[0].endpoint}/healthz >/dev/null; do sleep 4; done
+  EOT
+  }
 }
 
 resource "aws_security_group" "cluster" {
