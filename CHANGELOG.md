@@ -9,6 +9,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v7.0.0...HEAD)] - 2019-??-??]
 
+- Wait for cluster to respond to kubectl before applying auth map_config (@shaunc)
 - Added flag `create_eks` to conditionally create resources (by @syst0m / @tbeijen)
 - Support for AWS EKS Managed Node Groups. (by @wmorgan6796)
 - Added a if check on `aws-auth` configmap when `map_roles` is empty (by @shanmugakarna)
