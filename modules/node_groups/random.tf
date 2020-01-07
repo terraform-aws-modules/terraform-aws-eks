@@ -7,15 +7,15 @@ resource "random_pet" "node_groups" {
   keepers = {
     ami_type      = lookup(each.value, "ami_type", null)
     disk_size     = lookup(each.value, "disk_size", null)
-    instance_type = lookup(each.value, "instance_type", var.workers_group_defaults["instance_type"])
-    node_role_arn = lookup(each.value, "iam_role_arn", var.default_iam_role_arn)
+    instance_type = each.value["instance_type"]
+    iam_role_arn  = each.value["iam_role_arn"]
 
-    ec2_ssh_key = lookup(each.value, "key_name", var.workers_group_defaults["key_name"])
+    key_name = each.value["key_name"]
 
     source_security_group_ids = join("|", compact(
       lookup(each.value, "source_security_group_ids", [])
     ))
-    subnet_ids      = join("|", lookup(each.value, "subnets", var.workers_group_defaults["subnets"]))
+    subnet_ids      = join("|", each.value["subnets"])
     node_group_name = join("-", [var.cluster_name, each.key])
   }
 }

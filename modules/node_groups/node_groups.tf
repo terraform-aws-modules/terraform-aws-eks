@@ -1,27 +1,27 @@
 resource "aws_eks_node_group" "workers" {
-  for_each = random_pet.node_groups
+  for_each = local.node_groups_expanded
 
-  node_group_name = join("-", [var.cluster_name, each.key, each.value.id])
+  node_group_name = join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id])
 
   cluster_name  = var.cluster_name
-  node_role_arn = each.value.keepers.node_role_arn
-  subnet_ids    = split("|", each.value.keepers.subnet_ids)
+  node_role_arn = each.value["iam_role_arn"]
+  subnet_ids    = each.value["subnets"]
 
   scaling_config {
-    desired_size = lookup(local.node_groups_expanded[each.key], "desired_capacity", var.workers_group_defaults["asg_desired_capacity"])
-    max_size     = lookup(local.node_groups_expanded[each.key], "max_capacity", var.workers_group_defaults["asg_max_size"])
-    min_size     = lookup(local.node_groups_expanded[each.key], "min_capacity", var.workers_group_defaults["asg_min_size"])
+    desired_size = each.value["desired_capacity"]
+    max_size     = each.value["max_capacity"]
+    min_size     = each.value["min_capacity"]
   }
 
-  ami_type        = lookup(each.value.keepers, "ami_type", null)
-  disk_size       = lookup(each.value.keepers, "disk_size", null)
-  instance_types  = [each.value.keepers.instance_type]
-  release_version = lookup(local.node_groups_expanded[each.key], "ami_release_version", null)
+  ami_type        = lookup(each.value, "ami_type", null)
+  disk_size       = lookup(each.value, "disk_size", null)
+  instance_types  = [each.value["instance_type"]]
+  release_version = lookup(each.value, "ami_release_version", null)
 
   dynamic "remote_access" {
-    for_each = each.value.keepers.ec2_ssh_key != "" ? [{
-      ec2_ssh_key               = each.value.keepers.ec2_ssh_key
-      source_security_group_ids = compact(split("|", each.value.keepers.source_security_group_ids))
+    for_each = each.value["key_name"] != "" ? [{
+      ec2_ssh_key               = each.value["key_name"]
+      source_security_group_ids = lookup(each.value, "source_security_group_ids", [])
     }] : []
 
     content {
@@ -30,7 +30,7 @@ resource "aws_eks_node_group" "workers" {
     }
   }
 
-  version = lookup(local.node_groups_expanded[each.key], "version", null)
+  version = lookup(each.value, "version", null)
 
   labels = merge(
     lookup(var.node_groups_defaults, "k8s_labels", {}),
