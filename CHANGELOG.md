@@ -10,6 +10,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v7.0.0...HEAD)] - 2019-??-??]
 
 - Write your awesome change here (by @you)
+- Fix index reference on destroy for output `oidc_provider_arn` (@stevie-)
 - Add support for restricting access to the public API endpoint (@sidprak)
 
 # History
