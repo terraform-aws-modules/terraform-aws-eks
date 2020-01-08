@@ -65,7 +65,7 @@ output "kubeconfig_filename" {
 
 output "oidc_provider_arn" {
   description = "The ARN of the OIDC Provider if `enable_irsa = true`."
-  value       = var.enable_irsa ? aws_iam_openid_connect_provider.oidc_provider[0].arn : null
+  value       = var.enable_irsa ? concat(aws_iam_openid_connect_provider.oidc_provider[*].arn, [""])[0] : null
 }
 
 output "workers_asg_arns" {
