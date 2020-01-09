@@ -43,13 +43,10 @@ data "template_file" "worker_role_arns" {
 }
 
 data "template_file" "node_group_arns" {
-  count    = var.create_eks ? local.worker_group_managed_node_group_count : 0
+  count    = var.create_eks ? length(module.node_groups.aws_auth_roles) : 0
   template = file("${path.module}/templates/worker-role.tpl")
 
-  vars = {
-    worker_role_arn = lookup(var.node_groups[count.index], "iam_role_arn", aws_iam_role.node_groups[0].arn)
-    platform        = "linux" # Hardcoded because the EKS API currently only supports linux for managed node groups
-  }
+  vars = module.node_groups.aws_auth_roles[count.index]
 }
 
 resource "kubernetes_config_map" "aws_auth" {

@@ -181,7 +181,8 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | map\_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | list(string) | `[]` | no |
 | map\_roles | Additional IAM roles to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | object | `[]` | no |
 | map\_users | Additional IAM users to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | object | `[]` | no |
-| node\_groups | A list of maps defining node group configurations to be defined using AWS EKS Managed Node Groups. See workers_group_defaults for valid keys. | any | `[]` | no |
+| node\_groups | Map of map of node groups to create. See `node_groups` module's documentation for more details | any | `{}` | no |
+| node\_groups\_defaults | Map of values to be applied to all node groups. See `node_groups` module's documentaton for more details | any | `{}` | no |
 | permissions\_boundary | If provided, all IAM roles will be created with this permissions boundary attached. | string | `"null"` | no |
 | subnets | A list of subnets to place the EKS cluster and workers within. | list(string) | n/a | yes |
 | tags | A map of tags to add to all resources. | map(string) | `{}` | no |
@@ -218,7 +219,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | config\_map\_aws\_auth | A kubernetes configuration to authenticate to this EKS cluster. |
 | kubeconfig | kubectl config file contents for this EKS cluster. |
 | kubeconfig\_filename | The filename of the generated kubectl config. |
-| node\_groups\_iam\_role\_arns | IAM role ARNs for EKS node groups |
+| node\_groups | Outputs from EKS node groups. Map of maps, keyed by var.node_groups keys |
 | oidc\_provider\_arn | The ARN of the OIDC Provider if `enable_irsa = true`. |
 | worker\_autoscaling\_policy\_arn | ARN of the worker autoscaling IAM policy if `manage_worker_autoscaling_policy = true` |
 | worker\_autoscaling\_policy\_name | Name of the worker autoscaling IAM policy if `manage_worker_autoscaling_policy = true` |
