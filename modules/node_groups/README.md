@@ -17,6 +17,7 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 
 | Name | Description | Type | If unset |
 |------|-------------|:----:|:-----:|
+| name | Node group name | string | Node group index key |
 | additional\_tags | Additional tags to apply to node group | map(string) | Only `var.tags` applied |
 | ami\_release\_version | AMI version of workers | string | Provider default behavior |
 | ami\_type | AMI Type. See Terraform or AWS docs | string | Provider default behavior |

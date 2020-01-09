@@ -10,6 +10,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...HEAD)] - 2019-12-11]
 
 - Write your awesome change here (by @you)
+- Added lookup `name` field on node_groups (by @jinh574)
 
 # History
 
