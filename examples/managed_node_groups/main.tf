@@ -113,7 +113,6 @@ module "eks" {
         ExtraTag = "example"
       }
     }
-    defaults = {}
   }
 
   map_roles    = var.map_roles

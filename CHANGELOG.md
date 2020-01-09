@@ -7,13 +7,20 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v7.0.0...HEAD)] - 2019-??-??]
+## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...HEAD)] - 2019-12-11]
 
+- Write your awesome change here (by @you)
+
+# History
+
+## [[v8.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...v7.0.1)] - 2019-12-11]
+
+- **Breaking:** Change logic of security group whitelisting. Will always whitelist worker security group on control plane security group either provide one or create new one. See Important notes below for upgrade notes (by @ryanooi)
+- **Breaking:** Configure the aws-auth configmap using the terraform kubernetes providers. See Important notes below for upgrade notes (by @sdehaes)
 - Wait for cluster to respond to kubectl before applying auth map_config (@shaunc)
 - Added flag `create_eks` to conditionally create resources (by @syst0m / @tbeijen)
 - Support for AWS EKS Managed Node Groups. (by @wmorgan6796)
 - Added a if check on `aws-auth` configmap when `map_roles` is empty (by @shanmugakarna)
-- **Breaking:** Configure the aws-auth configmap using the terraform kubernetes providers. See Important notes below for upgrade notes (by @sdehaes)
 - Removed no longer used variable `write_aws_auth_config` (by @tbeijen)
 - Exit with error code when `aws-auth` configmap is unable to be updated (by @knittingdev)
 - Fix deprecated interpolation-only expression (by @angelabad)
@@ -25,7 +32,6 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Added support to create IAM OpenID Connect Identity Provider to enable EKS Identity Roles for Service Accounts (IRSA). (by @alaa)
 - Adding node group iam role arns to outputs. (by @mukgupta)
 - Added the OIDC Provider ARN to outputs. (by @eytanhanig)
-- **Breaking:** Change logic of security group whitelisting. Will always whitelist worker security group on control plane security group either provide one or create new one. See Important notes below for upgrade notes (by @ryanooi)
 - Move `eks_node_group` resources to a submodule (by @dpiddockcmp)
 - Add complex output `node_groups` (by @TBeijen)
 
