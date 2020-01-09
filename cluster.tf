@@ -33,7 +33,7 @@ resource "aws_eks_cluster" "this" {
   ]
   provisioner "local-exec" {
     command = <<EOT
-    until curl -k ${aws_eks_cluster.this[0].endpoint}/healthz >/dev/null; do sleep 4; done
+    until curl -k -s ${aws_eks_cluster.this[0].endpoint}/healthz >/dev/null; do sleep 4; done
   EOT
   }
 }
