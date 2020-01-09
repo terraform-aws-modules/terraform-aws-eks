@@ -163,10 +163,7 @@ output "worker_autoscaling_policy_arn" {
   value       = concat(aws_iam_policy.worker_autoscaling[*].arn, [""])[0]
 }
 
-output "node_groups_iam_role_arns" {
-  description = "IAM role ARNs for EKS node groups"
-  value = {
-    for node_group in aws_eks_node_group.workers :
-    node_group.node_group_name => node_group.node_role_arn
-  }
+output "node_groups" {
+  description = "Outputs from EKS node groups. Map of maps, keyed by var.node_groups keys"
+  value       = module.node_groups.node_groups
 }

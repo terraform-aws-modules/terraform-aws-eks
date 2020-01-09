@@ -92,27 +92,29 @@ module "eks" {
 
   vpc_id = module.vpc.vpc_id
 
-  node_groups = [
-    {
-      name = "example"
+  node_groups_defaults = {
+    ami_type  = "AL2_x86_64"
+    disk_size = 50
+  }
 
-      node_group_desired_capacity = 1
-      node_group_max_capacity     = 10
-      node_group_min_capacity     = 1
+  node_groups = {
+    example = {
+      desired_capacity = 1
+      max_capacity     = 10
+      min_capacity     = 1
 
       instance_type = "m5.large"
-      node_group_k8s_labels = {
+      k8s_labels = {
         Environment = "test"
         GithubRepo  = "terraform-aws-eks"
         GithubOrg   = "terraform-aws-modules"
       }
-      node_group_additional_tags = {
-        Environment = "test"
-        GithubRepo  = "terraform-aws-eks"
-        GithubOrg   = "terraform-aws-modules"
+      additional_tags = {
+        ExtraTag = "example"
       }
     }
-  ]
+    defaults = {}
+  }
 
   map_roles    = var.map_roles
   map_users    = var.map_users

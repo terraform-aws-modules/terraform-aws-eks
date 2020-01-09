@@ -282,10 +282,16 @@ variable "create_eks" {
   default     = true
 }
 
-variable "node_groups" {
-  description = "A list of maps defining node group configurations to be defined using AWS EKS Managed Node Groups. See workers_group_defaults for valid keys."
+variable "node_groups_defaults" {
+  description = "Map of values to be applied to all node groups. See `node_groups` module's documentaton for more details"
   type        = any
-  default     = []
+  default     = {}
+}
+
+variable "node_groups" {
+  description = "Map of map of node groups to create. See `node_groups` module's documentation for more details"
+  type        = any
+  default     = {}
 }
 
 variable "enable_irsa" {
