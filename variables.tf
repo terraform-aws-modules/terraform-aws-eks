@@ -234,6 +234,12 @@ variable "cluster_endpoint_public_access" {
   default     = true
 }
 
+variable "cluster_endpoint_public_access_cidrs" {
+  description = "List of CIDR blocks which can access the Amazon EKS public API server endpoint."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
 variable "manage_cluster_iam_resources" {
   description = "Whether to let the module manage cluster IAM resources. If set to false, cluster_iam_role_name must be specified."
   type        = bool
