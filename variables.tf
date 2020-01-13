@@ -234,6 +234,12 @@ variable "cluster_endpoint_public_access" {
   default     = true
 }
 
+variable "cluster_endpoint_public_access_cidrs" {
+  description = "List of CIDR blocks which can access the Amazon EKS public API server endpoint."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
 variable "manage_cluster_iam_resources" {
   description = "Whether to let the module manage cluster IAM resources. If set to false, cluster_iam_role_name must be specified."
   type        = bool
@@ -282,10 +288,16 @@ variable "create_eks" {
   default     = true
 }
 
-variable "node_groups" {
-  description = "A list of maps defining node group configurations to be defined using AWS EKS Managed Node Groups. See workers_group_defaults for valid keys."
+variable "node_groups_defaults" {
+  description = "Map of values to be applied to all node groups. See `node_groups` module's documentaton for more details"
   type        = any
-  default     = []
+  default     = {}
+}
+
+variable "node_groups" {
+  description = "Map of map of node groups to create. See `node_groups` module's documentation for more details"
+  type        = any
+  default     = {}
 }
 
 variable "enable_irsa" {
