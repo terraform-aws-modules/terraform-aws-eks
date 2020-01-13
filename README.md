@@ -164,6 +164,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster_name | Name of the EKS cluster. Also used as a prefix in names of related resources. | string | n/a | yes |
 | cluster_security_group_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the workers | string | `""` | no |
 | cluster_version | Kubernetes version to use for the EKS cluster. | string | `"1.14"` | no |
+| config_file_permissions | File mode of the Kubectl config file. For security concerns this defaults to 0600. | string | `"0600"` | no |
 | config_output_path | Where to save the Kubectl config file (if `write_kubeconfig = true`). Assumed to be a directory if the value ends with a forward slash `/`. | string | `"./"` | no |
 | create_eks | Controls if EKS resources should be created (it affects almost all resources) | bool | `"true"` | no |
 | eks_oidc_root_ca_thumbprint | Thumbprint of Root CA for EKS OIDC, Valid until 2037 | string | `"9e99a48a9960b14926bb7f3b02e22da2b0ab7280"` | no |

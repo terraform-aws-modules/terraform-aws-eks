@@ -37,6 +37,12 @@ variable "config_output_path" {
   default     = "./"
 }
 
+variable "config_file_permissions" {
+  description = "File mode of the Kubectl config file. For security concerns this defaults to 0600."
+  type        = string
+  default     = "0600"
+}
+
 variable "write_kubeconfig" {
   description = "Whether to write a Kubectl config file containing the cluster configuration. Saved to `config_output_path`."
   type        = bool

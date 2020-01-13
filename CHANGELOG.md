@@ -11,6 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 - Write your awesome change here (by @you)
 - Add support for restricting access to the public API endpoint (@sidprak)
+- Add support to adjust permissions of kubeconfig file (@szczad)
 
 # History
 
