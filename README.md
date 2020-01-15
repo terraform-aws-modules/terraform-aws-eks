@@ -22,11 +22,11 @@ A full example leveraging other community modules is contained in the [examples/
 
 ```hcl
 data "aws_eks_cluster" "cluster" {
-  name = module.eks.cluster_id
+  name = module.my-cluster.cluster_id
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = module.eks.cluster_id
+  name = module.my-cluster.cluster_id
 }
 
 provider "kubernetes" {
