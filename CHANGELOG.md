@@ -7,14 +7,17 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...HEAD)] - 2019-12-11]
+## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.1.0...HEAD)] - 2019-12-11]
 
 - Write your awesome change here (by @you)
+
+# History
+
+## [[v8.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...v8.1.0)] - 2019-12-11]
+
 - Fix index reference on destroy for output `oidc_provider_arn` (@stevie-)
 - Add support for restricting access to the public API endpoint (@sidprak)
 - Add an `ignore_lifecycle` rule to prevent Terraform from scaling down ASG behind AWS EKS Managed Node Group (by @davidalger)
-
-# History
 
 ## [[v8.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...v7.0.1)] - 2019-12-11]
 
