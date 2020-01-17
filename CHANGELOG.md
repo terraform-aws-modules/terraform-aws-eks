@@ -12,6 +12,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Write your awesome change here (by @you)
 - Fix index reference on destroy for output `oidc_provider_arn` (@stevie-)
 - Add support for restricting access to the public API endpoint (@sidprak)
+- Add an `ignore_lifecycle` rule to prevent Terraform from scaling down ASG behind AWS EKS Managed Node Group (by @davidalger)
 
 # History
 
