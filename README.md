@@ -174,7 +174,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | kubeconfig_aws_authenticator_command_args | Default arguments passed to the authenticator command. Defaults to [token -i $cluster_name]. | list(string) | `[]` | no |
 | kubeconfig_aws_authenticator_env_variables | Environment variables that should be used when executing the authenticator. e.g. { AWS_PROFILE = "eks"}. | map(string) | `{}` | no |
 | kubeconfig_name | Override the default name used for items kubeconfig. | string | `""` | no |
-| local_exec_wait_for_cluster_op | Custom local-exec command to execute for determining if the eks cluster is healthy | <pre>object({<br>    wait_for_cluster_cmd                = string<br>    cluster_health_endpoint_placeholder = string<br>  })<br></pre> | <pre>{<br>  "cluster_health_endpoint_placeholder": "%CLUSTER_HEALTH_ENDPOINT%",<br>  "wait_for_cluster_cmd": "until curl -k -s %CLUSTER_HEALTH_ENDPOINT% \u003e/dev/null; do sleep 4; done"<br>}<br></pre> | no |
+| local_exec_wait_for_cluster_op | Custom local-exec command to execute for determining if the eks cluster is healthy | object | `{ "cluster_health_endpoint_placeholder": "%CLUSTER_HEALTH_ENDPOINT%", "wait_for_cluster_cmd": "until curl -k -s %CLUSTER_HEALTH_ENDPOINT% \u003e/dev/null; do sleep 4; done" }` | no |
 | manage_aws_auth | Whether to apply the aws-auth configmap file. | string | `"true"` | no |
 | manage_cluster_iam_resources | Whether to let the module manage cluster IAM resources. If set to false, cluster_iam_role_name must be specified. | bool | `"true"` | no |
 | manage_worker_autoscaling_policy | Whether to let the module manage the cluster autoscaling iam policy. | bool | `"true"` | no |
