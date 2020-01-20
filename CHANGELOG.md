@@ -13,10 +13,6 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 # History
 
-## [[v8.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.1.0...HEAD)] - 2020-01-19]
-   
-- Include ability to configure custom os-specific command for waiting until kube cluster is healthy (@sanjeevgiri)
-
 ## [[v8.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...v8.1.0)] - 2020-01-17]
 
 - Fix index reference on destroy for output `oidc_provider_arn` (@stevie-)
