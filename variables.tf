@@ -200,11 +200,11 @@ variable "cluster_delete_timeout" {
 
 variable "local_exec_wait_for_cluster_op" {
   type = object({
-    wait_for_cluster_cmd = string
+    wait_for_cluster_cmd                = string
     cluster_health_endpoint_placeholder = string
   })
   default = {
-    wait_for_cluster_cmd = "until curl -k -s %CLUSTER_HEALTH_ENDPOINT% >/dev/null; do sleep 4; done"
+    wait_for_cluster_cmd                = "until curl -k -s %CLUSTER_HEALTH_ENDPOINT% >/dev/null; do sleep 4; done"
     cluster_health_endpoint_placeholder = "%CLUSTER_HEALTH_ENDPOINT%"
   }
   description = "Custom local-exec command to execute for determining if the eks cluster is healthy"
