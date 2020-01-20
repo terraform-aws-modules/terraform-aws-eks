@@ -7,11 +7,15 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.1.0...HEAD)] - YYYY-MM-DD]
+## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.2.0...HEAD)] - YYYY-MM-DD]
 
 - Write your awesome change here (by @you)
 
 # History
+
+## [[v8.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.1.0...HEAD)] - 2020-01-19]
+   
+- Include ability to configure custom os-specific command for waiting until kube cluster is healthy (@sanjeevgiri)
 
 ## [[v8.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...v8.1.0)] - 2020-01-17]
 
