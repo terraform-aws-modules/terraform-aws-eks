@@ -9,7 +9,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.1.0...HEAD)] - YYYY-MM-DD]
 
-- Write your awesome change here (by @you)
+- Fix assume role policy on worker nodes for IRSA  (by @josh-stableprice)
 
 # History
 
