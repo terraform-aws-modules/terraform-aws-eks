@@ -7,7 +7,30 @@ locals {
   )
 }
 
+
+data "aws_iam_policy_document" "irsa_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    effect  = "Allow"
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_iam_openid_connect_provider.oidc_provider.url, "https://", "")}:sub"
+      values   = ["system:serviceaccount:kube-system:aws-node"]
+    }
+
+    principals {
+      identifiers = [
+        aws_iam_openid_connect_provider.oidc_provider.arn]
+      type        = "Federated"
+    }
+  }
+}
+
 data "aws_iam_policy_document" "workers_assume_role_policy" {
+
+  source_json = var.enable_irsa ? aws_iam_policy_document.irsa_assume_role_policy.json : null
+
   statement {
     sid = "EKSWorkerAssumeRole"
 
