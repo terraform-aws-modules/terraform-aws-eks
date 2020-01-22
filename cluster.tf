@@ -32,13 +32,18 @@ resource "aws_eks_cluster" "this" {
     aws_iam_role_policy_attachment.cluster_AmazonEKSServicePolicy,
     aws_cloudwatch_log_group.this
   ]
+}
+
+resource "null_resource" "wait_for_cluster" {
+  depends_on = [
+    aws_eks_cluster.this[0]
+  ]
 
   provisioner "local-exec" {
-    command = replace(
-      var.local_exec_wait_for_cluster_op.wait_for_cluster_cmd,
-      var.local_exec_wait_for_cluster_op.cluster_health_endpoint_placeholder,
-      "${aws_eks_cluster.this[0].endpoint}/healthz"
-    )
+    command = var.manage_aws_auth ? var.wait_for_cluster_cmd : ""
+    environment = {
+      ENDPOINT = aws_eks_cluster.this[0].endpoint
+    }
   }
 }
 

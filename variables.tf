@@ -198,16 +198,10 @@ variable "cluster_delete_timeout" {
   default     = "15m"
 }
 
-variable "local_exec_wait_for_cluster_op" {
-  type = object({
-    wait_for_cluster_cmd                = string
-    cluster_health_endpoint_placeholder = string
-  })
-  default = {
-    wait_for_cluster_cmd                = "until curl -k -s %CLUSTER_HEALTH_ENDPOINT% >/dev/null; do sleep 4; done"
-    cluster_health_endpoint_placeholder = "%CLUSTER_HEALTH_ENDPOINT%"
-  }
-  description = "Custom local-exec command to execute for determining if the eks cluster is healthy"
+variable "wait_for_cluster_cmd" {
+  description = "Custom local-exec command to execute for determining if the eks cluster is healthy. Cluster endpoint will be available as an ENDPOINT environment variable"
+  type        = string
+  default     = "until curl -k -s $ENDPOINT/healthz >/dev/null; do sleep 4; done"
 }
 
 variable "worker_create_initial_lifecycle_hooks" {

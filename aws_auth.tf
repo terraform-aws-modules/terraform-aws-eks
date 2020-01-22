@@ -50,7 +50,7 @@ data "template_file" "node_group_arns" {
 }
 
 resource "kubernetes_config_map" "aws_auth" {
-  depends_on = [aws_eks_cluster.this]
+  depends_on = [null_resource.wait_for_cluster]
   count      = var.create_eks && var.manage_aws_auth ? 1 : 0
 
   metadata {
