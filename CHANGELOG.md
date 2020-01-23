@@ -9,7 +9,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.1.0...HEAD)] - YYYY-MM-DD]
 
-- Write your awesome change here (by @you)
+- Names of Auto Scaling Groups don't have to start with cluster name (by @michcio1234 and @tsub)
 
 # History
 
