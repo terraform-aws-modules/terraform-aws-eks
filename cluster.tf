@@ -35,12 +35,14 @@ resource "aws_eks_cluster" "this" {
 }
 
 resource "null_resource" "wait_for_cluster" {
+  count      = var.manage_aws_auth ? 1 : 0
+
   depends_on = [
     aws_eks_cluster.this[0]
   ]
 
   provisioner "local-exec" {
-    command = var.manage_aws_auth ? var.wait_for_cluster_cmd : ""
+    command = var.wait_for_cluster_cmd
     environment = {
       ENDPOINT = aws_eks_cluster.this[0].endpoint
     }

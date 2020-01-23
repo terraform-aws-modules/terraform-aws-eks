@@ -187,7 +187,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | subnets | A list of subnets to place the EKS cluster and workers within. | list(string) | n/a | yes |
 | tags | A map of tags to add to all resources. | map(string) | `{}` | no |
 | vpc_id | VPC where the cluster and workers will be deployed. | string | n/a | yes |
-| wait_for_cluster_cmd | Custom local-exec command to execute for determining if the eks cluster is healthy. Cluster endpoint will be available as an ENDPOINT environment variable | string | `"until curl -k -s $ENDPOINT/healthz \u003e/dev/null; do sleep 4; done"` | no |
+| wait_for_cluster_cmd | Custom local-exec command to execute for determining if the eks cluster is healthy. Cluster endpoint will be available as an environment variable called ENDPOINT | string | `"until curl -k -s $ENDPOINT/healthz \u003e/dev/null; do sleep 4; done"` | no |
 | worker_additional_security_group_ids | A list of additional security group ids to attach to worker instances | list(string) | `[]` | no |
 | worker_ami_name_filter | Name filter for AWS EKS worker AMI. If not provided, the latest official AMI for the specified 'cluster_version' is used. | string | `""` | no |
 | worker_ami_name_filter_windows | Name filter for AWS EKS Windows worker AMI. If not provided, the latest official AMI for the specified 'cluster_version' is used. | string | `""` | no |

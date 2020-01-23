@@ -199,7 +199,7 @@ variable "cluster_delete_timeout" {
 }
 
 variable "wait_for_cluster_cmd" {
-  description = "Custom local-exec command to execute for determining if the eks cluster is healthy. Cluster endpoint will be available as an ENDPOINT environment variable"
+  description = "Custom local-exec command to execute for determining if the eks cluster is healthy. Cluster endpoint will be available as an environment variable called ENDPOINT"
   type        = string
   default     = "until curl -k -s $ENDPOINT/healthz >/dev/null; do sleep 4; done"
 }
