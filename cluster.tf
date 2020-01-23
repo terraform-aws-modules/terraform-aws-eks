@@ -35,7 +35,7 @@ resource "aws_eks_cluster" "this" {
 }
 
 resource "null_resource" "wait_for_cluster" {
-  count      = var.manage_aws_auth ? 1 : 0
+  count = var.manage_aws_auth ? 1 : 0
 
   depends_on = [
     aws_eks_cluster.this[0]
