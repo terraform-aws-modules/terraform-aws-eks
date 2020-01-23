@@ -32,6 +32,7 @@ locals {
     asg_force_delete              = false                       # Enable forced deletion for the autoscaling group.
     asg_initial_lifecycle_hooks   = []                          # Initital lifecycle hook for the autoscaling group.
     asg_recreate_on_change        = false                       # Recreate the autoscaling group when the Launch Template or Launch Configuration change.
+    asg_name_prefix               = null                        # First part of autoscaling groups' names. By default, it will be set to cluster name.
     instance_type                 = "m4.large"                  # Size of the workers instances.
     spot_price                    = ""                          # Cost of spot instance.
     placement_tenancy             = ""                          # The tenancy of the instance. Valid values are "default" or "dedicated".
