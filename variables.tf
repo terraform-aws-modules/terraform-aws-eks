@@ -20,7 +20,7 @@ variable "cluster_name" {
 }
 
 variable "cluster_security_group_id" {
-  description = "If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the workers"
+  description = "If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the workers"
   type        = string
   default     = ""
 }
@@ -45,12 +45,6 @@ variable "write_kubeconfig" {
 
 variable "manage_aws_auth" {
   description = "Whether to apply the aws-auth configmap file."
-  default     = true
-}
-
-variable "write_aws_auth_config" {
-  description = "Whether to write the aws-auth configmap file."
-  type        = bool
   default     = true
 }
 
@@ -115,7 +109,7 @@ variable "worker_groups_launch_template" {
 }
 
 variable "worker_security_group_id" {
-  description = "If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingres/egress to work with the EKS cluster."
+  description = "If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the EKS cluster."
   type        = string
   default     = ""
 }
@@ -210,18 +204,6 @@ variable "local_exec_interpreter" {
   default     = ["/bin/sh", "-c"]
 }
 
-variable "cluster_create_security_group" {
-  description = "Whether to create a security group for the cluster or attach the cluster to `cluster_security_group_id`."
-  type        = bool
-  default     = true
-}
-
-variable "worker_create_security_group" {
-  description = "Whether to create a security group for the workers or attach the workers to `worker_security_group_id`."
-  type        = bool
-  default     = true
-}
-
 variable "worker_create_initial_lifecycle_hooks" {
   description = "Whether to create initial lifecycle hooks provided in worker groups."
   type        = bool
@@ -250,6 +232,12 @@ variable "cluster_endpoint_public_access" {
   description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled."
   type        = bool
   default     = true
+}
+
+variable "cluster_endpoint_public_access_cidrs" {
+  description = "List of CIDR blocks which can access the Amazon EKS public API server endpoint."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
 }
 
 variable "manage_cluster_iam_resources" {
@@ -292,4 +280,34 @@ variable "attach_worker_cni_policy" {
   description = "Whether to attach the Amazon managed `AmazonEKS_CNI_Policy` IAM policy to the default worker IAM role. WARNING: If set `false` the permissions must be assigned to the `aws-node` DaemonSet pods via another method or nodes will not be able to join the cluster."
   type        = bool
   default     = true
+}
+
+variable "create_eks" {
+  description = "Controls if EKS resources should be created (it affects almost all resources)"
+  type        = bool
+  default     = true
+}
+
+variable "node_groups_defaults" {
+  description = "Map of values to be applied to all node groups. See `node_groups` module's documentaton for more details"
+  type        = any
+  default     = {}
+}
+
+variable "node_groups" {
+  description = "Map of map of node groups to create. See `node_groups` module's documentation for more details"
+  type        = any
+  default     = {}
+}
+
+variable "enable_irsa" {
+  description = "Whether to create OpenID Connect Provider for EKS to enable IRSA"
+  type        = bool
+  default     = false
+}
+
+variable "eks_oidc_root_ca_thumbprint" {
+  type        = string
+  description = "Thumbprint of Root CA for EKS OIDC, Valid until 2037"
+  default     = "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
 }
