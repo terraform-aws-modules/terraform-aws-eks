@@ -23,14 +23,6 @@ NAME                                       STATUS   ROLES    AGE     VERSION
 ip-10-0-2-190.us-west-2.compute.internal   Ready    <none>   6m39s   v1.14.8-eks-b8860f
 ```
 
-Install Helm:
-
-```
-kubectl -n kube-system create serviceaccount tiller
-kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
-helm init --service-account=tiller
-```
-
 Replace `<ACCOUNT ID>` with your AWS account ID in `cluster-autoscaler-chart-values.yaml`. There is output from terraform for this.
 
 Install the chart using the provided values file:
