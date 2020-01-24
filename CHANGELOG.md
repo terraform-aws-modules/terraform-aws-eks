@@ -7,9 +7,9 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.1.0...HEAD)] - YYYY-MM-DD]
+## [[v8.1.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.1.0...HEAD)] - 2020-01-23]
 
-- Write your awesome change here (by @you)
+- Added max_instance_lifetime for worker ASGs. Default is 0. (@vglen)
 
 # History
 

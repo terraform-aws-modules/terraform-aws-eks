@@ -57,6 +57,7 @@ locals {
     suspended_processes           = ["AZRebalance"]             # A list of processes to suspend. i.e. ["AZRebalance", "HealthCheck", "ReplaceUnhealthy"]
     target_group_arns             = null                        # A list of Application LoadBalancer (ALB) target group ARNs to be associated to the autoscaling group
     enabled_metrics               = []                          # A list of metrics to be collected i.e. ["GroupMinSize", "GroupMaxSize", "GroupDesiredCapacity"]
+    max_instance_lifetime         = "0"                         # If not set, default is unlimited. The maximum amount of time, in seconds, that an instance can be in service, values must be either equal to 0 or between 604800 and 31536000 seconds.
     placement_group               = ""                          # The name of the placement group into which to launch the instances, if any.
     service_linked_role_arn       = ""                          # Arn of custom service linked role that Auto Scaling group will use. Useful when you have encrypted EBS
     termination_policies          = []                          # A list of policies to decide how the instances in the auto scale group should be terminated.
