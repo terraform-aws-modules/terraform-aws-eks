@@ -33,23 +33,30 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | version | Kubernetes version | string | Provider default behavior |
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Providers
+
+| Name | Version |
+|------|---------|
+| aws | n/a |
+| random | n/a |
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|:----:|:-----:|:-----:|
-| cluster_name | Name of parent cluster | string | n/a | yes |
-| create_eks | Controls if EKS resources should be created (it affects almost all resources) | bool | `"true"` | no |
-| default_iam_role_arn | ARN of the default IAM worker role to use if one is not specified in `var.node_groups` or `var.node_groups_defaults` | string | n/a | yes |
-| node_groups | Map of maps of `eks_node_groups` to create. See "`node_groups` and `node_groups_defaults` keys" section in README.md for more details | any | `{}` | no |
-| node_groups_defaults | map of maps of node groups to create. See "`node_groups` and `node_groups_defaults` keys" section in README.md for more details | any | n/a | yes |
-| tags | A map of tags to add to all resources | map(string) | n/a | yes |
-| workers_group_defaults | Workers group defaults from parent | any | n/a | yes |
+|------|-------------|------|---------|:-----:|
+| cluster\_name | Name of parent cluster | `string` | n/a | yes |
+| create\_eks | Controls if EKS resources should be created (it affects almost all resources) | `bool` | `true` | no |
+| default\_iam\_role\_arn | ARN of the default IAM worker role to use if one is not specified in `var.node_groups` or `var.node_groups_defaults` | `string` | n/a | yes |
+| node\_groups | Map of maps of `eks_node_groups` to create. See "`node_groups` and `node_groups_defaults` keys" section in README.md for more details | `any` | `{}` | no |
+| node\_groups\_defaults | map of maps of node groups to create. See "`node_groups` and `node_groups_defaults` keys" section in README.md for more details | `any` | n/a | yes |
+| tags | A map of tags to add to all resources | `map(string)` | n/a | yes |
+| workers\_group\_defaults | Workers group defaults from parent | `any` | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| aws_auth_roles | Roles for use in aws-auth ConfigMap |
-| node_groups | Outputs from EKS node groups. Map of maps, keyed by `var.node_groups` keys. See `aws_eks_node_group` Terraform documentation for values |
+| aws\_auth\_roles | Roles for use in aws-auth ConfigMap |
+| node\_groups | Outputs from EKS node groups. Map of maps, keyed by `var.node_groups` keys. See `aws_eks_node_group` Terraform documentation for values |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

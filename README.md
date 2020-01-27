@@ -54,7 +54,7 @@ module "my-cluster" {
 ```
 ## Conditional creation
 
-Sometimes you need to have a way to create EKS resources conditionally but Terraform does not allow to use `count` inside `module` block, so the solution is to specify argument `create_eks`. 
+Sometimes you need to have a way to create EKS resources conditionally but Terraform does not allow to use `count` inside `module` block, so the solution is to specify argument `create_eks`.
 
 Using this feature _and_ having `manage_aws_auth=true` (the default) requires to set up the kubernetes provider in a way that allows the data sources to not exist.
 
@@ -146,6 +146,17 @@ Many thanks to [the contributors listed here](https://github.com/terraform-aws-m
 MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/LICENSE) for full details.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Providers
+
+| Name | Version |
+|------|---------|
+| aws | >= 2.44.0 |
+| kubernetes | >= 1.6.2 |
+| local | >= 1.2 |
+| null | >= 2.1 |
+| random | >= 2.1 |
+| template | >= 2.1 |
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -203,38 +214,39 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | workers_role_name | User defined workers role name. | string | `""` | no |
 | write_kubeconfig | Whether to write a Kubectl config file containing the cluster configuration. Saved to `config_output_path`. | bool | `"true"` | no |
 
+
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| cloudwatch_log_group_name | Name of cloudwatch log group created |
-| cluster_arn | The Amazon Resource Name (ARN) of the cluster. |
-| cluster_certificate_authority_data | Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster. |
-| cluster_endpoint | The endpoint for your EKS Kubernetes API. |
-| cluster_iam_role_arn | IAM role ARN of the EKS cluster. |
-| cluster_iam_role_name | IAM role name of the EKS cluster. |
-| cluster_id | The name/id of the EKS cluster. |
-| cluster_oidc_issuer_url | The URL on the EKS cluster OIDC Issuer |
-| cluster_security_group_id | Security group ID attached to the EKS cluster. |
-| cluster_version | The Kubernetes server version for the EKS cluster. |
-| config_map_aws_auth | A kubernetes configuration to authenticate to this EKS cluster. |
+| cloudwatch\_log\_group\_name | Name of cloudwatch log group created |
+| cluster\_arn | The Amazon Resource Name (ARN) of the cluster. |
+| cluster\_certificate\_authority\_data | Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster. |
+| cluster\_endpoint | The endpoint for your EKS Kubernetes API. |
+| cluster\_iam\_role\_arn | IAM role ARN of the EKS cluster. |
+| cluster\_iam\_role\_name | IAM role name of the EKS cluster. |
+| cluster\_id | The name/id of the EKS cluster. |
+| cluster\_oidc\_issuer\_url | The URL on the EKS cluster OIDC Issuer |
+| cluster\_security\_group\_id | Security group ID attached to the EKS cluster. |
+| cluster\_version | The Kubernetes server version for the EKS cluster. |
+| config\_map\_aws\_auth | A kubernetes configuration to authenticate to this EKS cluster. |
 | kubeconfig | kubectl config file contents for this EKS cluster. |
-| kubeconfig_filename | The filename of the generated kubectl config. |
-| node_groups | Outputs from EKS node groups. Map of maps, keyed by var.node_groups keys |
-| oidc_provider_arn | The ARN of the OIDC Provider if `enable_irsa = true`. |
-| worker_autoscaling_policy_arn | ARN of the worker autoscaling IAM policy if `manage_worker_autoscaling_policy = true` |
-| worker_autoscaling_policy_name | Name of the worker autoscaling IAM policy if `manage_worker_autoscaling_policy = true` |
-| worker_iam_instance_profile_arns | default IAM instance profile ARN for EKS worker groups |
-| worker_iam_instance_profile_names | default IAM instance profile name for EKS worker groups |
-| worker_iam_role_arn | default IAM role ARN for EKS worker groups |
-| worker_iam_role_name | default IAM role name for EKS worker groups |
-| worker_security_group_id | Security group ID attached to the EKS workers. |
-| workers_asg_arns | IDs of the autoscaling groups containing workers. |
-| workers_asg_names | Names of the autoscaling groups containing workers. |
-| workers_default_ami_id | ID of the default worker group AMI |
-| workers_launch_template_arns | ARNs of the worker launch templates. |
-| workers_launch_template_ids | IDs of the worker launch templates. |
-| workers_launch_template_latest_versions | Latest versions of the worker launch templates. |
-| workers_user_data | User data of worker groups |
+| kubeconfig\_filename | The filename of the generated kubectl config. |
+| node\_groups | Outputs from EKS node groups. Map of maps, keyed by var.node\_groups keys |
+| oidc\_provider\_arn | The ARN of the OIDC Provider if `enable_irsa = true`. |
+| worker\_autoscaling\_policy\_arn | ARN of the worker autoscaling IAM policy if `manage_worker_autoscaling_policy = true` |
+| worker\_autoscaling\_policy\_name | Name of the worker autoscaling IAM policy if `manage_worker_autoscaling_policy = true` |
+| worker\_iam\_instance\_profile\_arns | default IAM instance profile ARN for EKS worker groups |
+| worker\_iam\_instance\_profile\_names | default IAM instance profile name for EKS worker groups |
+| worker\_iam\_role\_arn | default IAM role ARN for EKS worker groups |
+| worker\_iam\_role\_name | default IAM role name for EKS worker groups |
+| worker\_security\_group\_id | Security group ID attached to the EKS workers. |
+| workers\_asg\_arns | IDs of the autoscaling groups containing workers. |
+| workers\_asg\_names | Names of the autoscaling groups containing workers. |
+| workers\_default\_ami\_id | ID of the default worker group AMI |
+| workers\_launch\_template\_arns | ARNs of the worker launch templates. |
+| workers\_launch\_template\_ids | IDs of the worker launch templates. |
+| workers\_launch\_template\_latest\_versions | Latest versions of the worker launch templates. |
+| workers\_user\_data | User data of worker groups |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
