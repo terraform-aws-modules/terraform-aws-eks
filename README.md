@@ -174,7 +174,6 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | kubeconfig_aws_authenticator_command_args | Default arguments passed to the authenticator command. Defaults to [token -i $cluster_name]. | list(string) | `[]` | no |
 | kubeconfig_aws_authenticator_env_variables | Environment variables that should be used when executing the authenticator. e.g. { AWS_PROFILE = "eks"}. | map(string) | `{}` | no |
 | kubeconfig_name | Override the default name used for items kubeconfig. | string | `""` | no |
-| local_exec_interpreter | Command to run for local-exec resources. Must be a shell-style interpreter. If you are on Windows Git Bash is a good choice. | list(string) | `[ "/bin/sh", "-c" ]` | no |
 | manage_aws_auth | Whether to apply the aws-auth configmap file. | string | `"true"` | no |
 | manage_cluster_iam_resources | Whether to let the module manage cluster IAM resources. If set to false, cluster_iam_role_name must be specified. | bool | `"true"` | no |
 | manage_worker_autoscaling_policy | Whether to let the module manage the cluster autoscaling iam policy. | bool | `"true"` | no |
@@ -188,6 +187,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | subnets | A list of subnets to place the EKS cluster and workers within. | list(string) | n/a | yes |
 | tags | A map of tags to add to all resources. | map(string) | `{}` | no |
 | vpc_id | VPC where the cluster and workers will be deployed. | string | n/a | yes |
+| wait_for_cluster_cmd | Custom local-exec command to execute for determining if the eks cluster is healthy. Cluster endpoint will be available as an environment variable called ENDPOINT | string | `"until curl -k -s $ENDPOINT/healthz \u003e/dev/null; do sleep 4; done"` | no |
 | worker_additional_security_group_ids | A list of additional security group ids to attach to worker instances | list(string) | `[]` | no |
 | worker_ami_name_filter | Name filter for AWS EKS worker AMI. If not provided, the latest official AMI for the specified 'cluster_version' is used. | string | `""` | no |
 | worker_ami_name_filter_windows | Name filter for AWS EKS Windows worker AMI. If not provided, the latest official AMI for the specified 'cluster_version' is used. | string | `""` | no |

@@ -9,7 +9,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.1.0...HEAD)] - YYYY-MM-DD]
 
-- Write your awesome change here (by @you)
+- Include ability to configure custom os-specific command for waiting until kube cluster is healthy (@sanjeevgiri)
 
 # History
 
