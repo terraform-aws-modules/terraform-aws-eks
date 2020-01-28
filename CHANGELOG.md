@@ -12,6 +12,11 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Write your awesome change here (by @you)
 - [CI] Switch `Validate` github action to use env vars (by @max-rocket-internet)
 - [CI] Bump pre-commit-terraform version (by @barryib)
+- **Breaking:** Default to not manage autoscaling IAM policy (by @max-rocket-internet)
+
+#### Important notes
+
+In next release you will need to manage the policy for the cluster-autoscaler outside of this module. Either follow the example in `examples/irsa` or set `var.manage_worker_autoscaling_policy` and `var.attach_worker_autoscaling_policy` to `true`.
 
 # History
 
@@ -21,6 +26,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Disable creation of ingress rules if worker nodes security groups are exists (@andjelx)
 - [CI] Update pre-commit and re-generate docs to work with terraform-docs >= 0.8.1 (@barryib)
 - Added example `examples/irsa` for IAM Roles for Service Accounts (by @max-rocket-internet)
+
+# History
 
 ## [[v8.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...v8.1.0)] - 2020-01-17]
 

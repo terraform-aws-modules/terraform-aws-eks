@@ -267,13 +267,13 @@ variable "workers_role_name" {
 variable "manage_worker_autoscaling_policy" {
   description = "Whether to let the module manage the cluster autoscaling iam policy."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "attach_worker_autoscaling_policy" {
   description = "Whether to attach the module managed cluster autoscaling iam policy to the default worker IAM role. This requires `manage_worker_autoscaling_policy = true`"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "attach_worker_cni_policy" {
