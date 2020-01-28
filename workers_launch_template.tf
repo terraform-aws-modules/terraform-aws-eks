@@ -6,7 +6,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     "-",
     compact(
       [
-        aws_eks_cluster.this[0].name,
+        coalesce(lookup(var.worker_groups_launch_template[count.index], "asg_name_prefix", local.workers_group_defaults["asg_name_prefix"]), aws_eks_cluster.this[0].name),
         lookup(var.worker_groups_launch_template[count.index], "name", count.index),
         lookup(var.worker_groups_launch_template[count.index], "asg_recreate_on_change", local.workers_group_defaults["asg_recreate_on_change"]) ? random_pet.workers_launch_template[count.index].id : ""
       ]
