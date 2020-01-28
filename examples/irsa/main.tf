@@ -81,9 +81,9 @@ module "eks" {
       asg_desired_capacity = 1
       tags = [
         {
-            "key"                 = "k8s.io/cluster-autoscaler/enabled"
-            "propagate_at_launch" = "false"
-            "value"               = "true"
+          "key"                 = "k8s.io/cluster-autoscaler/enabled"
+          "propagate_at_launch" = "false"
+          "value"               = "true"
         }
       ]
     }
