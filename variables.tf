@@ -198,10 +198,10 @@ variable "cluster_delete_timeout" {
   default     = "15m"
 }
 
-variable "local_exec_interpreter" {
-  description = "Command to run for local-exec resources. Must be a shell-style interpreter. If you are on Windows Git Bash is a good choice."
-  type        = list(string)
-  default     = ["/bin/sh", "-c"]
+variable "wait_for_cluster_cmd" {
+  description = "Custom local-exec command to execute for determining if the eks cluster is healthy. Cluster endpoint will be available as an environment variable called ENDPOINT"
+  type        = string
+  default     = "until curl -k -s $ENDPOINT/healthz >/dev/null; do sleep 4; done"
 }
 
 variable "worker_create_initial_lifecycle_hooks" {

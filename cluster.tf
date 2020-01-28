@@ -32,10 +32,20 @@ resource "aws_eks_cluster" "this" {
     aws_iam_role_policy_attachment.cluster_AmazonEKSServicePolicy,
     aws_cloudwatch_log_group.this
   ]
+}
+
+resource "null_resource" "wait_for_cluster" {
+  count = var.manage_aws_auth ? 1 : 0
+
+  depends_on = [
+    aws_eks_cluster.this[0]
+  ]
+
   provisioner "local-exec" {
-    command = <<EOT
-    until curl -k -s ${aws_eks_cluster.this[0].endpoint}/healthz >/dev/null; do sleep 4; done
-  EOT
+    command = var.wait_for_cluster_cmd
+    environment = {
+      ENDPOINT = aws_eks_cluster.this[0].endpoint
+    }
   }
 }
 
@@ -64,7 +74,7 @@ resource "aws_security_group_rule" "cluster_egress_internet" {
 }
 
 resource "aws_security_group_rule" "cluster_https_worker_ingress" {
-  count                    = var.create_eks ? 1 : 0
+  count                    = var.worker_security_group_id == "" && var.create_eks ? 1 : 0
   description              = "Allow pods to communicate with the EKS cluster API."
   protocol                 = "tcp"
   security_group_id        = local.cluster_security_group_id
