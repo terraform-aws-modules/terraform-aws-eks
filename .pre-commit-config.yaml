@@ -4,6 +4,6 @@ repos:
     hooks:
       - id: terraform_fmt
       - id: terraform_docs
-        args: [--args=--with-aggregate-type-defaults --no-escape]
+
       - id: terraform_validate
       - id: terraform_tflint
