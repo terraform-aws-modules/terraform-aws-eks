@@ -57,6 +57,7 @@ Verify it is working by checking the logs, you should see that it has discovered
 ```
 kubectl --namespace=kube-system logs -l "app.kubernetes.io/name=aws-cluster-autoscaler"
 
-I0124 11:27:12.133334       1 static_autoscaler.go:138] Starting main loop
-I0124 11:27:12.256817       1 auto_scaling_groups.go:354] Regenerating instance to ASG map for ASGs: [test-eks-irsa-worker-group-120200124095239818200000013]
+I0128 14:59:00.901513       1 auto_scaling_groups.go:354] Regenerating instance to ASG map for ASGs: [test-eks-irsa-worker-group-12020012814125354700000000e]
+I0128 14:59:00.969875       1 auto_scaling_groups.go:138] Registering ASG test-eks-irsa-worker-group-12020012814125354700000000e
+I0128 14:59:00.969906       1 aws_manager.go:263] Refreshed ASG list, next refresh after 2020-01-28 15:00:00.969901767 +0000 UTC m=+61.310501783
 ```

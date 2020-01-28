@@ -1,32 +1,11 @@
-resource "aws_iam_role" "cluster_autoscaler" {
-  name               = "cluster-autoscaler"
-  assume_role_policy = data.aws_iam_policy_document.cluster_autoscaler_assume_role_policy.json
-}
-
-data "aws_iam_policy_document" "cluster_autoscaler_assume_role_policy" {
-  statement {
-    sid = "ClusterAutoscalerAssumeRolePolicy"
-
-    actions = [
-      "sts:AssumeRoleWithWebIdentity",
-    ]
-
-    principals {
-      type        = "Federated"
-      identifiers = [module.eks.oidc_provider_arn]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "${replace(module.eks.cluster_oidc_issuer_url, "https://", "")}:sub"
-      values   = ["system:serviceaccount:${local.k8s_service_account_namespace}:${local.k8s_service_account_name}"]
-    }
-  }
-}
-
-resource "aws_iam_role_policy_attachment" "cluster_autoscaler" {
-  policy_arn = aws_iam_policy.cluster_autoscaler.arn
-  role       = aws_iam_role.cluster_autoscaler.name
+module "iam_assumable_role_admin" {
+  source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
+  version                       = "~> v2.6.0"
+  create_role                   = true
+  role_name                     = "cluster-autoscaler"
+  provider_url                  = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
+  role_policy_arns              = [aws_iam_policy.cluster_autoscaler.arn]
+  oidc_fully_qualified_subjects = ["system:serviceaccount:${local.k8s_service_account_namespace}:${local.k8s_service_account_name}"]
 }
 
 resource "aws_iam_policy" "cluster_autoscaler" {
@@ -37,7 +16,7 @@ resource "aws_iam_policy" "cluster_autoscaler" {
 
 data "aws_iam_policy_document" "cluster_autoscaler" {
   statement {
-    sid    = "eksWorkerAutoscalingAll"
+    sid    = "clusterAutoscalerAll"
     effect = "Allow"
 
     actions = [
@@ -52,7 +31,7 @@ data "aws_iam_policy_document" "cluster_autoscaler" {
   }
 
   statement {
-    sid    = "eksWorkerAutoscalingOwn"
+    sid    = "clusterAutoscalerOwn"
     effect = "Allow"
 
     actions = [
