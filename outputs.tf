@@ -153,16 +153,6 @@ output "worker_iam_role_arn" {
   )[0]
 }
 
-output "worker_autoscaling_policy_name" {
-  description = "Name of the worker autoscaling IAM policy if `manage_worker_autoscaling_policy = true`"
-  value       = concat(aws_iam_policy.worker_autoscaling[*].name, [""])[0]
-}
-
-output "worker_autoscaling_policy_arn" {
-  description = "ARN of the worker autoscaling IAM policy if `manage_worker_autoscaling_policy = true`"
-  value       = concat(aws_iam_policy.worker_autoscaling[*].arn, [""])[0]
-}
-
 output "node_groups" {
   description = "Outputs from EKS node groups. Map of maps, keyed by var.node_groups keys"
   value       = module.node_groups.node_groups
