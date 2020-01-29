@@ -40,9 +40,13 @@ jobs:
         env:
           AWS_REGION: 'us-east-1'
           TF_WARN_OUTPUT_ERRORS: 1
+          TF_VAR_vpc_id: 'vpc-123456'
+          TF_VAR_subnets: '["subnet-12345a"]'
+          TF_VAR_workers_ami_id: 'ami-123456'
+          TF_VAR_cluster_name: 'test_cluster'
         run: |
           terraform init
-          terraform validate -var "region=${AWS_REGION}" -var "vpc_id=vpc-123456" -var "subnets=[\"subnet-12345a\"]" -var "workers_ami_id=ami-123456" -var "cluster_ingress_cidrs=[]" -var "cluster_name=test_cluster"
+          terraform validate
       - name: Validate Examples
         run: |
           for example in $(find examples -maxdepth 1 -mindepth 1 -type d); do
