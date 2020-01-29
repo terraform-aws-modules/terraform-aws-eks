@@ -7,13 +7,17 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.1.0...HEAD)] - YYYY-MM-DD]
+## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.2.0...HEAD)] - 2020-xx-xx]
+
+- Write your awesome change here (by @you)
+
+# History
+
+## [[v8.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.1.0...v8.2.0)] - 2020-01-29]
 
 - Include ability to configure custom os-specific command for waiting until kube cluster is healthy (@sanjeevgiri)
 - Disable creation of ingress rules if worker nodes security groups are exists (@andjelx)
 - [CI] Update pre-commit and re-generate docs to work with terraform-docs >= 0.8.1 (@barryib)
-
-# History
 
 ## [[v8.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...v8.1.0)] - 2020-01-17]
 
