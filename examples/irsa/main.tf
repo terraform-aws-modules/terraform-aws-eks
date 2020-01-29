@@ -7,10 +7,6 @@ provider "aws" {
   region  = var.region
 }
 
-provider "random" {
-  version = "~> 2.1"
-}
-
 provider "local" {
   version = "~> 1.2"
 }
@@ -42,11 +38,6 @@ provider "kubernetes" {
 data "aws_availability_zones" "available" {}
 
 data "aws_caller_identity" "current" {}
-
-resource "random_string" "suffix" {
-  length  = 8
-  special = false
-}
 
 module "vpc" {
   source               = "terraform-aws-modules/vpc/aws"
