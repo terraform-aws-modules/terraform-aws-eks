@@ -1,9 +1,8 @@
 repos:
 - repo: git://github.com/antonbabenko/pre-commit-terraform
-  rev: v1.22.0
+  rev: v1.24.0
   hooks:
     - id: terraform_fmt
     - id: terraform_docs
-      args: [--args=--with-aggregate-type-defaults --no-escape]
     - id: terraform_validate
     - id: terraform_tflint
