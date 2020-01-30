@@ -13,7 +13,6 @@ data "null_data_source" "node_groups" {
     role_NodePolicy  = coalescelist(aws_iam_role_policy_attachment.workers_AmazonEKSWorkerNodePolicy[*].id, [""])[0]
     role_CNI_Policy  = coalescelist(aws_iam_role_policy_attachment.workers_AmazonEKS_CNI_Policy[*].id, [""])[0]
     role_Container   = coalescelist(aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly[*].id, [""])[0]
-    role_autoscaling = coalescelist(aws_iam_role_policy_attachment.workers_autoscaling[*].id, [""])[0]
   }
 }
 

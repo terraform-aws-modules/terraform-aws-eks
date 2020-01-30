@@ -70,13 +70,7 @@ module "eks" {
       name                 = "worker-group-1"
       instance_type        = "t2.medium"
       asg_desired_capacity = 1
-      tags = [
-        {
-          "key"                 = "k8s.io/cluster-autoscaler/enabled"
-          "propagate_at_launch" = "false"
-          "value"               = "true"
-        }
-      ]
+      autoscaling_enabled  = true
     }
   ]
 }
