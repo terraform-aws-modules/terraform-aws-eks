@@ -8,6 +8,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ## Next release
 
 ## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.2.0...HEAD)] - 2020-xx-xx]
+- Revert #631. Add back manage security group flags. (by @ryanooi)
 
 - Write your awesome change here (by @you)
 
