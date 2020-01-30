@@ -11,6 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 - Write your awesome change here (by @you)
 - [CI] Switch `Validate` github action to use env vars (by @max-rocket-internet)
+- [CI] Bump pre-commit-terraform version (by @barryib)
 
 # History
 
