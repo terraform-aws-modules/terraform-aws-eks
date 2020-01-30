@@ -10,6 +10,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.2.0...HEAD)] - 2020-xx-xx]
 
 - Write your awesome change here (by @you)
+- [CI] Switch `Validate` github action to use env vars (by @max-rocket-internet)
 
 # History
 
