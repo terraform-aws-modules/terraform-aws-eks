@@ -19,6 +19,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Include ability to configure custom os-specific command for waiting until kube cluster is healthy (@sanjeevgiri)
 - Disable creation of ingress rules if worker nodes security groups are exists (@andjelx)
 - [CI] Update pre-commit and re-generate docs to work with terraform-docs >= 0.8.1 (@barryib)
+- Added example `examples/irsa` for IAM Roles for Service Accounts (by @max-rocket-internet)
 
 ## [[v8.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...v8.1.0)] - 2020-01-17]
 
