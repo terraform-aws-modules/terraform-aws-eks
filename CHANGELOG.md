@@ -9,9 +9,14 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.2.0...HEAD)] - 2020-xx-xx]
 
-- Write your awesome change here (by @you)
 - [CI] Switch `Validate` github action to use env vars (by @max-rocket-internet)
 - [CI] Bump pre-commit-terraform version (by @barryib)
+- Added example `examples/irsa` for IAM Roles for Service Accounts (by @max-rocket-internet)
+- **Breaking:** Removal of autoscaling IAM policy and tags (by @max-rocket-internet)
+
+#### Important notes
+
+Autoscaling policy and tags have been removed from this module. This reduces complexity and increases security as the policy was attached to the node group IAM role. To manage it outside of this module either follow the example in `examples/irsa` to attach an IAM role to the cluster-autoscaler `serviceAccount` or create the policy outside this module and pass it in using the `workers_additional_policies` variable.
 
 # History
 
@@ -20,7 +25,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Include ability to configure custom os-specific command for waiting until kube cluster is healthy (@sanjeevgiri)
 - Disable creation of ingress rules if worker nodes security groups are exists (@andjelx)
 - [CI] Update pre-commit and re-generate docs to work with terraform-docs >= 0.8.1 (@barryib)
-- Added example `examples/irsa` for IAM Roles for Service Accounts (by @max-rocket-internet)
+
+# History
 
 ## [[v8.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...v8.1.0)] - 2020-01-17]
 
