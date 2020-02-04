@@ -2,13 +2,13 @@
 
 To enable worker node autoscaling you will need to do a few things:
 
-- Set the `autoscaling_enabled` variable to `true` for a worker group
+- Add the [required tags](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler/cloudprovider/aws#auto-discovery-setup) to the worker group
 - Install the cluster-autoscaler
 - Give the cluster-autoscaler access via an IAM policy
 
 It's probably easiest to follow the example in [examples/irsa](../examples/irsa), this will install the cluster-autoscaler using [Helm](https://helm.sh/) and use IRSA to attach a policy.
 
-If you don't want to use IRSA then you will need to attach the IAM policy to the worker node IAM role or add AWS credentials to the cluster-autoscaler environment variables. Here is some example terraform code for this:
+If you don't want to use IRSA then you will need to attach the IAM policy to the worker node IAM role or add AWS credentials to the cluster-autoscaler environment variables. Here is some example terraform code for the policy:
 
 ```hcl
 resource "aws_iam_role_policy_attachment" "workers_autoscaling" {

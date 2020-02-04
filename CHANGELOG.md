@@ -12,11 +12,11 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - [CI] Switch `Validate` github action to use env vars (by @max-rocket-internet)
 - [CI] Bump pre-commit-terraform version (by @barryib)
 - Added example `examples/irsa` for IAM Roles for Service Accounts (by @max-rocket-internet)
-- **Breaking:** Removal of autoscaling IAM policy (by @max-rocket-internet)
+- **Breaking:** Removal of autoscaling IAM policy and tags (by @max-rocket-internet)
 
 #### Important notes
 
-Autoscaling policy has been removed from this module. This reduces complexity and increases security as the policy was attached to the node group IAM role. To manage it outside of this module either follow the example in `examples/irsa` to attach an IAM role to the cluster-autoscaler `serviceAccount` or create the policy outside this module and pass it in using the `workers_additional_policies` variable. The `autoscaling_enabled` worker group option still exists to add the required tag to the ASG.
+Autoscaling policy and tags have been removed from this module. This reduces complexity and increases security as the policy was attached to the node group IAM role. To manage it outside of this module either follow the example in `examples/irsa` to attach an IAM role to the cluster-autoscaler `serviceAccount` or create the policy outside this module and pass it in using the `workers_additional_policies` variable.
 
 # History
 
