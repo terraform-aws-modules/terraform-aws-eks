@@ -104,3 +104,31 @@ module "eks" {
 To enable Windows support for your EKS cluster, you should apply some configs manually. See the [Enabling Windows Support (Windows/MacOS/Linux)](https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support).
 
 Windows worker nodes requires additional cluster role (eks:kube-proxy-windows). If you are adding windows workers to existing cluster, you should apply config-map-aws-auth again.
+
+#### Algorithm for Windows nodes enabling:
+- Build AWS EKS cluster with the next workers configuration (default Linux):
+```
+worker_groups = [
+    {
+      name                          = "worker-group-linux"
+      instance_type                 = "m5.large"
+      platform                      = "linux"
+      additional_userdata           = "echo foo bar"
+      asg_desired_capacity          = 2
+      additional_security_group_ids = [///your_security_group]
+    },    
+  ]
+```
+- Apply commands from https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support (use tab with name `Windows`) 
+- Add one more worker group for Windows with required field `platform = "windows"` and update your cluster. Worker group example:
+```
+{
+      name                          = "worker-group-windows"
+      instance_type                 = "m5.large"
+      platform                      = "windows"
+      # additional_userdata           = "echo foo bar"
+      additional_security_group_ids = [aws_security_group.worker_group_mgmt_two.id]
+      asg_desired_capacity          = 1
+    },
+```
+- After `kubectl get nodes` you can see additional Windows node.
