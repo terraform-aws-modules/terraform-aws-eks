@@ -126,9 +126,8 @@ worker_groups = [
       name                          = "worker-group-windows"
       instance_type                 = "m5.large"
       platform                      = "windows"
-      # additional_userdata           = "echo foo bar"
-      additional_security_group_ids = [aws_security_group.worker_group_mgmt_two.id]
       asg_desired_capacity          = 1
+      additional_security_group_ids = [///your_security_group]      
     },
 ```
 - After `kubectl get nodes` you can see additional Windows node.
