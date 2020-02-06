@@ -13,6 +13,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - [CI] Bump pre-commit-terraform version (by @barryib)
 - Added example `examples/irsa` for IAM Roles for Service Accounts (by @max-rocket-internet)
 - **Breaking:** Removal of autoscaling IAM policy and tags (by @max-rocket-internet)
+- Add `iam:GetOpenIDConnectProvider` grant to the required IAM permissions in `docs/iam-permissions.md` (by @danielelisi)
 
 #### Important notes
 
