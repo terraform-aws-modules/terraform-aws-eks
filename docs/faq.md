@@ -122,6 +122,7 @@ worker_groups = [
 2. Apply commands from https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support (use tab with name `Windows`) 
 
 3. Add one more worker group for Windows with required field `platform = "windows"` and update your cluster. Worker group example:
+
 ```
 worker_groups = [
     {
