@@ -107,7 +107,10 @@ Windows worker nodes requires additional cluster role (eks:kube-proxy-windows). 
 
 #### Example configuration
 
+Amazon EKS clusters must contain one or more Linux worker nodes to run core system pods that only run on Linux, such as coredns and the VPC resource controller.
+
 1. Build AWS EKS cluster with the next workers configuration (default Linux):
+
 ```
 worker_groups = [
     {
