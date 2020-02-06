@@ -106,6 +106,7 @@ To enable Windows support for your EKS cluster, you should apply some configs ma
 Windows worker nodes requires additional cluster role (eks:kube-proxy-windows). If you are adding windows workers to existing cluster, you should apply config-map-aws-auth again.
 
 #### Example configuration
+
 1. Build AWS EKS cluster with the next workers configuration (default Linux):
 ```
 worker_groups = [
