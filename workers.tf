@@ -104,29 +104,6 @@ resource "aws_autoscaling_group" "workers" {
         "value"               = "owned"
         "propagate_at_launch" = true
       },
-      {
-        "key" = "k8s.io/cluster-autoscaler/${lookup(
-          var.worker_groups[count.index],
-          "autoscaling_enabled",
-          local.workers_group_defaults["autoscaling_enabled"],
-        ) ? "enabled" : "disabled"}"
-        "value"               = "true"
-        "propagate_at_launch" = false
-      },
-      {
-        "key"                 = "k8s.io/cluster-autoscaler/${aws_eks_cluster.this[0].name}"
-        "value"               = aws_eks_cluster.this[0].name
-        "propagate_at_launch" = false
-      },
-      {
-        "key" = "k8s.io/cluster-autoscaler/node-template/resources/ephemeral-storage"
-        "value" = "${lookup(
-          var.worker_groups[count.index],
-          "root_volume_size",
-          local.workers_group_defaults["root_volume_size"],
-        )}Gi"
-        "propagate_at_launch" = false
-      },
     ],
     local.asg_tags,
     lookup(
@@ -356,61 +333,4 @@ resource "aws_iam_role_policy_attachment" "workers_additional_policies" {
   count      = var.manage_worker_iam_resources && var.create_eks ? length(var.workers_additional_policies) : 0
   role       = aws_iam_role.workers[0].name
   policy_arn = var.workers_additional_policies[count.index]
-}
-
-resource "aws_iam_role_policy_attachment" "workers_autoscaling" {
-  count      = var.manage_worker_iam_resources && var.manage_worker_autoscaling_policy && var.attach_worker_autoscaling_policy && var.create_eks ? 1 : 0
-  policy_arn = aws_iam_policy.worker_autoscaling[0].arn
-  role       = aws_iam_role.workers[0].name
-}
-
-resource "aws_iam_policy" "worker_autoscaling" {
-  count       = var.manage_worker_iam_resources && var.manage_worker_autoscaling_policy && var.create_eks ? 1 : 0
-  name_prefix = "eks-worker-autoscaling-${aws_eks_cluster.this[0].name}"
-  description = "EKS worker node autoscaling policy for cluster ${aws_eks_cluster.this[0].name}"
-  policy      = data.aws_iam_policy_document.worker_autoscaling[0].json
-  path        = var.iam_path
-}
-
-data "aws_iam_policy_document" "worker_autoscaling" {
-  count = var.manage_worker_iam_resources && var.manage_worker_autoscaling_policy && var.create_eks ? 1 : 0
-  statement {
-    sid    = "eksWorkerAutoscalingAll"
-    effect = "Allow"
-
-    actions = [
-      "autoscaling:DescribeAutoScalingGroups",
-      "autoscaling:DescribeAutoScalingInstances",
-      "autoscaling:DescribeLaunchConfigurations",
-      "autoscaling:DescribeTags",
-      "ec2:DescribeLaunchTemplateVersions",
-    ]
-
-    resources = ["*"]
-  }
-
-  statement {
-    sid    = "eksWorkerAutoscalingOwn"
-    effect = "Allow"
-
-    actions = [
-      "autoscaling:SetDesiredCapacity",
-      "autoscaling:TerminateInstanceInAutoScalingGroup",
-      "autoscaling:UpdateAutoScalingGroup",
-    ]
-
-    resources = ["*"]
-
-    condition {
-      test     = "StringEquals"
-      variable = "autoscaling:ResourceTag/kubernetes.io/cluster/${aws_eks_cluster.this[0].name}"
-      values   = ["owned"]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "autoscaling:ResourceTag/k8s.io/cluster-autoscaler/enabled"
-      values   = ["true"]
-    }
-  }
 }

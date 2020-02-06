@@ -9,11 +9,10 @@ data "null_data_source" "node_groups" {
     # Ensure these resources are created before "unlocking" the data source.
     # `depends_on` causes a refresh on every run so is useless here.
     # [Re]creating or removing these resources will trigger recreation of Node Group resources
-    aws_auth         = coalescelist(kubernetes_config_map.aws_auth[*].id, [""])[0]
-    role_NodePolicy  = coalescelist(aws_iam_role_policy_attachment.workers_AmazonEKSWorkerNodePolicy[*].id, [""])[0]
-    role_CNI_Policy  = coalescelist(aws_iam_role_policy_attachment.workers_AmazonEKS_CNI_Policy[*].id, [""])[0]
-    role_Container   = coalescelist(aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly[*].id, [""])[0]
-    role_autoscaling = coalescelist(aws_iam_role_policy_attachment.workers_autoscaling[*].id, [""])[0]
+    aws_auth        = coalescelist(kubernetes_config_map.aws_auth[*].id, [""])[0]
+    role_NodePolicy = coalescelist(aws_iam_role_policy_attachment.workers_AmazonEKSWorkerNodePolicy[*].id, [""])[0]
+    role_CNI_Policy = coalescelist(aws_iam_role_policy_attachment.workers_AmazonEKS_CNI_Policy[*].id, [""])[0]
+    role_Container  = coalescelist(aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly[*].id, [""])[0]
   }
 }
 

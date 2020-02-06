@@ -56,7 +56,7 @@ The safest and easiest option is to set `asg_min_size` and `asg_max_size` to 0 o
 
 The module is configured to ignore this value. Unfortunately Terraform does not support variables within the `lifecycle` block.
 
-The setting is ignored to allow the cluster autoscaler to work correctly and so that terraform applys do not accidentally remove running workers.
+The setting is ignored to allow the cluster autoscaler to work correctly and so that terraform apply does not accidentally remove running workers.
 
 You can change the desired count via the CLI or console if you're not using the cluster autoscaler.
 
