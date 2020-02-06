@@ -140,4 +140,4 @@ worker_groups = [
   ]
 ```
 
-4. After `kubectl get nodes` you can see cluster with mixed(Linux/Windows) nodes support.
+4. Wtih `kubectl get nodes` you can see cluster with mixed (Linux/Windows) nodes support.
