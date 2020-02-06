@@ -104,3 +104,43 @@ module "eks" {
 To enable Windows support for your EKS cluster, you should apply some configs manually. See the [Enabling Windows Support (Windows/MacOS/Linux)](https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support).
 
 Windows worker nodes requires additional cluster role (eks:kube-proxy-windows). If you are adding windows workers to existing cluster, you should apply config-map-aws-auth again.
+
+#### Example configuration
+
+Amazon EKS clusters must contain one or more Linux worker nodes to run core system pods that only run on Linux, such as coredns and the VPC resource controller.
+
+1. Build AWS EKS cluster with the next workers configuration (default Linux):
+
+```
+worker_groups = [
+    {
+      name                          = "worker-group-linux"
+      instance_type                 = "m5.large"
+      platform                      = "linux"
+      asg_desired_capacity          = 2
+    },    
+  ]
+```
+
+2. Apply commands from https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support (use tab with name `Windows`) 
+
+3. Add one more worker group for Windows with required field `platform = "windows"` and update your cluster. Worker group example:
+
+```
+worker_groups = [
+    {
+      name                          = "worker-group-linux"
+      instance_type                 = "m5.large"
+      platform                      = "linux"
+      asg_desired_capacity          = 2
+    },
+    {
+      name                          = "worker-group-windows"
+      instance_type                 = "m5.large"
+      platform                      = "windows"
+      asg_desired_capacity          = 1
+    },
+  ]
+```
+
+4. Wtih `kubectl get nodes` you can see cluster with mixed (Linux/Windows) nodes support.

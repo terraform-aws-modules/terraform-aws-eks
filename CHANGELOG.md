@@ -9,6 +9,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.2.0...HEAD)] - 2020-xx-xx]
 
+- Added instructions for how to add Windows nodes (by @ivanguravel)
 - [CI] Switch `Validate` github action to use env vars (by @max-rocket-internet)
 - [CI] Bump pre-commit-terraform version (by @barryib)
 - Added example `examples/irsa` for IAM Roles for Service Accounts (by @max-rocket-internet)
