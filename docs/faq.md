@@ -119,7 +119,8 @@ worker_groups = [
     },    
   ]
 ```
-- Apply commands from https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support (use tab with name `Windows`) 
+
+2. Apply commands from https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support (use tab with name `Windows`) 
 - Add one more worker group for Windows with required field `platform = "windows"` and update your cluster. Worker group example:
 ```
 {
