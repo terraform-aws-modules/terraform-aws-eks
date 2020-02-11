@@ -179,29 +179,6 @@ resource "aws_autoscaling_group" "workers_launch_template" {
         "value"               = "owned"
         "propagate_at_launch" = true
       },
-      {
-        "key" = "k8s.io/cluster-autoscaler/${lookup(
-          var.worker_groups_launch_template[count.index],
-          "autoscaling_enabled",
-          local.workers_group_defaults["autoscaling_enabled"],
-        ) ? "enabled" : "disabled"}"
-        "value"               = "true"
-        "propagate_at_launch" = false
-      },
-      {
-        "key"                 = "k8s.io/cluster-autoscaler/${aws_eks_cluster.this[0].name}"
-        "value"               = aws_eks_cluster.this[0].name
-        "propagate_at_launch" = false
-      },
-      {
-        "key" = "k8s.io/cluster-autoscaler/node-template/resources/ephemeral-storage"
-        "value" = "${lookup(
-          var.worker_groups_launch_template[count.index],
-          "root_volume_size",
-          local.workers_group_defaults["root_volume_size"],
-        )}Gi"
-        "propagate_at_launch" = false
-      },
     ],
     local.asg_tags,
     lookup(

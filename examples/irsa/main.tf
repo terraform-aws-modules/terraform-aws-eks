@@ -75,6 +75,11 @@ module "eks" {
           "key"                 = "k8s.io/cluster-autoscaler/enabled"
           "propagate_at_launch" = "false"
           "value"               = "true"
+        },
+        {
+          "key"                 = "k8s.io/cluster-autoscaler/${local.cluster_name}"
+          "propagate_at_launch" = "false"
+          "value"               = "true"
         }
       ]
     }

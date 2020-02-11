@@ -49,7 +49,6 @@ locals {
     public_ip                     = false                       # Associate a public ip address with a worker
     kubelet_extra_args            = ""                          # This string is passed directly to kubelet if set. Useful for adding labels or taints.
     subnets                       = var.subnets                 # A list of subnets to place the worker nodes in. i.e. ["subnet-123", "subnet-456", "subnet-789"]
-    autoscaling_enabled           = false                       # Sets whether policy and matching tags will be added to allow autoscaling.
     additional_security_group_ids = []                          # A list of additional security group ids to include in worker launch config
     protect_from_scale_in         = false                       # Prevent AWS from scaling in, so that cluster-autoscaler is solely responsible.
     iam_instance_profile_name     = ""                          # A custom IAM instance profile name. Used when manage_worker_iam_resources is set to false. Incompatible with iam_role_id.
