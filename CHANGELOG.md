@@ -15,6 +15,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Added example `examples/irsa` for IAM Roles for Service Accounts (by @max-rocket-internet)
 - **Breaking:** Removal of autoscaling IAM policy and tags (by @max-rocket-internet)
 - Add `iam:{Create,Delete,Get}OpenIDConnectProvider` grants to the list of required IAM permissions in `docs/iam-permissions.md` (by @danielelisi)
+- Add an `name` parameter to be able to manually name EKS Managed Node Groups (by @splieth)
 
 #### Important notes
 
