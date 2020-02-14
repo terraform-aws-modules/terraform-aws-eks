@@ -28,6 +28,7 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | key\_name | Key name for workers. Set to empty string to disable remote access | string | `var.workers_group_defaults[key_name]` |
 | max\_capacity | Max number of workers | number | `var.workers_group_defaults[asg_max_size]` |
 | min\_capacity | Min number of workers | number | `var.workers_group_defaults[asg_min_size]` |
+| name | Name of the node group | string | Auto generated |
 | source\_security\_group\_ids | Source security groups for remote access to workers | list(string) | If key\_name is specified: THE REMOTE ACCESS WILL BE OPENED TO THE WORLD |
 | subnets | Subnets to contain workers | list(string) | `var.workers_group_defaults[subnets]` |
 | version | Kubernetes version | string | Provider default behavior |
