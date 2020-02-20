@@ -53,7 +53,7 @@ resource "aws_security_group_rule" "eks_cluster_add_access" {
   protocol    = "tcp"
   cidr_blocks = ["${chomp(data.http.myip.body)}/32"]
 
-  security_group_id = aws_eks_cluster.this[0].vpc_config.cluster_security_group_id
+  security_group_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
   depends_on        = [aws_eks_cluster.this[0]]
 }
 
