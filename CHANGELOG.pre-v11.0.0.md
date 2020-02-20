@@ -41,9 +41,14 @@ From EKS 1.15, the VPC tag `kubernetes.io/cluster/<cluster-name>: shared` is no 
 - [CI] Bump pre-commit-terraform version (by @barryib)
 - Added example `examples/irsa` for IAM Roles for Service Accounts (by @max-rocket-internet)
 - Add `iam:{Create,Delete,Get}OpenIDConnectProvider` grants to the list of required IAM permissions in `docs/iam-permissions.md` (by @danielelisi)
+<<<<<<< HEAD
 - Add a `name` parameter to be able to manually name EKS Managed Node Groups (by @splieth)
 - Pinned kubernetes provider version to exactly 1.10.0 across all examples and README.md's (by @andres-de-castro)
 - Change variable default `wait_for_cluster_cmd` from curl to wget (by @daroga0002)
+=======
+- Add an `name` parameter to be able to manually name EKS Managed Node Groups (by @splieth)
+- Add IP address to eks cluster security group if public_access = false and manage_aws_auth = true (by @slimm609)
+>>>>>>> add ip address when manage_aws_auth is true and public_access is false
 
 #### Important notes
 
