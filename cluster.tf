@@ -46,12 +46,12 @@ resource "aws_eks_cluster" "this" {
 }
 
 resource "aws_security_group_rule" "eks_cluster_add_access" {
-  count       = var.create_eks && var.manage_aws_auth == true && var.cluster_endpoint_public_access == false ? 1 : 0
+  count       = var.create_eks && var.manage_aws_auth && var.cluster_endpoint_private_access && var.cluster_endpoint_public_access == false ? 1 : 0
   type        = "ingress"
   from_port   = 443
   to_port     = 443
   protocol    = "tcp"
-  cidr_blocks = ["${chomp(data.http.myip.body)}/32"]
+  cidr_blocks = [var.cluster_endpoint_public_access]
 
   security_group_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
   depends_on        = [aws_eks_cluster.this[0]]
