@@ -45,7 +45,7 @@ resource "aws_eks_cluster" "this" {
   ]
 }
 
-resource "aws_security_group_rule" "eks_cluster_add_access" {
+resource "aws_security_group_rule" "cluster_private_access" {
   count       = var.create_eks && var.manage_aws_auth && var.cluster_endpoint_private_access && var.cluster_endpoint_public_access == false ? 1 : 0
   type        = "ingress"
   from_port   = 443
