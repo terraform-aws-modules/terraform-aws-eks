@@ -7,25 +7,29 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v8.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.2.0...HEAD)] - 2020-xx-xx]
-- Revert #631. Add back manage security group flags. (by @ryanooi)
+## [[v9.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v9.0.0...HEAD)] - 2020-xx-xx]
 
-- changed timeout for creating EKS (by @confiq)
+- Write your awesome change here (by @you)
+
+# History
+
+## [[v9.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.2.0...v9.0.0)] - 2020-xx-xx]
+
+- Revert #631. Add back manage security group flags. (by @ryanooi)
+- Changed timeout for creating EKS (by @confiq)
 - Added instructions for how to add Windows nodes (by @ivanguravel)
 - [CI] Switch `Validate` github action to use env vars (by @max-rocket-internet)
 - [CI] Bump pre-commit-terraform version (by @barryib)
 - Added example `examples/irsa` for IAM Roles for Service Accounts (by @max-rocket-internet)
 - **Breaking:** Removal of autoscaling IAM policy and tags (by @max-rocket-internet)
 - Add `iam:{Create,Delete,Get}OpenIDConnectProvider` grants to the list of required IAM permissions in `docs/iam-permissions.md` (by @danielelisi)
-- Add an `name` parameter to be able to manually name EKS Managed Node Groups (by @splieth)
+- Add a `name` parameter to be able to manually name EKS Managed Node Groups (by @splieth)
 - Pinned kubernetes provider version to exactly 1.10.0 across all examples and README.md's (by @andres-de-castro)
 - Change variable default `wait_for_cluster_cmd` from curl to wget (by @daroga0002)
 
 #### Important notes
 
-Autoscaling policy and tags have been removed from this module. This reduces complexity and increases security as the policy was attached to the node group IAM role. To manage it outside of this module either follow the example in `examples/irsa` to attach an IAM role to the cluster-autoscaler `serviceAccount` or create the policy outside this module and pass it in using the `workers_additional_policies` variable.
-
-# History
+Autoscaling policy and tags have been removed from this module. This reduces complexity and increases security as the policy was attached to the node group IAM role. To manage it outside of this module either follow the example in `examples/irsa` to attach an IAM role to the cluster-autoscaler `serviceAccount` or create [the policy](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/v8.2.0/workers.tf#L361-L416) outside this module and pass it in using the `workers_additional_policies` variable.
 
 ## [[v8.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.1.0...v8.2.0)] - 2020-01-29]
 
