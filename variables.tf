@@ -201,7 +201,19 @@ variable "cluster_delete_timeout" {
 variable "wait_for_cluster_cmd" {
   description = "Custom local-exec command to execute for determining if the eks cluster is healthy. Cluster endpoint will be available as an environment variable called ENDPOINT"
   type        = string
-  default     = "until curl -k -s $ENDPOINT/healthz >/dev/null; do sleep 4; done"
+  default     = "until wget --no-check-certificate -O - -q $ENDPOINT/healthz >/dev/null; do sleep 4; done"
+}
+
+variable "cluster_create_security_group" {
+  description = "Whether to create a security group for the cluster or attach the cluster to `cluster_security_group_id`."
+  type        = bool
+  default     = true
+}
+
+variable "worker_create_security_group" {
+  description = "Whether to create a security group for the workers or attach the workers to `worker_security_group_id`."
+  type        = bool
+  default     = true
 }
 
 variable "worker_create_initial_lifecycle_hooks" {
