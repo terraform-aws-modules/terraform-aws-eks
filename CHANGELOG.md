@@ -17,6 +17,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - **Breaking:** Removal of autoscaling IAM policy and tags (by @max-rocket-internet)
 - Add `iam:{Create,Delete,Get}OpenIDConnectProvider` grants to the list of required IAM permissions in `docs/iam-permissions.md` (by @danielelisi)
 - Add an `name` parameter to be able to manually name EKS Managed Node Groups (by @splieth)
+- Pinned kubernetes provider version to exactly 1.10.0 across all examples and README.md's (by @andres-de-castro)
 - Change variable default `wait_for_cluster_cmd` from curl to wget (by @daroga0002)
 
 #### Important notes
