@@ -16,6 +16,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - **Breaking:** Removal of autoscaling IAM policy and tags (by @max-rocket-internet)
 - Add `iam:{Create,Delete,Get}OpenIDConnectProvider` grants to the list of required IAM permissions in `docs/iam-permissions.md` (by @danielelisi)
 - Add an `name` parameter to be able to manually name EKS Managed Node Groups (by @splieth)
+- Add `default_cooldown` option to workers ASG
+- Add `health_check_grace_period` option to workers ASG
 
 #### Important notes
 
