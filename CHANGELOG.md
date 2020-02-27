@@ -17,6 +17,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - **Breaking:** Removal of autoscaling IAM policy and tags (by @max-rocket-internet)
 - Add `iam:{Create,Delete,Get}OpenIDConnectProvider` grants to the list of required IAM permissions in `docs/iam-permissions.md` (by @danielelisi)
 - Add an `name` parameter to be able to manually name EKS Managed Node Groups (by @splieth)
+- Change variable default `wait_for_cluster_cmd` from curl to wget (by @daroga0002)
 
 #### Important notes
 
