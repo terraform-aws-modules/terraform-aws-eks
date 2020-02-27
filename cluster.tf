@@ -50,7 +50,7 @@ resource "null_resource" "wait_for_cluster" {
 }
 
 resource "aws_security_group" "cluster" {
-  count       = var.cluster_security_group_id == "" && var.create_eks ? 1 : 0
+  count       = var.cluster_create_security_group && var.create_eks ? 1 : 0
   name_prefix = var.cluster_name
   description = "EKS cluster security group."
   vpc_id      = var.vpc_id
@@ -63,7 +63,7 @@ resource "aws_security_group" "cluster" {
 }
 
 resource "aws_security_group_rule" "cluster_egress_internet" {
-  count             = var.cluster_security_group_id == "" && var.create_eks ? 1 : 0
+  count             = var.cluster_create_security_group && var.create_eks ? 1 : 0
   description       = "Allow cluster egress access to the Internet."
   protocol          = "-1"
   security_group_id = local.cluster_security_group_id
@@ -74,7 +74,7 @@ resource "aws_security_group_rule" "cluster_egress_internet" {
 }
 
 resource "aws_security_group_rule" "cluster_https_worker_ingress" {
-  count                    = var.worker_security_group_id == "" && var.create_eks ? 1 : 0
+  count                    = var.cluster_create_security_group && var.create_eks ? 1 : 0
   description              = "Allow pods to communicate with the EKS cluster API."
   protocol                 = "tcp"
   security_group_id        = local.cluster_security_group_id
