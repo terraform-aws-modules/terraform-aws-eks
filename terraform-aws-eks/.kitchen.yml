@@ -1,7 +1,7 @@
 ---
 driver:
   name: "terraform"
-  root_module_directory: "examples/eks_test_fixture"
+  root_module_directory: "examples/basic"
 
 provisioner:
   name: "terraform"

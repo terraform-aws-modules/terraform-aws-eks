@@ -1,0 +1,73 @@
+name: Lint
+on: [push, pull_request]
+
+jobs:
+  tflint:
+    name: TFLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: TFLint
+        uses: docker://wata727/tflint
+
+  fmt:
+    name: Code Format
+    runs-on: ubuntu-latest
+    container:
+      image: hashicorp/terraform:latest
+    steps:
+      - uses: actions/checkout@master
+      - run: terraform fmt --recursive -check=true
+
+  docs:
+    name: Docs
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Install Deps
+        run: brew update && brew install pre-commit terraform-docs terraform
+      - name: Check Docs
+        run: pre-commit run --show-diff-on-failure --all-files terraform_docs
+
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    container:
+      image: hashicorp/terraform:latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Validate Code
+        env:
+          AWS_REGION: 'us-east-1'
+          TF_WARN_OUTPUT_ERRORS: 1
+          TF_VAR_vpc_id: 'vpc-123456'
+          TF_VAR_subnets: '["subnet-12345a"]'
+          TF_VAR_workers_ami_id: 'ami-123456'
+          TF_VAR_cluster_name: 'test_cluster'
+        run: |
+          terraform init
+          terraform validate
+      - name: Validate Examples
+        run: |
+          for example in $(find examples -maxdepth 1 -mindepth 1 -type d); do
+            cd $example
+            terraform init
+            terraform validate
+            cd -
+          done
+
+  minimum:
+    name: Minimum version check
+    runs-on: ubuntu-latest
+    container:
+      image: hashicorp/terraform:0.12.9
+    steps:
+      - uses: actions/checkout@master
+      - name: Validate Code
+        env:
+          AWS_REGION: 'us-east-1'
+          TF_WARN_OUTPUT_ERRORS: 1
+        run: |
+          sed -i -e 's/>=/=/' -e 's/ \(\d\+\.\d\+\)"/ \1.0"/' versions.tf
+          terraform init
+          terraform validate -var "region=${AWS_REGION}" -var "vpc_id=vpc-123456" -var "subnets=[\"subnet-12345a\"]" -var "workers_ami_id=ami-123456" -var "cluster_ingress_cidrs=[]" -var "cluster_name=test_cluster"
