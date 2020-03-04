@@ -12,7 +12,7 @@ In the following examples at least 1 worker group that uses on-demand instances 
 
 ```yaml
 nodeSelector:
-  kubernetes.io/lifecycle: spot
+  kubernetes.io/lifecycle: normal
 ```
 
 Notes:
