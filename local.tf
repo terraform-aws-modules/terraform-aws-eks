@@ -19,8 +19,8 @@ locals {
   worker_group_count                 = length(var.worker_groups)
   worker_group_launch_template_count = length(var.worker_groups_launch_template)
 
-  default_ami_id_linux   = lookup(var.workers_group_defaults, "ami_id", data.aws_ami.eks_worker.id)
-  default_ami_id_windows = lookup(var.workers_group_defaults, "ami_id", data.aws_ami.eks_worker_windows.id)
+  default_ami_id_linux   = coalesce(local.workers_group_defaults.ami_id, data.aws_ami.eks_worker.id)
+  default_ami_id_windows = coalesce(local.workers_group_defaults.ami_id, data.aws_ami.eks_worker_windows.id)
 
   workers_group_defaults_defaults = {
     name                          = "count.index"               # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
