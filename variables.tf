@@ -288,6 +288,12 @@ variable "create_eks" {
   default     = true
 }
 
+variable "create_eks_worker_nodes" {
+  description = "Controls if EKS worker node resources should be created"
+  type        = bool
+  default     = true
+}
+
 variable "node_groups_defaults" {
   description = "Map of values to be applied to all node groups. See `node_groups` module's documentaton for more details"
   type        = any

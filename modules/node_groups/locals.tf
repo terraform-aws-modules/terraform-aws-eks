@@ -12,5 +12,5 @@ locals {
     },
     var.node_groups_defaults,
     v,
-  ) if var.create_eks }
+  ) if (var.create_eks || var.create_eks_worker_nodes) }
 }
