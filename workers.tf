@@ -185,6 +185,11 @@ resource "aws_launch_configuration" "workers" {
   )
 
   root_block_device {
+    encrypted = lookup(
+      var.worker_groups[count.index],
+      "root_encrypted",
+      local.workers_group_defaults["root_encrypted"],
+    )
     volume_size = lookup(
       var.worker_groups[count.index],
       "root_volume_size",
