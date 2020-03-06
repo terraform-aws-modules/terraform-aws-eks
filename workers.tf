@@ -318,19 +318,19 @@ resource "aws_iam_instance_profile" "workers" {
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {
   count      = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+  policy_arn = "${local.policy_arn_prefix}/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.workers[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEKS_CNI_Policy" {
   count      = var.manage_worker_iam_resources && var.attach_worker_cni_policy && var.create_eks ? 1 : 0
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  policy_arn = "${local.policy_arn_prefix}/AmazonEKS_CNI_Policy"
   role       = aws_iam_role.workers[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryReadOnly" {
   count      = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  policy_arn = "${local.policy_arn_prefix}/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.workers[0].name
 }
 
