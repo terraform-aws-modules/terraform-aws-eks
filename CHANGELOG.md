@@ -11,6 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 - Fix #753 by adding and instance tag spec to launch templates (by @js-timbirkett)
 - Fix doc about spot instances, cluster-autoscaler should be scheduled on normal instances instead of spot (by @simowaer)
+- Adding `encrypted` option to worker's root_block_device as read from the worker configurations (by @craig-rueda)
 
 # History
 
