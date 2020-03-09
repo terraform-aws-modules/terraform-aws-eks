@@ -67,7 +67,7 @@ locals {
     launch_template_version           = "$Latest"                                # The lastest version of the launch template to use in the autoscaling group
     launch_template_placement_tenancy = "default"                                # The placement tenancy for instances
     launch_template_placement_group   = ""                                       # The name of the placement group into which to launch the instances, if any.
-    root_encrypted                    = ""                                       # Whether the volume should be encrypted or not
+    root_encrypted                    = false                                    # Whether the volume should be encrypted or not
     eni_delete                        = true                                     # Delete the Elastic Network Interface (ENI) on termination (if set to false you will have to manually delete before destroying)
     cpu_credits                       = "standard"                               # T2/T3 unlimited mode, can be 'standard' or 'unlimited'. Used 'standard' mode as default to avoid paying higher costs
     market_type                       = null
