@@ -96,12 +96,12 @@ resource "aws_iam_role" "cluster" {
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
   count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  policy_arn = "${local.policy_arn_prefix}/AmazonEKSClusterPolicy"
   role       = local.cluster_iam_role_name
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSServicePolicy" {
   count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
+  policy_arn = "${local.policy_arn_prefix}/AmazonEKSServicePolicy"
   role       = local.cluster_iam_role_name
 }
