@@ -73,6 +73,11 @@ resource "aws_autoscaling_group" "workers" {
     "termination_policies",
     local.workers_group_defaults["termination_policies"]
   )
+  max_instance_lifetime = lookup(
+    var.worker_groups_launch_template[count.index],
+    "max_instance_lifetime",
+    local.workers_group_defaults["max_instance_lifetime"],
+  )
 
   dynamic "initial_lifecycle_hook" {
     for_each = var.worker_create_initial_lifecycle_hooks ? lookup(var.worker_groups[count.index], "asg_initial_lifecycle_hooks", local.workers_group_defaults["asg_initial_lifecycle_hooks"]) : []
