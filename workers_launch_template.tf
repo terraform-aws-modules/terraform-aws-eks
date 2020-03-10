@@ -77,6 +77,16 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     "max_instance_lifetime",
     local.workers_group_defaults["max_instance_lifetime"],
   )
+  default_cooldown = lookup(
+    var.worker_groups_launch_template[count.index],
+    "default_cooldown",
+    local.workers_group_defaults["default_cooldown"]
+  )
+  health_check_grace_period = lookup(
+    var.worker_groups_launch_template[count.index],
+    "health_check_grace_period",
+    local.workers_group_defaults["health_check_grace_period"]
+  )
 
   dynamic mixed_instances_policy {
     iterator = item
