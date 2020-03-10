@@ -13,6 +13,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Adding `encrypted` option to worker's root_block_device as read from the worker configurations (by @craig-rueda)
 - Use correct policy arns for CN regions (cn-north-1, cn-northwest-1) (by @cofyc)
 - Add support for ASG max instance lifetime (by @sidprak)
+- Add `default_cooldown` option to workers ASG (by @ArieLevs)
+- Add `health_check_grace_period` option to workers ASG (by @ArieLevs)
 
 # History
 
