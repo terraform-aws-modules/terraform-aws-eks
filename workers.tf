@@ -78,6 +78,16 @@ resource "aws_autoscaling_group" "workers" {
     "max_instance_lifetime",
     local.workers_group_defaults["max_instance_lifetime"],
   )
+  default_cooldown = lookup(
+    var.worker_groups[count.index],
+    "default_cooldown",
+    local.workers_group_defaults["default_cooldown"]
+  )
+  health_check_grace_period = lookup(
+    var.worker_groups[count.index],
+    "health_check_grace_period",
+    local.workers_group_defaults["health_check_grace_period"]
+  )
 
   dynamic "initial_lifecycle_hook" {
     for_each = var.worker_create_initial_lifecycle_hooks ? lookup(var.worker_groups[count.index], "asg_initial_lifecycle_hooks", local.workers_group_defaults["asg_initial_lifecycle_hooks"]) : []
