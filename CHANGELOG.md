@@ -14,6 +14,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Use correct policy arns for CN regions (cn-north-1, cn-northwest-1) (by @cofyc)
 - Add support for ASG max instance lifetime (by @sidprak)
 - Add `default_cooldown` and `health_check_grace_period` options to workers ASG (by @ArieLevs)
+- Fix support for ASG max instance lifetime for workers (by @barryib)
 
 # History
 
