@@ -27,6 +27,17 @@ resource "aws_eks_cluster" "this" {
     delete = var.cluster_delete_timeout
   }
 
+  dynamic encryption_config {
+    for_each = toset(var.cluster_encryption_config)
+
+    content {
+      provider {
+        key_arn = encryption_config.value["provider_key_arn"]
+      }
+      resources = encryption_config.value["resources"]
+    }
+  }
+
   depends_on = [
     aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy,
     aws_iam_role_policy_attachment.cluster_AmazonEKSServicePolicy,
