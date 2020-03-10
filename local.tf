@@ -22,6 +22,7 @@ locals {
   default_ami_id_linux   = coalesce(local.workers_group_defaults.ami_id, data.aws_ami.eks_worker.id)
   default_ami_id_windows = coalesce(local.workers_group_defaults.ami_id, data.aws_ami.eks_worker_windows.id)
 
+  policy_arn_prefix = contains(["cn-northwest-1", "cn-north-1"], data.aws_region.current.name) ? "arn:aws-cn:iam::aws:policy" : "arn:aws:iam::aws:policy"
   workers_group_defaults_defaults = {
     name                          = "count.index"               # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
     tags                          = []                          # A list of map defining extra tags to be applied to the worker group autoscaling group.
@@ -32,6 +33,8 @@ locals {
     asg_force_delete              = false                       # Enable forced deletion for the autoscaling group.
     asg_initial_lifecycle_hooks   = []                          # Initital lifecycle hook for the autoscaling group.
     asg_recreate_on_change        = false                       # Recreate the autoscaling group when the Launch Template or Launch Configuration change.
+    default_cooldown              = null                        # The amount of time, in seconds, after a scaling activity completes before another scaling activity can start.
+    health_check_grace_period     = null                        # Time in seconds after instance comes into service before checking health.
     instance_type                 = "m4.large"                  # Size of the workers instances.
     spot_price                    = ""                          # Cost of spot instance.
     placement_tenancy             = ""                          # The tenancy of the instance. Valid values are "default" or "dedicated".
@@ -66,7 +69,7 @@ locals {
     launch_template_version           = "$Latest"                                # The lastest version of the launch template to use in the autoscaling group
     launch_template_placement_tenancy = "default"                                # The placement tenancy for instances
     launch_template_placement_group   = ""                                       # The name of the placement group into which to launch the instances, if any.
-    root_encrypted                    = ""                                       # Whether the volume should be encrypted or not
+    root_encrypted                    = false                                    # Whether the volume should be encrypted or not
     eni_delete                        = true                                     # Delete the Elastic Network Interface (ENI) on termination (if set to false you will have to manually delete before destroying)
     cpu_credits                       = "standard"                               # T2/T3 unlimited mode, can be 'standard' or 'unlimited'. Used 'standard' mode as default to avoid paying higher costs
     market_type                       = null
@@ -78,6 +81,7 @@ locals {
     spot_allocation_strategy                 = "lowest-price"                                       # Valid options are 'lowest-price' and 'capacity-optimized'. If 'lowest-price', the Auto Scaling group launches instances using the Spot pools with the lowest price, and evenly allocates your instances across the number of Spot pools. If 'capacity-optimized', the Auto Scaling group launches instances using Spot pools that are optimally chosen based on the available Spot capacity.
     spot_instance_pools                      = 10                                                   # "Number of Spot pools per availability zone to allocate capacity. EC2 Auto Scaling selects the cheapest Spot pools and evenly allocates Spot capacity across the number of Spot pools that you specify."
     spot_max_price                           = ""                                                   # Maximum price per unit hour that the user is willing to pay for the Spot instances. Default is the on-demand price
+    max_instance_lifetime                    = 0                                                    # Maximum number of seconds instances can run in the ASG. 0 is unlimited.
   }
 
   workers_group_defaults = merge(

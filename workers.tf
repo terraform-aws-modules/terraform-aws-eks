@@ -73,6 +73,21 @@ resource "aws_autoscaling_group" "workers" {
     "termination_policies",
     local.workers_group_defaults["termination_policies"]
   )
+  max_instance_lifetime = lookup(
+    var.worker_groups_launch_template[count.index],
+    "max_instance_lifetime",
+    local.workers_group_defaults["max_instance_lifetime"],
+  )
+  default_cooldown = lookup(
+    var.worker_groups[count.index],
+    "default_cooldown",
+    local.workers_group_defaults["default_cooldown"]
+  )
+  health_check_grace_period = lookup(
+    var.worker_groups[count.index],
+    "health_check_grace_period",
+    local.workers_group_defaults["health_check_grace_period"]
+  )
 
   dynamic "initial_lifecycle_hook" {
     for_each = var.worker_create_initial_lifecycle_hooks ? lookup(var.worker_groups[count.index], "asg_initial_lifecycle_hooks", local.workers_group_defaults["asg_initial_lifecycle_hooks"]) : []
@@ -185,6 +200,11 @@ resource "aws_launch_configuration" "workers" {
   )
 
   root_block_device {
+    encrypted = lookup(
+      var.worker_groups[count.index],
+      "root_encrypted",
+      local.workers_group_defaults["root_encrypted"],
+    )
     volume_size = lookup(
       var.worker_groups[count.index],
       "root_volume_size",
@@ -313,19 +333,19 @@ resource "aws_iam_instance_profile" "workers" {
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {
   count      = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+  policy_arn = "${local.policy_arn_prefix}/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.workers[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEKS_CNI_Policy" {
   count      = var.manage_worker_iam_resources && var.attach_worker_cni_policy && var.create_eks ? 1 : 0
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  policy_arn = "${local.policy_arn_prefix}/AmazonEKS_CNI_Policy"
   role       = aws_iam_role.workers[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryReadOnly" {
   count      = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  policy_arn = "${local.policy_arn_prefix}/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.workers[0].name
 }
 
