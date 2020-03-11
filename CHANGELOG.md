@@ -15,6 +15,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Add support for ASG max instance lifetime (by @sidprak)
 - Add `default_cooldown` and `health_check_grace_period` options to workers ASG (by @ArieLevs)
 - Fix support for ASG max instance lifetime for workers (by @barryib)
+- Add support for envelope encryption of Secrets (by @babilen5)
 
 # History
 
