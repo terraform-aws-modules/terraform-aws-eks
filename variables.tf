@@ -311,3 +311,12 @@ variable "eks_oidc_root_ca_thumbprint" {
   description = "Thumbprint of Root CA for EKS OIDC, Valid until 2037"
   default     = "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
 }
+
+variable "cluster_encryption_config" {
+  description = "Configuration block with encryption configuration for the cluster. See examples/secrets_encryption/main.tf for example format"
+  type = list(object({
+    provider_key_arn = string
+    resources        = list(string)
+  }))
+  default = []
+}

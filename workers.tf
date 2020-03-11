@@ -74,7 +74,7 @@ resource "aws_autoscaling_group" "workers" {
     local.workers_group_defaults["termination_policies"]
   )
   max_instance_lifetime = lookup(
-    var.worker_groups_launch_template[count.index],
+    var.worker_groups[count.index],
     "max_instance_lifetime",
     local.workers_group_defaults["max_instance_lifetime"],
   )
