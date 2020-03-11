@@ -7,23 +7,39 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Next release
 
-## [[v9.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v9.0.0...HEAD)] - 2020-xx-xx]
+## [[v10.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v10.0.0...HEAD)] - 2020-xx-xx
 
-- Remove obsolete assumption from README (kubectl & aws-iam-authenticator) (by @pierresteiner)
+- Write your awesome change here (GH-xxxx)
+
+## History
+
+## [[v10.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v9.0.0...v10.0.0)] - 2020-03-12
+
+BREAKING CHANGES:
+
+- Added support for EKS 1.15 (by @sc250024)
+
+ENHANCEMENTS:
+
 - Ensuring that ami lookup hierarchy is worker_group_launch_templates and worker_groups -> worker_group_defaults -> and finally aws ami lookup (by @ck3mp3r)
-- Fix doc about spot instances, cluster-autoscaler should be scheduled on normal instances instead of spot (by @simowaer)
 - Adding `encrypted` option to worker's root_block_device as read from the worker configurations (by @craig-rueda)
-- Use correct policy arns for CN regions (cn-north-1, cn-northwest-1) (by @cofyc)
 - Add support for ASG max instance lifetime (by @sidprak)
 - Add `default_cooldown` and `health_check_grace_period` options to workers ASG (by @ArieLevs)
-- Fix support for ASG max instance lifetime for workers (by @barryib)
 - Add support for envelope encryption of Secrets (by @babilen5)
+
+BUG FIXES:
+
 - Fix issue with terraform plan phase when IRSA was enabled and create_eks switches to false (by @daroga0002)
-- **Breaking:** Added support for EKS 1.15 (by @sc250024)
+- Remove obsolete assumption from README (kubectl & aws-iam-authenticator) (by @pierresteiner)
+- Fix doc about spot instances, cluster-autoscaler should be scheduled on normal instances instead of spot (by @simowaer)
+- Use correct policy arns for CN regions (cn-north-1, cn-northwest-1) (by @cofyc)
+- Fix support for ASG max instance lifetime for workers (by @barryib)
 
-# History
+NOTES:
 
-## [[v9.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.2.0...v9.0.0)] - 2020-02-27]
+From EKS 1.15, the VPC tag `kubernetes.io/cluster/<cluster-name>: shared` is no longer required. So we droped those tags from exemples.
+
+## [[v9.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.2.0...v9.0.0)] - 2020-02-27
 
 - **Breaking:** Removal of autoscaling IAM policy and tags (by @max-rocket-internet)
 - Revert #631. Add back manage security group flags. (by @ryanooi)
@@ -41,19 +57,19 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 Autoscaling policy and tags have been removed from this module. This reduces complexity and increases security as the policy was attached to the node group IAM role. To manage it outside of this module either follow the example in `examples/irsa` to attach an IAM role to the cluster-autoscaler `serviceAccount` or create [the policy](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/v8.2.0/workers.tf#L361-L416) outside this module and pass it in using the `workers_additional_policies` variable.
 
-## [[v8.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.1.0...v8.2.0)] - 2020-01-29]
+## [[v8.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.1.0...v8.2.0)] - 2020-01-29
 
 - Include ability to configure custom os-specific command for waiting until kube cluster is healthy (@sanjeevgiri)
 - Disable creation of ingress rules if worker nodes security groups are exists (@andjelx)
 - [CI] Update pre-commit and re-generate docs to work with terraform-docs >= 0.8.1 (@barryib)
 
-## [[v8.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...v8.1.0)] - 2020-01-17]
+## [[v8.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...v8.1.0)] - 2020-01-17
 
 - Fix index reference on destroy for output `oidc_provider_arn` (@stevie-)
 - Add support for restricting access to the public API endpoint (@sidprak)
 - Add an `ignore_lifecycle` rule to prevent Terraform from scaling down ASG behind AWS EKS Managed Node Group (by @davidalger)
 
-## [[v8.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...v7.0.1)] - 2020-01-09]
+## [[v8.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...v7.0.1)] - 2020-01-09
 
 - **Breaking:** Change logic of security group whitelisting. Will always whitelist worker security group on control plane security group either provide one or create new one. See Important notes below for upgrade notes (by @ryanooi)
 - **Breaking:** Configure the aws-auth configmap using the terraform kubernetes providers. See Important notes below for upgrade notes (by @sdehaes)
@@ -94,14 +110,14 @@ For security group whitelisting change. After upgrade, have to remove `cluster_c
 terraform import module.eks.aws_security_group_rule.cluster_https_worker_ingress <CONTROL_PLANE_SECURITY_GROUP_ID>_ingress_tcp_443_443_<WORKER_SECURITY_GROUP_ID>
 ```
 
-## [[v7.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v7.0.1...v7.0.0)] - 2019-12-11]
+## [[v7.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v7.0.1...v7.0.0)] - 2019-12-11
 
 - Test against minimum versions specified in `versions.tf` (by @dpiddockcmp)
 - Updated `instance_profile_names` and `instance_profile_arns` outputs to also consider launch template as well as asg (by @ankitwal)
 - Fix broken terraform plan/apply on a cluster < 1.14 (by @hodduc)
 - Updated application of `aws-auth` configmap to create `kube_config.yaml` and `aws_auth_configmap.yaml` in sequence (and not parallel) to `kubectl apply` (by @knittingdev)
 
-## [[v7.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.2...v7.0.0)] - 2019-10-30]
+## [[v7.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.2...v7.0.0)] - 2019-10-30
 
 - **Breaking:** Allow for specifying a custom AMI for the worker nodes. (by @bmcstdio)
 - Added support for Windows workers AMIs (by @hodduc)
@@ -115,20 +131,20 @@ terraform import module.eks.aws_security_group_rule.cluster_https_worker_ingress
 
 An AMI is now specified using the whole name, for example `amazon-eks-node-1.14-v20190927`.
 
-## [[v6.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.1...v6.0.2)] - 2019-10-07]
+## [[v6.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.1...v6.0.2)] - 2019-10-07
 
 - Added `tags` to `aws_eks_cluster` introduced by terraform-provider-aws 2.31.0 (by @morganchristiansson)
 - Add option to enable lifecycle hooks creation (by @barryib)
 - Remove helm chart value `sslCertPath` described in `docs/autoscaling.md` (by @wi1dcard)
 - Attaching of IAM policies for autoscaler and CNI to the worker nodes now optional (by @dpiddockcmp)
 
-## [[v6.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.0...v6.0.1)] - 2019-09-25]
+## [[v6.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.0...v6.0.1)] - 2019-09-25
 
 - Added support for different workers AMI's, i.e. with GPU support (by @rvoitenko)
 - Use null as default value for `target_group_arns` attribute of worker autoscaling group (by @tatusl)
 - Output empty string when cluster identity is empty (by @tbarry)
 
-## [[v6.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.1.0...v6.0.0)] - 2019-09-17]
+## [[v6.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.1.0...v6.0.0)] - 2019-09-17
 
 - Added `market_type` to `workers_launch_template.tf` allow the usage of spot nodegroups without mixed instances policy.
 - Added support for log group tag in `./cluster.tf` (@lucas-giaco)
@@ -156,11 +172,11 @@ You will need to move worker groups from `worker_groups_launch_template_mixed` t
 
 Map roles need to rename `role_arn` to `rolearn` and `group = ""` to `groups = [""]`.
 
-## [[v5.1.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.1.0...v5.1.1)] - 2019-07-30]
+## [[v5.1.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.1.0...v5.1.1)] - 2019-07-30
 
 - Added new tag in `worker.tf` with autoscaling_enabled = true flag (by @insider89)
 
-## [[v5.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.0.0...v5.1.0)] - 2019-07-30]
+## [[v5.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.0.0...v5.1.0)] - 2019-07-30
 
 - Option to set a KMS key for the log group and encrypt it (by @till-krauss)
 - Output the name of the cloudwatch log group (by @gbooth27)
@@ -170,7 +186,7 @@ Map roles need to rename `role_arn` to `rolearn` and `group = ""` to `groups = [
 - Update default override instance types to work with Cluster Autoscaler (by @nauxliu on behalf of RightCapital)
 - Examples now specify `enable_dns_hostnames = true`, as per [EKS documentation](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html) (by @karolinepauls)
 
-## [[v5.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.2...v5.0.0)] - 2019-06-19]
+## [[v5.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.2...v5.0.0)] - 2019-06-19
 
 - Added Termination Policy Option to worker ASGs (by @undeadops)
 - Update EBS optimized instances type (by @gloutsch)
@@ -184,17 +200,17 @@ Map roles need to rename `role_arn` to `rolearn` and `group = ""` to `groups = [
 - Change override instance_types to list (by @nauxliu on behalf of RightCapital)
 - Fix toggle for IAM instance profile creation for mixed launch templates (by @jnozo)
 
-## [[v4.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.1...v4.0.2)] - 2019-05-07]
+## [[v4.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.1...v4.0.2)] - 2019-05-07
 - Added 2 new examples, also tidy up basic example (by @max-rocket-internet)
 - Updates to travis, PR template (by @max-rocket-internet)
 - Fix typo in data.tf (by @max-rocket-internet)
 - Add missing launch template items in `aws_auth.tf` (by @max-rocket-internet)
 
-## [[v4.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.0...v4.0.1)] - 2019-05-07]
+## [[v4.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.0...v4.0.1)] - 2019-05-07
 
 - Fix annoying typo: worker_group_xx vs worker_groups_xx (by @max-rocket-internet)
 
-## [[v4.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v3.0.0...v4.0.0)] - 2019-05-07]
+## [[v4.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v3.0.0...v4.0.0)] - 2019-05-07
 
 - Added support for custom service linked role for Auto Scaling group (by @voanhduy1512)
 - Added support for custom IAM roles for cluster and workers (by @erks)
@@ -209,7 +225,7 @@ Map roles need to rename `role_arn` to `rolearn` and `group = ""` to `groups = [
 - Switch to https for the pre-commit repos (by @rothandrew)
 - Add instructions on how to enable the docker bridge network (by @rothandrew)
 
-## [[v3.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.3.1...v3.0.0)] - 2019-04-15]
+## [[v3.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.3.1...v3.0.0)] - 2019-04-15
 
 - Fixed: Ability to destroy clusters due to security groups being attached to ENI's (by @whiskeyjimbo)
 - Added outputs for worker IAM instance profile(s) (by @soapergem)
@@ -217,13 +233,13 @@ Map roles need to rename `role_arn` to `rolearn` and `group = ""` to `groups = [
 - Updated vpc module version and aws provider version. (by @chenrui333)
 - Upgraded default kubernetes version from 1.11 to 1.12 (by @stijndehaes)
 
-## [[v2.3.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.3.0...v2.3.1)] - 2019-03-26]
+## [[v2.3.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.3.0...v2.3.1)] - 2019-03-26
 
 - Added support for eks public and private endpoints (by @stijndehaes)
 - Added minimum inbound traffic rule to the cluster worker security group as per the [EKS security group requirements](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html) (by @sc250024)
 - (Breaking Change) Replaced `enable_docker_bridge` with a generic option called `bootstrap_extra_args` to resolve [310](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/310) (by @max-rocket-internet)
 
-## [[v2.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.1...v2.3.0)] - 2019-03-20]
+## [[v2.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.1...v2.3.0)] - 2019-03-20
 
 - Allow additional policies to be attached to worker nodes (by @rottenbytes)
 - Ability to specify a placement group for each worker group (by @matheuss)
@@ -235,13 +251,13 @@ Map roles need to rename `role_arn` to `rolearn` and `group = ""` to `groups = [
 - Added optional name filter variable to be able to pin worker AMI to a release (by @max-rocket-internet)
 - Added `--enable-docker-bridge` option for bootstrap.sh in AMI (by @michaelmccord)
 
-## [[v2.2.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.1...v2.2.2)] - 2019-02-25]
+## [[v2.2.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.1...v2.2.2)] - 2019-02-25
 
 - Ability to specify a path for IAM roles (by @tekn0ir)
 
-## [[v2.2.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.0...v2.2.1)] - 2019-02-18]
+## [[v2.2.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.0...v2.2.1)] - 2019-02-18
 
-## [[v2.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.1.0...v2.2.0)] - 2019-02-07]
+## [[v2.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.1.0...v2.2.0)] - 2019-02-07
 
 - Ability to specify a permissions_boundary for IAM roles (by @dylanhellems)
 - Ability to configure force_delete for the worker group ASG (by @stefansedich)
@@ -253,7 +269,7 @@ Map roles need to rename `role_arn` to `rolearn` and `group = ""` to `groups = [
 - Fixed a bug where worker group defaults were being used for launch template user data (by @leonsodhi-lf)
 - Managed_aws_auth option is true, the aws-auth configmap file is no longer created, and write_aws_auth_config must be set to true to generate config_map. (by @yutachaos)
 
-## [[v2.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.0.0...v2.1.0)] - 2019-01-15]
+## [[v2.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.0.0...v2.1.0)] - 2019-01-15
 
 - Initial support for worker groups based on Launch Templates (by @skang0601)
 - Updated the `update_config_map_aws_auth` resource to trigger when the EKS cluster endpoint changes. This likely means that a new cluster was spun up so our ConfigMap won't exist (fixes #234) (by @elatt)
@@ -261,7 +277,7 @@ Map roles need to rename `role_arn` to `rolearn` and `group = ""` to `groups = [
 - Fixed zsh-specific syntax in retry loop for aws auth config map (by @marcelloromani)
 - Fix: fail deployment if applying the aws auth config map still fails after 10 attempts (by @marcelloromani)
 
-## [[v2.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.8.0...v2.0.0)] - 2018-12-14]
+## [[v2.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.8.0...v2.0.0)] - 2018-12-14
 
 - (Breaking Change) New input variables `map_accounts_count`, `map_roles_count` and `map_users_count` to allow using computed values as part of `map_accounts`, `map_roles` and `map_users` configs (by @chili-man on behalf of OpenGov).
 - (Breaking Change) New variables `cluster_create_security_group` and `worker_create_security_group` to stop `value of 'count' cannot be computed` error.
@@ -272,7 +288,7 @@ Map roles need to rename `role_arn` to `rolearn` and `group = ""` to `groups = [
 - Travis fixes (by @RothAndrew)
 - Fixed some Windows compatibility issues (by @RothAndrew)
 
-## [[v1.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.7.0...v1.8.0)] - 2018-12-04]
+## [[v1.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.7.0...v1.8.0)] - 2018-12-04
 
 -  Support for using AWS Launch Templates to define autoscaling groups (by @skang0601)
 - `suspended_processes` to `worker_groups` input (by @bkmeneguello)
@@ -286,7 +302,7 @@ Map roles need to rename `role_arn` to `rolearn` and `group = ""` to `groups = [
 - Removed providers from `main.tf`. (by @max-rocket-internet)
 - Removed `configure_kubectl_session` references in documentation [#171](https://github.com/terraform-aws-modules/terraform-aws-eks/pull/171) (by @dominik-k)
 
-## [[v1.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.6.0...v1.7.0)] - 2018-10-09]
+## [[v1.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.6.0...v1.7.0)] - 2018-10-09
 
 - Worker groups can be created with a specified IAM profile. (from @laverya)
 - exposed `aws_eks_cluster` create and destroy timeouts (by @RGPosadas)
@@ -297,7 +313,7 @@ Map roles need to rename `role_arn` to `rolearn` and `group = ""` to `groups = [
 - Cosmetic syntax changes to improve readability. (by @max-rocket-internet)
 - add `protect_from_scale_in` to solve issue #134 (by @kinghajj)
 
-## [[v1.6.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.5.0...v1.6.0)] - 2018-09-04]
+## [[v1.6.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.5.0...v1.6.0)] - 2018-09-04
 
 - add support for [`amazon-eks-node-*` AMI with bootstrap script](https://aws.amazon.com/blogs/opensource/improvements-eks-worker-node-provisioning/) (by @erks)
 - expose `kubelet_extra_args` worker group option (replacing `kubelet_node_labels`) to allow specifying arbitrary kubelet options (e.g. taints and labels) (by @erks)
@@ -308,7 +324,7 @@ Map roles need to rename `role_arn` to `rolearn` and `group = ""` to `groups = [
 - **Breaking change** Removed support for `eks-worker-*` AMI. The cluster specifying a custom AMI based off of `eks-worker-*` AMI will have to rebuild the AMI from `amazon-eks-node-*`.  (by @erks)
 - **Breaking change** Removed `kubelet_node_labels` worker group option in favor of `kubelet_extra_args`. (by @erks)
 
-## [[v1.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.4.0...v1.5.0)] - 2018-08-30]
+## [[v1.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.4.0...v1.5.0)] - 2018-08-30
 
 - add spot_price option to aws_launch_configuration
 - add enable_monitoring option to aws_launch_configuration
@@ -319,20 +335,20 @@ Map roles need to rename `role_arn` to `rolearn` and `group = ""` to `groups = [
   If you are upgrading from 1.4 you should fix state after upgrade: `terraform state rm module.eks.data.http.workstation_external_ip`
 - Can now selectively override keys in `workers_group_defaults` variable rather than callers maintaining a duplicate of the whole map. (by @dpiddockcmp)
 
-## [[v1.4.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.3.0...v1.4.0)] - 2018-08-02]
+## [[v1.4.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.3.0...v1.4.0)] - 2018-08-02
 
 - manage eks workers' root volume size and type.
 - `workers_asg_names` added to outputs. (kudos to @laverya)
 - New top level variable `worker_group_count` added to replace the use of `length(var.worker_groups)`. This allows using computed values as part of worker group configs. (complaints to @laverya)
 
-## [[v1.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.2.0...v1.3.0)] - 2018-07-11]
+## [[v1.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.2.0...v1.3.0)] - 2018-07-11
 
 - New variables `map_accounts`, `map_roles` and `map_users` in order to manage additional entries in the `aws-auth` configmap. (by @max-rocket-internet)
 - kubelet_node_labels worker group option allows setting --node-labels= in kubelet. (Hat-tip, @bshelton229 👒)
 - `worker_iam_role_arn` added to outputs. Sweet, @hatemosphere 🔥
 - Worker subnets able to be specified as a dedicated list per autoscaling group. (up top, @bshelton229 🙏)
 
-## [[v1.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.1.0...v1.2.0)] - 2018-07-01]
+## [[v1.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.1.0...v1.2.0)] - 2018-07-01
 
 - new variable `pre_userdata` added to worker launch configuration allows to run scripts before the plugin does anything. (W00t, @jimbeck 🦉)
 - kubeconfig made much more flexible. (Bang up job, @sdavids13 💥)
@@ -340,7 +356,7 @@ Map roles need to rename `role_arn` to `rolearn` and `group = ""` to `groups = [
 - Providing security groups didn't behave as expected. This has been fixed. (Good catch, @jimbeck 🔧)
 - workstation cidr to be allowed by created security group is now more flexible. (A welcome addition, @jimbeck 🔐)
 
-## [[v1.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.0.0...v1.1.0)] - 2018-06-25]
+## [[v1.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.0.0...v1.1.0)] - 2018-06-25
 
 - new variable `worker_sg_ingress_from_port` allows to change the minimum port number from which pods will accept communication (Thanks, @ilyasotkov 👏).
 - expanded on worker example to show how multiple worker autoscaling groups can be created.
@@ -351,13 +367,13 @@ Map roles need to rename `role_arn` to `rolearn` and `group = ""` to `groups = [
 - `kube-proxy` restart no longer needed in userdata. Good catch, @hatemosphere 🔥
 - worker ASG reattachment wasn't possible when using `name`. Moved to `name_prefix` to allow recreation of resources. Kudos again, @hatemosphere 🐧
 
-## [[v1.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v0.2.0...v1.0.0)] - 2018-06-11]
+## [[v1.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v0.2.0...v1.0.0)] - 2018-06-11
 
 - security group id can be provided for either/both of the cluster and the workers. If not provided, security groups will be created with sufficient rules to allow cluster-worker communication. - kudos to @tanmng on the idea ⭐
 - outputs of security group ids and worker ASG arns added for working with these resources outside the module.
 - Worker build out refactored to allow multiple autoscaling groups each having differing specs. If none are given, a single ASG is created with a set of sane defaults - big thanks to @kppullin 🥨
 
-## [[v0.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v0.1.1...v0.2.0)] - 2018-06-08]
+## [[v0.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v0.1.1...v0.2.0)] - 2018-06-08
 
 - ability to specify extra userdata code to execute following kubelet services start.
 - EBS optimization used whenever possible for the given instance type.
@@ -365,7 +381,7 @@ Map roles need to rename `role_arn` to `rolearn` and `group = ""` to `groups = [
 - files rendered from dedicated templates to separate out raw code and config from `hcl`
 - `workers_ami_id` is now made optional. If not specified, the module will source the latest AWS supported EKS AMI instead.
 
-## [[v0.1.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v0.1.0...v0.1.1)] - 2018-06-07]
+## [[v0.1.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v0.1.0...v0.1.1)] - 2018-06-07
 - Pre-commit hooks fixed and working.
 - Made progress on CI, advancing the build to the final `kitchen test` stage before failing.
 
