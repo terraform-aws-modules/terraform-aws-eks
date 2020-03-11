@@ -51,7 +51,7 @@ resource "aws_security_group_rule" "cluster_private_access" {
   from_port   = 443
   to_port     = 443
   protocol    = "tcp"
-  cidr_blocks = [var.cluster_endpoint_public_access]
+  cidr_blocks = var.cluster_endpoint_private_access_cidrs
 
   security_group_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
 }
