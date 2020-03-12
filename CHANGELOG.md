@@ -9,6 +9,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[v9.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v9.0.0...HEAD)] - 2020-xx-xx]
 
+- Ensuring that ami lookup hierarchy is worker_group_launch_templates and worker_groups -> worker_group_defaults -> and finally aws ami lookup (by @ck3mp3r)
 - Fix doc about spot instances, cluster-autoscaler should be scheduled on normal instances instead of spot (by @simowaer)
 - Adding `encrypted` option to worker's root_block_device as read from the worker configurations (by @craig-rueda)
 - Use correct policy arns for CN regions (cn-north-1, cn-northwest-1) (by @cofyc)
