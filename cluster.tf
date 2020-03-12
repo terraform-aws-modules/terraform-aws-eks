@@ -54,7 +54,6 @@ resource "aws_security_group_rule" "cluster_private_access" {
   cidr_blocks = [var.cluster_endpoint_public_access]
 
   security_group_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
-  depends_on        = [aws_eks_cluster.this[0]]
 }
 
 
