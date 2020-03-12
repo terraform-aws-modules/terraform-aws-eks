@@ -1,0 +1,41 @@
+style: github
+template: CHANGELOG.tpl.md
+info:
+  title: CHANGELOG
+  repository_url: https://github.com/terraform-aws-modules/terraform-aws-eks
+options:
+
+  commits:
+    sort_by: Scope
+    filters:
+      Type:
+        - feat
+        - fix
+
+  commit_groups:
+    group_by: Type
+    sort_by: Type
+    title_maps:
+      feat: ENHANCEMENTS
+      fix: BUG FIXES
+
+  # header:
+  #   pattern: "^(.*)$"
+  #   pattern_maps:
+  #     - Subject
+  header:
+    pattern: "^(\\w*)\\:\\s(.*)$"
+    pattern_maps:
+      - Type
+      - Subject
+
+  notes:
+    keywords:
+      - BREAKING CHANGE
+      - NOTES
+
+  refs:
+    actions:
+      - Closes
+      - Fixes
+      - Resolves
