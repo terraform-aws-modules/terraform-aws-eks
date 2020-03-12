@@ -14,7 +14,6 @@ Read the [AWS docs on EKS to get connected to the k8s dashboard](https://docs.aw
 * You want to create an EKS cluster and an autoscaling group of workers for the cluster.
 * You want these resources to exist within security groups that allow communication and coordination. These can be user provided or created within the module.
 * You've created a Virtual Private Cloud (VPC) and subnets where you intend to put the EKS resources. The VPC satisfies [EKS requirements](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html).
-* If `manage_aws_auth = true`, it's required that both [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl) (>=1.10) and [`aws-iam-authenticator`](https://github.com/kubernetes-sigs/aws-iam-authenticator#4-set-up-kubectl-to-use-authentication-tokens-provided-by-aws-iam-authenticator-for-kubernetes) are installed and on your shell's PATH.
 
 ## Usage example
 
