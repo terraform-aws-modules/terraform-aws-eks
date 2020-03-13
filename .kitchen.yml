@@ -1,6 +1,7 @@
 ---
 driver:
   name: "terraform"
+  command_timeout: 3000
   root_module_directory: "examples/basic"
 
 provisioner:
