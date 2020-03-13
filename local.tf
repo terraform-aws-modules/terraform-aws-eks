@@ -9,9 +9,9 @@ locals {
   ]
 
   additional_security_group_id = var.cluster_create_security_group ? join("", aws_security_group.cluster.*.id) : var.additional_security_group_id
-  cluster_iam_role_name     = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.name) : var.cluster_iam_role_name
-  cluster_iam_role_arn      = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.arn) : join("", data.aws_iam_role.custom_cluster_iam_role.*.arn)
-  worker_security_group_id  = var.worker_create_security_group ? join("", aws_security_group.workers.*.id) : var.worker_security_group_id
+  cluster_iam_role_name        = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.name) : var.cluster_iam_role_name
+  cluster_iam_role_arn         = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.arn) : join("", data.aws_iam_role.custom_cluster_iam_role.*.arn)
+  worker_security_group_id     = var.worker_create_security_group ? join("", aws_security_group.workers.*.id) : var.worker_security_group_id
 
   default_iam_role_id = concat(aws_iam_role.workers.*.id, [""])[0]
   kubeconfig_name     = var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name
