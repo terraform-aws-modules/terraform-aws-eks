@@ -19,8 +19,8 @@ variable "cluster_name" {
   type        = string
 }
 
-variable "cluster_security_group_id" {
-  description = "If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the workers"
+variable "additional_security_group_id" {
+  description = "If provided, the EKS cluster will be attached to this security group as an additional group. If not given, a security group will be created with necessary ingress/egress to work with the workers"
   type        = string
   default     = ""
 }
