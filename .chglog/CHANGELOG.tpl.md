@@ -1,27 +1,26 @@
 {{ if .Versions -}}
 <a name="unreleased"></a>
 ## [Unreleased]
-
 {{ if .Unreleased.CommitGroups -}}
 {{ range .Unreleased.CommitGroups -}}
-{{ .Title }}
+### {{ .Title }}
 {{ range .Commits -}}
 - {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject }}
 {{ end }}
 {{ end -}}
 {{ else }}
-{{ range .Unreleased.Commits }}
+{{ range .Unreleased.Commits -}}
 - {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject }}
 {{ end }}
 {{ end -}}
 {{ end -}}
 
-{{ range .Versions -}}
+{{ range .Versions }}
 <a name="{{ .Tag.Name }}"></a>
 ## {{ if .Tag.Previous }}[{{ .Tag.Name }}]{{ else }}{{ .Tag.Name }}{{ end }} - {{ datetime "2006-01-02" .Tag.Date }}
 {{ if .CommitGroups -}}
 {{ range .CommitGroups -}}
-{{ .Title }}
+### {{ .Title }}
 {{ range .Commits -}}
 - {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject }}
 {{ end }}
@@ -34,7 +33,7 @@
 
 {{- if .NoteGroups -}}
 {{ range .NoteGroups -}}
-{{ .Title }}
+### {{ .Title }}
 {{ range .Notes }}
 {{ .Body }}
 {{ end }}
