@@ -3,8 +3,6 @@
 .terraform/
 **/inspec.lock
 *.gem
-.kitchen/
-.kitchen.local.yml
 Gemfile.lock
 terraform.tfstate.d/
 eks-admin-cluster-role-binding.yaml
