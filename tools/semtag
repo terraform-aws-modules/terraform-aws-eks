@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-
+#
+# Thanks to @pnikosis for this script https://github.com/pnikosis/semtag
+#
 PROG=semtag
 PROG_VERSION="v0.1.0"
 

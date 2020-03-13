@@ -10,3 +10,5 @@ changelog-unrelease:
 changelog:
 	git-chglog -o CHANGELOG.md --next-tag `$(SEMTAG) final -s $(scope) -o -f` $(TAG_QUERY)
 
+release:
+	$(SEMTAG) final -s $(scope)
