@@ -6,18 +6,30 @@ info:
 options:
 
   commits:
-    sort_by: Scope
+    sort_by: Type
     filters:
       Type:
         - feat
         - fix
+        - improvement
+        - docs
+        - refactor
+        - test
+        - ci
+        - chore
 
   commit_groups:
     group_by: Type
     sort_by: Type
     title_maps:
-      feat: ENHANCEMENTS
+      feat: FEATURES
       fix: BUG FIXES
+      improvement: ENHANCEMENTS
+      docs: DOCS
+      refactor: REFACTORS
+      test: TESTS
+      ci: CI
+      chore: CHORES
 
   # header:
   #   pattern: "^(.*)$"
