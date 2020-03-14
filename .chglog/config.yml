@@ -20,7 +20,6 @@ options:
 
   commit_groups:
     group_by: Type
-    sort_by: Type
     title_maps:
       feat: FEATURES
       fix: BUG FIXES
