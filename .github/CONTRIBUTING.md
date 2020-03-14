@@ -13,7 +13,7 @@ Please note we have a code of conduct, please follow it in all your interactions
 
 ## Checklists for contributions
 
-- [ ] Add [sementics prefix](https://github.com/terraform-aws-modules/terraform-aws-eks) to your PR or Commits (at leats one of your commit groups)
+- [ ] Add [sementics prefix](#semantic-pull-requests) to your PR or Commits (at leats one of your commit groups)
 - [ ] CI tests are passing
 - [ ] README.md has been updated after any changes to variables and outputs. See https://github.com/terraform-aws-modules/terraform-aws-eks/#doc-generation
 
