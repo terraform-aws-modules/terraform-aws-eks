@@ -12,8 +12,16 @@ END_PLACEHOLDER:=<!-- END GIT-CHGLOG -->
 
 TMPFILE:=$(shell mktemp /tmp/terraform-aws-eks.XXXXXX)
 TMPFILE_CHANGELOG:=$(shell mktemp /tmp/terraform-aws-eks.XXXXXX)
-# ToDo: Make compatible with sed and GNUsed (or test if GNU sed is present)
-SED:=$(shell which gsed)
+
+SED:=$(shell which gsed || which sed)
+ifeq ($(strip $(SED)),)
+$(error "GNU sed is not installed. Please install it before running this Makefile")
+endif
+
+IS_GNU_SED:=$(shell $(SED) --version 2>/dev/null|grep -q "GNU sed" && echo "yes"||echo "false")
+ifeq ($(strip $(IS_GNU_SED)),false)
+$(error "$(SED) is not a GNU sed. Please install it before running this Makefile.")
+endif
 
 scope ?= "minor"
 
