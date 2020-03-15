@@ -205,7 +205,7 @@ variable "wait_for_cluster_cmd" {
 }
 
 variable "cluster_create_security_group" {
-  description = "Whether to create a security group for the cluster or attach the cluster to `cluster_security_group_id`."
+  description = "Whether to create a security group for the cluster or attach the cluster to `additional_security_group_id`."
   type        = bool
   default     = true
 }
