@@ -30,7 +30,7 @@ output "cluster_version" {
 
 output "cluster_security_group_id" {
   description = "Cluster security group ID attached to the EKS cluster."
-  value       = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
+  value       = element(concat(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, list("")), 0)
 }
 
 output "config_map_aws_auth" {

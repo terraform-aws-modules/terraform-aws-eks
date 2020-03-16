@@ -18,7 +18,7 @@ data "null_data_source" "node_groups" {
 
 module "node_groups" {
   source                 = "./modules/node_groups"
-  create_eks             = var.create_eks
+  create_eks             = var.create_eks && var.cluster_version >= 1.14
   cluster_name           = coalescelist(data.null_data_source.node_groups[*].outputs["cluster_name"], [""])[0]
   default_iam_role_arn   = coalescelist(aws_iam_role.workers[*].arn, [""])[0]
   workers_group_defaults = local.workers_group_defaults
