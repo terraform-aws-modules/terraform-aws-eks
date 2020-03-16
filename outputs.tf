@@ -1,6 +1,6 @@
 output "additional_security_group_id" {
   description = "Additional security group ID attached to the EKS cluster."
-  value       = local.additional_security_group_id
+  value       = var.cluster_version >= 1.14 ? local.additional_security_group_id : null
 }
 
 output "cluster_id" {
@@ -30,7 +30,7 @@ output "cluster_version" {
 
 output "cluster_security_group_id" {
   description = "Cluster security group ID attached to the EKS cluster."
-  value       = element(concat(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, list("")), 0)
+  value       = var.cluster_version >= 1.14 ? element(concat(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, list("")), 0) : local.additional_security_group_id
 }
 
 output "config_map_aws_auth" {
