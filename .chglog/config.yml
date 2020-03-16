@@ -30,12 +30,8 @@ options:
       ci: CI
       chore: CHORES
 
-  # header:
-  #   pattern: "^(.*)$"
-  #   pattern_maps:
-  #     - Subject
   header:
-    pattern: "^(\\w*)\\:\\s(.*)$"
+    pattern: "^(\\.+)\\s*:\\s*(.+)$"
     pattern_maps:
       - Type
       - Subject

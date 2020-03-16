@@ -1,9 +1,16 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
+project adheres to [Semantic Versioning](http://semver.org/).
+
 {{ if .Versions -}}
 <a name="unreleased"></a>
 ## [Unreleased]
 {{ if .Unreleased.CommitGroups -}}
 {{ range .Unreleased.CommitGroups -}}
-{{ .Title }}
+{{ .Title }}:
 {{ range .Commits -}}
 {{- if .Subject -}}
 - {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject }}
@@ -24,7 +31,7 @@
 ## {{ if .Tag.Previous }}[{{ .Tag.Name }}]{{ else }}{{ .Tag.Name }}{{ end }} - {{ datetime "2006-01-02" .Tag.Date }}
 {{ if .CommitGroups -}}
 {{ range .CommitGroups -}}
-{{ .Title }}
+{{ .Title }}:
 {{ range .Commits -}}
 {{- if .Subject -}}
 - {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject }}
@@ -41,7 +48,7 @@
 
 {{- if .NoteGroups -}}
 {{ range .NoteGroups -}}
-{{ .Title }}
+{{ .Title }}:
 {{ range .Notes }}
 {{ .Body }}
 {{ end }}

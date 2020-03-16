@@ -5,9 +5,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
-<!-- BEGIN GIT-CHGLOG -->
-<!-- END GIT-CHGLOG -->
-
 ## [v10.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v9.0.0...v10.0.0) - 2020-03-12
 
 BREAKING CHANGES:

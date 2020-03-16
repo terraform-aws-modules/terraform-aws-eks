@@ -10,4 +10,5 @@ types:
   - test
   - ci
   - chore
-  - skip/changelog
+  - skip changelog
+  - skip ci
