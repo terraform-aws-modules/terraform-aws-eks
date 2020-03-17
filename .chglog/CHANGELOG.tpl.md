@@ -14,14 +14,14 @@ project adheres to [Semantic Versioning](http://semver.org/).
 {{ range .Commits -}}
 {{- if .Subject -}}
 - {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject }}
-{{- end -}}
+{{ end -}}
 {{ end }}
 {{ end -}}
 {{ else }}
 {{ range .Unreleased.Commits -}}
 {{- if .Subject -}}
 - {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject }}
-{{- end -}}
+{{ end -}}
 {{ end }}
 {{ end -}}
 {{ end -}}
@@ -35,14 +35,14 @@ project adheres to [Semantic Versioning](http://semver.org/).
 {{ range .Commits -}}
 {{- if .Subject -}}
 - {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject }}
-{{- end -}}
+{{ end -}}
 {{ end }}
 {{ end -}}
 {{ else }}
 {{ range .Commits -}}
 {{- if .Subject -}}
 - {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject }}
-{{- end -}}
+{{ end -}}
 {{ end }}
 {{ end -}}
 
