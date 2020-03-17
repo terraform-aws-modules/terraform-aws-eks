@@ -31,7 +31,7 @@ options:
       chore: CHORES
 
   header:
-    pattern: "^(\\.+)\\s*:\\s*(.+)$"
+    pattern: "^(.+)\\s*:\\s*(.+)$"
     pattern_maps:
       - Type
       - Subject
