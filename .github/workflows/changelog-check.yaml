@@ -1,0 +1,20 @@
+name: CHANGELOG Checks
+on:
+  pull_request:
+    paths:
+      - CHANGELOG.md
+
+jobs:
+  changelog-check:
+    name: CHANGELOG Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail the check if changelog change
+        run: |-
+          echo "Thank you for your contribution!"
+          echo ""
+          echo "The 'CHANGELOG.md' file contents are handled by the maintainers during merge. This is to prevent pull request merge conflicts."
+          echo "Please see the Contributing Guide for additional pull request review items."
+          echo ""
+          echo "Remove any changes to the 'CHANGELOG.md' file and commit them in this pull request."
+          exit 1
