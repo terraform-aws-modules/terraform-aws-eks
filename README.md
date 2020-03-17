@@ -94,28 +94,6 @@ module "eks" {
 * [IAM Permissions](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/iam-permissions.md): Minimum IAM permissions needed to setup EKS Cluster.
 * [FAQ](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md): Frequently Asked Questions
 
-## Testing
-
-This module has been packaged with [awspec](https://github.com/k1LoW/awspec) tests through [kitchen](https://kitchen.ci/) and [kitchen-terraform](https://newcontext-oss.github.io/kitchen-terraform/). To run them:
-
-1. Install [rvm](https://rvm.io/rvm/install) and the ruby version specified in the [Gemfile](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/Gemfile).
-2. Install bundler and the gems from our Gemfile:
-
-    ```bash
-    gem install bundler && bundle install
-    ```
-
-3. Ensure your AWS environment is configured (i.e. credentials and region) for test.
-4. Test using `bundle exec kitchen test` from the root of the repo.
-
-For now, connectivity to the kubernetes cluster is not tested but will be in the
-future. Once the test fixture has converged, you can query the test cluster from
-that terminal session with
-```bash
-kubectl get nodes --watch --kubeconfig kubeconfig
-```
-(using default settings `config_output_path = "./"` & `write_kubeconfig = true`)
-
 ## Doc generation
 
 Code formatting and documentation for variables and outputs is generated using [pre-commit-terraform hooks](https://github.com/antonbabenko/pre-commit-terraform) which uses [terraform-docs](https://github.com/segmentio/terraform-docs).
