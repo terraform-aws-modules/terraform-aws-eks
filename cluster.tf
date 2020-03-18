@@ -15,7 +15,7 @@ resource "aws_eks_cluster" "this" {
   tags                      = var.tags
 
   vpc_config {
-    security_group_ids      = [local.cluster_security_group_id]
+    security_group_ids      = compact([local.cluster_security_group_id])
     subnet_ids              = var.subnets
     endpoint_private_access = var.cluster_endpoint_private_access
     endpoint_public_access  = var.cluster_endpoint_public_access
@@ -46,7 +46,7 @@ resource "aws_eks_cluster" "this" {
 }
 
 resource "null_resource" "wait_for_cluster" {
-  count = var.manage_aws_auth ? 1 : 0
+  count = var.create_eks && var.manage_aws_auth ? 1 : 0
 
   depends_on = [
     aws_eks_cluster.this[0]
