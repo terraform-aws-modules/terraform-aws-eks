@@ -5,8 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
-
-## [[v10.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v9.0.0...v10.0.0)] - 2020-03-12
+## [v10.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v9.0.0...v10.0.0) - 2020-03-12
 
 BREAKING CHANGES:
 
@@ -45,7 +44,6 @@ From EKS 1.15, the VPC tag `kubernetes.io/cluster/<cluster-name>: shared` is no 
 - Add a `name` parameter to be able to manually name EKS Managed Node Groups (by @splieth)
 - Pinned kubernetes provider version to exactly 1.10.0 across all examples and README.md's (by @andres-de-castro)
 - Change variable default `wait_for_cluster_cmd` from curl to wget (by @daroga0002)
-
 
 #### Important notes
 

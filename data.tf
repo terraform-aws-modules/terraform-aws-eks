@@ -221,8 +221,3 @@ data "aws_iam_instance_profile" "custom_worker_group_launch_template_iam_instanc
     local.workers_group_defaults["iam_instance_profile_name"],
   )
 }
-<<<<<<< HEAD
-
-data "aws_region" "current" {}
-=======
->>>>>>> move to authorized list rather than lookup
