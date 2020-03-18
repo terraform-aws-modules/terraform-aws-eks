@@ -129,7 +129,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | Name | Version |
 |------|---------|
 | aws | >= 2.52.0 |
-| kubernetes | >= 1.6.2 |
+| kubernetes | >= 1.11.1 |
 | local | >= 1.2 |
 | null | >= 2.1 |
 | random | >= 2.1 |
