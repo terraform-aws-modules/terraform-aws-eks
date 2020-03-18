@@ -4,7 +4,7 @@ data "null_data_source" "node_groups" {
   count = var.create_eks ? 1 : 0
 
   inputs = {
-    cluster_name = var.cluster_name
+    cluster_name = aws_eks_cluster.this[0].name
 
     # Ensure these resources are created before "unlocking" the data source.
     # `depends_on` causes a refresh on every run so is useless here.
