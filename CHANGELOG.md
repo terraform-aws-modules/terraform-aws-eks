@@ -9,7 +9,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[v10.?.?](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v10.0.0...HEAD)] - 2020-xx-xx
 
-- Allow to configure interpreter for the `wait_for_cluster_cmd` command (by @avoidik)
+- Write your awesome change here (GH-xxxx)
 
 ## History
 
