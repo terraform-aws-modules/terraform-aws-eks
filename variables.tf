@@ -201,7 +201,7 @@ variable "cluster_delete_timeout" {
 variable "wait_for_cluster_cmd" {
   description = "Custom local-exec command to execute for determining if the eks cluster is healthy. Cluster endpoint will be available as an environment variable called ENDPOINT"
   type        = string
-  default     = "until wget --no-check-certificate -O - -q $ENDPOINT/healthz >/dev/null; do sleep 4; done"
+  default     = "for i in `seq 1 60`; do wget --no-check-certificate -O - -q $ENDPOINT/healthz >/dev/null && exit 0 || true; sleep 5; done; echo TIMEOUT && exit 1"
 }
 
 variable "wait_for_cluster_interpreter" {
@@ -238,6 +238,12 @@ variable "iam_path" {
   description = "If provided, all IAM roles will be created on this path."
   type        = string
   default     = "/"
+}
+
+variable "cluster_endpoint_private_access_cidrs" {
+  description = "List of CIDR blocks which can access the Amazon EKS private API server endpoint, when public access is disabled"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
 }
 
 variable "cluster_endpoint_private_access" {
