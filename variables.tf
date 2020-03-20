@@ -204,6 +204,12 @@ variable "wait_for_cluster_cmd" {
   default     = "for i in `seq 1 60`; do wget --no-check-certificate -O - -q $ENDPOINT/healthz >/dev/null && exit 0 || true; sleep 5; done; echo TIMEOUT && exit 1"
 }
 
+variable "wait_for_cluster_interpreter" {
+  description = "Custom local-exec command line interpreter for the command to determining if the eks cluster is healthy."
+  type        = list(string)
+  default     = ["/bin/sh", "-c"]
+}
+
 variable "cluster_create_security_group" {
   description = "Whether to create a security group for the cluster or attach the cluster to `cluster_security_group_id`."
   type        = bool

@@ -65,7 +65,8 @@ resource "null_resource" "wait_for_cluster" {
   ]
 
   provisioner "local-exec" {
-    command = var.wait_for_cluster_cmd
+    command     = var.wait_for_cluster_cmd
+    interpreter = var.wait_for_cluster_interpreter
     environment = {
       ENDPOINT = aws_eks_cluster.this[0].endpoint
     }
