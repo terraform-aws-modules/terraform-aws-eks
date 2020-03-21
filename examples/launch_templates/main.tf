@@ -17,8 +17,7 @@ provider "kubernetes" {
   load_config_file       = false
 }
 
-data "aws_availability_zones" "available" {
-}
+data "aws_availability_zones" "available" {}
 
 locals {
   cluster_name = "test-eks-lt-${random_string.suffix.result}"
@@ -38,6 +37,14 @@ module "vpc" {
   azs                  = data.aws_availability_zones.available.names
   public_subnets       = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
   enable_dns_hostnames = true
+
+  private_subnet_tags = {
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+  }
+
+  public_subnet_tags = {
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+  }
 }
 
 module "eks" {
@@ -47,7 +54,7 @@ module "eks" {
   subnets         = module.vpc.public_subnets
   vpc_id          = module.vpc.vpc_id
 
-  worker_groups_launch_template = [
+  worker_groups_launch_template_legacy = [
     {
       name                 = "worker-group-1"
       instance_type        = "t3.small"
@@ -68,4 +75,23 @@ module "eks" {
       elastic_inference_accelerator = "eia2.medium"
     },
   ]
+
+  worker_groups = {
+    worker-group-1 = {
+      instance_type        = "t3.small"
+      asg_desired_capacity = 2
+      public_ip            = true
+    },
+    worker-group-2 = {
+      instance_type        = "t3.medium"
+      asg_desired_capacity = 1
+      public_ip            = true
+    },
+    worker-group-3 = {
+      instance_type                 = "t2.large"
+      asg_desired_capacity          = 1
+      public_ip                     = true
+      elastic_inference_accelerator = "eia2.medium"
+    },
+  }
 }

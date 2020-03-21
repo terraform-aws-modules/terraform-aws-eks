@@ -232,7 +232,8 @@ module "eks" {
   subnets         = module.vpc.public_subnets
   vpc_id          = module.vpc.vpc_id
   enable_irsa     = true
-  worker_groups_launch_template = [
+
+  worker_groups_launch_template_legacy = [
     {
       name                                 = "refresh"
       asg_max_size                         = 2
@@ -257,4 +258,29 @@ module "eks" {
       ]
     }
   ]
+
+  //  worker_groups = {
+  //    refresh = {
+  //      asg_max_size                         = 2
+  //      asg_desired_capacity                 = 2
+  //      instance_refresh_enabled             = true
+  //      instance_refresh_instance_warmup     = 60
+  //      public_ip                            = true
+  //      metadata_http_put_response_hop_limit = 3
+  //      update_default_version               = true
+  //      instance_refresh_triggers            = ["tag"]
+  //      tags = [
+  //        {
+  //          key                 = "aws-node-termination-handler/managed"
+  //          value               = ""
+  //          propagate_at_launch = true
+  //        },
+  //        {
+  //          key                 = "foo"
+  //          value               = "buzz"
+  //          propagate_at_launch = true
+  //        }
+  //      ]
+  //    }
+  //  }
 }

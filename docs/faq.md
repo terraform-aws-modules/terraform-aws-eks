@@ -2,7 +2,7 @@
 
 ## How do I customize X on the worker group's settings?
 
-All the options that can be customized for worker groups are listed in [local.tf](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/local.tf) under `workers_group_defaults_defaults`.
+All the options that can be customized for worker groups are listed in [local.tf](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/modules/worker_groups/local.tf) under `workers_group_defaults_defaults`.
 
 Please open Issues or PRs if you think something is missing.
 
@@ -61,12 +61,6 @@ You need to add the tags to the VPC and subnets yourself. See the [basic example
 
 An alternative is to use the aws provider's [`ignore_tags` variable](https://www.terraform.io/docs/providers/aws/#ignore\_tags-configuration-block). However this can also cause terraform to display a perpetual difference.
 
-## How do I safely remove old worker groups?
-
-You've added new worker groups. Deleting worker groups from earlier in the list causes Terraform to want to recreate all worker groups. This is a limitation with how Terraform works and the module using `count` to create the ASGs and other resources.
-
-The safest and easiest option is to set `asg_min_size` and `asg_max_size` to 0 on the worker groups to "remove".
-
 ## Why does changing the worker group's desired count not do anything?
 
 The module is configured to ignore this value. Unfortunately Terraform does not support variables within the `lifecycle` block.
@@ -77,9 +71,9 @@ You can change the desired count via the CLI or console if you're not using the 
 
 If you are not using autoscaling and really want to control the number of nodes via terraform then set the `asg_min_size` and `asg_max_size` instead. AWS will remove a random instance when you scale down. You will have to weigh the risks here.
 
-## Why are nodes not recreated when the `launch_configuration`/`launch_template` is recreated?
+## Why are nodes not recreated when the `launch_configuration` is recreated?
 
-By default the ASG is not configured to be recreated when the launch configuration or template changes. Terraform spins up new instances and then deletes all the old instances in one go as the AWS provider team have refused to implement rolling updates of autoscaling groups. This is not good for kubernetes stability.
+By default the ASG is not configured to be recreated when the launch configuration changes. Terraform spins up new instances and then deletes all the old instances in one go as the AWS provider team have refused to implement rolling updates of autoscaling groups. This is not good for kubernetes stability.
 
 You need to use a process to drain and cycle the workers.
 
@@ -137,14 +131,13 @@ Amazon EKS clusters must contain one or more Linux worker nodes to run core syst
 1. Build AWS EKS cluster with the next workers configuration (default Linux):
 
 ```
-worker_groups = [
-    {
-      name                          = "worker-group-linux"
+worker_groups = {
+    worker-group-linux = {
       instance_type                 = "m5.large"
       platform                      = "linux"
       asg_desired_capacity          = 2
     },
-  ]
+  }
 ```
 
 2. Apply commands from https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support (use tab with name `Windows`)
@@ -152,20 +145,18 @@ worker_groups = [
 3. Add one more worker group for Windows with required field `platform = "windows"` and update your cluster. Worker group example:
 
 ```
-worker_groups = [
-    {
-      name                          = "worker-group-linux"
+worker_groups = {
+    worker-group-linux = {
       instance_type                 = "m5.large"
       platform                      = "linux"
       asg_desired_capacity          = 2
     },
-    {
-      name                          = "worker-group-windows"
+    worker-group-windows = {
       instance_type                 = "m5.large"
       platform                      = "windows"
       asg_desired_capacity          = 1
     },
-  ]
+  }
 ```
 
 4. With `kubectl get nodes` you can see cluster with mixed (Linux/Windows) nodes support.

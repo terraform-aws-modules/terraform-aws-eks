@@ -57,6 +57,7 @@ resource "aws_security_group" "cluster" {
   name_prefix = var.cluster_name
   description = "EKS cluster security group."
   vpc_id      = var.vpc_id
+
   tags = merge(
     var.tags,
     {

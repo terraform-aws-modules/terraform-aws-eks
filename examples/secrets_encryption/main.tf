@@ -78,14 +78,13 @@ module "eks" {
 
   vpc_id = module.vpc.vpc_id
 
-  worker_groups = [
-    {
-      name                 = "worker-group-1"
+  worker_groups = {
+    worker-group-1 = {
       instance_type        = "t3.small"
       additional_userdata  = "echo foo bar"
       asg_desired_capacity = 2
     },
-  ]
+  }
 
   map_roles    = var.map_roles
   map_users    = var.map_users

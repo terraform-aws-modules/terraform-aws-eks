@@ -114,22 +114,39 @@ module "eks" {
 
   vpc_id = module.vpc.vpc_id
 
-  worker_groups = [
-    {
-      name                          = "worker-group-1"
+  //    worker_groups_legacy = [
+  //      {
+  //        name                          = "worker-group-1"
+  //        instance_type                 = "t3.small"
+  //        additional_userdata           = "echo foo bar"
+  //        asg_desired_capacity          = 2
+  //        additional_security_group_ids = [aws_security_group.worker_group_mgmt_one.id]
+  //        root_volume_type              = "gp2"
+  //      },
+  //      {
+  //        name                          = "worker-group-2"
+  //        instance_type                 = "t3.medium"
+  //        additional_userdata           = "echo foo bar"
+  //        additional_security_group_ids = [aws_security_group.worker_group_mgmt_two.id]
+  //        asg_desired_capacity          = 1
+  //        root_volume_type              = "gp2"
+  //      },
+  //    ]
+
+  worker_groups = {
+    worker-group-1 = {
       instance_type                 = "t3.small"
       additional_userdata           = "echo foo bar"
       asg_desired_capacity          = 2
       additional_security_group_ids = [aws_security_group.worker_group_mgmt_one.id]
     },
-    {
-      name                          = "worker-group-2"
+    worker-group-2 = {
       instance_type                 = "t3.medium"
       additional_userdata           = "echo foo bar"
       additional_security_group_ids = [aws_security_group.worker_group_mgmt_two.id]
       asg_desired_capacity          = 1
     },
-  ]
+  }
 
   worker_additional_security_group_ids = [aws_security_group.all_worker_mgmt.id]
   map_roles                            = var.map_roles

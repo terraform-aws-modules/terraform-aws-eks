@@ -1,6 +1,6 @@
 locals {
   auth_launch_template_worker_roles = [
-    for index in range(0, var.create_eks ? local.worker_group_launch_template_count : 0) : {
+    for index in range(0, var.create_eks ? local.worker_group_launch_template_legacy_count : 0) : {
       worker_role_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${element(
         coalescelist(
           aws_iam_instance_profile.workers_launch_template.*.role,
@@ -10,7 +10,7 @@ locals {
         index
       )}"
       platform = lookup(
-        var.worker_groups_launch_template[index],
+        var.worker_groups_launch_template_legacy[index],
         "platform",
         local.workers_group_defaults["platform"]
       )
@@ -18,7 +18,7 @@ locals {
   ]
 
   auth_worker_roles = [
-    for index in range(0, var.create_eks ? local.worker_group_count : 0) : {
+    for index in range(0, var.create_eks ? local.worker_group_legacy_count : 0) : {
       worker_role_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${element(
         coalescelist(
           aws_iam_instance_profile.workers.*.role,
@@ -28,7 +28,7 @@ locals {
         index,
       )}"
       platform = lookup(
-        var.worker_groups[index],
+        var.worker_groups_legacy[index],
         "platform",
         local.workers_group_defaults["platform"]
       )
@@ -40,6 +40,7 @@ locals {
     for role in concat(
       local.auth_launch_template_worker_roles,
       local.auth_worker_roles,
+      module.worker_groups.aws_auth_roles,
       module.node_groups.aws_auth_roles,
       module.fargate.aws_auth_roles,
     ) :

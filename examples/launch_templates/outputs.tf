@@ -18,6 +18,11 @@ output "config_map_aws_auth" {
   value       = module.eks.config_map_aws_auth
 }
 
+output "worker_groups" {
+  description = "Outputs from EKS worker groups. Map of maps, keyed by var.worker_groups keys"
+  value       = module.eks.worker_groups
+}
+
 output "region" {
   description = "AWS region."
   value       = var.region
