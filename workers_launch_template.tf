@@ -352,7 +352,7 @@ resource "aws_launch_template" "workers_launch_template" {
   }
 
   dynamic "block_device_mappings" {
-    for_each = lookup(var.worker_groups_launch_template[count.index], "additional_volumes", lookup(local.workers_group_defaults, "additional_volumes", []))
+    for_each = lookup(var.worker_groups_launch_template[count.index], "additional_volumes", local.workers_group_defaults["additional_volumes"])
     content {
       device_name = block_device_mappings.value.block_device_name
 
