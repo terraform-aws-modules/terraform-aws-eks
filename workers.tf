@@ -224,7 +224,7 @@ resource "aws_launch_configuration" "workers" {
   }
 
   dynamic "ebs_block_device" {
-    for_each = lookup(var.worker_groups[count.index], "additional_volumes", local.workers_group_defaults["additional_volumes"])
+    for_each = lookup(var.worker_groups[count.index], "additional_ebs_volumes", local.workers_group_defaults["additional_ebs_volumes"])
 
     content {
       device_name = ebs_block_device.value.block_device_name
