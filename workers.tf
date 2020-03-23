@@ -223,6 +223,37 @@ resource "aws_launch_configuration" "workers" {
     delete_on_termination = true
   }
 
+  dynamic "ebs_block_device" {
+    for_each    = lookup(var.worker_groups[count.index], "additional_volumes", local.workers_group_defaults["additional_volumes"])
+    device_name = ebs_block_device.value.block_device_name
+    volume_size = lookup(
+      ebs_block_device.value,
+      "volume_size",
+      local.workers_group_defaults["root_volume_size"],
+    )
+    volume_type = lookup(
+      ebs_block_device.value,
+      "volume_type",
+      local.workers_group_defaults["root_volume_type"],
+    )
+    iops = lookup(
+      ebs_block_device.value,
+      "iops",
+      local.workers_group_defaults["root_iops"],
+    )
+    encrypted = lookup(
+      ebs_block_device.value,
+      "encrypted",
+      local.workers_group_defaults["root_encrypted"],
+    )
+    kms_key_id = lookup(
+      ebs_block_device.value,
+      "kms_key_id",
+      local.workers_group_defaults["root_kms_key_id"],
+    )
+    delete_on_termination = lookup(ebs_block_device.value, "delete_on_termination", true)
+  }
+
   lifecycle {
     create_before_destroy = true
   }
