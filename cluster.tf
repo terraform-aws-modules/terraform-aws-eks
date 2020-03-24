@@ -45,15 +45,29 @@ resource "aws_eks_cluster" "this" {
   ]
 }
 
+resource "aws_security_group_rule" "cluster_private_access" {
+  count       = var.create_eks && var.manage_aws_auth && var.cluster_endpoint_private_access && var.cluster_endpoint_public_access == false ? 1 : 0
+  type        = "ingress"
+  from_port   = 443
+  to_port     = 443
+  protocol    = "tcp"
+  cidr_blocks = var.cluster_endpoint_private_access_cidrs
+
+  security_group_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
+}
+
+
 resource "null_resource" "wait_for_cluster" {
   count = var.create_eks && var.manage_aws_auth ? 1 : 0
 
   depends_on = [
-    aws_eks_cluster.this[0]
+    aws_eks_cluster.this[0],
+    aws_security_group_rule.cluster_private_access,
   ]
 
   provisioner "local-exec" {
-    command = var.wait_for_cluster_cmd
+    command     = var.wait_for_cluster_cmd
+    interpreter = var.wait_for_cluster_interpreter
     environment = {
       ENDPOINT = aws_eks_cluster.this[0].endpoint
     }

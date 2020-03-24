@@ -351,6 +351,43 @@ resource "aws_launch_template" "workers_launch_template" {
     }
   }
 
+  dynamic "block_device_mappings" {
+    for_each = lookup(var.worker_groups_launch_template[count.index], "additional_ebs_volumes", local.workers_group_defaults["additional_ebs_volumes"])
+    content {
+      device_name = block_device_mappings.value.block_device_name
+
+      ebs {
+        volume_size = lookup(
+          block_device_mappings.value,
+          "volume_size",
+          local.workers_group_defaults["root_volume_size"],
+        )
+        volume_type = lookup(
+          block_device_mappings.value,
+          "volume_type",
+          local.workers_group_defaults["root_volume_type"],
+        )
+        iops = lookup(
+          block_device_mappings.value,
+          "iops",
+          local.workers_group_defaults["root_iops"],
+        )
+        encrypted = lookup(
+          block_device_mappings.value,
+          "encrypted",
+          local.workers_group_defaults["root_encrypted"],
+        )
+        kms_key_id = lookup(
+          block_device_mappings.value,
+          "kms_key_id",
+          local.workers_group_defaults["root_kms_key_id"],
+        )
+        delete_on_termination = lookup(block_device_mappings.value, "delete_on_termination", true)
+      }
+    }
+
+  }
+
   tag_specifications {
     resource_type = "volume"
 
