@@ -61,7 +61,8 @@ resource "null_resource" "wait_for_cluster" {
   count = var.create_eks && var.manage_aws_auth ? 1 : 0
 
   depends_on = [
-    aws_eks_cluster.this[0]
+    aws_eks_cluster.this[0],
+    aws_security_group_rule.cluster_private_access,
   ]
 
   provisioner "local-exec" {
