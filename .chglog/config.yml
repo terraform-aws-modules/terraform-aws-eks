@@ -4,7 +4,6 @@ info:
   title: CHANGELOG
   repository_url: https://github.com/terraform-aws-modules/terraform-aws-eks
 options:
-
   commits:
     sort_by: Type
     filters:
@@ -20,6 +19,7 @@ options:
 
   commit_groups:
     group_by: Type
+    sort_by: Type
     title_maps:
       feat: FEATURES
       fix: BUG FIXES
