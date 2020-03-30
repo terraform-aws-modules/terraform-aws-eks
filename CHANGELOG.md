@@ -11,7 +11,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 <a name="v11.0.0"></a>
-## [v11.0.0] - 2020-03-25
+## [v11.0.0] - 2020-03-31
 FEATURES:
 - Add instance tag specifications to Launch Template ([#822](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/822))
 - Add support for additional volumes in launch templates and launch configurations ([#800](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/800))
