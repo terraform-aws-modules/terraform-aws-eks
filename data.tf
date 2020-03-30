@@ -222,4 +222,4 @@ data "aws_iam_instance_profile" "custom_worker_group_launch_template_iam_instanc
   )
 }
 
-data "aws_region" "current" {}
+data "aws_partition" "current" {}
