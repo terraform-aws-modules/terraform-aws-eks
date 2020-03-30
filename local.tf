@@ -22,7 +22,7 @@ locals {
   default_ami_id_linux   = coalesce(local.workers_group_defaults.ami_id, data.aws_ami.eks_worker.id)
   default_ami_id_windows = coalesce(local.workers_group_defaults.ami_id_windows, data.aws_ami.eks_worker_windows.id)
 
-  policy_arn_prefix = contains(["cn-northwest-1", "cn-north-1"], data.aws_region.current.name) ? "arn:aws-cn:iam::aws:policy" : "arn:aws:iam::aws:policy"
+  policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
   workers_group_defaults_defaults = {
     name                          = "count.index"               # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
     tags                          = []                          # A list of map defining extra tags to be applied to the worker group autoscaling group.
