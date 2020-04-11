@@ -34,6 +34,10 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | version | Kubernetes version | string | Provider default behavior |
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Requirements
+
+No requirements.
+
 ## Providers
 
 | Name | Version |
@@ -44,7 +48,7 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:-----:|
+|------|-------------|------|---------|:--------:|
 | cluster\_name | Name of parent cluster | `string` | n/a | yes |
 | create\_eks | Controls if EKS resources should be created (it affects almost all resources) | `bool` | `true` | no |
 | default\_iam\_role\_arn | ARN of the default IAM worker role to use if one is not specified in `var.node_groups` or `var.node_groups_defaults` | `string` | n/a | yes |

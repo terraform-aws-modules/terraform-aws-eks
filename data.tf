@@ -5,6 +5,7 @@ locals {
   worker_ami_name_filter_windows = (var.worker_ami_name_filter_windows != "" ?
     var.worker_ami_name_filter_windows : "Windows_Server-2019-English-Core-EKS_Optimized-${tonumber(var.cluster_version) >= 1.14 ? var.cluster_version : 1.14}-*"
   )
+  ec2_principal = "ec2.${data.aws_partition.current.dns_suffix}"
 }
 
 data "aws_iam_policy_document" "workers_assume_role_policy" {
@@ -17,7 +18,7 @@ data "aws_iam_policy_document" "workers_assume_role_policy" {
 
     principals {
       type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
+      identifiers = [local.ec2_principal]
     }
   }
 }
