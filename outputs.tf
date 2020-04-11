@@ -68,6 +68,11 @@ output "oidc_provider_arn" {
   value       = var.enable_irsa ? concat(aws_iam_openid_connect_provider.oidc_provider[*].arn, [""])[0] : null
 }
 
+output "primary_cluster_security_group_id" {
+  description = "The Primary Cluster security group ID created by the EKS cluster on 1.14 or later."
+  value       = var.cluster_version >= 1.14 ? element(concat(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, list("")), 0) : null
+}
+
 output "workers_asg_arns" {
   description = "IDs of the autoscaling groups containing workers."
   value = concat(
