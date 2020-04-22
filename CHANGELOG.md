@@ -7,7 +7,11 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 <a name="unreleased"></a>
 ## [Unreleased]
+BUG FIXES:
+- Prevent `coalescelist` null argument error when destroying worker_group_launch_templates ([#842](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/842))
 
+FEATURES:
+- Add support for EC2 principal in assume worker role policy for China ([#827](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/827))
 
 
 <a name="v11.0.0"></a>
