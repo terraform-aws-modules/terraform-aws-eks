@@ -15,7 +15,6 @@ options:
         - refactor
         - test
         - ci
-        - chore
 
   commit_groups:
     group_by: Type
@@ -28,7 +27,6 @@ options:
       refactor: REFACTORS
       test: TESTS
       ci: CI
-      chore: CHORES
 
   header:
     pattern: "^(.+)\\s*:\\s*(.+)$"
