@@ -8,6 +8,7 @@ locals {
         coalescelist(
           aws_iam_instance_profile.workers_launch_template.*.role,
           data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_name,
+          [""]
         ),
         index
       )}"
