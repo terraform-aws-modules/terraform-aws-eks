@@ -30,5 +30,5 @@ To generate changelog, Pull Requests or Commits must have sementic and must foll
 - `ci:` for CI purpose
 - `chore:` for chores stuff
 
-There is a special prefix `skip changelog` which is skipped during changelog generation. It can be used for `skip changelog: update changelog` commit message by example.
+The `chore` prefix skipped during changelog generation. It can be used for `chore: update changelog` commit message by example.
 
