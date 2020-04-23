@@ -219,7 +219,8 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster\_iam\_role\_name | IAM role name of the EKS cluster. |
 | cluster\_id | The name/id of the EKS cluster. |
 | cluster\_oidc\_issuer\_url | The URL on the EKS cluster OIDC Issuer |
-| cluster\_security\_group\_id | Security group ID attached to the EKS cluster. |
+| cluster\_primary\_security\_group\_id | The cluster primary security group ID created by the EKS cluster on 1.14 or later. Referred to as 'Cluster security group' in the EKS console. |
+| cluster\_security\_group\_id | Security group ID attached to the EKS cluster. On 1.14 or later, this is the 'Additional security groups' in the EKS console. |
 | cluster\_version | The Kubernetes server version for the EKS cluster. |
 | config\_map\_aws\_auth | A kubernetes configuration to authenticate to this EKS cluster. |
 | kubeconfig | kubectl config file contents for this EKS cluster. |

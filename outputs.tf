@@ -24,7 +24,7 @@ output "cluster_version" {
 }
 
 output "cluster_security_group_id" {
-  description = "Security group ID attached to the EKS cluster."
+  description = "Security group ID attached to the EKS cluster. On 1.14 or later, this is the 'Additional security groups' in the EKS console."
   value       = local.cluster_security_group_id
 }
 
@@ -46,6 +46,11 @@ output "cluster_iam_role_arn" {
 output "cluster_oidc_issuer_url" {
   description = "The URL on the EKS cluster OIDC Issuer"
   value       = flatten(concat(aws_eks_cluster.this[*].identity[*].oidc.0.issuer, [""]))[0]
+}
+
+output "cluster_primary_security_group_id" {
+  description = "The cluster primary security group ID created by the EKS cluster on 1.14 or later. Referred to as 'Cluster security group' in the EKS console."
+  value       = var.cluster_version >= 1.14 ? element(concat(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, list("")), 0) : null
 }
 
 output "cloudwatch_log_group_name" {
