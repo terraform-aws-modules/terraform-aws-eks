@@ -48,13 +48,13 @@ locals {
     {
       rolearn  = role["worker_role_arn"]
       username = "system:node:{{EC2PrivateDNSName}}"
-      groups = concat(
+      groups = tolist(concat(
         [
           "system:bootstrappers",
           "system:nodes",
         ],
         role["platform"] == "windows" ? ["eks:kube-proxy-windows"] : []
-      )
+      ))
     }
   ]
 }
