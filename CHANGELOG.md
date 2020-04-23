@@ -7,7 +7,14 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 <a name="unreleased"></a>
 ## [Unreleased]
+
+
+
+<a name="v11.1.0"></a>
+## [v11.1.0] - 2020-04-23
 BUG FIXES:
+- Add `vpc_config.cluster_security_group` output as primary cluster security group id ([#828](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/828))
+- Wrap `local.configmap_roles.groups` with tolist() to avoid panic ([#846](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/846))
 - Prevent `coalescelist` null argument error when destroying worker_group_launch_templates ([#842](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/842))
 
 FEATURES:
@@ -43,5 +50,6 @@ TESTS:
 - remove unused kitchen test related stuff ([#787](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/787))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v11.0.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v11.1.0...HEAD
+[v11.1.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v11.0.0...v11.1.0
 [v11.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v10.0.0...v11.0.0
