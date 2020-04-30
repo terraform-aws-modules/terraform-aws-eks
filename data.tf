@@ -66,46 +66,16 @@ data "aws_iam_policy_document" "cluster_assume_role_policy" {
   }
 }
 
-data "template_file" "kubeconfig" {
-  count    = var.create_eks ? 1 : 0
-  template = file("${path.module}/templates/kubeconfig.tpl")
-
-  vars = {
-    kubeconfig_name           = local.kubeconfig_name
-    endpoint                  = aws_eks_cluster.this[0].endpoint
-    cluster_auth_base64       = aws_eks_cluster.this[0].certificate_authority[0].data
-    aws_authenticator_command = var.kubeconfig_aws_authenticator_command
-    aws_authenticator_command_args = length(var.kubeconfig_aws_authenticator_command_args) > 0 ? "        - ${join(
-      "\n        - ",
-      var.kubeconfig_aws_authenticator_command_args,
-      )}" : "        - ${join(
-      "\n        - ",
-      formatlist("\"%s\"", ["token", "-i", aws_eks_cluster.this[0].name]),
-    )}"
-    aws_authenticator_additional_args = length(var.kubeconfig_aws_authenticator_additional_args) > 0 ? "        - ${join(
-      "\n        - ",
-      var.kubeconfig_aws_authenticator_additional_args,
-    )}" : ""
-    aws_authenticator_env_variables = length(var.kubeconfig_aws_authenticator_env_variables) > 0 ? "      env:\n${join(
-      "\n",
-      data.template_file.aws_authenticator_env_variables.*.rendered,
-    )}" : ""
-  }
-}
-
-data "template_file" "aws_authenticator_env_variables" {
-  count = length(var.kubeconfig_aws_authenticator_env_variables)
-
-  template = <<EOF
-        - name: $${key}
-          value: $${value}
-EOF
-
-
-  vars = {
-    value = values(var.kubeconfig_aws_authenticator_env_variables)[count.index]
-    key   = keys(var.kubeconfig_aws_authenticator_env_variables)[count.index]
-  }
+locals {
+  kubeconfig = var.create_eks ? templatefile("${path.module}/templates/kubeconfig.tpl", {
+    kubeconfig_name                   = local.kubeconfig_name
+    endpoint                          = aws_eks_cluster.this[0].endpoint
+    cluster_auth_base64               = aws_eks_cluster.this[0].certificate_authority[0].data
+    aws_authenticator_command         = var.kubeconfig_aws_authenticator_command
+    aws_authenticator_command_args    = length(var.kubeconfig_aws_authenticator_command_args) > 0 ? var.kubeconfig_aws_authenticator_command_args : ["token", "-i", aws_eks_cluster.this[0].name]
+    aws_authenticator_additional_args = var.kubeconfig_aws_authenticator_additional_args
+    aws_authenticator_env_variables   = var.kubeconfig_aws_authenticator_env_variables
+  }) : ""
 }
 
 data "template_file" "userdata" {
