@@ -336,4 +336,5 @@ variable "cluster_encryption_config" {
 variable "workers_assume_role_services" {
   type        = list(string)
   description = "Addition AWS Services the Workers should have in their IAM Profile Role in addition to ec2.amazonaws.com"
+  default     = []
 }
