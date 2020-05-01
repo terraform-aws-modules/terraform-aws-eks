@@ -196,7 +196,6 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker\_ami\_name\_filter\_windows | Name filter for AWS EKS Windows worker AMI. If not provided, the latest official AMI for the specified 'cluster\_version' is used. | `string` | `""` | no |
 | worker\_ami\_owner\_id | The ID of the owner for the AMI to use for the AWS EKS workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft'). | `string` | `"602401143452"` | no |
 | worker\_ami\_owner\_id\_windows | The ID of the owner for the AMI to use for the AWS EKS Windows workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft'). | `string` | `"801119661308"` | no |
-| workers\_assume\_role\_services | Addition AWS Services the Workers should have in their IAM Profile Role in addition to ec2.amazonaws.com | `list(string)` | `[]` | no |
 | worker\_create\_initial\_lifecycle\_hooks | Whether to create initial lifecycle hooks provided in worker groups. | `bool` | `false` | no |
 | worker\_create\_security\_group | Whether to create a security group for the workers or attach the workers to `worker_security_group_id`. | `bool` | `true` | no |
 | worker\_groups | A list of maps defining worker group configurations to be defined using AWS Launch Configurations. See workers\_group\_defaults for valid keys. | `any` | `[]` | no |
@@ -204,6 +203,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | worker\_security\_group\_id | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the EKS cluster. | `string` | `""` | no |
 | worker\_sg\_ingress\_from\_port | Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443). | `number` | `1025` | no |
 | workers\_additional\_policies | Additional policies to be added to workers | `list(string)` | `[]` | no |
+| workers\_assume\_role\_services | Addition AWS Services the Workers should have in their IAM Profile Role in addition to ec2.amazonaws.com | `list(string)` | `[]` | no |
 | workers\_group\_defaults | Override default values for target groups. See workers\_group\_defaults\_defaults in local.tf for valid keys. | `any` | `{}` | no |
 | workers\_role\_name | User defined workers role name. | `string` | `""` | no |
 | write\_kubeconfig | Whether to write a Kubectl config file containing the cluster configuration. Saved to `config_output_path`. | `bool` | `true` | no |
