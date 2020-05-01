@@ -117,6 +117,10 @@ resource "aws_iam_role" "cluster" {
   path                  = var.iam_path
   force_detach_policies = true
   tags                  = var.tags
+
+  lifecycle {
+    ignore_changes = [name_prefix]
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
