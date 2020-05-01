@@ -134,7 +134,6 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | local | >= 1.2 |
 | null | >= 2.1 |
 | random | >= 2.1 |
-| template | >= 2.1 |
 
 ## Providers
 
@@ -145,7 +144,6 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | local | >= 1.2 |
 | null | >= 2.1 |
 | random | >= 2.1 |
-| template | >= 2.1 |
 
 ## Inputs
 
