@@ -156,4 +156,5 @@ module "eks" {
   map_roles                            = var.map_roles
   map_users                            = var.map_users
   map_accounts                         = var.map_accounts
+  workers_assume_role_services         = []
 }
