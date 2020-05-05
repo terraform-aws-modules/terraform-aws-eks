@@ -158,6 +158,16 @@ output "worker_iam_role_arn" {
   )[0]
 }
 
+output "fargate_iam_role_name" {
+  description = "IAM role name for EKS Fargate pods"
+  value       = element(concat(aws_iam_role.eks_fargate_pod.*.name, list("")), 0)
+}
+
+output "fargate_iam_role_arn" {
+  description = "IAM role ARN for EKS Fargate pods"
+  value       = element(concat(aws_iam_role.eks_fargate_pod.*.arn, list("")), 0)
+}
+
 output "node_groups" {
   description = "Outputs from EKS node groups. Map of maps, keyed by var.node_groups keys"
   value       = module.node_groups.node_groups

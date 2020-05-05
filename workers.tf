@@ -144,6 +144,7 @@ resource "aws_launch_configuration" "workers" {
   )
   security_groups = flatten([
     local.worker_security_group_id,
+    var.cluster_version >= 1.14 ? [element(concat(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, list("")), 0)] : [],
     var.worker_additional_security_group_ids,
     lookup(
       var.worker_groups[count.index],

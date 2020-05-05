@@ -38,22 +38,31 @@ locals {
     }
   ]
 
+  auth_fargate_roles = [
+    for index in range(0, var.create_eks && var.create_eks_fargate ? 1 : 0) : {
+      worker_role_arn = aws_iam_role.eks_fargate_pod[0].arn
+      platform        = "fargate"
+    }
+  ]
+
   # Convert to format needed by aws-auth ConfigMap
   configmap_roles = [
     for role in concat(
       local.auth_launch_template_worker_roles,
       local.auth_worker_roles,
+      local.auth_fargate_roles,
       module.node_groups.aws_auth_roles,
     ) :
     {
       rolearn  = role["worker_role_arn"]
-      username = "system:node:{{EC2PrivateDNSName}}"
+      username = role["platform"] == "fargate" ? "system:node:{{SessionName}}" : "system:node:{{EC2PrivateDNSName}}"
       groups = tolist(concat(
         [
           "system:bootstrappers",
           "system:nodes",
         ],
-        role["platform"] == "windows" ? ["eks:kube-proxy-windows"] : []
+        role["platform"] == "windows" ? ["eks:kube-proxy-windows"] : [],
+        role["platform"] == "fargate" ? ["system:node-proxier"] : [],
       ))
     }
   ]
