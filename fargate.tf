@@ -17,7 +17,7 @@ resource "aws_iam_role" "eks_fargate_pod" {
   count              = var.create_eks && var.create_eks_fargate ? 1 : 0
   name               = format("%s-fargate", var.cluster_name)
   assume_role_policy = join("", data.aws_iam_policy_document.eks_fargate_pod_assume_role.*.json)
-  tags = merge(var.tags, {"kubernetes.io/cluster/${aws_eks_cluster.this[0].name}" = "owned"})
+  tags               = merge(var.tags, { "kubernetes.io/cluster/${aws_eks_cluster.this[0].name}" = "owned" })
 }
 
 resource "aws_iam_role_policy_attachment" "eks_fargate_pod" {
@@ -35,7 +35,7 @@ resource "aws_eks_fargate_profile" "this" {
   fargate_profile_name   = format("%s-fargate-%s", aws_eks_cluster.this[0].name, var.eks_fargate_profiles[count.index].namespace)
   pod_execution_role_arn = join("", aws_iam_role.eks_fargate_pod.*.arn)
   subnet_ids             = var.subnets
-  tags = merge(var.tags, {"kubernetes.io/cluster/${aws_eks_cluster.this[0].name}" = "owned"})
+  tags                   = merge(var.tags, { "kubernetes.io/cluster/${aws_eks_cluster.this[0].name}" = "owned" })
 
   selector {
     namespace = var.eks_fargate_profiles[count.index].namespace
