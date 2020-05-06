@@ -13,14 +13,22 @@ locals {
   cluster_iam_role_arn      = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.arn) : join("", data.aws_iam_role.custom_cluster_iam_role.*.arn)
   worker_security_group_id  = var.worker_create_security_group ? join("", aws_security_group.workers.*.id) : var.worker_security_group_id
 
-  default_iam_role_id = concat(aws_iam_role.workers.*.id, [""])[0]
-  kubeconfig_name     = var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name
+  default_iam_role_id    = concat(aws_iam_role.workers.*.id, [""])[0]
+  default_ami_id_linux   = coalesce(local.workers_group_defaults.ami_id, data.aws_ami.eks_worker.id)
+  default_ami_id_windows = coalesce(local.workers_group_defaults.ami_id_windows, data.aws_ami.eks_worker_windows.id)
+
+  kubeconfig_name = var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name
 
   worker_group_count                 = length(var.worker_groups)
   worker_group_launch_template_count = length(var.worker_groups_launch_template)
 
-  default_ami_id_linux   = coalesce(local.workers_group_defaults.ami_id, data.aws_ami.eks_worker.id)
-  default_ami_id_windows = coalesce(local.workers_group_defaults.ami_id_windows, data.aws_ami.eks_worker_windows.id)
+  worker_ami_name_filter = var.worker_ami_name_filter != "" ? var.worker_ami_name_filter : "amazon-eks-node-${var.cluster_version}-v*"
+  # Windows nodes are available from k8s 1.14. If cluster version is less than 1.14, fix ami filter to some constant to not fail on 'terraform plan'.
+  worker_ami_name_filter_windows = (var.worker_ami_name_filter_windows != "" ?
+    var.worker_ami_name_filter_windows : "Windows_Server-2019-English-Core-EKS_Optimized-${tonumber(var.cluster_version) >= 1.14 ? var.cluster_version : 1.14}-*"
+  )
+
+  ec2_principal = "ec2.${data.aws_partition.current.dns_suffix}"
 
   policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
   workers_group_defaults_defaults = {
@@ -127,5 +135,103 @@ locals {
     "t2.nano",
     "t2.small",
     "t2.xlarge"
+  ]
+
+  kubeconfig = var.create_eks ? templatefile("${path.module}/templates/kubeconfig.tpl", {
+    kubeconfig_name                   = local.kubeconfig_name
+    endpoint                          = aws_eks_cluster.this[0].endpoint
+    cluster_auth_base64               = aws_eks_cluster.this[0].certificate_authority[0].data
+    aws_authenticator_command         = var.kubeconfig_aws_authenticator_command
+    aws_authenticator_command_args    = length(var.kubeconfig_aws_authenticator_command_args) > 0 ? var.kubeconfig_aws_authenticator_command_args : ["token", "-i", aws_eks_cluster.this[0].name]
+    aws_authenticator_additional_args = var.kubeconfig_aws_authenticator_additional_args
+    aws_authenticator_env_variables   = var.kubeconfig_aws_authenticator_env_variables
+  }) : ""
+
+  userdata = [for worker in var.worker_groups : templatefile(
+    lookup(
+      worker,
+      "userdata_template_file",
+      lookup(worker, "platform", local.workers_group_defaults["platform"]) == "windows"
+      ? "${path.module}/templates/userdata_windows.tpl"
+      : "${path.module}/templates/userdata.sh.tpl"
+    ),
+    merge(
+      {
+        platform            = lookup(worker, "platform", local.workers_group_defaults["platform"])
+        cluster_name        = aws_eks_cluster.this[0].name
+        endpoint            = aws_eks_cluster.this[0].endpoint
+        cluster_auth_base64 = aws_eks_cluster.this[0].certificate_authority[0].data
+        pre_userdata = lookup(
+          worker,
+          "pre_userdata",
+          local.workers_group_defaults["pre_userdata"],
+        )
+        additional_userdata = lookup(
+          worker,
+          "additional_userdata",
+          local.workers_group_defaults["additional_userdata"],
+        )
+        bootstrap_extra_args = lookup(
+          worker,
+          "bootstrap_extra_args",
+          local.workers_group_defaults["bootstrap_extra_args"],
+        )
+        kubelet_extra_args = lookup(
+          worker,
+          "kubelet_extra_args",
+          local.workers_group_defaults["kubelet_extra_args"],
+        )
+      },
+      lookup(
+        worker,
+        "userdata_template_extra_args",
+        local.workers_group_defaults["userdata_template_extra_args"]
+      )
+    )
+    ) if var.create_eks
+  ]
+
+  launch_template_userdata = [for worker in var.worker_groups_launch_template : templatefile(
+    lookup(
+      worker,
+      "userdata_template_file",
+      lookup(worker, "platform", local.workers_group_defaults["platform"]) == "windows"
+      ? "${path.module}/templates/userdata_windows.tpl"
+      : "${path.module}/templates/userdata.sh.tpl"
+    ),
+    merge(
+      {
+        platform            = lookup(worker, "platform", local.workers_group_defaults["platform"])
+        cluster_name        = aws_eks_cluster.this[0].name
+        endpoint            = aws_eks_cluster.this[0].endpoint
+        cluster_auth_base64 = aws_eks_cluster.this[0].certificate_authority[0].data
+        pre_userdata = lookup(
+          worker,
+          "pre_userdata",
+          local.workers_group_defaults["pre_userdata"],
+        )
+        additional_userdata = lookup(
+          worker,
+          "additional_userdata",
+          local.workers_group_defaults["additional_userdata"],
+        )
+        bootstrap_extra_args = lookup(
+          worker,
+          "bootstrap_extra_args",
+          local.workers_group_defaults["bootstrap_extra_args"],
+        )
+        kubelet_extra_args = lookup(
+          worker,
+          "kubelet_extra_args",
+          local.workers_group_defaults["kubelet_extra_args"],
+        )
+      },
+      lookup(
+        worker,
+        "userdata_template_extra_args",
+        local.workers_group_defaults["userdata_template_extra_args"]
+      )
+    )
+    ) if var.create_eks
   ]
 }
