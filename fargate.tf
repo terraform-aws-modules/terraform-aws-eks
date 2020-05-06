@@ -1,6 +1,6 @@
-# Allow cluster security group to communicate with worker nodes
+# Allow Fargate pods and EC2 workers to communicate
 
-resource "aws_security_group_rule" "allow_cluster_sg" {
+resource "aws_security_group_rule" "eks_fargate1" {
   count                    = var.create_eks && var.create_eks_fargate ? 1 : 0
   type                     = "ingress"
   from_port                = 0
@@ -8,6 +8,16 @@ resource "aws_security_group_rule" "allow_cluster_sg" {
   protocol                 = "all"
   security_group_id        = local.worker_security_group_id
   source_security_group_id = element(concat(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, list("")), 0)
+}
+
+resource "aws_security_group_rule" "eks_fargate2" {
+  count                    = var.create_eks && var.create_eks_fargate ? 1 : 0
+  type                     = "ingress"
+  from_port                = 0
+  to_port                  = 65535
+  protocol                 = "all"
+  security_group_id        = element(concat(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, list("")), 0)
+  source_security_group_id = local.worker_security_group_id
 }
 
 
