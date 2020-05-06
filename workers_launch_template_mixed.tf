@@ -88,6 +88,10 @@ resource "aws_launch_template" "workers_launch_template_mixed" {
   user_data     = "${base64encode(element(data.template_file.workers_launch_template_mixed.*.rendered, count.index))}"
   ebs_optimized = "${lookup(var.worker_groups_launch_template_mixed[count.index], "ebs_optimized", lookup(local.ebs_optimized, lookup(var.worker_groups_launch_template_mixed[count.index], "instance_type", local.workers_group_defaults["instance_type"]), false))}"
 
+  credit_specification {
+    cpu_credits = "${lookup(var.worker_groups_launch_template[count.index], "cpu_credits", local.workers_group_defaults["cpu_credits"])}"
+  }
+
   monitoring {
     enabled = "${lookup(var.worker_groups_launch_template_mixed[count.index], "enable_monitoring", local.workers_group_defaults["enable_monitoring"])}"
   }
