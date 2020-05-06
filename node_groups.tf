@@ -1,6 +1,8 @@
 # Hack to ensure ordering of resource creation. Do not create node_groups
 # before other resources are ready. Removes race conditions
 data "null_data_source" "node_groups" {
+  count = var.create_eks ? 1 : 0
+
   inputs = {
     cluster_name = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
 
