@@ -10,6 +10,22 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v11.2.0"></a>
+## [v11.2.0] - 2020-05-07
+BUG FIXES:
+- Use splat syntax for cluster name to avoid `(known after apply)` in managed node groups ([#868](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/868))
+
+FEATURES:
+- Create kubeconfig with non-executable permissions ([#864](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/864))
+- Change EKS default version to 1.16 ([#857](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/857))
+
+DOCS:
+- Remove useless template provider in examples ([#863](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/863))
+
+ENHANCEMENTS:
+- Remove dependency on external template provider ([#854](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/854))
+
+
 <a name="v11.1.0"></a>
 ## [v11.1.0] - 2020-04-23
 BUG FIXES:
@@ -50,6 +66,7 @@ TESTS:
 - remove unused kitchen test related stuff ([#787](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/787))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v11.1.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v11.2.0...HEAD
+[v11.2.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v11.1.0...v11.2.0
 [v11.1.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v11.0.0...v11.1.0
 [v11.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v10.0.0...v11.0.0
