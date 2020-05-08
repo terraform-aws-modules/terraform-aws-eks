@@ -19,7 +19,7 @@ Read the [AWS docs on EKS to get connected to the k8s dashboard](https://docs.aw
 
 The default `cluster_version`is now 1.16. Kubernetes 1.16 includes a number of deprecated API removals, and you need to ensure your applications and add ons are updated, or workloads could fail after the upgrade is complete. For more information on the API removals, see the [Kubernetes blog post](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/). For action you may need to take before upgrading, see the steps in the [EKS documentation](https://docs.aws.amazon.com/eks/latest/userguide/update-cluster.html#1-16-prequisites).
 
-Please set explicitly your `cluster_version` to an older EKS version untill your workload are ready for Kubernetes 1.16.
+Please set explicitly your `cluster_version` to an older EKS version until your workloads are ready for Kubernetes 1.16.
 
 ## Usage example
 
