@@ -294,17 +294,17 @@ resource "aws_launch_template" "workers_launch_template" {
     )
   }
 
-  placement {
-    tenancy = lookup(
-      var.worker_groups_launch_template[count.index],
-      "launch_template_placement_tenancy",
-      local.workers_group_defaults["launch_template_placement_tenancy"],
-    )
-    group_name = lookup(
-      var.worker_groups_launch_template[count.index],
-      "launch_template_placement_group",
-      local.workers_group_defaults["launch_template_placement_group"],
-    )
+  dynamic placement {
+    for_each = lookup(var.worker_groups_launch_template[count.index], "launch_template_placement_group", local.workers_group_defaults["launch_template_placement_group"]) != null ? [lookup(var.worker_groups_launch_template[count.index], "launch_template_placement_group", local.workers_group_defaults["launch_template_placement_group"])] : []
+
+    content {
+      tenancy = lookup(
+        var.worker_groups_launch_template[count.index],
+        "launch_template_placement_tenancy",
+        local.workers_group_defaults["launch_template_placement_tenancy"],
+      )
+      group_name = placement.value
+    }
   }
 
   dynamic instance_market_options {
