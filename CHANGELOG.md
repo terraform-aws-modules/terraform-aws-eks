@@ -11,13 +11,14 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 <a name="v12.0.0"></a>
-## [v12.0.0] - 2020-05-07
+## [v12.0.0] - 2020-05-08
+BUG FIXES:
+- Fix Launch Templates error with aws 2.61.0 ([#875](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/875))
+- Use splat syntax for cluster name to avoid `(known after apply)` in managed node groups ([#868](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/868))
+
 DOCS:
 - Add notes for Kubernetes 1.16 ([#873](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/873))
 - Remove useless template provider in examples ([#863](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/863))
-
-BUG FIXES:
-- Use splat syntax for cluster name to avoid `(known after apply)` in managed node groups ([#868](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/868))
 
 FEATURES:
 - Create kubeconfig with non-executable permissions ([#864](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/864))
