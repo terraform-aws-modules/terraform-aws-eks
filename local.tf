@@ -68,7 +68,7 @@ locals {
     suspended_processes           = ["AZRebalance"]             # A list of processes to suspend. i.e. ["AZRebalance", "HealthCheck", "ReplaceUnhealthy"]
     target_group_arns             = null                        # A list of Application LoadBalancer (ALB) target group ARNs to be associated to the autoscaling group
     enabled_metrics               = []                          # A list of metrics to be collected i.e. ["GroupMinSize", "GroupMaxSize", "GroupDesiredCapacity"]
-    placement_group               = ""                          # The name of the placement group into which to launch the instances, if any.
+    placement_group               = null                        # The name of the placement group into which to launch the instances, if any.
     service_linked_role_arn       = ""                          # Arn of custom service linked role that Auto Scaling group will use. Useful when you have encrypted EBS
     termination_policies          = []                          # A list of policies to decide how the instances in the auto scale group should be terminated.
     platform                      = "linux"                     # Platform of workers. either "linux" or "windows"
@@ -78,7 +78,7 @@ locals {
     root_kms_key_id                   = ""                                       # The KMS key to use when encrypting the root storage device
     launch_template_version           = "$Latest"                                # The lastest version of the launch template to use in the autoscaling group
     launch_template_placement_tenancy = "default"                                # The placement tenancy for instances
-    launch_template_placement_group   = ""                                       # The name of the placement group into which to launch the instances, if any.
+    launch_template_placement_group   = null                                     # The name of the placement group into which to launch the instances, if any.
     root_encrypted                    = false                                    # Whether the volume should be encrypted or not
     eni_delete                        = true                                     # Delete the Elastic Network Interface (ENI) on termination (if set to false you will have to manually delete before destroying)
     cpu_credits                       = "standard"                               # T2/T3 unlimited mode, can be 'standard' or 'unlimited'. Used 'standard' mode as default to avoid paying higher costs
