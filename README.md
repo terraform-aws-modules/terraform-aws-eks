@@ -15,6 +15,12 @@ Read the [AWS docs on EKS to get connected to the k8s dashboard](https://docs.aw
 * You want these resources to exist within security groups that allow communication and coordination. These can be user provided or created within the module.
 * You've created a Virtual Private Cloud (VPC) and subnets where you intend to put the EKS resources. The VPC satisfies [EKS requirements](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html).
 
+## Important note
+
+The default `cluster_version`is now 1.16. Kubernetes 1.16 includes a number of deprecated API removals, and you need to ensure your applications and add ons are updated, or workloads could fail after the upgrade is complete. For more information on the API removals, see the [Kubernetes blog post](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/). For action you may need to take before upgrading, see the steps in the [EKS documentation](https://docs.aws.amazon.com/eks/latest/userguide/update-cluster.html#1-16-prequisites).
+
+Please set explicitly your `cluster_version` to an older EKS version until your workloads are ready for Kubernetes 1.16.
+
 ## Usage example
 
 A full example leveraging other community modules is contained in the [examples/basic directory](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/basic).
@@ -39,7 +45,7 @@ provider "kubernetes" {
 module "my-cluster" {
   source          = "terraform-aws-modules/eks/aws"
   cluster_name    = "my-cluster"
-  cluster_version = "1.14"
+  cluster_version = "1.16"
   subnets         = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
   vpc_id          = "vpc-1234556abcdef"
 
@@ -131,7 +137,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | terraform | >= 0.12.9 |
 | aws | >= 2.52.0 |
 | kubernetes | >= 1.11.1 |
-| local | >= 1.2 |
+| local | >= 1.4 |
 | null | >= 2.1 |
 | random | >= 2.1 |
 
@@ -141,7 +147,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 |------|---------|
 | aws | >= 2.52.0 |
 | kubernetes | >= 1.11.1 |
-| local | >= 1.2 |
+| local | >= 1.4 |
 | null | >= 2.1 |
 | random | >= 2.1 |
 
@@ -164,7 +170,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster\_log\_retention\_in\_days | Number of days to retain log events. Default retention - 90 days. | `number` | `90` | no |
 | cluster\_name | Name of the EKS cluster. Also used as a prefix in names of related resources. | `string` | n/a | yes |
 | cluster\_security\_group\_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the workers | `string` | `""` | no |
-| cluster\_version | Kubernetes version to use for the EKS cluster. | `string` | `"1.15"` | no |
+| cluster\_version | Kubernetes version to use for the EKS cluster. | `string` | `"1.16"` | no |
 | config\_output\_path | Where to save the Kubectl config file (if `write_kubeconfig = true`). Assumed to be a directory if the value ends with a forward slash `/`. | `string` | `"./"` | no |
 | create\_eks | Controls if EKS resources should be created (it affects almost all resources) | `bool` | `true` | no |
 | create\_eks\_fargate | Controls if EKS Fargate resources should be created | `bool` | `false` | no |

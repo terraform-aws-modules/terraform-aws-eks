@@ -24,6 +24,15 @@ project adheres to [Semantic Versioning](http://semver.org/).
 {{ end -}}
 {{ end }}
 {{ end -}}
+
+{{- if .Unreleased.NoteGroups -}}
+{{ range .Unreleased.NoteGroups -}}
+{{ .Title }}:
+{{ range .Notes -}}
+- {{ .Body }}
+{{ end }}
+{{ end -}}
+{{ end -}}
 {{ end -}}
 
 {{ range .Versions }}
@@ -49,8 +58,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 {{- if .NoteGroups -}}
 {{ range .NoteGroups -}}
 {{ .Title }}:
-{{ range .Notes }}
-{{ .Body }}
+{{ range .Notes -}}
+- {{ .Body }}
 {{ end }}
 {{ end -}}
 {{ end -}}
