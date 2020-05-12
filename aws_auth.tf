@@ -39,7 +39,7 @@ locals {
 
   auth_fargate_roles = [
     for index in range(0, var.create_eks && var.create_eks_fargate ? 1 : 0) : {
-      worker_role_arn = aws_iam_role.eks_fargate_pod[0].arn
+      worker_role_arn = module.fargate.iam_role_arn
       platform        = "fargate"
     }
   ]
