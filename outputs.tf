@@ -160,12 +160,12 @@ output "worker_iam_role_arn" {
 
 output "fargate_iam_role_name" {
   description = "IAM role name for EKS Fargate pods"
-  value       = element(concat(aws_iam_role.eks_fargate_pod.*.name, list("")), 0)
+  value       = module.fargate.iam_role_name
 }
 
 output "fargate_iam_role_arn" {
   description = "IAM role ARN for EKS Fargate pods"
-  value       = element(concat(aws_iam_role.eks_fargate_pod.*.arn, list("")), 0)
+  value       = module.fargate.iam_role_arn
 }
 
 output "node_groups" {
