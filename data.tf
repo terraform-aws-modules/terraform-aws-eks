@@ -55,6 +55,96 @@ data "aws_iam_policy_document" "cluster_assume_role_policy" {
   }
 }
 
+locals {
+  userdata = [for worker in var.worker_groups : templatefile(
+    lookup(
+      worker,
+      "userdata_template_file",
+      lookup(worker, "platform", local.workers_group_defaults["platform"]) == "windows"
+      ? "${path.module}/templates/userdata_windows.tpl"
+      : "${path.module}/templates/userdata.sh.tpl"
+    ),
+    merge(
+      {
+        platform            = lookup(worker, "platform", local.workers_group_defaults["platform"])
+        cluster_name        = aws_eks_cluster.this[0].name
+        endpoint            = aws_eks_cluster.this[0].endpoint
+        cluster_auth_base64 = aws_eks_cluster.this[0].certificate_authority[0].data
+        pre_userdata = lookup(
+          worker,
+          "pre_userdata",
+          local.workers_group_defaults["pre_userdata"],
+        )
+        additional_userdata = lookup(
+          worker,
+          "additional_userdata",
+          local.workers_group_defaults["additional_userdata"],
+        )
+        bootstrap_extra_args = lookup(
+          worker,
+          "bootstrap_extra_args",
+          local.workers_group_defaults["bootstrap_extra_args"],
+        )
+        kubelet_extra_args = lookup(
+          worker,
+          "kubelet_extra_args",
+          local.workers_group_defaults["kubelet_extra_args"],
+        )
+      },
+      lookup(
+        worker,
+        "userdata_template_extra_args",
+        local.workers_group_defaults["userdata_template_extra_args"]
+      )
+    )
+    ) if var.create_eks
+  ]
+
+  launch_template_userdata = [for worker in var.worker_groups_launch_template : templatefile(
+    lookup(
+      worker,
+      "userdata_template_file",
+      lookup(worker, "platform", local.workers_group_defaults["platform"]) == "windows"
+      ? "${path.module}/templates/userdata_windows.tpl"
+      : "${path.module}/templates/userdata.sh.tpl"
+    ),
+    merge(
+      {
+        platform            = lookup(worker, "platform", local.workers_group_defaults["platform"])
+        cluster_name        = aws_eks_cluster.this[0].name
+        endpoint            = aws_eks_cluster.this[0].endpoint
+        cluster_auth_base64 = aws_eks_cluster.this[0].certificate_authority[0].data
+        pre_userdata = lookup(
+          worker,
+          "pre_userdata",
+          local.workers_group_defaults["pre_userdata"],
+        )
+        additional_userdata = lookup(
+          worker,
+          "additional_userdata",
+          local.workers_group_defaults["additional_userdata"],
+        )
+        bootstrap_extra_args = lookup(
+          worker,
+          "bootstrap_extra_args",
+          local.workers_group_defaults["bootstrap_extra_args"],
+        )
+        kubelet_extra_args = lookup(
+          worker,
+          "kubelet_extra_args",
+          local.workers_group_defaults["kubelet_extra_args"],
+        )
+      },
+      lookup(
+        worker,
+        "userdata_template_extra_args",
+        local.workers_group_defaults["userdata_template_extra_args"]
+      )
+    )
+    ) if var.create_eks
+  ]
+}
+
 data "aws_iam_role" "custom_cluster_iam_role" {
   count = var.manage_cluster_iam_resources ? 0 : 1
   name  = var.cluster_iam_role_name
