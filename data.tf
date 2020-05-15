@@ -55,94 +55,96 @@ data "aws_iam_policy_document" "cluster_assume_role_policy" {
   }
 }
 
-locals {
-  userdata = [for worker in var.worker_groups : templatefile(
-    lookup(
-      worker,
-      "userdata_template_file",
-      lookup(worker, "platform", local.workers_group_defaults["platform"]) == "windows"
+data "template_file" "userdata" {
+  count = var.create_eks ? local.worker_group_count : 0
+  template = lookup(
+    var.worker_groups[count.index],
+    "userdata_template_file",
+    file(
+      lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"]) == "windows"
       ? "${path.module}/templates/userdata_windows.tpl"
       : "${path.module}/templates/userdata.sh.tpl"
-    ),
-    merge(
-      {
-        platform            = lookup(worker, "platform", local.workers_group_defaults["platform"])
-        cluster_name        = aws_eks_cluster.this[0].name
-        endpoint            = aws_eks_cluster.this[0].endpoint
-        cluster_auth_base64 = aws_eks_cluster.this[0].certificate_authority[0].data
-        pre_userdata = lookup(
-          worker,
-          "pre_userdata",
-          local.workers_group_defaults["pre_userdata"],
-        )
-        additional_userdata = lookup(
-          worker,
-          "additional_userdata",
-          local.workers_group_defaults["additional_userdata"],
-        )
-        bootstrap_extra_args = lookup(
-          worker,
-          "bootstrap_extra_args",
-          local.workers_group_defaults["bootstrap_extra_args"],
-        )
-        kubelet_extra_args = lookup(
-          worker,
-          "kubelet_extra_args",
-          local.workers_group_defaults["kubelet_extra_args"],
-        )
-      },
-      lookup(
-        worker,
-        "userdata_template_extra_args",
-        local.workers_group_defaults["userdata_template_extra_args"]
-      )
     )
-    ) if var.create_eks
-  ]
+  )
 
-  launch_template_userdata = [for worker in var.worker_groups_launch_template : templatefile(
+  vars = merge({
+    platform            = lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"])
+    cluster_name        = aws_eks_cluster.this[0].name
+    endpoint            = aws_eks_cluster.this[0].endpoint
+    cluster_auth_base64 = aws_eks_cluster.this[0].certificate_authority[0].data
+    pre_userdata = lookup(
+      var.worker_groups[count.index],
+      "pre_userdata",
+      local.workers_group_defaults["pre_userdata"],
+    )
+    additional_userdata = lookup(
+      var.worker_groups[count.index],
+      "additional_userdata",
+      local.workers_group_defaults["additional_userdata"],
+    )
+    bootstrap_extra_args = lookup(
+      var.worker_groups[count.index],
+      "bootstrap_extra_args",
+      local.workers_group_defaults["bootstrap_extra_args"],
+    )
+    kubelet_extra_args = lookup(
+      var.worker_groups[count.index],
+      "kubelet_extra_args",
+      local.workers_group_defaults["kubelet_extra_args"],
+    )
+    },
     lookup(
-      worker,
-      "userdata_template_file",
-      lookup(worker, "platform", local.workers_group_defaults["platform"]) == "windows"
+      var.worker_groups[count.index],
+      "userdata_template_extra_args",
+      local.workers_group_defaults["userdata_template_extra_args"]
+    )
+  )
+}
+
+data "template_file" "launch_template_userdata" {
+  count = var.create_eks ? local.worker_group_launch_template_count : 0
+  template = lookup(
+    var.worker_groups_launch_template[count.index],
+    "userdata_template_file",
+    file(
+      lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"]) == "windows"
       ? "${path.module}/templates/userdata_windows.tpl"
       : "${path.module}/templates/userdata.sh.tpl"
-    ),
-    merge(
-      {
-        platform            = lookup(worker, "platform", local.workers_group_defaults["platform"])
-        cluster_name        = aws_eks_cluster.this[0].name
-        endpoint            = aws_eks_cluster.this[0].endpoint
-        cluster_auth_base64 = aws_eks_cluster.this[0].certificate_authority[0].data
-        pre_userdata = lookup(
-          worker,
-          "pre_userdata",
-          local.workers_group_defaults["pre_userdata"],
-        )
-        additional_userdata = lookup(
-          worker,
-          "additional_userdata",
-          local.workers_group_defaults["additional_userdata"],
-        )
-        bootstrap_extra_args = lookup(
-          worker,
-          "bootstrap_extra_args",
-          local.workers_group_defaults["bootstrap_extra_args"],
-        )
-        kubelet_extra_args = lookup(
-          worker,
-          "kubelet_extra_args",
-          local.workers_group_defaults["kubelet_extra_args"],
-        )
-      },
-      lookup(
-        worker,
-        "userdata_template_extra_args",
-        local.workers_group_defaults["userdata_template_extra_args"]
-      )
     )
-    ) if var.create_eks
-  ]
+  )
+
+  vars = merge({
+    platform            = lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"])
+    cluster_name        = aws_eks_cluster.this[0].name
+    endpoint            = aws_eks_cluster.this[0].endpoint
+    cluster_auth_base64 = aws_eks_cluster.this[0].certificate_authority[0].data
+    pre_userdata = lookup(
+      var.worker_groups_launch_template[count.index],
+      "pre_userdata",
+      local.workers_group_defaults["pre_userdata"],
+    )
+    additional_userdata = lookup(
+      var.worker_groups_launch_template[count.index],
+      "additional_userdata",
+      local.workers_group_defaults["additional_userdata"],
+    )
+    bootstrap_extra_args = lookup(
+      var.worker_groups_launch_template[count.index],
+      "bootstrap_extra_args",
+      local.workers_group_defaults["bootstrap_extra_args"],
+    )
+    kubelet_extra_args = lookup(
+      var.worker_groups_launch_template[count.index],
+      "kubelet_extra_args",
+      local.workers_group_defaults["kubelet_extra_args"],
+    )
+    },
+    lookup(
+      var.worker_groups_launch_template[count.index],
+      "userdata_template_extra_args",
+      local.workers_group_defaults["userdata_template_extra_args"]
+    )
+  )
 }
 
 data "aws_iam_role" "custom_cluster_iam_role" {
