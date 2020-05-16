@@ -1,6 +1,7 @@
 output "cluster_id" {
   description = "The name/id of the EKS cluster."
   value       = element(concat(aws_eks_cluster.this.*.id, list("")), 0)
+  depends_on  = [null_resource.wait_for_cluster]
 }
 
 output "cluster_arn" {
