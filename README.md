@@ -26,22 +26,6 @@ Please set explicitly your `cluster_version` to an older EKS version until your 
 A full example leveraging other community modules is contained in the [examples/basic directory](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/basic).
 
 ```hcl
-data "aws_eks_cluster" "cluster" {
-  name = module.my-cluster.cluster_id
-}
-
-data "aws_eks_cluster_auth" "cluster" {
-  name = module.my-cluster.cluster_id
-}
-
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
-  token                  = data.aws_eks_cluster_auth.cluster.token
-  load_config_file       = false
-  version                = "~> 1.9"
-}
-
 module "my-cluster" {
   source          = "terraform-aws-modules/eks/aws"
   cluster_name    = "my-cluster"
@@ -57,18 +41,51 @@ module "my-cluster" {
   ]
 }
 ```
+
+## Creating Kubernetes resources in the same plan
+
+The module has a kubernetes provider embedded for managing some resources. This is not accessible to the calling module. You will need to define your own kubernetes provider block. The data source is necessary so that the kubernetes provider waits for the cluster to be created before attempting to communicate with it:
+```hcl
+data "aws_eks_cluster_auth" "cluster" {
+  name = module.eks.cluster_id
+}
+
+provider "kubernetes" {
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.certificate_authority_data)
+  token                  = data.aws_eks_cluster_auth.cluster.token
+  load_config_file       = false
+  version                = "~> 1.9"
+}
+
+module "eks" {
+  source          = "terraform-aws-modules/eks/aws"
+  cluster_name    = "my-cluster"
+  cluster_version = "1.16"
+  subnets         = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
+  vpc_id          = "vpc-1234556abcdef"
+
+  worker_groups = [
+    {
+      instance_type = "m4.large"
+      asg_max_size  = 5
+    }
+  ]
+}
+
+resource "kubernetes_namespace" "example" {
+  metadata {
+    name = "example"
+  }
+}
+```
+
 ## Conditional creation
 
 Sometimes you need to have a way to create EKS resources conditionally but Terraform does not allow to use `count` inside `module` block, so the solution is to specify argument `create_eks`.
 
-Using this feature _and_ having `manage_aws_auth=true` (the default) requires to set up the kubernetes provider in a way that allows the data sources to not exist.
-
+If you also want to sometimes create kubernetes resources then it gets slightly more complicated:
 ```hcl
-data "aws_eks_cluster" "cluster" {
-  count = var.create_eks ? 1 : 0
-  name  = module.eks.cluster_id
-}
-
 data "aws_eks_cluster_auth" "cluster" {
   count = var.create_eks ? 1 : 0
   name  = module.eks.cluster_id
@@ -76,18 +93,17 @@ data "aws_eks_cluster_auth" "cluster" {
 
 # In case of not creating the cluster, this will be an incompletely configured, unused provider, which poses no problem.
 provider "kubernetes" {
-  host                   = element(concat(data.aws_eks_cluster.cluster[*].endpoint, list("")), 0)
-  cluster_ca_certificate = base64decode(element(concat(data.aws_eks_cluster.cluster[*].certificate_authority.0.data, list("")), 0))
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
   token                  = element(concat(data.aws_eks_cluster_auth.cluster[*].token, list("")), 0)
   load_config_file       = false
-  version                = "1.10"
 }
 
-# This cluster will not be created
+# This cluster will not be created when create_eks = false
 module "eks" {
   source = "terraform-aws-modules/eks/aws"
 
-  create_eks = false
+  create_eks = var.create_eks
   # ... omitted
 }
 ```
