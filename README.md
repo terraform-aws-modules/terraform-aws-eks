@@ -55,7 +55,7 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(module.eks.certificate_authority_data)
   token                  = data.aws_eks_cluster_auth.cluster.token
   load_config_file       = false
-  version                = "~> 1.9"
+  version                = "~> 1.11"
 }
 
 module "eks" {
@@ -84,8 +84,12 @@ resource "kubernetes_namespace" "example" {
 
 Sometimes you need to have a way to create EKS resources conditionally but Terraform does not allow to use `count` inside `module` block, so the solution is to specify argument `create_eks`.
 
-If you also want to sometimes create kubernetes resources then it gets slightly more complicated:
+This can also be done for kubernetes resources created by the calling module. Configuration of the kubernetes provider and eks data source is a little more complicated than the previous example:
 ```hcl
+variable "create_eks" {
+  default = false
+}
+
 data "aws_eks_cluster_auth" "cluster" {
   count = var.create_eks ? 1 : 0
   name  = module.eks.cluster_id
@@ -95,7 +99,7 @@ data "aws_eks_cluster_auth" "cluster" {
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-  token                  = element(concat(data.aws_eks_cluster_auth.cluster[*].token, list("")), 0)
+  token                  = concat(data.aws_eks_cluster_auth.cluster[*].token, [""])[0]
   load_config_file       = false
 }
 

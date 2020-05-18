@@ -82,10 +82,14 @@ data "aws_partition" "current" {}
 
 data "aws_eks_cluster" "cluster" {
   count = var.create_eks ? 1 : 0
-  name  = concat(aws_eks_cluster.this[*].id, [""])[0]
+  # The concat here is a trick to stop data sources from appearing in the plan
+  # output when the cluster is being modified.
+  name = concat(aws_eks_cluster.this[*].id, [""])[0]
 }
 
 data "aws_eks_cluster_auth" "cluster" {
   count = var.create_eks ? 1 : 0
-  name  = concat(aws_eks_cluster.this[*].id, [""])[0]
+  # The concat here is a trick to stop data sources from appearing in the plan
+  # output when the cluster is being modified.
+  name = concat(aws_eks_cluster.this[*].id, [""])[0]
 }
