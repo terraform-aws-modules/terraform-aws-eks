@@ -12,13 +12,6 @@ variable "profiles" {
   default = {}
 }
 
-variable "node_groups" {
-  description = "Map of maps of `eks_node_groups` to create. See \"`node_groups` and `node_groups_defaults` keys\" section in README.md for more details"
-  type        = any
-  default     = {}
-}
-
-
 variable "subnets" {
   description = "A list of subnets for the EKS Fargate profiles."
   type        = list(string)
