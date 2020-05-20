@@ -1,3 +1,3 @@
 locals {
-  profile_count = length(var.profiles)
+  create = length(var.profiles) > 0
 }

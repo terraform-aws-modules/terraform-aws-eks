@@ -1,22 +1,23 @@
-variable "create" {
-  description = "Controls if EKS Fargate resources should be created."
-  type        = bool
-  default     = false
-}
-
 variable "cluster_name" {
   description = "Name of parent cluster."
   type        = string
 }
 
 variable "profiles" {
-  description = "List of EKS Fargate profiles to create."
-  type = list(object({
+  description = "EKS Fargate profiles to create."
+  type = map(object({
     namespace = string
     labels    = map(string)
   }))
-  default = []
+  default = {}
 }
+
+variable "node_groups" {
+  description = "Map of maps of `eks_node_groups` to create. See \"`node_groups` and `node_groups_defaults` keys\" section in README.md for more details"
+  type        = any
+  default     = {}
+}
+
 
 variable "subnets" {
   description = "A list of subnets for the EKS Fargate profiles."
