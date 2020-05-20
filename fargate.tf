@@ -1,6 +1,6 @@
 module "fargate" {
   source                            = "./modules/fargate"
-  cluster_name                      = aws_eks_cluster.this[0].name
+  cluster_name                      = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
   profiles                          = var.create_eks ? var.eks_fargate_profiles : {}
   subnets                           = var.subnets
   tags                              = var.tags
