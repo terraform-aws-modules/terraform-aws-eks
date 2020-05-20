@@ -333,17 +333,11 @@ variable "cluster_encryption_config" {
   default = []
 }
 
-variable "create_eks_fargate" {
-  description = "Controls if EKS Fargate resources should be created"
-  type        = bool
-  default     = false
-}
-
 variable "eks_fargate_profiles" {
   description = "EKS Fargate profiles"
-  type = list(object({
+  type = map(object({
     namespace = string
     labels    = map(string)
   }))
-  default = []
+  default = {}
 }
