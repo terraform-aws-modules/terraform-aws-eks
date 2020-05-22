@@ -110,12 +110,12 @@ resource "aws_autoscaling_group" "workers" {
         "propagate_at_launch" = true
       },
       {
-        "key"                 = "kubernetes.io/cluster/${aws_eks_cluster.this[0].name}"
+        "key"                 = "k8s.io/cluster/${aws_eks_cluster.this[0].name}"
         "value"               = "owned"
         "propagate_at_launch" = true
       },
       {
-        "key"                 = "k8s.io/cluster/${aws_eks_cluster.this[0].name}"
+        "key"                 = "kubernetes.io/cluster/${aws_eks_cluster.this[0].name}"
         "value"               = "owned"
         "propagate_at_launch" = true
       },
