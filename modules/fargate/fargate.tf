@@ -1,7 +1,7 @@
 # Allow Fargate pods and EC2 workers to communicate
 
 resource "aws_security_group_rule" "eks_fargate1" {
-  count                    = local.create ? 1 : 0
+  count                    = var.create_eks ? 1 : 0
   type                     = "ingress"
   from_port                = 0
   to_port                  = 65535
@@ -11,7 +11,7 @@ resource "aws_security_group_rule" "eks_fargate1" {
 }
 
 resource "aws_security_group_rule" "eks_fargate2" {
-  count                    = local.create ? 1 : 0
+  count                    = var.create_eks ? 1 : 0
   type                     = "ingress"
   from_port                = 0
   to_port                  = 65535
@@ -24,7 +24,7 @@ resource "aws_security_group_rule" "eks_fargate2" {
 # EKS Fargate Pod Execution Role
 
 data "aws_iam_policy_document" "eks_fargate_pod_assume_role" {
-  count = local.create ? 1 : 0
+  count = var.create_eks ? 1 : 0
   statement {
     effect  = "Allow"
     actions = ["sts:AssumeRole"]
@@ -37,14 +37,14 @@ data "aws_iam_policy_document" "eks_fargate_pod_assume_role" {
 }
 
 resource "aws_iam_role" "eks_fargate_pod" {
-  count              = local.create ? 1 : 0
+  count              = var.create_eks ? 1 : 0
   name               = format("%s-fargate", var.cluster_name)
   assume_role_policy = join("", data.aws_iam_policy_document.eks_fargate_pod_assume_role.*.json)
   tags               = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "eks_fargate_pod" {
-  count      = local.create ? 1 : 0
+  count      = var.create_eks ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
   role       = join("", aws_iam_role.eks_fargate_pod.*.name)
 }
@@ -53,9 +53,9 @@ resource "aws_iam_role_policy_attachment" "eks_fargate_pod" {
 # EKS Fargate profiles
 
 resource "aws_eks_fargate_profile" "this" {
-  for_each               = var.profiles
+  for_each               = var.create_eks ? var.fargate_profiles : {}
   cluster_name           = var.cluster_name
-  fargate_profile_name   = format("%s-fargate-%s", var.cluster_name, each.value.namespace)
+  fargate_profile_name   = lookup(each.value, "name", format("%s-fargate-%s", var.cluster_name, replace(each.key, "_", "-")))
   pod_execution_role_arn = join("", aws_iam_role.eks_fargate_pod.*.arn)
   subnet_ids             = var.subnets
   tags                   = var.tags

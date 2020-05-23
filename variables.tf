@@ -333,7 +333,7 @@ variable "cluster_encryption_config" {
   default = []
 }
 
-variable "eks_fargate_profiles" {
+variable "fargate_profiles" {
   description = "EKS Fargate profiles"
   type = map(object({
     namespace = string
