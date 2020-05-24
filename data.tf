@@ -69,9 +69,9 @@ data "template_file" "userdata" {
 
   vars = merge({
     platform            = lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"])
-    cluster_name        = aws_eks_cluster.this[0].name
-    endpoint            = aws_eks_cluster.this[0].endpoint
-    cluster_auth_base64 = aws_eks_cluster.this[0].certificate_authority[0].data
+    cluster_name        = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
+    endpoint            = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
+    cluster_auth_base64 = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
     pre_userdata = lookup(
       var.worker_groups[count.index],
       "pre_userdata",
@@ -115,9 +115,9 @@ data "template_file" "launch_template_userdata" {
 
   vars = merge({
     platform            = lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"])
-    cluster_name        = aws_eks_cluster.this[0].name
-    endpoint            = aws_eks_cluster.this[0].endpoint
-    cluster_auth_base64 = aws_eks_cluster.this[0].certificate_authority[0].data
+    cluster_name        = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
+    endpoint            = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
+    cluster_auth_base64 = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
     pre_userdata = lookup(
       var.worker_groups_launch_template[count.index],
       "pre_userdata",
