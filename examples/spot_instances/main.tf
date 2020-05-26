@@ -19,10 +19,6 @@ provider "null" {
   version = "~> 2.1"
 }
 
-provider "template" {
-  version = "~> 2.1"
-}
-
 data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
 }
@@ -75,7 +71,7 @@ module "eks" {
       spot_instance_pools     = 4
       asg_max_size            = 5
       asg_desired_capacity    = 5
-      kubelet_extra_args      = "--node-labels=kubernetes.io/lifecycle=spot"
+      kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot"
       public_ip               = true
     },
   ]

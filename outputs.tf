@@ -60,7 +60,7 @@ output "cloudwatch_log_group_name" {
 
 output "kubeconfig" {
   description = "kubectl config file contents for this EKS cluster."
-  value       = concat(data.template_file.kubeconfig[*].rendered, [""])[0]
+  value       = local.kubeconfig
 }
 
 output "kubeconfig_filename" {
@@ -92,8 +92,8 @@ output "workers_asg_names" {
 output "workers_user_data" {
   description = "User data of worker groups"
   value = concat(
-    data.template_file.userdata.*.rendered,
-    data.template_file.launch_template_userdata.*.rendered,
+    local.userdata,
+    local.launch_template_userdata,
   )
 }
 
