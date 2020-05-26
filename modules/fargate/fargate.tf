@@ -1,26 +1,3 @@
-# Allow Fargate pods and EC2 workers to communicate
-
-resource "aws_security_group_rule" "eks_fargate1" {
-  count                    = var.create_eks ? 1 : 0
-  type                     = "ingress"
-  from_port                = 0
-  to_port                  = 65535
-  protocol                 = "all"
-  security_group_id        = var.worker_security_group_id
-  source_security_group_id = var.cluster_primary_security_group_id
-}
-
-resource "aws_security_group_rule" "eks_fargate2" {
-  count                    = var.create_eks ? 1 : 0
-  type                     = "ingress"
-  from_port                = 0
-  to_port                  = 65535
-  protocol                 = "all"
-  security_group_id        = var.cluster_primary_security_group_id
-  source_security_group_id = var.worker_security_group_id
-}
-
-
 # EKS Fargate Pod Execution Role
 
 data "aws_iam_policy_document" "eks_fargate_pod_assume_role" {
