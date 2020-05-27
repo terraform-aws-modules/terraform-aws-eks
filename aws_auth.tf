@@ -46,6 +46,7 @@ locals {
       module.node_groups.aws_auth_roles,
     ) :
     {
+      # Work around https://github.com/kubernetes-sigs/aws-iam-authenticator/issues/153
       # Strip the leading slash off so that Terraform doesn't think it's a regex
       rolearn  = replace(role["worker_role_arn"], replace(var.iam_path, "/^//", ""), "")
       username = "system:node:{{EC2PrivateDNSName}}"
