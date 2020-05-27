@@ -16,7 +16,7 @@ data "aws_iam_policy_document" "eks_fargate_pod_assume_role" {
 resource "aws_iam_role" "eks_fargate_pod" {
   count              = var.create_eks ? 1 : 0
   name               = format("%s-fargate", var.cluster_name)
-  assume_role_policy = join("", data.aws_iam_policy_document.eks_fargate_pod_assume_role.*.json)
+  assume_role_policy = data.aws_iam_policy_document.eks_fargate_pod_assume_role[0].json
   tags               = var.tags
 }
 
