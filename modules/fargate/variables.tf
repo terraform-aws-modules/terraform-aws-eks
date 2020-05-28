@@ -9,6 +9,12 @@ variable "create_eks" {
   default     = true
 }
 
+variable "create_fargate_pod_execution_role" {
+  description = "Controls if the EKS Fargate pod execution IAM role should be created."
+  type        = bool
+  default     = true
+}
+
 variable "fargate_profiles" {
   description = "Fargate profiles to create."
   type = map(object({
