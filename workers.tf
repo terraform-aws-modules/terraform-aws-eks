@@ -16,6 +16,7 @@ resource "aws_autoscaling_group" "workers" {
   enabled_metrics         = ["${compact(split(",", coalesce(lookup(var.worker_groups[count.index], "enabled_metrics", ""), local.workers_group_defaults["enabled_metrics"])))}"]
   placement_group         = "${lookup(var.worker_groups[count.index], "placement_group", local.workers_group_defaults["placement_group"])}"
   termination_policies    = ["${compact(split(",", coalesce(lookup(var.worker_groups[count.index], "termination_policies", ""), local.workers_group_defaults["termination_policies"])))}"]
+  max_instance_lifetime   = "${lookup(var.worker_groups[count.index], "max_instance_lifetime", local.workers_group_defaults["max_instance_lifetime"])}"
 
   tags = ["${concat(
     list(
