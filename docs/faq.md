@@ -28,13 +28,14 @@ Nodes need to be able to connect to other AWS services plus pull down container 
 
 ### `aws-auth` ConfigMap not present
 
-The module configures the `aws-auth` ConfigMap. This is used by the cluster to grant IAM users RBAC permissions in the cluster. Sometimes the map fails to apply correctly, especially if terraform could not access the cluster endpoint during cluster creation.
+The module configures the `aws-auth` ConfigMap. This is used by the cluster to grant IAM users and roles RBAC permissions in the cluster, like the IAM role assigned to the worker nodes.
 
-Confirm that the ConfigMap matches the contents of the generated `config-map-aws-auth_${cluster_name}.yaml` file. You can retrieve the live config by running the following in your terraform folder:
+Confirm that the ConfigMap matches the contents of the `config_map_aws_auth` module output. You can retrieve the live config by running the following in your terraform folder:
 `kubectl --kubeconfig=kubeconfig_* -n kube-system get cm aws-auth -o yaml`
 
-Apply the config with:
-`kubectl --kubeconfig=kubeconfig_* apply -f config-map-aws-auth_*.yaml`
+If the ConfigMap is missing or the contents are incorrect then ensure that you have properly configured the kubernetes provider block by referring to [README.md](https://github.com/terraform-aws-modules/terraform-aws-eks/#usage-example) and run `terraform apply` again.
+
+Users with `manage_aws_auth = false` will need to apply the ConfigMap themselves.
 
 ## How can I work with the cluster if I disable the public endpoint?
 
@@ -42,9 +43,23 @@ You have to interact with the cluster from within the VPC that it's associated w
 
 Creating a new cluster with the public endpoint disabled is harder to achieve. You will either want to pass in a pre-configured cluster security group or apply the `aws-auth` configmap in a separate action.
 
+## ConfigMap "aws-auth" already exists
+
+This can happen if the kubernetes provider has not been configured for use with the cluster. The kubernetes provider will be accessing your default kubernetes cluster which already has the map defined. Read [README.md](https://github.com/terraform-aws-modules/terraform-aws-eks/#usage-example) for more details on how to configure the kubernetes provider correctly.
+
+Users upgrading from modules before 8.0.0 will need to import their existing aws-auth ConfigMap in to the terraform state. See 8.0.0's [CHANGELOG](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/v8.0.0/CHANGELOG.md#v800---2019-12-11) for more details.
+
+## `Error: Get http://localhost/api/v1/namespaces/kube-system/configmaps/aws-auth: dial tcp 127.0.0.1:80: connect: connection refused`
+
+Usually this means that the kubernetes provider has not been configured, there is no default `~/.kube/config` and so the kubernetes provider is attempting to talk to localhost.
+
+You need to configure the kubernetes provider correctly. See [README.md](https://github.com/terraform-aws-modules/terraform-aws-eks/#usage-example) for more details.
+
 ## How can I stop Terraform from removing the EKS tags from my VPC and subnets?
 
 You need to add the tags to the VPC and subnets yourself. See the [basic example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/basic).
+
+An alternative is to use the aws provider's [`ignore_tags` variable](https://www.terraform.io/docs/providers/aws/#ignore\_tags-configuration-block). However this can also cause terraform to display a perpetual difference.
 
 ## How do I safely remove old worker groups?
 
@@ -84,6 +99,8 @@ You are using the cluster autoscaler:
 
 Alternatively you can set the `asg_recreate_on_change = true` worker group option to get the ASG recreated after changes to the launch configuration or template. But be aware of the risks to cluster stability mentioned above.
 
+You can also use a 3rd party tool like Gruntwork's kubergrunt. See the [`eks deploy`](https://github.com/gruntwork-io/kubergrunt#deploy) subcommand.
+
 ## `aws_auth.tf: At 2:14: Unknown token: 2:14 IDENT`
 
 You are attempting to use a Terraform 0.12 module with Terraform 0.11.
@@ -118,11 +135,11 @@ worker_groups = [
       instance_type                 = "m5.large"
       platform                      = "linux"
       asg_desired_capacity          = 2
-    },    
+    },
   ]
 ```
 
-2. Apply commands from https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support (use tab with name `Windows`) 
+2. Apply commands from https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support (use tab with name `Windows`)
 
 3. Add one more worker group for Windows with required field `platform = "windows"` and update your cluster. Worker group example:
 
@@ -143,4 +160,12 @@ worker_groups = [
   ]
 ```
 
-4. Wtih `kubectl get nodes` you can see cluster with mixed (Linux/Windows) nodes support.
+4. With `kubectl get nodes` you can see cluster with mixed (Linux/Windows) nodes support.
+
+## Worker nodes with labels do not join a 1.16+ cluster
+
+Kubelet restricts the allowed list of labels in the `kubernetes.io` namespace that can be applied to nodes starting in 1.16.
+
+Older configurations used labels like `kubernetes.io/lifecycle=spot` and this is no longer allowed. Use `node.kubernetes.io/lifecycle=spot` instead.
+
+Reference the `--node-labels` argument for your version of Kubenetes for the allowed prefixes. [Documentation for 1.16](https://v1-16.docs.kubernetes.io/docs/reference/command-line-tools-reference/kubelet/)
