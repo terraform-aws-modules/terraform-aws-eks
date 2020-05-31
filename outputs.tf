@@ -165,3 +165,8 @@ output "node_groups" {
   description = "Outputs from EKS node groups. Map of maps, keyed by var.node_groups keys"
   value       = module.node_groups.node_groups
 }
+
+output "security_group_rule_cluster_https_worker_ingress" {
+  description = "Security group rule responsible for allowing pods to communicate with the EKS cluster API."
+  value       = aws_security_group_rule.cluster_https_worker_ingress
+}
