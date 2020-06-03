@@ -14,6 +14,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Added support for termination policies for Auto Scaling group (by @nusnewob)
 - Added `cpu_credits` param for the workers defined in `worker_groups_launch_template` and `worker_groups_launch_template_mixed` (by @rinrailin)
 - Added `max_instance_lifetime` param for the workers defined in `worker_groups_launch_template` and `worker_groups_launch_template_mixed` (by @sortigoza)
+- Added support for restricting access to the public API endpoint (by @rinrailin)
 
 # History
 

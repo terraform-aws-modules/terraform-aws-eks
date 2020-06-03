@@ -19,7 +19,7 @@ before_install:
 
 install:
 - echo "install"
-- gem install bundler --no-rdoc --no-ri
+- gem install bundler --no-document
 - bundle install
 
 before_script:
