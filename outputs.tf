@@ -1,6 +1,9 @@
 output "cluster_id" {
   description = "The name/id of the EKS cluster."
   value       = element(concat(aws_eks_cluster.this.*.id, list("")), 0)
+  # So that calling plans wait for the cluster to be available before attempting
+  # to use it. They will not need to duplicate this null_resource
+  depends_on = [null_resource.wait_for_cluster]
 }
 
 output "cluster_arn" {
@@ -50,7 +53,7 @@ output "cluster_oidc_issuer_url" {
 
 output "cluster_primary_security_group_id" {
   description = "The cluster primary security group ID created by the EKS cluster on 1.14 or later. Referred to as 'Cluster security group' in the EKS console."
-  value       = var.cluster_version >= 1.14 ? element(concat(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, list("")), 0) : null
+  value       = local.cluster_primary_security_group_id
 }
 
 output "cloudwatch_log_group_name" {
