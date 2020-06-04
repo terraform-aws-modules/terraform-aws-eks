@@ -35,4 +35,4 @@ users:
         - name: ${k}
           value: ${v}
   %{~ endfor ~}
-%{ endif ~}
+%{ endif }
