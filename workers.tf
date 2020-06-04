@@ -338,6 +338,28 @@ resource "aws_security_group_rule" "workers_ingress_cluster_https" {
   type                     = "ingress"
 }
 
+resource "aws_security_group_rule" "workers_ingress_cluster_primary" {
+  count                    = var.worker_create_security_group && var.worker_create_cluster_primary_security_group_rules && var.cluster_version >= 1.14 && var.create_eks ? 1 : 0
+  description              = "Allow pods running on workers to receive communication from cluster primary security group (e.g. Fargate pods)."
+  protocol                 = "all"
+  security_group_id        = local.worker_security_group_id
+  source_security_group_id = local.cluster_primary_security_group_id
+  from_port                = 0
+  to_port                  = 65535
+  type                     = "ingress"
+}
+
+resource "aws_security_group_rule" "cluster_primary_ingress_workers" {
+  count                    = var.worker_create_security_group && var.worker_create_cluster_primary_security_group_rules && var.cluster_version >= 1.14 && var.create_eks ? 1 : 0
+  description              = "Allow pods running on workers to send communication to cluster primary security group (e.g. Fargate pods)."
+  protocol                 = "all"
+  security_group_id        = local.cluster_primary_security_group_id
+  source_security_group_id = local.worker_security_group_id
+  from_port                = 0
+  to_port                  = 65535
+  type                     = "ingress"
+}
+
 resource "aws_iam_role" "workers" {
   count                 = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
   name_prefix           = var.workers_role_name != "" ? null : aws_eks_cluster.this[0].name
