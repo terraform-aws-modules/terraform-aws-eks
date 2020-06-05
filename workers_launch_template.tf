@@ -90,7 +90,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
 
   dynamic mixed_instances_policy {
     iterator = item
-    for_each = (lookup(var.worker_groups_launch_template[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups_launch_template[count.index], "on_demand_allocation_strategy", null) != null) ? list(var.worker_groups_launch_template[count.index]) : []
+    for_each = (lookup(var.worker_groups_launch_template[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups_launch_template[count.index], "on_demand_allocation_strategy", local.workers_group_defaults["on_demand_allocation_strategy"]) != null) ? list(var.worker_groups_launch_template[count.index]) : []
 
     content {
       instances_distribution {
@@ -153,7 +153,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
   }
   dynamic launch_template {
     iterator = item
-    for_each = (lookup(var.worker_groups_launch_template[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups_launch_template[count.index], "on_demand_allocation_strategy", null) != null) ? [] : list(var.worker_groups_launch_template[count.index])
+    for_each = (lookup(var.worker_groups_launch_template[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups_launch_template[count.index], "on_demand_allocation_strategy", local.workers_group_defaults["on_demand_allocation_strategy"]) != null) ? [] : list(var.worker_groups_launch_template[count.index])
 
     content {
       id = aws_launch_template.workers_launch_template.*.id[count.index]
