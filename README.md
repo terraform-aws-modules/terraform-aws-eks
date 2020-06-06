@@ -234,6 +234,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | kubeconfig\_filename | The filename of the generated kubectl config. |
 | node\_groups | Outputs from EKS node groups. Map of maps, keyed by var.node\_groups keys |
 | oidc\_provider\_arn | The ARN of the OIDC Provider if `enable_irsa = true`. |
+| security\_group\_rule\_cluster\_https\_worker\_ingress | Security group rule responsible for allowing pods to communicate with the EKS cluster API. |
 | worker\_iam\_instance\_profile\_arns | default IAM instance profile ARN for EKS worker groups |
 | worker\_iam\_instance\_profile\_names | default IAM instance profile name for EKS worker groups |
 | worker\_iam\_role\_arn | default IAM role ARN for EKS worker groups |
