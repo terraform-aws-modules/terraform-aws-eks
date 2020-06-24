@@ -95,8 +95,8 @@ output "workers_asg_names" {
 output "workers_user_data" {
   description = "User data of worker groups"
   value = concat(
-    local.userdata,
-    local.launch_template_userdata,
+    data.template_file.userdata.*.rendered,
+    data.template_file.launch_template_userdata.*.rendered,
   )
 }
 
@@ -164,4 +164,9 @@ output "worker_iam_role_arn" {
 output "node_groups" {
   description = "Outputs from EKS node groups. Map of maps, keyed by var.node_groups keys"
   value       = module.node_groups.node_groups
+}
+
+output "security_group_rule_cluster_https_worker_ingress" {
+  description = "Security group rule responsible for allowing pods to communicate with the EKS cluster API."
+  value       = aws_security_group_rule.cluster_https_worker_ingress
 }
