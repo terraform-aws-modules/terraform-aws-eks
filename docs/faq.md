@@ -162,6 +162,18 @@ worker_groups = [
 
 4. With `kubectl get nodes` you can see cluster with mixed (Linux/Windows) nodes support.
 
+## Deploying from Windows: `/bin/sh` file does not exist
+
+The module is almost pure Terraform apart from the `wait_for_cluster` `null_resource` that runs a local provisioner. The module has a default configuration for Unix-like systems. In order to run the provisioner on Windows systems you must set the interpreter to a valid value. [PR #795 (comment)](https://github.com/terraform-aws-modules/terraform-aws-eks/pull/795#issuecomment-599191029) suggests the following value:
+```hcl
+module "eks" {
+  # ...
+  wait_for_cluster_interpreter = ["c:/git/bin/sh.exe", "-c"]
+}
+```
+
+Alternatively, you can disable the `null_resource` by disabling creation of the `aws-auth` ConfigMap via setting `manage_aws_auth = false` on the module. The ConfigMap will then need creating via a different method.
+
 ## Worker nodes with labels do not join a 1.16+ cluster
 
 Kubelet restricts the allowed list of labels in the `kubernetes.io` namespace that can be applied to nodes starting in 1.16.
