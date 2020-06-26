@@ -171,7 +171,7 @@ output "security_group_rule_cluster_https_worker_ingress" {
   value       = aws_security_group_rule.cluster_https_worker_ingress
 }
 
-output "security_group_rule_cluster_workers_egress_internet" {
+output "security_group_rule_workers_egress_internet" {
   description = "Security group rule responsible for allowing pods to communicate with the Internet."
   value       = aws_security_group_rule.workers_egress_internet
 }
