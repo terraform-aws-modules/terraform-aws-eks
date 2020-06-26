@@ -287,14 +287,14 @@ resource "random_pet" "workers" {
 
 resource "aws_security_group" "workers" {
   count       = var.worker_create_security_group && var.create_eks ? 1 : 0
-  name_prefix = aws_eks_cluster.this[0].name
+  name_prefix = var.cluster_name
   description = "Security group for all nodes in the cluster."
   vpc_id      = var.vpc_id
   tags = merge(
     var.tags,
     {
-      "Name"                                                  = "${aws_eks_cluster.this[0].name}-eks_worker_sg"
-      "kubernetes.io/cluster/${aws_eks_cluster.this[0].name}" = "owned"
+      "Name"                                      = "${var.cluster_name}-eks_worker_sg"
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     },
   )
 }
