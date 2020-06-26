@@ -132,22 +132,6 @@ resource "aws_autoscaling_group" "workers" {
     create_before_destroy = true
     ignore_changes        = [desired_capacity]
   }
-
-  # Prevent premature access of security group roles and policies by pods that
-  # require permissions on create/destroy that depend on workers.
-  depends_on = [
-    aws_security_group_rule.workers_egress_internet,
-    aws_security_group_rule.workers_ingress_self,
-    aws_security_group_rule.workers_ingress_cluster,
-    aws_security_group_rule.workers_ingress_cluster_kubelet,
-    aws_security_group_rule.workers_ingress_cluster_https,
-    aws_security_group_rule.workers_ingress_cluster_primary,
-    aws_security_group_rule.cluster_primary_ingress_workers,
-    aws_iam_role_policy_attachment.workers_AmazonEKSWorkerNodePolicy,
-    aws_iam_role_policy_attachment.workers_AmazonEKS_CNI_Policy,
-    aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly,
-    aws_iam_role_policy_attachment.workers_additional_policies
-  ]
 }
 
 resource "aws_launch_configuration" "workers" {
@@ -272,6 +256,22 @@ resource "aws_launch_configuration" "workers" {
   lifecycle {
     create_before_destroy = true
   }
+
+  # Prevent premature access of security group roles and policies by pods that
+  # require permissions on create/destroy that depend on workers.
+  depends_on = [
+    aws_security_group_rule.workers_egress_internet,
+    aws_security_group_rule.workers_ingress_self,
+    aws_security_group_rule.workers_ingress_cluster,
+    aws_security_group_rule.workers_ingress_cluster_kubelet,
+    aws_security_group_rule.workers_ingress_cluster_https,
+    aws_security_group_rule.workers_ingress_cluster_primary,
+    aws_security_group_rule.cluster_primary_ingress_workers,
+    aws_iam_role_policy_attachment.workers_AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.workers_AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly,
+    aws_iam_role_policy_attachment.workers_additional_policies
+  ]
 }
 
 resource "random_pet" "workers" {
