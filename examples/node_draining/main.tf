@@ -102,6 +102,8 @@ module "eks" {
         default_result = "ABANDON"
         // timeout after 6min
         heartbeat_timeout = var.asg_hook_timeout
+        // we adding some metadata to filter shutdown events only for our cluster
+        notification_metadata = "{ \"cluster_name\": \"${var.cluster_name}\" }"
       }
     ]
     tags = [

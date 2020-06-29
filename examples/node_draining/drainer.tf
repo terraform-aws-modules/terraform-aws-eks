@@ -106,7 +106,7 @@ resource "aws_cloudwatch_event_rule" "terminating_events" {
   name = "asg-terminate-events-${var.cluster_name}"
   description = "Capture all terminating autoscaling events for cluster ${var.cluster_name}"
 
-  event_pattern = templatefile("${path.module}/event-rule.tpl", {  })
+  event_pattern = templatefile("${path.module}/event-rule.tpl", { cluster_name = var.cluster_name })
 }
 
 resource "aws_cloudwatch_event_target" "terminating_events" {
