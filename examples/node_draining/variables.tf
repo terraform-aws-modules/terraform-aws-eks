@@ -7,14 +7,14 @@ variable "cluster_version" {
 }
 
 variable "cluster_name" {
-  type = string
+  type    = string
   default = "eks-test"
 }
 
 // https://docs.aws.amazon.com/de_de/eks/latest/userguide/eks-linux-ami-versions.html
 variable "ami_version" {
   default = "v20200423"
-  type = string
+  type    = string
 }
 
 variable "tags" {
@@ -25,22 +25,22 @@ variable "tags" {
 }
 
 variable "asg_hook_timeout" {
-  default = 360
+  default     = 360
   description = "timeout in sec to wait until lifecycle is completed. If reached the instance will complete hook and shutdown instance will continue"
 }
 
 // drainer variables
 variable "drainer_enabled" {
   default = true
-  type = bool
+  type    = bool
 }
 
 variable "drainer_lambda_function_name" {
   default = "node-drainer"
-  type = string
+  type    = string
 }
 
 variable "drainer_lambda_timeout" {
-  type = number
+  type    = number
   default = 120
 }
