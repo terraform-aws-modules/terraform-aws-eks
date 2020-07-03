@@ -426,7 +426,7 @@ resource "aws_launch_template" "workers_launch_template" {
 }
 
 resource "random_pet" "workers_launch_template" {
-  count = lookup(var.worker_groups_launch_template[count.index], "asg_recreate_on_change", local.workers_group_defaults["asg_recreate_on_change"]) && var.create_eks ? local.worker_group_launch_template_count : 0
+  count = var.create_eks ? local.worker_group_launch_template_count : 0
 
   separator = "-"
   length    = 2
@@ -441,6 +441,9 @@ resource "random_pet" "workers_launch_template" {
         ]
       )
     )
+  }
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
