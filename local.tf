@@ -1,6 +1,6 @@
 locals {
   asg_tags = [
-    for item in keys(var.tags) :
+    for item in setsubtract(keys(var.tags), ["Name"]) :
     map(
       "key", item,
       "value", element(values(var.tags), index(keys(var.tags), item)),
