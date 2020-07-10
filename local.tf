@@ -1,11 +1,12 @@
 locals {
   asg_tags = [
-    for item in setsubtract(keys(var.tags), ["Name"]) :
+    for item in keys(var.tags) :
     map(
       "key", item,
       "value", element(values(var.tags), index(keys(var.tags), item)),
       "propagate_at_launch", "true"
     )
+    if item != "Name"
   ]
 
   cluster_security_group_id         = var.cluster_create_security_group ? join("", aws_security_group.cluster.*.id) : var.cluster_security_group_id
