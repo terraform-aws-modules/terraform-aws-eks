@@ -81,7 +81,7 @@ autoDiscovery:
 
 image:
   repository: us.gcr.io/k8s-artifacts-prod/autoscaling/cluster-autoscaler
-  tag: v1.16.5
+  tag: v1.17.2
 ```
 
 To install the chart, simply run helm with the `--values` option:
@@ -94,4 +94,4 @@ helm install stable/cluster-autoscaler --values=path/to/your/values-file.yaml
 
 There is a variable `asg_desired_capacity` given in the `local.tf` file, currently it can be used to change the desired worker(s) capacity in the autoscaling group but currently it is being ignored in terraform to reduce the [complexities](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/510#issuecomment-531700442) and the feature of scaling up and down the cluster nodes is being handled by the cluster autoscaler.
 
-The cluster autoscaler major and minor versions must match your cluster. For example if you are running a 1.16 EKS cluster set `image.tag=v1.16.5`. Search through their [releases page](https://github.com/kubernetes/autoscaler/releases) for valid version numbers.
+The cluster autoscaler major and minor versions must match your cluster. For example if you are running a 1.17 EKS cluster set `image.tag=v1.17.2`. Search through their [releases page](https://github.com/kubernetes/autoscaler/releases) for valid version numbers.
