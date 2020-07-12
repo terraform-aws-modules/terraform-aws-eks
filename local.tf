@@ -87,8 +87,6 @@ locals {
     metadata_http_endpoint               = "enabled"  # The state of the metadata service: enabled, disabled.
     metadata_http_tokens                 = "optional" # If session tokens are required: optional, required.
     metadata_http_put_response_hop_limit = null       # The desired HTTP PUT response hop limit for instance metadata requests.
-
-
     # Settings for launch templates with mixed instances policy
     override_instance_types                  = ["m5.large", "m5a.large", "m5d.large", "m5ad.large"] # A list of override instance types for mixed instances policy
     on_demand_allocation_strategy            = null                                                 # Strategy to use when launching on-demand instances. Valid values: prioritized.
