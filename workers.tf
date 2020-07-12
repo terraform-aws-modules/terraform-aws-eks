@@ -256,6 +256,22 @@ resource "aws_launch_configuration" "workers" {
   lifecycle {
     create_before_destroy = true
   }
+
+  # Prevent premature access of security group roles and policies by pods that
+  # require permissions on create/destroy that depend on workers.
+  depends_on = [
+    aws_security_group_rule.workers_egress_internet,
+    aws_security_group_rule.workers_ingress_self,
+    aws_security_group_rule.workers_ingress_cluster,
+    aws_security_group_rule.workers_ingress_cluster_kubelet,
+    aws_security_group_rule.workers_ingress_cluster_https,
+    aws_security_group_rule.workers_ingress_cluster_primary,
+    aws_security_group_rule.cluster_primary_ingress_workers,
+    aws_iam_role_policy_attachment.workers_AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.workers_AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly,
+    aws_iam_role_policy_attachment.workers_additional_policies
+  ]
 }
 
 resource "random_pet" "workers" {
@@ -271,14 +287,14 @@ resource "random_pet" "workers" {
 
 resource "aws_security_group" "workers" {
   count       = var.worker_create_security_group && var.create_eks ? 1 : 0
-  name_prefix = aws_eks_cluster.this[0].name
+  name_prefix = var.cluster_name
   description = "Security group for all nodes in the cluster."
   vpc_id      = var.vpc_id
   tags = merge(
     var.tags,
     {
-      "Name"                                                  = "${aws_eks_cluster.this[0].name}-eks_worker_sg"
-      "kubernetes.io/cluster/${aws_eks_cluster.this[0].name}" = "owned"
+      "Name"                                      = "${var.cluster_name}-eks_worker_sg"
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     },
   )
 }
