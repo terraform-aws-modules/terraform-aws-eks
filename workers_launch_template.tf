@@ -278,6 +278,24 @@ resource "aws_launch_template" "workers_launch_template" {
     )
   )
 
+  metadata_options {
+    http_endpoint = lookup(
+      var.worker_groups_launch_template[count.index],
+      "metadata_http_endpoint",
+      local.workers_group_defaults["metadata_http_endpoint"],
+    )
+    http_tokens = lookup(
+      var.worker_groups_launch_template[count.index],
+      "metadata_http_tokens",
+      local.workers_group_defaults["metadata_http_tokens"],
+    )
+    http_put_response_hop_limit = lookup(
+      var.worker_groups_launch_template[count.index],
+      "metadata_http_put_response_hop_limit",
+      local.workers_group_defaults["metadata_http_put_response_hop_limit"],
+    )
+  }
+
   credit_specification {
     cpu_credits = lookup(
       var.worker_groups_launch_template[count.index],
