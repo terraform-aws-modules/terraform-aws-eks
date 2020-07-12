@@ -6,6 +6,7 @@ locals {
       "value", element(values(var.tags), index(keys(var.tags), item)),
       "propagate_at_launch", "true"
     )
+    if item != "Name"
   ]
 
   cluster_security_group_id         = var.cluster_create_security_group ? join("", aws_security_group.cluster.*.id) : var.cluster_security_group_id
