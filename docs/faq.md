@@ -101,6 +101,14 @@ Alternatively you can set the `asg_recreate_on_change = true` worker group optio
 
 You can also use a 3rd party tool like Gruntwork's kubergrunt. See the [`eks deploy`](https://github.com/gruntwork-io/kubergrunt#deploy) subcommand.
 
+## How do I create kubernetes resources when creating the cluster?
+
+You do not need to do anything extra since v12.1.0 of the module as long as the following conditions are met:
+- `manage_aws_auth = true` on the module (default)
+- the kubernetes provider is correctly configured like in the [Usage Example](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/README.md#usage-example). Primarily the module's `cluster_id` output is used as input to the `aws_eks_cluster*` data sources.
+
+The `cluster_id` depends on a `null_resource` that polls the EKS cluster's endpoint until it is alive. This blocks initialisation of the kubernetes provider.
+
 ## `aws_auth.tf: At 2:14: Unknown token: 2:14 IDENT`
 
 You are attempting to use a Terraform 0.12 module with Terraform 0.11.
