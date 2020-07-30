@@ -72,6 +72,11 @@ data "template_file" "userdata" {
     cluster_name        = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
     endpoint            = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
     cluster_auth_base64 = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
+    boothook = lookup(
+      var.worker_groups[count.index],
+      "boothook",
+      local.workers_group_defaults["boothook"],
+    )
     pre_userdata = lookup(
       var.worker_groups[count.index],
       "pre_userdata",
@@ -118,6 +123,11 @@ data "template_file" "launch_template_userdata" {
     cluster_name        = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
     endpoint            = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
     cluster_auth_base64 = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
+    boothook = lookup(
+      var.worker_groups_launch_template[count.index],
+      "boothook",
+      local.workers_group_defaults["boothook"],
+    )
     pre_userdata = lookup(
       var.worker_groups_launch_template[count.index],
       "pre_userdata",

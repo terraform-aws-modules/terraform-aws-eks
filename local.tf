@@ -53,6 +53,7 @@ locals {
     root_volume_type              = "gp2"                       # root volume type of workers instances, can be 'standard', 'gp2', or 'io1'
     root_iops                     = "0"                         # The amount of provisioned IOPS. This must be set with a volume_type of "io1".
     key_name                      = ""                          # The key name that should be used for the instances in the autoscaling group
+    boothook                      = ""                          # boothook script to execute early in the boot process
     pre_userdata                  = ""                          # userdata to pre-append to the default userdata.
     userdata_template_file        = ""                          # alternate template to use for userdata
     userdata_template_extra_args  = {}                          # Additional arguments to use when expanding the userdata template file
