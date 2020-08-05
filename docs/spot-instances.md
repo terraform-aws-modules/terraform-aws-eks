@@ -84,7 +84,7 @@ Launch Template support is a recent addition to both AWS and this module. It mig
 ```
 
 ## Using Launch Templates With Both On Demand
-Launch template to launch 2 on demand instances of type M5.Large, and have the ability to scale up using spot instances and on demand instances. The node labels will be either "on-demand" or "spot" depending on which is launched using the EC2 meta-data. With `on_demand_percentage_above_base_capacity` set to 25, 1 in 4 new nodes when auto-scaling will be an on-demand instance. If not set, all new nodes will be spot instances. 
+Launch template to launch 2 on demand instances of type M5.Large, and have the ability to scale up using spot instances and on demand instances. The node labels will be either "on-demand" or "spot" depending on which is launched using the EC2 meta-data. With `on_demand_percentage_above_base_capacity` set to 25, 1 in 4 new nodes when auto-scaling will be an on-demand instance. If not set, all new nodes will be spot instances. The on-demand types will be the primary instance type (first in the array if they are not weighted).
 ```hcl
   worker_groups_launch_template {
     name                    = "mixed-demand-spot"
