@@ -123,9 +123,10 @@ module "vpc" {
 }
 
 module "eks" {
-  source       = "../.."
-  cluster_name = local.cluster_name
-  subnets      = module.vpc.private_subnets
+  source          = "../.."
+  cluster_name    = local.cluster_name
+  cluster_version = "1.17"
+  subnets         = module.vpc.private_subnets
 
   tags = {
     Environment = "test"

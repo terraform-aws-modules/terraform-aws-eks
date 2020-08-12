@@ -21,8 +21,9 @@ provider "kubernetes" {
 }
 
 module "eks" {
-  source     = "../.."
-  create_eks = false
+  source          = "../.."
+  create_eks      = false
+  cluster_version = ""
 
   vpc_id       = ""
   cluster_name = ""

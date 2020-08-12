@@ -55,11 +55,12 @@ module "vpc" {
 }
 
 module "eks" {
-  source       = "../.."
-  cluster_name = local.cluster_name
-  subnets      = module.vpc.public_subnets
-  vpc_id       = module.vpc.vpc_id
-  enable_irsa  = true
+  source          = "../.."
+  cluster_name    = local.cluster_name
+  cluster_version = "1.17"
+  subnets         = module.vpc.public_subnets
+  vpc_id          = module.vpc.vpc_id
+  enable_irsa     = true
 
   worker_groups = [
     {
