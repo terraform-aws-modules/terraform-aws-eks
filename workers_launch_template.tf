@@ -476,6 +476,9 @@ resource "random_pet" "workers_launch_template" {
       )
     )
   }
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_iam_instance_profile" "workers_launch_template" {
