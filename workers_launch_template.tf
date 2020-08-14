@@ -151,6 +151,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
       }
     }
   }
+
   dynamic launch_template {
     iterator = item
     for_each = (lookup(var.worker_groups_launch_template[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups_launch_template[count.index], "on_demand_allocation_strategy", local.workers_group_defaults["on_demand_allocation_strategy"]) != null) ? [] : list(var.worker_groups_launch_template[count.index])
@@ -178,30 +179,37 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     }
   }
 
-  tags = concat(
-    [
-      {
-        "key" = "Name"
-        "value" = "${aws_eks_cluster.this[0].name}-${lookup(
-          var.worker_groups_launch_template[count.index],
-          "name",
-          count.index,
-        )}-eks_asg"
-        "propagate_at_launch" = true
-      },
-      {
-        "key"                 = "kubernetes.io/cluster/${aws_eks_cluster.this[0].name}"
-        "value"               = "owned"
-        "propagate_at_launch" = true
-      },
-    ],
-    local.asg_tags,
-    lookup(
-      var.worker_groups_launch_template[count.index],
-      "tags",
-      local.workers_group_defaults["tags"]
+  dynamic "tag" {
+    for_each = concat(
+      [
+        {
+          "key" = "Name"
+          "value" = "${aws_eks_cluster.this[0].name}-${lookup(
+            var.worker_groups_launch_template[count.index],
+            "name",
+            count.index,
+          )}-eks_asg"
+          "propagate_at_launch" = true
+        },
+        {
+          "key"                 = "kubernetes.io/cluster/${aws_eks_cluster.this[0].name}"
+          "value"               = "owned"
+          "propagate_at_launch" = true
+        },
+      ],
+      local.asg_tags,
+      lookup(
+        var.worker_groups_launch_template[count.index],
+        "tags",
+        local.workers_group_defaults["tags"]
+      )
     )
-  )
+    content {
+      key                 = tag.value.key
+      value               = tag.value.value
+      propagate_at_launch = tag.value.propagate_at_launch
+    }
+  }
 
   lifecycle {
     create_before_destroy = true
