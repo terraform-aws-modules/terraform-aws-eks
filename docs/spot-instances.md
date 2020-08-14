@@ -83,10 +83,14 @@ Launch Template support is a recent addition to both AWS and this module. It mig
   ]
 ```
 
-## Using Launch Templates With Both On Demand
-Launch template to launch 2 on demand instances of type M5.Large, and have the ability to scale up using spot instances and on demand instances. The node labels will be either "on-demand" or "spot" depending on which is launched using the EC2 meta-data. With `on_demand_percentage_above_base_capacity` set to 25, 1 in 4 new nodes when auto-scaling will be an on-demand instance. If not set, all new nodes will be spot instances. The on-demand types will be the primary instance type (first in the array if they are not weighted).
+## Using Launch Templates With Both Spot and On Demand
+
+Example launch template to launch 2 on demand instances of type m5.large, and have the ability to scale up using spot instances and on demand instances. The `node.kubernetes.io/lifecycle` node label will be set to the value queried from the EC2 meta-data service: either "on-demand" or "spot".
+
+`on_demand_percentage_above_base_capacity` is set to 25 so 1 in 4 new nodes, when auto-scaling, will be on-demand instances. If not set, all new nodes will be spot instances. The on-demand instances will be the primary instance type (first in the array if they are not weighted).
+
 ```hcl
-  worker_groups_launch_template {
+  worker_groups_launch_template = [{
     name                    = "mixed-demand-spot"
     override_instance_types = ["m5.large", "m5a.large", "m4.large"]
     root_encrypted          = true
@@ -100,8 +104,9 @@ Launch template to launch 2 on demand instances of type M5.Large, and have the a
     spot_instance_pools                      = 3
 
     kubelet_extra_args = "--node-labels=node.kubernetes.io/lifecycle=`curl -s http://169.254.169.254/latest/meta-data/instance-life-cycle`"
-  }
+  }]
 ```
+
 ## Important Notes
 
 An issue with the cluster-autoscaler: https://github.com/kubernetes/autoscaler/issues/1133
