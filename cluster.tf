@@ -122,13 +122,11 @@ resource "aws_iam_role" "cluster" {
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
-  count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
   policy_arn = "${local.policy_arn_prefix}/AmazonEKSClusterPolicy"
   role       = local.cluster_iam_role_name
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSServicePolicy" {
-  count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
   policy_arn = "${local.policy_arn_prefix}/AmazonEKSServicePolicy"
   role       = local.cluster_iam_role_name
 }
@@ -139,8 +137,6 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSServicePolicy" {
 */
 
 data "aws_iam_policy_document" "cluster_elb_sl_role_creation" {
-  count = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
-
   statement {
     effect = "Allow"
     actions = [
@@ -152,7 +148,6 @@ data "aws_iam_policy_document" "cluster_elb_sl_role_creation" {
 }
 
 resource "aws_iam_role_policy" "cluster_elb_sl_role_creation" {
-  count       = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
   name_prefix = "${var.cluster_name}-elb-sl-role-creation"
   role        = local.cluster_iam_role_name
   policy      = data.aws_iam_policy_document.cluster_elb_sl_role_creation[0].json
