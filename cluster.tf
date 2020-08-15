@@ -150,5 +150,5 @@ data "aws_iam_policy_document" "cluster_elb_sl_role_creation" {
 resource "aws_iam_role_policy" "cluster_elb_sl_role_creation" {
   name_prefix = "${var.cluster_name}-elb-sl-role-creation"
   role        = local.cluster_iam_role_name
-  policy      = data.aws_iam_policy_document.cluster_elb_sl_role_creation[0].json
+  policy      = data.aws_iam_policy_document.cluster_elb_sl_role_creation.json
 }
