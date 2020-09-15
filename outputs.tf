@@ -36,6 +36,11 @@ output "config_map_aws_auth" {
   value       = kubernetes_config_map.aws_auth.*
 }
 
+output "config_map_aws_auth_roles" {
+  description = "IAM roles that should be added to the kubernetes aws-auth configmap."
+  value       = local.configmap_roles
+}
+
 output "cluster_iam_role_name" {
   description = "IAM role name of the EKS cluster."
   value       = local.cluster_iam_role_name
