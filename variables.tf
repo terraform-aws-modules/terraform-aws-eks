@@ -245,10 +245,16 @@ variable "iam_path" {
   default     = "/"
 }
 
+variable "cluster_create_endpoint_private_access_sg_rule" {
+  description = "Whether to create security group rules for the access to the Amazon EKS private API server endpoint."
+  type        = bool
+  default     = false
+}
+
 variable "cluster_endpoint_private_access_cidrs" {
-  description = "List of CIDR blocks which can access the Amazon EKS private API server endpoint, when public access is disabled"
+  description = "List of CIDR blocks which can access the Amazon EKS private API server endpoint."
   type        = list(string)
-  default     = ["0.0.0.0/0"]
+  default     = null
 }
 
 variable "cluster_endpoint_private_access" {
