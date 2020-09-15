@@ -15,7 +15,7 @@ resource "aws_eks_node_group" "workers" {
 
   ami_type        = lookup(each.value, "ami_type", null)
   disk_size       = lookup(each.value, "disk_size", null)
-  instance_types  = [each.value["instance_type"]]
+  instance_types  = each.value["launch_template_id"] != "" ? [] : [each.value["instance_type"]]
   release_version = lookup(each.value, "ami_release_version", null)
 
   dynamic "remote_access" {
@@ -27,6 +27,18 @@ resource "aws_eks_node_group" "workers" {
     content {
       ec2_ssh_key               = remote_access.value["ec2_ssh_key"]
       source_security_group_ids = remote_access.value["source_security_group_ids"]
+    }
+  }
+
+  dynamic "launch_template" {
+    for_each = each.value["launch_template_id"] != "" ? [{
+      id      = each.value["launch_template_id"]
+      version = each.value["launch_template_version"]
+    }] : []
+
+    content {
+      id      = launch_template.value["id"]
+      version = launch_template.value["version"]
     }
   }
 
