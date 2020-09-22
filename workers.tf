@@ -6,7 +6,7 @@ resource "aws_autoscaling_group" "workers" {
     "-",
     compact(
       [
-        aws_eks_cluster.this[0].name,
+        var.cluster_name,
         lookup(var.worker_groups[count.index], "name", count.index),
         lookup(var.worker_groups[count.index], "asg_recreate_on_change", local.workers_group_defaults["asg_recreate_on_change"]) ? random_pet.workers[count.index].id : ""
       ]
@@ -106,16 +106,16 @@ resource "aws_autoscaling_group" "workers" {
     [
       {
         "key"                 = "Name"
-        "value"               = "${aws_eks_cluster.this[0].name}-${lookup(var.worker_groups[count.index], "name", count.index)}-eks_asg"
+        "value"               = "${var.cluster_name}-${lookup(var.worker_groups[count.index], "name", count.index)}-eks_asg"
         "propagate_at_launch" = true
       },
       {
-        "key"                 = "kubernetes.io/cluster/${aws_eks_cluster.this[0].name}"
+        "key"                 = "kubernetes.io/cluster/${var.cluster_name}"
         "value"               = "owned"
         "propagate_at_launch" = true
       },
       {
-        "key"                 = "k8s.io/cluster/${aws_eks_cluster.this[0].name}"
+        "key"                 = "k8s.io/cluster/${var.cluster_name}"
         "value"               = "owned"
         "propagate_at_launch" = true
       },
@@ -136,7 +136,7 @@ resource "aws_autoscaling_group" "workers" {
 
 resource "aws_launch_configuration" "workers" {
   count       = var.create_eks ? local.worker_group_count : 0
-  name_prefix = "${aws_eks_cluster.this[0].name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
+  name_prefix = "${var.cluster_name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
   associate_public_ip_address = lookup(
     var.worker_groups[count.index],
     "public_ip",
@@ -378,7 +378,7 @@ resource "aws_security_group_rule" "cluster_primary_ingress_workers" {
 
 resource "aws_iam_role" "workers" {
   count                 = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
-  name_prefix           = var.workers_role_name != "" ? null : aws_eks_cluster.this[0].name
+  name_prefix           = var.workers_role_name != "" ? null : var.cluster_name
   name                  = var.workers_role_name != "" ? var.workers_role_name : null
   assume_role_policy    = data.aws_iam_policy_document.workers_assume_role_policy.json
   permissions_boundary  = var.permissions_boundary
@@ -389,7 +389,7 @@ resource "aws_iam_role" "workers" {
 
 resource "aws_iam_instance_profile" "workers" {
   count       = var.manage_worker_iam_resources && var.create_eks ? local.worker_group_count : 0
-  name_prefix = aws_eks_cluster.this[0].name
+  name_prefix = var.cluster_name
   role = lookup(
     var.worker_groups[count.index],
     "iam_role_id",
