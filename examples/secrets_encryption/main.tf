@@ -57,7 +57,7 @@ resource "aws_kms_key" "eks" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "2.6.0"
+  version = "2.47.0"
 
   name                 = "test-vpc"
   cidr                 = "10.0.0.0/16"
