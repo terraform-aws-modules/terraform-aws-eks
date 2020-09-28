@@ -42,6 +42,7 @@ Following IAM permissions are the minimum permissions needed for your IAM user o
                 "ec2:CreateTags",
                 "ec2:CreateVolume",
                 "ec2:CreateVpc",
+                "ec2:CreateVpcEndpoint",
                 "ec2:DeleteDhcpOptions",
                 "ec2:DeleteEgressOnlyInternetGateway",
                 "ec2:DeleteInternetGateway",
