@@ -304,12 +304,19 @@ resource "aws_launch_template" "workers_launch_template" {
     )
   }
 
-  credit_specification {
-    cpu_credits = lookup(
+  dynamic "credit_specification" {
+    for_each = lookup(
       var.worker_groups_launch_template[count.index],
       "cpu_credits",
       local.workers_group_defaults["cpu_credits"]
-    )
+    ) != null ? [{}] : []
+    content {
+      cpu_credits = lookup(
+        var.worker_groups_launch_template[count.index],
+        "cpu_credits",
+        local.workers_group_defaults["cpu_credits"]
+      )
+    }
   }
 
   monitoring {
