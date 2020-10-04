@@ -43,6 +43,7 @@ resource "aws_eks_cluster" "this" {
     aws_security_group_rule.cluster_https_worker_ingress,
     aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy,
     aws_iam_role_policy_attachment.cluster_AmazonEKSServicePolicy,
+    aws_iam_role_policy_attachment.cluster_AmazonEKSVPCResourceControllerPolicy,
     aws_cloudwatch_log_group.this
   ]
 }
@@ -130,6 +131,12 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSServicePolicy" {
   count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
   policy_arn = "${local.policy_arn_prefix}/AmazonEKSServicePolicy"
+  role       = local.cluster_iam_role_name
+}
+
+resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSVPCResourceControllerPolicy" {
+  count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
+  policy_arn = "${local.policy_arn_prefix}/AmazonEKSVPCResourceController"
   role       = local.cluster_iam_role_name
 }
 
