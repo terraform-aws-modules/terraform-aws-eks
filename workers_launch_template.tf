@@ -309,13 +309,9 @@ resource "aws_launch_template" "workers_launch_template" {
       var.worker_groups_launch_template[count.index],
       "cpu_credits",
       local.workers_group_defaults["cpu_credits"]
-    ) != null ? [{}] : []
+    ) != null ? [lookup(var.worker_groups_launch_template[count.index], "cpu_credits", local.workers_group_defaults["cpu_credits"])] : []
     content {
-      cpu_credits = lookup(
-        var.worker_groups_launch_template[count.index],
-        "cpu_credits",
-        local.workers_group_defaults["cpu_credits"]
-      )
+      cpu_credits = credit_specification.value
     }
   }
 
