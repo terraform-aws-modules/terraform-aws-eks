@@ -128,13 +128,13 @@ variable "worker_ami_name_filter_windows" {
 variable "worker_ami_owner_id" {
   description = "The ID of the owner for the AMI to use for the AWS EKS workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft')."
   type        = string
-  default     = "602401143452" // The ID of the owner of the official AWS EKS AMIs.
+  default     = "amazon"
 }
 
 variable "worker_ami_owner_id_windows" {
   description = "The ID of the owner for the AMI to use for the AWS EKS Windows workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft')."
   type        = string
-  default     = "801119661308" // The ID of the owner of the official AWS EKS Windows AMIs.
+  default     = "amazon"
 }
 
 variable "worker_additional_security_group_ids" {
