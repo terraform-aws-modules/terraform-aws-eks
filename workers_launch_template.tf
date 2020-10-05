@@ -37,6 +37,11 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     "target_group_arns",
     local.workers_group_defaults["target_group_arns"]
   )
+  load_balancers = lookup(
+    var.worker_groups_launch_template[count.index],
+    "load_balancers",
+    local.workers_group_defaults["load_balancers"]
+  )
   service_linked_role_arn = lookup(
     var.worker_groups_launch_template[count.index],
     "service_linked_role_arn",
