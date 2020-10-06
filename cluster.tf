@@ -158,9 +158,15 @@ data "aws_iam_policy_document" "cluster_elb_sl_role_creation" {
   }
 }
 
-resource "aws_iam_role_policy" "cluster_elb_sl_role_creation" {
+resource "aws_iam_policy" "cluster_elb_sl_role_creation" {
   count       = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
   name_prefix = "${var.cluster_name}-elb-sl-role-creation"
-  role        = local.cluster_iam_role_name
+  description = "Permissions for EKS to create AWSServiceRoleForElasticLoadBalancing service-linked role"
   policy      = data.aws_iam_policy_document.cluster_elb_sl_role_creation[0].json
+}
+
+resource "aws_iam_role_policy_attachment" "cluster_elb_sl_role_creation" {
+  count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
+  policy_arn = aws_iam_policy.cluster_elb_sl_role_creation[0].arn
+  role       = local.cluster_iam_role_name
 }
