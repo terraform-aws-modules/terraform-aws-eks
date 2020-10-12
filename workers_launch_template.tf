@@ -6,7 +6,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     "-",
     compact(
       [
-        aws_eks_cluster.this[0].name,
+        coalescelist(aws_eks_cluster.this[*].name, [""])[0],
         lookup(var.worker_groups_launch_template[count.index], "name", count.index),
         lookup(var.worker_groups_launch_template[count.index], "asg_recreate_on_change", local.workers_group_defaults["asg_recreate_on_change"]) ? random_pet.workers_launch_template[count.index].id : ""
       ]
@@ -189,7 +189,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
       [
         {
           "key" = "Name"
-          "value" = "${aws_eks_cluster.this[0].name}-${lookup(
+          "value" = "${coalescelist(aws_eks_cluster.this[*].name, [""])[0]}-${lookup(
             var.worker_groups_launch_template[count.index],
             "name",
             count.index,
@@ -197,7 +197,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
           "propagate_at_launch" = true
         },
         {
-          "key"                 = "kubernetes.io/cluster/${aws_eks_cluster.this[0].name}"
+          "key"                 = "kubernetes.io/cluster/${coalescelist(aws_eks_cluster.this[*].name, [""])[0]}"
           "value"               = "owned"
           "propagate_at_launch" = true
         },
@@ -224,7 +224,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
 
 resource "aws_launch_template" "workers_launch_template" {
   count = var.create_eks ? (local.worker_group_launch_template_count) : 0
-  name_prefix = "${aws_eks_cluster.this[0].name}-${lookup(
+  name_prefix = "${coalescelist(aws_eks_cluster.this[*].name, [""])[0]}-${lookup(
     var.worker_groups_launch_template[count.index],
     "name",
     count.index,
@@ -427,7 +427,7 @@ resource "aws_launch_template" "workers_launch_template" {
 
     tags = merge(
       {
-        "Name" = "${aws_eks_cluster.this[0].name}-${lookup(
+        "Name" = "${coalescelist(aws_eks_cluster.this[*].name, [""])[0]}-${lookup(
           var.worker_groups_launch_template[count.index],
           "name",
           count.index,
@@ -442,7 +442,7 @@ resource "aws_launch_template" "workers_launch_template" {
 
     tags = merge(
       {
-        "Name" = "${aws_eks_cluster.this[0].name}-${lookup(
+        "Name" = "${coalescelist(aws_eks_cluster.this[*].name, [""])[0]}-${lookup(
           var.worker_groups_launch_template[count.index],
           "name",
           count.index,
@@ -500,7 +500,7 @@ resource "random_pet" "workers_launch_template" {
 
 resource "aws_iam_instance_profile" "workers_launch_template" {
   count       = var.manage_worker_iam_resources && var.create_eks ? local.worker_group_launch_template_count : 0
-  name_prefix = aws_eks_cluster.this[0].name
+  name_prefix = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
   role = lookup(
     var.worker_groups_launch_template[count.index],
     "iam_role_id",

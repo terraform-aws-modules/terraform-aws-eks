@@ -1,5 +1,4 @@
-data "aws_caller_identity" "current" {
-}
+data "aws_caller_identity" "current" {}
 
 locals {
   auth_launch_template_worker_roles = [
