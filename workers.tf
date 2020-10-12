@@ -294,6 +294,10 @@ resource "random_pet" "workers" {
   keepers = {
     lc_name = aws_launch_configuration.workers[count.index].name
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_security_group" "workers" {
@@ -408,6 +412,10 @@ resource "aws_iam_instance_profile" "workers" {
   )
 
   path = var.iam_path
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {
