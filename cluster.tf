@@ -1,10 +1,3 @@
-resource "aws_cloudwatch_log_group" "this" {
-  count             = length(var.cluster_enabled_log_types) > 0 ? 1 : 0
-  name              = "/aws/eks/${var.cluster_name}/cluster"
-  retention_in_days = var.cluster_log_retention_in_days
-  kms_key_id        = var.cluster_log_kms_key_id
-}
-
 resource "aws_eks_cluster" "this" {
   name                      = var.cluster_name
   enabled_cluster_log_types = var.cluster_enabled_log_types
@@ -25,8 +18,7 @@ resource "aws_eks_cluster" "this" {
 
   depends_on = [
     aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy,
-    aws_iam_role_policy_attachment.cluster_AmazonEKSServicePolicy,
-    aws_cloudwatch_log_group.this
+    aws_iam_role_policy_attachment.cluster_AmazonEKSServicePolicy
   ]
 }
 
