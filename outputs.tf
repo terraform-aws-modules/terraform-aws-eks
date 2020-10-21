@@ -48,7 +48,7 @@ output "cluster_iam_role_arn" {
 
 output "cluster_oidc_issuer_url" {
   description = "The URL on the EKS cluster OIDC Issuer"
-  value       = flatten(concat(aws_eks_cluster.this[*].identity[*].oidc.0.issuer, [""]))[0]
+  value       = element(flatten(concat(aws_eks_cluster.this[*].identity[*].oidc.0.issuer, list(""))), 0)
 }
 
 output "cluster_primary_security_group_id" {
@@ -58,7 +58,7 @@ output "cluster_primary_security_group_id" {
 
 output "cloudwatch_log_group_name" {
   description = "Name of cloudwatch log group created"
-  value       = aws_cloudwatch_log_group.this[*].name
+  value       = element(concat(aws_cloudwatch_log_group.this[*].name, list("")), 0)
 }
 
 output "kubeconfig" {
@@ -68,12 +68,12 @@ output "kubeconfig" {
 
 output "kubeconfig_filename" {
   description = "The filename of the generated kubectl config."
-  value       = concat(local_file.kubeconfig.*.filename, [""])[0]
+  value       = element(concat(local_file.kubeconfig.*.filename, list("")), 0)
 }
 
 output "oidc_provider_arn" {
   description = "The ARN of the OIDC Provider if `enable_irsa = true`."
-  value       = var.enable_irsa ? concat(aws_iam_openid_connect_provider.oidc_provider[*].arn, [""])[0] : null
+  value       = var.enable_irsa ? element(concat(aws_iam_openid_connect_provider.oidc_provider[*].arn, list("")), 0) : null
 }
 
 output "workers_asg_arns" {
