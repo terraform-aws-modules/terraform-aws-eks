@@ -28,7 +28,7 @@ Replace `<ACCOUNT ID>` with your AWS account ID in `cluster-autoscaler-chart-val
 Install the chart using the provided values file:
 
 ```
-helm install --name cluster-autoscaler --namespace kube-system stable/cluster-autoscaler --values=cluster-autoscaler-chart-values.yaml
+helm install cluster-autoscaler --namespace kube-system autoscaler/cluster-autoscaler-chart --values=cluster-autoscaler-chart-values.yaml
 ```
 
 ## Verify
