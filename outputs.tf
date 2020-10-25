@@ -166,6 +166,16 @@ output "worker_iam_role_arn" {
   )[0]
 }
 
+output "fargate_profile_ids" {
+  description = "EKS Cluster name and EKS Fargate Profile names separated by a colon (:)."
+  value       = module.fargate.fargate_profile_ids
+}
+
+output "fargate_profile_arns" {
+  description = "Amazon Resource Name (ARN) of the EKS Fargate Profiles."
+  value       = module.fargate.fargate_profile_arns
+}
+
 output "fargate_iam_role_name" {
   description = "IAM role name for EKS Fargate pods"
   value       = module.fargate.iam_role_name
