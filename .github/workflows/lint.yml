@@ -21,11 +21,16 @@ jobs:
 
   docs:
     name: Docs
-    runs-on: macOS-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@master
       - name: Install Deps
-        run: brew update && brew install pre-commit terraform-docs terraform
+        run: |
+          # Temporary fix for https://github.com/actions/virtual-environments/issues/1811
+          brew untap local/homebrew-openssl
+          brew untap local/homebrew-python2
+          brew update
+          brew install pre-commit terraform-docs terraform
       - name: Check Docs
         run: pre-commit run --show-diff-on-failure --all-files terraform_docs
 

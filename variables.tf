@@ -47,6 +47,12 @@ variable "manage_aws_auth" {
   default     = true
 }
 
+variable "aws_auth_additional_labels" {
+  description = "Additionnal kubernetes labels applied on aws-auth ConfigMap"
+  default     = {}
+  type        = map(string)
+}
+
 variable "map_accounts" {
   description = "Additional AWS account numbers to add to the aws-auth configmap. See examples/basic/variables.tf for example format."
   type        = list(string)
