@@ -26,8 +26,9 @@ jobs:
       - uses: actions/checkout@master
       - name: Install Deps
         run: |
-          # brew untap local/homebrew-openssl
-          # brew untap local/homebrew-python2
+          # Temporary fix for https://github.com/actions/virtual-environments/issues/1811
+          brew untap local/homebrew-openssl
+          brew untap local/homebrew-python2
           brew update
           brew install pre-commit terraform-docs terraform
       - name: Check Docs
