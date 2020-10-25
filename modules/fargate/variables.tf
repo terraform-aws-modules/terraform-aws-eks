@@ -9,6 +9,16 @@ variable "create_eks" {
   default     = true
 }
 
+variable "iam_path" {
+  description = "IAM roles will be created on this path."
+  type        = string
+}
+
+variable "iam_policy_arn_prefix" {
+  description = "IAM policy prefix with the correct AWS partition."
+  type        = string
+}
+
 variable "create_fargate_pod_execution_role" {
   description = "Controls if the the IAM Role that provides permissions for the EKS Fargate Profile should be created."
   type        = bool
