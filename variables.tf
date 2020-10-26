@@ -362,5 +362,5 @@ variable "fargate_profiles" {
 variable "create_fargate_pod_execution_role" {
   description = "Controls if the EKS Fargate pod execution IAM role should be created."
   type        = bool
-  default     = false
+  default     = true
 }

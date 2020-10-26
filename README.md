@@ -187,7 +187,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster\_version | Kubernetes version to use for the EKS cluster. | `string` | n/a | yes |
 | config\_output\_path | Where to save the Kubectl config file (if `write_kubeconfig = true`). Assumed to be a directory if the value ends with a forward slash `/`. | `string` | `"./"` | no |
 | create\_eks | Controls if EKS resources should be created (it affects almost all resources) | `bool` | `true` | no |
-| create\_fargate\_pod\_execution\_role | Controls if the EKS Fargate pod execution IAM role should be created. | `bool` | `false` | no |
+| create\_fargate\_pod\_execution\_role | Controls if the EKS Fargate pod execution IAM role should be created. | `bool` | `true` | no |
 | eks\_oidc\_root\_ca\_thumbprint | Thumbprint of Root CA for EKS OIDC, Valid until 2037 | `string` | `"9e99a48a9960b14926bb7f3b02e22da2b0ab7280"` | no |
 | enable\_irsa | Whether to create OpenID Connect Provider for EKS to enable IRSA | `bool` | `false` | no |
 | fargate\_profiles | Fargate profiles | <pre>map(object({<br>    namespace = string<br>    labels    = map(string)<br>  }))</pre> | `{}` | no |
