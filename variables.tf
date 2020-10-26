@@ -351,12 +351,9 @@ variable "cluster_encryption_config" {
 }
 
 variable "fargate_profiles" {
-  description = "Fargate profiles"
-  type = map(object({
-    namespace = string
-    labels    = map(string)
-  }))
-  default = {}
+  description = "Fargate profiles to create. See `fargate_profile` keys section in README.md for more details"
+  type        = any
+  default     = {}
 }
 
 variable "create_fargate_pod_execution_role" {
