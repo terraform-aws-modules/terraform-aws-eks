@@ -247,6 +247,8 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | config\_map\_aws\_auth | A kubernetes configuration to authenticate to this EKS cluster. |
 | fargate\_iam\_role\_arn | IAM role ARN for EKS Fargate pods |
 | fargate\_iam\_role\_name | IAM role name for EKS Fargate pods |
+| fargate\_profile\_arns | Amazon Resource Name (ARN) of the EKS Fargate Profiles. |
+| fargate\_profile\_ids | EKS Cluster name and EKS Fargate Profile names separated by a colon (:). |
 | kubeconfig | kubectl config file contents for this EKS cluster. |
 | kubeconfig\_filename | The filename of the generated kubectl config. |
 | node\_groups | Outputs from EKS node groups. Map of maps, keyed by var.node\_groups keys |

@@ -1,0 +1,44 @@
+# eks `fargate` submodule
+
+Helper submodule to create and manage resources related to `aws_eks_fargate_profile`.
+
+## Assumptions
+* Designed for use by the parent module and not directly by end users
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Requirements
+
+No requirements.
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| aws | n/a |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| cluster\_name | Name of the EKS cluster. | `string` | n/a | yes |
+| create\_eks | Controls if EKS resources should be created (it affects almost all resources) | `bool` | `true` | no |
+| create\_fargate\_pod\_execution\_role | Controls if the the IAM Role that provides permissions for the EKS Fargate Profile should be created. | `bool` | `true` | no |
+| eks\_depends\_on | List of references to other resources this submodule depends on. | `any` | `null` | no |
+| fargate\_pod\_execution\_role\_name | The IAM Role that provides permissions for the EKS Fargate Profile. | `string` | `null` | no |
+| fargate\_profiles | Fargate profiles to create. | <pre>map(object({<br>    namespace = string<br>    labels    = map(string)<br>  }))</pre> | `{}` | no |
+| iam\_path | IAM roles will be created on this path. | `string` | n/a | yes |
+| iam\_policy\_arn\_prefix | IAM policy prefix with the correct AWS partition. | `string` | n/a | yes |
+| subnets | A list of subnets for the EKS Fargate profiles. | `list(string)` | n/a | yes |
+| tags | A map of tags to add to all resources. | `map(string)` | n/a | yes |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| aws\_auth\_roles | Roles for use in aws-auth ConfigMap |
+| fargate\_profile\_arns | Amazon Resource Name (ARN) of the EKS Fargate Profiles. |
+| fargate\_profile\_ids | EKS Cluster name and EKS Fargate Profile names separated by a colon (:). |
+| iam\_role\_arn | IAM role ARN for EKS Fargate pods |
+| iam\_role\_name | IAM role name for EKS Fargate pods |
+
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
