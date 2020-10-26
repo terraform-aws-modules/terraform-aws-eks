@@ -20,10 +20,8 @@ output "iam_role_arn" {
 
 output "aws_auth_roles" {
   description = "Roles for use in aws-auth ConfigMap"
-  value = [
-    for role in aws_iam_role.eks_fargate_pod : {
-      worker_role_arn = role.arn
-      platform        = "fargate"
-    }
-  ]
+  value = [{
+    worker_role_arn = local.pod_execution_role_arn
+    platform        = "fargate"
+  }]
 }

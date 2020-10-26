@@ -10,16 +10,12 @@ resource "aws_iam_role" "eks_fargate_pod" {
   assume_role_policy = data.aws_iam_policy_document.eks_fargate_pod_assume_role[0].json
   tags               = var.tags
   path               = var.iam_path
-
-  depends_on = [var.eks_depends_on]
 }
 
 resource "aws_iam_role_policy_attachment" "eks_fargate_pod" {
   count      = local.create_eks && var.create_fargate_pod_execution_role ? 1 : 0
   policy_arn = "${var.iam_policy_arn_prefix}/AmazonEKSFargatePodExecutionRolePolicy"
   role       = aws_iam_role.eks_fargate_pod[0].name
-
-  depends_on = [var.eks_depends_on]
 }
 
 resource "aws_eks_fargate_profile" "this" {

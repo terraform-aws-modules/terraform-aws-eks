@@ -364,3 +364,9 @@ variable "create_fargate_pod_execution_role" {
   type        = bool
   default     = true
 }
+
+variable "fargate_pod_execution_role_name" {
+  description = "The IAM Role that provides permissions for the EKS Fargate Profile."
+  type        = string
+  default     = null
+}
