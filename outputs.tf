@@ -58,7 +58,7 @@ output "cluster_primary_security_group_id" {
 
 output "cloudwatch_log_group_name" {
   description = "Name of cloudwatch log group created"
-  value       = aws_cloudwatch_log_group.this[*].name
+  value       = element(concat(aws_cloudwatch_log_group.this[*].name, list("")), 0)
 }
 
 output "kubeconfig" {
