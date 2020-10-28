@@ -318,7 +318,7 @@ variable "create_eks" {
 }
 
 variable "node_groups_defaults" {
-  description = "Map of values to be applied to all node groups. See `node_groups` module's documentaton for more details"
+  description = "Map of values to be applied to all node groups. See `node_groups` module's documentation for more details"
   type        = any
   default     = {}
 }
