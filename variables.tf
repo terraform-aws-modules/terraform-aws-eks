@@ -90,6 +90,12 @@ variable "tags" {
   default     = {}
 }
 
+variable "tags_override_asg" {
+  description = "A map of tags to override in autoscaling group resources."
+  type        = map(string)
+  default     = {}
+}
+
 variable "vpc_id" {
   description = "VPC where the cluster and workers will be deployed."
   type        = string

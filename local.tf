@@ -1,5 +1,5 @@
 locals {
-  asg_tags = [
+  asg_tags = var.tags_override_asg == {} ? var.tags_override_asg : [
     for item in keys(var.tags) :
     map(
       "key", item,
