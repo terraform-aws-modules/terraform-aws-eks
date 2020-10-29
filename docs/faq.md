@@ -134,24 +134,12 @@ Windows worker nodes requires additional cluster role (eks:kube-proxy-windows). 
 
 Amazon EKS clusters must contain one or more Linux worker nodes to run core system pods that only run on Linux, such as coredns and the VPC resource controller.
 
-1. Build AWS EKS cluster with the next workers configuration (default Linux):
+1. Build AWS EKS cluster with the next workers configuration (for local-exec provider a kubectl, openssl and jq are required):
 
 ```
-worker_groups = [
-    {
-      name                          = "worker-group-linux"
-      instance_type                 = "m5.large"
-      platform                      = "linux"
-      asg_desired_capacity          = 2
-    },
-  ]
-```
+wait_for_cluster_interpreter         = ["/bin/sh", "-c"]
+wait_for_cluster_cmd                 = "for i in `seq 1 60`; do if [ \"$(curl -k -s $ENDPOINT/healthz 2>/dev/null)\" = \"ok\" ]; then export KUBECONFIG=kubeconfig_${var.cluster_name} && kubectl apply -f https://amazon-eks.s3.us-west-2.amazonaws.com/manifests/${var.region}/vpc-resource-controller/latest/vpc-resource-controller.yaml && curl -o webhook-create-signed-cert.sh https://amazon-eks.s3.us-west-2.amazonaws.com/manifests/${var.region}/vpc-admission-webhook/latest/webhook-create-signed-cert.sh && curl -o webhook-patch-ca-bundle.sh https://amazon-eks.s3.us-west-2.amazonaws.com/manifests/${var.region}/vpc-admission-webhook/latest/webhook-patch-ca-bundle.sh && curl -o vpc-admission-webhook-deployment.yaml https://amazon-eks.s3.us-west-2.amazonaws.com/manifests/${var.region}/vpc-admission-webhook/latest/vpc-admission-webhook-deployment.yaml && chmod +x webhook-create-signed-cert.sh webhook-patch-ca-bundle.sh && ./webhook-create-signed-cert.sh && kubectl get secret -n kube-system vpc-admission-webhook-certs && cat ./vpc-admission-webhook-deployment.yaml | ./webhook-patch-ca-bundle.sh > vpc-admission-webhook.yaml && kubectl apply -f vpc-admission-webhook.yaml && exit 0;fi;sleep 5;done;echo TIMEOUT && exit 1"
 
-2. Apply commands from https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support (use tab with name `Windows`)
-
-3. Add one more worker group for Windows with required field `platform = "windows"` and update your cluster. Worker group example:
-
-```
 worker_groups = [
     {
       name                          = "worker-group-linux"
@@ -168,7 +156,7 @@ worker_groups = [
   ]
 ```
 
-4. With `kubectl get nodes` you can see cluster with mixed (Linux/Windows) nodes support.
+2. With `kubectl get nodes` you can see cluster with mixed (Linux/Windows) nodes support.
 
 ## Deploying from Windows: `/bin/sh` file does not exist
 
