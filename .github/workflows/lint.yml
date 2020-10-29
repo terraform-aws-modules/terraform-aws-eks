@@ -30,7 +30,7 @@ jobs:
           # Get the download url of the latest version of terraform-docs
           tf_docs_download_url=$(curl -s https://api.github.com/repos/terraform-docs/terraform-docs/releases/latest | jq -rc '.assets[] | select( .name | contains("linux-amd64")).browser_download_url')
           mkdir -p $GITHUB_WORKSPACE/bin
-          curl -sLo $GITHUB_WORKSPACE/bin/terraform-docs $tf_docs_download_url
+          curl -Lo $GITHUB_WORKSPACE/bin/terraform-docs $tf_docs_download_url
           chmod +x $GITHUB_WORKSPACE/bin/terraform-docs
           echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
       - name: Check Docs
