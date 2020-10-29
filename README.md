@@ -230,6 +230,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 
 | Name | Description |
 |------|-------------|
+| cloudwatch\_log\_group\_arn | Arn of cloudwatch log group created |
 | cloudwatch\_log\_group\_name | Name of cloudwatch log group created |
 | cluster\_arn | The Amazon Resource Name (ARN) of the cluster. |
 | cluster\_certificate\_authority\_data | Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster. |

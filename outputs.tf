@@ -61,6 +61,11 @@ output "cloudwatch_log_group_name" {
   value       = element(concat(aws_cloudwatch_log_group.this[*].name, list("")), 0)
 }
 
+output "cloudwatch_log_group_arn" {
+  description = "Arn of cloudwatch log group created"
+  value       = element(concat(aws_cloudwatch_log_group.this[*].arn, list("")), 0)
+}
+
 output "kubeconfig" {
   description = "kubectl config file contents for this EKS cluster."
   value       = local.kubeconfig
