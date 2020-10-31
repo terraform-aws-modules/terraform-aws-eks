@@ -126,20 +126,15 @@ module "eks" {
 
 ## How can I use Windows workers?
 
-To enable Windows support for your EKS cluster, you should apply some configs manually. See the [Enabling Windows Support (Windows/MacOS/Linux)](https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support).
-
-Windows worker nodes requires additional cluster role (eks:kube-proxy-windows). If you are adding windows workers to existing cluster, you should apply config-map-aws-auth again.
+To enable Windows support for your EKS cluster, you should add additional resource definition named "eks_windows_boostrap". See the [Enabling Windows Support (Windows/MacOS/Linux)](https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support).
 
 #### Example configuration
 
 Amazon EKS clusters must contain one or more Linux worker nodes to run core system pods that only run on Linux, such as coredns and the VPC resource controller.
 
-1. Build AWS EKS cluster with the next workers configuration (for local-exec provider a kubectl, openssl and jq are required):
+1. Build AWS EKS cluster with the next workers configuration (for local-exec provider a kubectl, openssl and jq packages are required):
 
 ```
-wait_for_cluster_interpreter         = ["/bin/sh", "-c"]
-wait_for_cluster_cmd                 = "for i in `seq 1 60`; do if [ \"$(curl -k -s $ENDPOINT/healthz 2>/dev/null)\" = \"ok\" ]; then export KUBECONFIG=kubeconfig_${var.cluster_name} && kubectl apply -f https://amazon-eks.s3.us-west-2.amazonaws.com/manifests/${var.region}/vpc-resource-controller/latest/vpc-resource-controller.yaml && curl -o webhook-create-signed-cert.sh https://amazon-eks.s3.us-west-2.amazonaws.com/manifests/${var.region}/vpc-admission-webhook/latest/webhook-create-signed-cert.sh && curl -o webhook-patch-ca-bundle.sh https://amazon-eks.s3.us-west-2.amazonaws.com/manifests/${var.region}/vpc-admission-webhook/latest/webhook-patch-ca-bundle.sh && curl -o vpc-admission-webhook-deployment.yaml https://amazon-eks.s3.us-west-2.amazonaws.com/manifests/${var.region}/vpc-admission-webhook/latest/vpc-admission-webhook-deployment.yaml && chmod +x webhook-create-signed-cert.sh webhook-patch-ca-bundle.sh && ./webhook-create-signed-cert.sh && kubectl get secret -n kube-system vpc-admission-webhook-certs && cat ./vpc-admission-webhook-deployment.yaml | ./webhook-patch-ca-bundle.sh > vpc-admission-webhook.yaml && kubectl apply -f vpc-admission-webhook.yaml && exit 0;fi;sleep 5;done;echo TIMEOUT && exit 1"
-
 worker_groups = [
     {
       name                          = "worker-group-linux"
@@ -154,6 +149,20 @@ worker_groups = [
       asg_desired_capacity          = 1
     },
   ]
+  
+
+resource "null_resource" "eks_windows_boostrap" {
+  depends_on = [
+    module.eks.cluster_id
+  ]
+  provisioner "local-exec" {
+    command     = "export KUBECONFIG=kubeconfig_${var.cluster_name} && kubectl apply -f https://amazon-eks.s3.us-west-2.amazonaws.com/manifests/${var.region}/vpc-resource-controller/latest/vpc-resource-controller.yaml && curl -o webhook-create-signed-cert.sh https://amazon-eks.s3.us-west-2.amazonaws.com/manifests/${var.region}/vpc-admission-webhook/latest/webhook-create-signed-cert.sh && curl -o webhook-patch-ca-bundle.sh https://amazon-eks.s3.us-west-2.amazonaws.com/manifests/${var.region}/vpc-admission-webhook/latest/webhook-patch-ca-bundle.sh && curl -o vpc-admission-webhook-deployment.yaml https://amazon-eks.s3.us-west-2.amazonaws.com/manifests/${var.region}/vpc-admission-webhook/latest/vpc-admission-webhook-deployment.yaml && chmod +x webhook-create-signed-cert.sh webhook-patch-ca-bundle.sh && ./webhook-create-signed-cert.sh && kubectl get secret -n kube-system vpc-admission-webhook-certs && cat ./vpc-admission-webhook-deployment.yaml | ./webhook-patch-ca-bundle.sh > vpc-admission-webhook.yaml && kubectl apply -f vpc-admission-webhook.yaml && exit 0"
+    interpreter = ["/bin/sh", "-c"]
+    environment = {
+      ENDPOINT = module.eks.cluster_endpoint
+    }
+  }
+}  
 ```
 
 2. With `kubectl get nodes` you can see cluster with mixed (Linux/Windows) nodes support.
