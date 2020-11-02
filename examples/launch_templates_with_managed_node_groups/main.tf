@@ -65,7 +65,7 @@ module "vpc" {
   enable_dns_hostnames = true
 
   private_subnet_tags = {
-    "kubernetes.io/cluster/${local.cluster_name}" = "shared" // EKS adds this and TF would want to remove then later
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared" # EKS adds this and TF would want to remove then later
   }
 }
 

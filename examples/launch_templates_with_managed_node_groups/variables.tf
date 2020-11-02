@@ -3,7 +3,8 @@ variable "region" {
 }
 
 variable "instance_type" {
-  default = "t3.small" // smallest recommended, where ~1.1Gb of 2Gb memory is available for the Kubernetes pods after ‘warming up’ Docker, Kubelet, and OS
+  # Smallest recommended, where ~1.1Gb of 2Gb memory is available for the Kubernetes pods after ‘warming up’ Docker, Kubelet, and OS
+  default = "t3.small"
   type    = string
 }
 
