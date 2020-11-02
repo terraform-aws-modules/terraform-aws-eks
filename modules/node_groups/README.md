@@ -26,6 +26,8 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | instance\_type | Workers' instance type | string | `var.workers_group_defaults[instance_type]` |
 | k8s\_labels | Kubernetes labels | map(string) | No labels applied |
 | key\_name | Key name for workers. Set to empty string to disable remote access | string | `var.workers_group_defaults[key_name]` |
+| launch_template_id | The id of a aws_launch_template to use | string | No LT used |
+| launch\_template_version | The version of the LT to use | string | none |
 | max\_capacity | Max number of workers | number | `var.workers_group_defaults[asg_max_size]` |
 | min\_capacity | Min number of workers | number | `var.workers_group_defaults[asg_min_size]` |
 | name | Name of the node group | string | Auto generated |
