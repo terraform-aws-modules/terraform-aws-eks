@@ -189,3 +189,17 @@ Kubelet restricts the allowed list of labels in the `kubernetes.io` namespace th
 Older configurations used labels like `kubernetes.io/lifecycle=spot` and this is no longer allowed. Use `node.kubernetes.io/lifecycle=spot` instead.
 
 Reference the `--node-labels` argument for your version of Kubenetes for the allowed prefixes. [Documentation for 1.16](https://v1-16.docs.kubernetes.io/docs/reference/command-line-tools-reference/kubelet/)
+
+## Variables like ${availability_zone} get treated as string literals in userdata.sh due to single quotes
+
+This can be resolved by wrapping the variable in single quotes.
+
+For example:
+
+```sh
+$ echo 'my name is ${USER}'
+my name is ${USER}
+
+$ echo 'my name is '${USER}''
+my name is foo
+```
