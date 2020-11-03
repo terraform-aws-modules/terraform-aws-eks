@@ -189,3 +189,11 @@ Kubelet restricts the allowed list of labels in the `kubernetes.io` namespace th
 Older configurations used labels like `kubernetes.io/lifecycle=spot` and this is no longer allowed. Use `node.kubernetes.io/lifecycle=spot` instead.
 
 Reference the `--node-labels` argument for your version of Kubenetes for the allowed prefixes. [Documentation for 1.16](https://v1-16.docs.kubernetes.io/docs/reference/command-line-tools-reference/kubelet/)
+
+## What is the difference between `node_groups` and `worker_groups`?
+
+`node_groups` are [AWS-managed node groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) (configures "Node Groups" that you can find on the EKS dashboard). This system is supposed to ease some of the lifecycle around upgrading nodes. Although they do not do this automatically and you still need to manually trigger the updates.
+
+`worker_groups` are [self-managed nodes](https://docs.aws.amazon.com/eks/latest/userguide/worker.html) (provisions a typical "Autoscaling group" on EC2). It gives you full control over nodes in the cluster like using custom AMI for the nodes. As AWS says, "with worker groups the customer controls the data plane & AWS controls the control plane".
+
+Both can be used together in the same cluster.
