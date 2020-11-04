@@ -351,7 +351,7 @@ variable "cluster_encryption_config" {
 }
 
 variable "fargate_profiles" {
-  description = "Fargate profiles to create. See `fargate_profile` keys section in README.md for more details"
+  description = "Fargate profiles to create. See `fargate_profile` keys section in fargate submodule's README.md for more details"
   type        = any
   default     = {}
 }
