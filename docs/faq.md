@@ -196,10 +196,14 @@ This can be resolved by wrapping the variable in single quotes.
 
 For example:
 
-```sh
-$ echo 'my name is ${USER}'
-my name is ${USER}
+When passing the following in your Terraform configuration :
 
-$ echo 'my name is '${USER}''
-my name is foo
+```terraform
+kubelet_extra_args = "--node-labels=k8s.amazonaws.com/eniConfig='$${availability_zone}'-pod-netconfig"
+```
+
+The output of the userdata will be as follows:
+
+```shell
+/etc/eks/bootstrap.sh --b64-cluster-ca ........... --kubelet-extra-args '--node-labels=k8s.amazonaws.com/eniConfig='${availability_zone}'-pod-netconfig' 'my-eks-cluster'
 ```
