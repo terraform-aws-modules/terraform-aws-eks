@@ -36,10 +36,10 @@ No requirements.
 | eks\_depends\_on | List of references to other resources this submodule depends on. | `any` | `null` | no |
 | fargate\_pod\_execution\_role\_name | The IAM Role that provides permissions for the EKS Fargate Profile. | `string` | `null` | no |
 | fargate\_profiles | Fargate profiles to create. See `fargate_profile` keys section in README.md for more details | `any` | `{}` | no |
-| iam\_path | IAM roles will be created on this path. | `string` | n/a | yes |
+| iam\_path | IAM roles will be created on this path. | `string` | `"/"` | no |
 | iam\_policy\_arn\_prefix | IAM policy prefix with the correct AWS partition. | `string` | n/a | yes |
-| subnets | A list of subnets for the EKS Fargate profiles. | `list(string)` | n/a | yes |
-| tags | A map of tags to add to all resources. | `map(string)` | n/a | yes |
+| subnets | A list of subnets for the EKS Fargate profiles. | `list(string)` | `[]` | no |
+| tags | A map of tags to add to all resources. | `map(string)` | `{}` | no |
 
 ## Outputs
 
