@@ -12,6 +12,7 @@ variable "create_eks" {
 variable "iam_path" {
   description = "IAM roles will be created on this path."
   type        = string
+  default     = "/"
 }
 
 variable "iam_policy_arn_prefix" {
@@ -40,11 +41,13 @@ variable "fargate_profiles" {
 variable "subnets" {
   description = "A list of subnets for the EKS Fargate profiles."
   type        = list(string)
+  default     = []
 }
 
 variable "tags" {
   description = "A map of tags to add to all resources."
   type        = map(string)
+  default     = {}
 }
 
 # Hack for a homemade `depends_on` https://discuss.hashicorp.com/t/tips-howto-implement-module-depends-on-emulation/2305/2
