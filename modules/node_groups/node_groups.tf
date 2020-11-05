@@ -31,7 +31,7 @@ resource "aws_eks_node_group" "workers" {
   }
 
   dynamic "launch_template" {
-    for_each = each.value["launch_template_id"] != "" ? [{
+    for_each = each.value["launch_template_id"] != null ? [{
       id      = each.value["launch_template_id"]
       version = each.value["launch_template_version"]
     }] : []
