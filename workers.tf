@@ -133,7 +133,7 @@ resource "aws_autoscaling_group" "workers" {
           "value", element(values(var.tags), index(keys(var.tags), item)),
           "propagate_at_launch", "true"
         )
-        if item != "Name" || item != keys(lookup(var.worker_groups[count.index], "tags", local.workers_group_defaults["tags"]))
+        if item != "Name" || item != [for tag in lookup(var.worker_groups[count.index], "tags", local.workers_group_defaults["tags"]) : tag["key"]]
       ],
       lookup(
         var.worker_groups[count.index],
