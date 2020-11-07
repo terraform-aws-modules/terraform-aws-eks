@@ -202,7 +202,15 @@ resource "aws_autoscaling_group" "workers_launch_template" {
           "propagate_at_launch" = true
         },
       ],
-      local.asg_tags,
+      [
+        for tag_key, tag_value in var.tags :
+        map(
+          "key", tag_key,
+          "value", tag_value,
+          "propagate_at_launch", "true"
+        )
+        if tag_key != "Name" && ! contains([for tag in lookup(var.worker_groups_launch_template[count.index], "tags", local.workers_group_defaults["tags"]) : tag["key"]], tag_key)
+      ],
       lookup(
         var.worker_groups_launch_template[count.index],
         "tags",
