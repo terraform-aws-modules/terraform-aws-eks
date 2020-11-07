@@ -1,13 +1,4 @@
 locals {
-  asg_tags = [
-    for item in keys(var.tags) :
-    map(
-      "key", item,
-      "value", element(values(var.tags), index(keys(var.tags), item)),
-      "propagate_at_launch", "true"
-    )
-    if item != "Name"
-  ]
 
   cluster_security_group_id         = var.cluster_create_security_group ? join("", aws_security_group.cluster.*.id) : var.cluster_security_group_id
   cluster_primary_security_group_id = var.cluster_version >= 1.14 ? element(concat(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, list("")), 0) : null
@@ -80,7 +71,7 @@ locals {
     # Settings for launch templates
     root_block_device_name               = data.aws_ami.eks_worker.root_device_name # Root device name for workers. If non is provided, will assume default AMI was used.
     root_kms_key_id                      = ""                                       # The KMS key to use when encrypting the root storage device
-    launch_template_id                   = ""                                       # The id of the launch template used for managed node_groups
+    launch_template_id                   = null                                     # The id of the launch template used for managed node_groups
     launch_template_version              = "$Latest"                                # The lastest version of the launch template to use in the autoscaling group
     launch_template_placement_tenancy    = "default"                                # The placement tenancy for instances
     launch_template_placement_group      = null                                     # The name of the placement group into which to launch the instances, if any.
