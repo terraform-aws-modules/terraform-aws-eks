@@ -71,7 +71,7 @@ locals {
     # Settings for launch templates
     root_block_device_name               = data.aws_ami.eks_worker.root_device_name # Root device name for workers. If non is provided, will assume default AMI was used.
     root_kms_key_id                      = ""                                       # The KMS key to use when encrypting the root storage device
-    launch_template_id                   = ""                                       # The id of the launch template used for managed node_groups
+    launch_template_id                   = null                                     # The id of the launch template used for managed node_groups
     launch_template_version              = "$Latest"                                # The lastest version of the launch template to use in the autoscaling group
     launch_template_placement_tenancy    = "default"                                # The placement tenancy for instances
     launch_template_placement_group      = null                                     # The name of the placement group into which to launch the instances, if any.
