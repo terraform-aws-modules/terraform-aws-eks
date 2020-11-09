@@ -448,16 +448,13 @@ resource "aws_launch_template" "workers_launch_template" {
   tag_specifications {
     resource_type = "instance"
 
-    tags = merge(
-      {
-        "Name" = "${coalescelist(aws_eks_cluster.this[*].name, [""])[0]}-${lookup(
-          var.worker_groups_launch_template[count.index],
-          "name",
-          count.index,
-        )}-eks_asg"
-      },
-      var.tags,
-    )
+    tags = {
+      "Name" = "${coalescelist(aws_eks_cluster.this[*].name, [""])[0]}-${lookup(
+        var.worker_groups_launch_template[count.index],
+        "name",
+        count.index,
+      )}-eks_asg"
+    }
   }
 
   tags = var.tags
