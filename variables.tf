@@ -349,3 +349,21 @@ variable "cluster_encryption_config" {
   }))
   default = []
 }
+
+variable "fargate_profiles" {
+  description = "Fargate profiles to create. See `fargate_profile` keys section in fargate submodule's README.md for more details"
+  type        = any
+  default     = {}
+}
+
+variable "create_fargate_pod_execution_role" {
+  description = "Controls if the EKS Fargate pod execution IAM role should be created."
+  type        = bool
+  default     = true
+}
+
+variable "fargate_pod_execution_role_name" {
+  description = "The IAM Role that provides permissions for the EKS Fargate Profile."
+  type        = string
+  default     = null
+}
