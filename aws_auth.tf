@@ -59,6 +59,7 @@ locals {
         role["platform"] == "fargate" ? ["system:node-proxier"] : [],
       ))
     }
+    if role["worker_role_arn"] != ""
   ]
 }
 
