@@ -458,7 +458,7 @@ resource "aws_launch_template" "workers_launch_template" {
       },
       { for tag_key, tag_value in var.tags :
         tag_key => tag_value
-        if ! contains([for tag in lookup(var.worker_groups_launch_template[count.index], "tags", local.workers_group_defaults["tags"]) : tag["key"]], tag_key)
+        if tag_key != "Name" && ! contains([for tag in lookup(var.worker_groups_launch_template[count.index], "tags", local.workers_group_defaults["tags"]) : tag["key"]], tag_key)
       }
     )
   }
