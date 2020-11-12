@@ -112,6 +112,21 @@ module "eks" {
     }
   }
 
+  # Create security group rules to allow communication between pods on workers and pods in managed node groups.
+  # Set this to true if you have AWS-Managed node groups and Self-Managed worker groups.
+  # See https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1089
+
+  # worker_create_cluster_primary_security_group_rules = true
+
+  # worker_groups_launch_template = [
+  #   {
+  #     name                 = "worker-group-1"
+  #     instance_type        = "t2.small"
+  #     asg_desired_capacity = 2
+  #     public_ip            = true
+  #   }
+  # ]
+
   map_roles    = var.map_roles
   map_users    = var.map_users
   map_accounts = var.map_accounts
