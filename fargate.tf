@@ -5,6 +5,7 @@ module "fargate" {
   create_fargate_pod_execution_role = var.create_fargate_pod_execution_role
   fargate_pod_execution_role_name   = var.fargate_pod_execution_role_name
   fargate_profiles                  = var.fargate_profiles
+  permissions_boundary              = var.permissions_boundary
   iam_path                          = var.iam_path
   iam_policy_arn_prefix             = local.policy_arn_prefix
   subnets                           = var.subnets
