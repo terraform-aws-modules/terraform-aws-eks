@@ -367,3 +367,9 @@ variable "fargate_pod_execution_role_name" {
   type        = string
   default     = null
 }
+
+variable "key_name" {
+  description = "Attach SSH key to worker nodes"
+  type        = string
+  default     = null
+}
