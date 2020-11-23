@@ -87,6 +87,11 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     "default_cooldown",
     local.workers_group_defaults["default_cooldown"]
   )
+  health_check_type = lookup(
+    var.worker_groups_launch_template[count.index],
+    "health_check_type",
+    local.workers_group_defaults["health_check_type"]
+  )
   health_check_grace_period = lookup(
     var.worker_groups_launch_template[count.index],
     "health_check_grace_period",
