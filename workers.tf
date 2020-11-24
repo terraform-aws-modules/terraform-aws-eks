@@ -320,6 +320,9 @@ resource "aws_security_group" "workers" {
       "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     },
   )
+  lifecycle {
+    ignore_changes = [name_prefix, description]
+  }
 }
 
 resource "aws_security_group_rule" "workers_egress_internet" {
