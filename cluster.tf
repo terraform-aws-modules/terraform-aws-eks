@@ -88,6 +88,9 @@ resource "aws_security_group" "cluster" {
       "Name" = "${var.cluster_name}-eks_cluster_sg"
     },
   )
+  lifecycle {
+    ignore_changes = [name_prefix, description]
+  }
 }
 
 resource "aws_security_group_rule" "cluster_egress_internet" {
