@@ -25,7 +25,10 @@ locals {
         lookup(
           aws_iam_instance_profile.workers,
           map_key,
-      lookup(data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile[map_key], "role_name", ""))}"
+          lookup(data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile,
+            map_key,
+      false) ? data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile[map_key].role_name : "")}"
+
       platform = lookup(
         map_value,
         "platform",
