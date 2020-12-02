@@ -1,7 +1,7 @@
 # Worker Groups using Launch Configurations
 
 resource "aws_autoscaling_group" "workers" {
-  for_each = var.create_eks ? local.worker_groups_maps : {}
+  for_each = var.create_eks ? local.worker_groups_map : {}
   name_prefix = join(
     "-",
     compact(
@@ -155,7 +155,7 @@ resource "aws_autoscaling_group" "workers" {
 }
 
 resource "aws_launch_configuration" "workers" {
-  for_each    = var.create_eks ? local.worker_groups_maps : {}
+  for_each    = var.create_eks ? local.worker_groups_map : {}
   name_prefix = "${coalescelist(aws_eks_cluster.this[*].name, [""])[0]}-${lookup(each.value, "name", each.key)}"
   associate_public_ip_address = lookup(
     each.value,
@@ -295,7 +295,7 @@ resource "aws_launch_configuration" "workers" {
 }
 
 resource "random_pet" "workers" {
-  for_each = var.create_eks ? local.worker_groups_maps : {}
+  for_each = var.create_eks ? local.worker_groups_map : {}
 
   separator = "-"
   length    = 2
@@ -412,7 +412,7 @@ resource "aws_iam_role" "workers" {
 }
 
 resource "aws_iam_instance_profile" "workers" {
-  for_each    = var.manage_worker_iam_resources && var.create_eks ? local.worker_groups_maps : {}
+  for_each    = var.manage_worker_iam_resources && var.create_eks ? local.worker_groups_map : {}
   name_prefix = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
   role = lookup(
     each.value,
