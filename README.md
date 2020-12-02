@@ -145,7 +145,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | Name | Version |
 |------|---------|
 | terraform | >= 0.12.9, != 0.13.0 |
-| aws | >= 3.3.0 |
+| aws | >= 3.19.0 |
 | kubernetes | >= 1.11.1 |
 | local | >= 1.4 |
 | null | >= 2.1 |
@@ -156,7 +156,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 
 | Name | Version |
 |------|---------|
-| aws | >= 3.3.0 |
+| aws | >= 3.19.0 |
 | kubernetes | >= 1.11.1 |
 | local | >= 1.4 |
 | null | >= 2.1 |
