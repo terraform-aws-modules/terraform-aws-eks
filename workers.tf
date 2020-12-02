@@ -47,7 +47,7 @@ resource "aws_autoscaling_group" "workers" {
     "service_linked_role_arn",
     local.workers_group_defaults["service_linked_role_arn"],
   )
-  launch_configuration = aws_launch_configuration.workers.*.id[each.key]
+  launch_configuration = aws_launch_configuration.workers[each.key].id
   vpc_zone_identifier = lookup(
     each.value,
     "subnets",
@@ -174,7 +174,7 @@ resource "aws_launch_configuration" "workers" {
   iam_instance_profile = lookup(
     aws_iam_instance_profile.workers.*.id,
     each.key,
-    data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.name[each.key]
+    data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile[each.key].name
   )
   image_id = lookup(
     each.value,
@@ -191,7 +191,7 @@ resource "aws_launch_configuration" "workers" {
     "key_name",
     local.workers_group_defaults["key_name"],
   )
-  user_data_base64 = base64encode(data.template_file.userdata.*.rendered[each.key])
+  user_data_base64 = base64encode(data.template_file.userdata[each.key].rendered)
   ebs_optimized = lookup(
     each.value,
     "ebs_optimized",
