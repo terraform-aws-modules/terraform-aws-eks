@@ -153,7 +153,7 @@ data "aws_iam_role" "custom_cluster_iam_role" {
 }
 
 data "aws_iam_instance_profile" "custom_worker_group_iam_instance_profile" {
-  for_each = var.manage_worker_iam_resources ? {} : local.worker_groups_maps
+  for_each = var.manage_worker_iam_resources ? {} : local.worker_groups_map
   name = lookup(
     each.value,
     "iam_instance_profile_name",
