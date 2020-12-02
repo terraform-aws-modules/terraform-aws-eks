@@ -84,7 +84,7 @@ output "oidc_provider_arn" {
 output "workers_asg_arns" {
   description = "IDs of the autoscaling groups containing workers."
   value = concat(
-    aws_autoscaling_group.workers.*.arn,
+    [for wg_k, wg_v in aws_autoscaling_group.workers : wg_v.arn],
     aws_autoscaling_group.workers_launch_template.*.arn,
   )
 }
@@ -92,7 +92,7 @@ output "workers_asg_arns" {
 output "workers_asg_names" {
   description = "Names of the autoscaling groups containing workers."
   value = concat(
-    aws_autoscaling_group.workers.*.id,
+    [for wg_k, wg_v in aws_autoscaling_group.workers : wg_v.id],
     aws_autoscaling_group.workers_launch_template.*.id,
   )
 }
@@ -100,7 +100,7 @@ output "workers_asg_names" {
 output "workers_user_data" {
   description = "User data of worker groups"
   value = concat(
-    data.template_file.userdata.*.rendered,
+    [for tf_k, tf_v in data.template_file.userdata : tf_v.rendered],
     data.template_file.launch_template_userdata.*.rendered,
   )
 }
@@ -133,7 +133,7 @@ output "worker_security_group_id" {
 output "worker_iam_instance_profile_arns" {
   description = "default IAM instance profile ARN for EKS worker groups"
   value = concat(
-    aws_iam_instance_profile.workers.*.arn,
+    [for iip_k, iip_v in aws_iam_instance_profile.workers : iip_v.arn],
     aws_iam_instance_profile.workers_launch_template.*.arn
   )
 }
@@ -141,7 +141,7 @@ output "worker_iam_instance_profile_arns" {
 output "worker_iam_instance_profile_names" {
   description = "default IAM instance profile name for EKS worker groups"
   value = concat(
-    aws_iam_instance_profile.workers.*.name,
+    [for iip_k, iip_v in aws_iam_instance_profile.workers : iip_v.name],
     aws_iam_instance_profile.workers_launch_template.*.name
   )
 }
