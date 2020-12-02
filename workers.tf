@@ -172,10 +172,9 @@ resource "aws_launch_configuration" "workers" {
     )
   ])
   iam_instance_profile = lookup(
-    aws_iam_instance_profile.workers.*.id,
+    aws_iam_instance_profile.workers,
     each.key,
-    data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile[each.key].name
-  )
+  false) ? aws_iam_instance_profile.workers[each.key].id : data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile[each.key].name
   image_id = lookup(
     each.value,
     "ami_id",
