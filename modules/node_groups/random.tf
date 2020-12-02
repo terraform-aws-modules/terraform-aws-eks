@@ -5,9 +5,10 @@ resource "random_pet" "node_groups" {
   length    = 2
 
   keepers = {
-    ami_type     = lookup(each.value, "ami_type", null)
-    disk_size    = lookup(each.value, "disk_size", null)
-    iam_role_arn = each.value["iam_role_arn"]
+    ami_type      = lookup(each.value, "ami_type", null)
+    disk_size     = lookup(each.value, "disk_size", null)
+    capacity_type = lookup(each.value, "capacity_type", null)
+    iam_role_arn  = each.value["iam_role_arn"]
     instance_types = join("|", compact(
       lookup(each.value, "instance_types", [])
     ))
