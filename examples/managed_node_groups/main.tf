@@ -101,7 +101,7 @@ module "eks" {
       min_capacity     = 1
 
       instance_types = ["m5.large"]
-      capacity_type = "SPOT"
+      capacity_type  = "SPOT"
       k8s_labels = {
         Environment = "test"
         GithubRepo  = "terraform-aws-eks"
