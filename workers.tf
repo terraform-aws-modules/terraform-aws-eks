@@ -171,10 +171,7 @@ resource "aws_launch_configuration" "workers" {
       local.workers_group_defaults["additional_security_group_ids"]
     )
   ])
-  iam_instance_profile = lookup(
-    aws_iam_instance_profile.workers,
-    each.key,
-  false) ? aws_iam_instance_profile.workers[each.key].id : data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile[each.key].name
+  iam_instance_profile = length(aws_iam_instance_profile.workers) > 0 ? aws_iam_instance_profile.workers[each.key].id : data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile[each.key].name
   image_id = lookup(
     each.value,
     "ami_id",
