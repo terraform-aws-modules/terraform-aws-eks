@@ -23,9 +23,13 @@ locals {
     for map_key, map_value in var.create_eks ? local.worker_groups_map : {} : {
       worker_role_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${
         lookup(
-          aws_iam_instance_profile.workers,
-          map_key,
-      length(data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile) > 0 ? data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile[map_key].role_name : "")}"
+          lookup(
+            aws_iam_instance_profile.workers,
+            map_key,
+            lookup(data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile,
+              map_key,
+              {}
+      )), "role_name", "")}"
 
       platform = lookup(
         map_value,
