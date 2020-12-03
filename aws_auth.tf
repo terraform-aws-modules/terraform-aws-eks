@@ -22,14 +22,15 @@ locals {
   auth_worker_roles = [
     for map_key, map_value in var.create_eks ? local.worker_groups_map : {} : {
       worker_role_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${
-        lookup(
+        length(
           lookup(
             aws_iam_instance_profile.workers,
+          map_key, {})) > 0 ? aws_iam_instance_profile.workers[map_key].role : lookup(
+          lookup(
+            data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile,
             map_key,
-            lookup(data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile,
-              map_key,
-              {}
-      )), "role_name", "")}"
+            {}
+      ), "role_name", "")}"
 
       platform = lookup(
         map_value,
