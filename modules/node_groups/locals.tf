@@ -11,6 +11,8 @@ locals {
       max_capacity            = var.workers_group_defaults["asg_max_size"]
       min_capacity            = var.workers_group_defaults["asg_min_size"]
       subnets                 = var.workers_group_defaults["subnets"]
+      create_launch_template  = false
+      kubelet_extra_args      = var.workers_group_defaults["kubelet_extra_args"]
     },
     var.node_groups_defaults,
     v,
