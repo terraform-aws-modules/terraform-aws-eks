@@ -35,6 +35,8 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | source\_security\_group\_ids | Source security groups for remote access to workers | list(string) | If key\_name is specified: THE REMOTE ACCESS WILL BE OPENED TO THE WORLD |
 | subnets | Subnets to contain workers | list(string) | `var.workers_group_defaults[subnets]` |
 | version | Kubernetes version | string | Provider default behavior |
+| create_launch_template | Create and use a default launch template | `false` |
+| kubelet_extra_args | This string is passed directly to kubelet if set. Useful for adding labels or taints. Require `create_launch_template` to be `true`| "" |
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
@@ -47,6 +49,7 @@ No requirements.
 |------|---------|
 | aws | n/a |
 | random | n/a |
+| template | n/a |
 
 ## Inputs
 
