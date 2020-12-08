@@ -93,7 +93,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     local.workers_group_defaults["health_check_grace_period"]
   )
 
-  dynamic mixed_instances_policy {
+  dynamic "mixed_instances_policy" {
     iterator = item
     for_each = (lookup(var.worker_groups_launch_template[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups_launch_template[count.index], "on_demand_allocation_strategy", local.workers_group_defaults["on_demand_allocation_strategy"]) != null) ? list(var.worker_groups_launch_template[count.index]) : []
 
@@ -157,7 +157,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     }
   }
 
-  dynamic launch_template {
+  dynamic "launch_template" {
     iterator = item
     for_each = (lookup(var.worker_groups_launch_template[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups_launch_template[count.index], "on_demand_allocation_strategy", local.workers_group_defaults["on_demand_allocation_strategy"]) != null) ? [] : list(var.worker_groups_launch_template[count.index])
 
@@ -336,7 +336,7 @@ resource "aws_launch_template" "workers_launch_template" {
     )
   }
 
-  dynamic placement {
+  dynamic "placement" {
     for_each = lookup(var.worker_groups_launch_template[count.index], "launch_template_placement_group", local.workers_group_defaults["launch_template_placement_group"]) != null ? [lookup(var.worker_groups_launch_template[count.index], "launch_template_placement_group", local.workers_group_defaults["launch_template_placement_group"])] : []
 
     content {
@@ -349,7 +349,7 @@ resource "aws_launch_template" "workers_launch_template" {
     }
   }
 
-  dynamic instance_market_options {
+  dynamic "instance_market_options" {
     for_each = lookup(var.worker_groups_launch_template[count.index], "market_type", null) == null ? [] : list(lookup(var.worker_groups_launch_template[count.index], "market_type", null))
     content {
       market_type = instance_market_options.value

@@ -17,9 +17,7 @@ locals {
 
   worker_ami_name_filter = var.worker_ami_name_filter != "" ? var.worker_ami_name_filter : "amazon-eks-node-${var.cluster_version}-v*"
   # Windows nodes are available from k8s 1.14. If cluster version is less than 1.14, fix ami filter to some constant to not fail on 'terraform plan'.
-  worker_ami_name_filter_windows = (var.worker_ami_name_filter_windows != "" ?
-    var.worker_ami_name_filter_windows : "Windows_Server-2019-English-Core-EKS_Optimized-${tonumber(var.cluster_version) >= 1.14 ? var.cluster_version : 1.14}-*"
-  )
+  worker_ami_name_filter_windows = var.worker_ami_name_filter_windows != "" ? var.worker_ami_name_filter_windows : "Windows_Server-2019-English-Core-EKS_Optimized-${tonumber(var.cluster_version) >= 1.14 ? var.cluster_version : 1.14}-*"
 
   ec2_principal = "ec2.${data.aws_partition.current.dns_suffix}"
   sts_principal = "sts.${data.aws_partition.current.dns_suffix}"
