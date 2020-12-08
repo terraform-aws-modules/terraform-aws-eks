@@ -3,8 +3,7 @@ data "template_file" "workers_userdata" {
   template = file("${path.module}/templates/userdata.sh.tpl")
 
   vars = {
-    bootstrap_extra_args = each.value["bootstrap_extra_args"]
-    kubelet_extra_args   = each.value["kubelet_extra_args"]
+    kubelet_extra_args = each.value["kubelet_extra_args"]
   }
 }
 
@@ -16,7 +15,7 @@ data "template_file" "workers_userdata" {
 # then the default user-data for bootstrapping a cluster is merged in the copy.
 resource "aws_launch_template" "workers" {
   for_each               = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] }
-  name                   = lookup(each.value, "name", join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id]))
+  name_prefix            = lookup(each.value, "name", join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id]))
   description            = lookup(each.value, "name", join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id]))
   update_default_version = true
 
@@ -24,7 +23,7 @@ resource "aws_launch_template" "workers" {
     device_name = "/dev/xvda"
 
     ebs {
-      volume_size           = each.value.disk_size
+      volume_size           = lookup(each.value, "disk_size", 20)
       volume_type           = "gp2"
       delete_on_termination = true
       # encrypted             = true
