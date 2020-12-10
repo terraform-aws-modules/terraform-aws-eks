@@ -367,3 +367,11 @@ variable "fargate_pod_execution_role_name" {
   type        = string
   default     = null
 }
+
+variable "kubernetes_network_config" {
+  description = "Configuration block with network config for Kubernetes. See examples/network_config/main.tf for example format"
+  type = list(object({
+    service_ipv4_cidr = string
+  }))
+  default = []
+}

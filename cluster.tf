@@ -38,6 +38,14 @@ resource "aws_eks_cluster" "this" {
     }
   }
 
+  dynamic kubernetes_network_config {
+    for_each = toset(var.kubernetes_network_config)
+
+    content {
+      service_ipv4_cidr = kubernets_network_config.value["service_ipv4_cidr"]
+    }
+  }
+
   depends_on = [
     aws_security_group_rule.cluster_egress_internet,
     aws_security_group_rule.cluster_https_worker_ingress,
