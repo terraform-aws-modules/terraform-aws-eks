@@ -55,6 +55,7 @@ resource "aws_security_group_rule" "cluster_private_access" {
   to_port     = 443
   protocol    = "tcp"
   cidr_blocks = var.cluster_endpoint_private_access_cidrs
+  description = "Permits ingress cluster endpoint access from private cidrs."
 
   security_group_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
 }
@@ -95,7 +96,7 @@ resource "aws_security_group_rule" "cluster_egress_internet" {
   description       = "Allow cluster egress access to the Internet."
   protocol          = "-1"
   security_group_id = local.cluster_security_group_id
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = ["0.0.0.0/0"] #tfsec:ignore:AWS007
   from_port         = 0
   to_port           = 0
   type              = "egress"
