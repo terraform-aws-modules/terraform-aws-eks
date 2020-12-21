@@ -27,7 +27,7 @@ resource "aws_eks_cluster" "this" {
     delete = var.cluster_delete_timeout
   }
 
-  dynamic encryption_config {
+  dynamic "encryption_config" {
     for_each = toset(var.cluster_encryption_config)
 
     content {
