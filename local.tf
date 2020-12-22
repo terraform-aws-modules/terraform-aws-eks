@@ -37,6 +37,7 @@ locals {
     asg_initial_lifecycle_hooks   = []                          # Initital lifecycle hook for the autoscaling group.
     asg_recreate_on_change        = false                       # Recreate the autoscaling group when the Launch Template or Launch Configuration change.
     default_cooldown              = null                        # The amount of time, in seconds, after a scaling activity completes before another scaling activity can start.
+    health_check_type             = null                        # Controls how health checking is done. Valid values are "EC2" or "ELB".
     health_check_grace_period     = null                        # Time in seconds after instance comes into service before checking health.
     instance_type                 = "m4.large"                  # Size of the workers instances.
     spot_price                    = ""                          # Cost of spot instance.
