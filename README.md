@@ -25,7 +25,7 @@ You also need to ensure your applications and add ons are updated, or workloads 
 
 An example of harming update was the removal of several commonly used, but deprecated  APIs, in Kubernetes 1.16. More information on the API removals, see the [Kubernetes blog post](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/).
 
-By default, this module manage the `aws-auth` configmap for you (`manage_aws_auth=true`). To avoid the following [issue](https://github.com/aws/containers-roadmap/issues/654) where the EKS creation is `ACTIVE` but not ready, we implemented a retry logic with an `local-exec` provisioner and `wget` (by default) with failover to `curl`.
+By default, this module manages the `aws-auth` configmap for you (`manage_aws_auth=true`). To avoid the following [issue](https://github.com/aws/containers-roadmap/issues/654) where the EKS creation is `ACTIVE` but not ready, we implemented a retry logic with an `local-exec` provisioner and `wget` (by default) with failover to `curl`.
 
 **If you want to manage your `aws-auth` configmap, ensure you have `wget` (or `curl`) and `/bin/sh` installed where you're running Terraform or set `wait_for_cluster_cmd` and `wait_for_cluster_interpreter` to match your needs.**
 

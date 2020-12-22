@@ -38,6 +38,7 @@ No requirements.
 | fargate\_profiles | Fargate profiles to create. See `fargate_profile` keys section in README.md for more details | `any` | `{}` | no |
 | iam\_path | IAM roles will be created on this path. | `string` | `"/"` | no |
 | iam\_policy\_arn\_prefix | IAM policy prefix with the correct AWS partition. | `string` | n/a | yes |
+| permissions\_boundary | If provided, all IAM roles will be created with this permissions boundary attached. | `string` | `null` | no |
 | subnets | A list of subnets for the EKS Fargate profiles. | `list(string)` | `[]` | no |
 | tags | A map of tags to add to all resources. | `map(string)` | `{}` | no |
 
