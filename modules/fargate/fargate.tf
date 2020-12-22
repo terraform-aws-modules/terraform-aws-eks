@@ -1,9 +1,10 @@
 resource "aws_iam_role" "eks_fargate_pod" {
-  count              = local.create_eks && var.create_fargate_pod_execution_role ? 1 : 0
-  name_prefix        = format("%s-fargate", var.cluster_name)
-  assume_role_policy = data.aws_iam_policy_document.eks_fargate_pod_assume_role[0].json
-  tags               = var.tags
-  path               = var.iam_path
+  count                = local.create_eks && var.create_fargate_pod_execution_role ? 1 : 0
+  name_prefix          = format("%s-fargate", var.cluster_name)
+  assume_role_policy   = data.aws_iam_policy_document.eks_fargate_pod_assume_role[0].json
+  permissions_boundary = var.permissions_boundary
+  tags                 = var.tags
+  path                 = var.iam_path
 }
 
 resource "aws_iam_role_policy_attachment" "eks_fargate_pod" {
