@@ -21,7 +21,7 @@ resource "aws_eks_fargate_profile" "this" {
   subnet_ids             = var.subnets
   tags                   = each.value.tags
 
-  dynamic selector {
+  dynamic "selector" {
     for_each = each.value.selectors
     content {
       namespace = selector.value["namespace"]

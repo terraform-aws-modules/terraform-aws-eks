@@ -91,7 +91,7 @@ module "eks" {
 
   fargate_profiles = {
     default = {
-      name = "${local.cluster_name}-fargate-profile"
+      name = "default"
 
       selectors = [
         {
