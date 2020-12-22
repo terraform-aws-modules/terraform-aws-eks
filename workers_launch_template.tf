@@ -384,6 +384,11 @@ resource "aws_launch_template" "workers_launch_template" {
         "root_iops",
         local.workers_group_defaults["root_iops"],
       )
+      throughput = lookup(
+        var.worker_groups_launch_template[count.index],
+        "root_volume_throughput",
+        local.workers_group_defaults["root_volume_throughput"],
+      )
       encrypted = lookup(
         var.worker_groups_launch_template[count.index],
         "root_encrypted",
@@ -418,6 +423,11 @@ resource "aws_launch_template" "workers_launch_template" {
           block_device_mappings.value,
           "iops",
           local.workers_group_defaults["root_iops"],
+        )
+        throughput = lookup(
+          block_device_mappings.value,
+          "throughput",
+          local.workers_group_defaults["root_volume_throughput"],
         )
         encrypted = lookup(
           block_device_mappings.value,
