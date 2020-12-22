@@ -90,15 +90,26 @@ module "eks" {
   vpc_id = module.vpc.vpc_id
 
   fargate_profiles = {
-    example = {
-      namespace = "default"
+    default = {
+      name = "${local.cluster_name}-fargate-profile"
 
-      # Kubernetes labels for selection
-      # labels = {
-      #   Environment = "test"
-      #   GithubRepo  = "terraform-aws-eks"
-      #   GithubOrg   = "terraform-aws-modules"
-      # }
+      selectors = [
+        {
+          namespace = "kube-system"
+          labels = {
+            "k8s-app" : "kube-dns"
+          }
+        },
+        {
+          namespace = "default"
+          # Kubernetes labels for selection
+          # labels = {
+          #   Environment = "test"
+          #   GithubRepo  = "terraform-aws-eks"
+          #   GithubOrg   = "terraform-aws-modules"
+          # }
+        }
+      ]
 
       tags = {
         Owner = "test"

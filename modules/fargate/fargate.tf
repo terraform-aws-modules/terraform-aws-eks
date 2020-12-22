@@ -21,9 +21,12 @@ resource "aws_eks_fargate_profile" "this" {
   subnet_ids             = var.subnets
   tags                   = each.value.tags
 
-  selector {
-    namespace = each.value.namespace
-    labels    = lookup(each.value, "labels", null)
+  dynamic selector {
+    for_each = each.value.selectors
+    content {
+      namespace = selector.value["namespace"]
+      labels    = lookup(selector.value, "labels", {})
+    }
   }
 
   depends_on = [var.eks_depends_on]
