@@ -38,6 +38,12 @@ variable "fargate_profiles" {
   default     = {}
 }
 
+variable "permissions_boundary" {
+  description = "If provided, all IAM roles will be created with this permissions boundary attached."
+  type        = string
+  default     = null
+}
+
 variable "subnets" {
   description = "A list of subnets for the EKS Fargate profiles."
   type        = list(string)
