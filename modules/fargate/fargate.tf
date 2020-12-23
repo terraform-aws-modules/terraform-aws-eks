@@ -20,7 +20,6 @@ resource "aws_eks_fargate_profile" "this" {
   pod_execution_role_arn = local.pod_execution_role_arn
   subnet_ids             = var.subnets
   tags                   = each.value.tags
-
   selector {
     namespace = each.value.namespace
     labels    = lookup(each.value, "labels", null)
