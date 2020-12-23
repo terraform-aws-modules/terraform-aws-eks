@@ -96,7 +96,7 @@ module "eks" {
         {
           namespace = "kube-system"
           labels = {
-            "k8s-app" : "kube-dns"
+            k8s-app = "kube-dns"
           }
         },
         {
