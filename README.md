@@ -25,7 +25,7 @@ You also need to ensure your applications and add ons are updated, or workloads 
 
 An example of harming update was the removal of several commonly used, but deprecated  APIs, in Kubernetes 1.16. More information on the API removals, see the [Kubernetes blog post](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/).
 
-By default, this module manage the `aws-auth` configmap for you (`manage_aws_auth=true`). To avoid the following [issue](https://github.com/aws/containers-roadmap/issues/654) where the EKS creation is `ACTIVE` but not ready, we implemented a retry logic with an `local-exec` provisioner and `wget` (by default) with failover to `curl`.
+By default, this module manages the `aws-auth` configmap for you (`manage_aws_auth=true`). To avoid the following [issue](https://github.com/aws/containers-roadmap/issues/654) where the EKS creation is `ACTIVE` but not ready, we implemented a retry logic with an `local-exec` provisioner and `wget` (by default) with failover to `curl`.
 
 **If you want to manage your `aws-auth` configmap, ensure you have `wget` (or `curl`) and `/bin/sh` installed where you're running Terraform or set `wait_for_cluster_cmd` and `wait_for_cluster_interpreter` to match your needs.**
 
@@ -145,7 +145,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | Name | Version |
 |------|---------|
 | terraform | >= 0.12.9, != 0.13.0 |
-| aws | >= 3.3.0 |
+| aws | >= 3.21.0 |
 | kubernetes | >= 1.11.1 |
 | local | >= 1.4 |
 | null | >= 2.1 |
@@ -156,7 +156,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 
 | Name | Version |
 |------|---------|
-| aws | >= 3.3.0 |
+| aws | >= 3.21.0 |
 | kubernetes | >= 1.11.1 |
 | local | >= 1.4 |
 | null | >= 2.1 |
@@ -208,7 +208,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | node\_groups\_defaults | Map of values to be applied to all node groups. See `node_groups` module's documentation for more details | `any` | `{}` | no |
 | permissions\_boundary | If provided, all IAM roles will be created with this permissions boundary attached. | `string` | `null` | no |
 | subnets | A list of subnets to place the EKS cluster and workers within. | `list(string)` | n/a | yes |
-| tags | A map of tags to add to all resources. Tags added to launch coniguration or templates override these values for ASG Tags only. | `map(string)` | `{}` | no |
+| tags | A map of tags to add to all resources. Tags added to launch configuration or templates override these values for ASG Tags only. | `map(string)` | `{}` | no |
 | vpc\_id | VPC where the cluster and workers will be deployed. | `string` | n/a | yes |
 | wait\_for\_cluster\_cmd | Custom local-exec command to execute for determining if the eks cluster is healthy. Cluster endpoint will be available as an environment variable called ENDPOINT | `string` | `"for i in `seq 1 60`; do if `command -v wget > /dev/null`; then wget --no-check-certificate -O - -q $ENDPOINT/healthz >/dev/null && exit 0 || true; else curl -k -s $ENDPOINT/healthz >/dev/null && exit 0 || true;fi; sleep 5; done; echo TIMEOUT && exit 1"` | no |
 | wait\_for\_cluster\_interpreter | Custom local-exec command line interpreter for the command to determining if the eks cluster is healthy. | `list(string)` | <pre>[<br>  "/bin/sh",<br>  "-c"<br>]</pre> | no |
