@@ -4,7 +4,7 @@ locals {
   pod_execution_role_name = var.create_fargate_pod_execution_role ? element(concat(aws_iam_role.eks_fargate_pod.*.name, list("")), 0) : element(concat(data.aws_iam_role.custom_fargate_iam_role.*.name, list("")), 0)
 
   fargate_profiles_expanded = { for k, v in var.fargate_profiles : k => merge(
-    { tags = var.tags },
     v,
+    { tags = merge(var.tags, lookup(v, "tags", {})) },
   ) if var.create_eks }
 }

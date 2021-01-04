@@ -37,6 +37,7 @@ locals {
     asg_initial_lifecycle_hooks   = []                          # Initital lifecycle hook for the autoscaling group.
     asg_recreate_on_change        = false                       # Recreate the autoscaling group when the Launch Template or Launch Configuration change.
     default_cooldown              = null                        # The amount of time, in seconds, after a scaling activity completes before another scaling activity can start.
+    health_check_type             = null                        # Controls how health checking is done. Valid values are "EC2" or "ELB".
     health_check_grace_period     = null                        # Time in seconds after instance comes into service before checking health.
     instance_type                 = "m4.large"                  # Size of the workers instances.
     spot_price                    = ""                          # Cost of spot instance.
@@ -44,6 +45,7 @@ locals {
     root_volume_size              = "100"                       # root volume size of workers instances.
     root_volume_type              = "gp2"                       # root volume type of workers instances, can be 'standard', 'gp2', or 'io1'
     root_iops                     = "0"                         # The amount of provisioned IOPS. This must be set with a volume_type of "io1".
+    root_volume_throughput        = null                        # The amount of throughput to provision for a gp3 volume.
     key_name                      = ""                          # The key pair name that should be used for the instances in the autoscaling group
     pre_userdata                  = ""                          # userdata to pre-append to the default userdata.
     userdata_template_file        = ""                          # alternate template to use for userdata
