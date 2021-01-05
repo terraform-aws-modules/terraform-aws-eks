@@ -369,3 +369,9 @@ variable "fargate_pod_execution_role_name" {
   type        = string
   default     = null
 }
+
+variable "cluster_service_ipv4_cidr" {
+  description = "service ipv4 cidr for the kubernetes cluster"
+  type        = string
+  default     = null
+}
