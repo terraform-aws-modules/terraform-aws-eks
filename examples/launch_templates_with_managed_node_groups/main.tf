@@ -89,5 +89,18 @@ module "eks" {
         CustomTag = "EKS example"
       }
     }
+
+    spot-example = {
+      name             = "spot-example"
+      desired_capacity = 1
+      max_capacity     = 20
+      min_capacity     = 1
+      instance_type    = ["m5.large", "m5a.large", "m5d.large", "m5ad.large"]
+      capacity_type    = "SPOT"
+      k8s_labels = {
+        lifecycle = "spot"
+        node-type = "microservice"
+      }
+    }
   }
 }
