@@ -15,7 +15,7 @@ resource "aws_eks_node_group" "workers" {
 
   ami_type        = lookup(each.value, "ami_type", null)
   disk_size       = lookup(each.value, "disk_size", null)
-  instance_types  = try(each.value["launch_template_id"] != "", false) ? [] : flatten([each.value["instance_type"]])
+  instance_types  = each.value["launch_template_id"] != "" ? [] : flatten([each.value["instance_type"]])
   release_version = lookup(each.value, "ami_release_version", null)
   capacity_type   = lookup(each.value, "capacity_type", "ON_DEMAND")
 
