@@ -100,6 +100,9 @@ module "eks" {
       #   GithubOrg   = "terraform-aws-modules"
       # }
 
+      # using specific subnets instead of all the ones configured in eks
+      # subnets = ["subnet-0ca3e3d1234a56c78"]
+
       tags = {
         Owner = "test"
       }
