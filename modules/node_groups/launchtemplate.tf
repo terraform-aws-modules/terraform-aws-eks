@@ -57,6 +57,7 @@ resource "aws_launch_template" "workers" {
     data.template_file.workers_userdata[each.key].rendered,
   )
 
+  key_name = lookup(each.value, "key_name", null)
 
   # Supplying custom tags to EKS instances is another use-case for LaunchTemplates
   tag_specifications {
