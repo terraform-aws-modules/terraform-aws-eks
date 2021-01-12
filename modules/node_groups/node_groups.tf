@@ -20,7 +20,7 @@ resource "aws_eks_node_group" "workers" {
   capacity_type   = lookup(each.value, "capacity_type", null)
 
   dynamic "remote_access" {
-    for_each = each.value["key_name"] != "" ? [{
+    for_each = each.value["key_name"] != "" && each.value["launch_template_id"] == null && !each.value["create_launch_template"] ? [{
       ec2_ssh_key               = each.value["key_name"]
       source_security_group_ids = lookup(each.value, "source_security_group_ids", [])
     }] : []
