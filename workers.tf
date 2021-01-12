@@ -89,7 +89,7 @@ resource "aws_autoscaling_group" "workers" {
     local.workers_group_defaults["default_cooldown"]
   )
   health_check_type = lookup(
-    var.worker_groups[count.index],
+    each.value,
     "health_check_type",
     local.workers_group_defaults["health_check_type"]
   )
