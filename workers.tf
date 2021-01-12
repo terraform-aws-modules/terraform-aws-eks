@@ -88,6 +88,11 @@ resource "aws_autoscaling_group" "workers" {
     "default_cooldown",
     local.workers_group_defaults["default_cooldown"]
   )
+  health_check_type = lookup(
+    var.worker_groups[count.index],
+    "health_check_type",
+    local.workers_group_defaults["health_check_type"]
+  )
   health_check_grace_period = lookup(
     each.value,
     "health_check_grace_period",
@@ -133,7 +138,7 @@ resource "aws_autoscaling_group" "workers" {
           "value", tag_value,
           "propagate_at_launch", "true"
         )
-        if tag_key != "Name" && ! contains([for tag in lookup(each.value, "tags", local.workers_group_defaults["tags"]) : tag["key"]], tag_key)
+        if tag_key != "Name" && !contains([for tag in lookup(each.value, "tags", local.workers_group_defaults["tags"]) : tag["key"]], tag_key)
       ],
       lookup(
         each.value,
@@ -191,7 +196,7 @@ resource "aws_launch_configuration" "workers" {
   ebs_optimized = lookup(
     each.value,
     "ebs_optimized",
-    ! contains(
+    !contains(
       local.ebs_optimized_not_supported,
       lookup(
         each.value,
