@@ -54,6 +54,7 @@ locals {
     additional_userdata           = ""                          # userdata to append to the default userdata.
     ebs_optimized                 = true                        # sets whether to use ebs optimization on supported types.
     enable_monitoring             = true                        # Enables/disables detailed monitoring.
+    enclave_support               = false                       # Enables/disables enclave support
     public_ip                     = false                       # Associate a public ip address with a worker
     kubelet_extra_args            = ""                          # This string is passed directly to kubelet if set. Useful for adding labels or taints.
     subnets                       = var.subnets                 # A list of subnets to place the worker nodes in. i.e. ["subnet-123", "subnet-456", "subnet-789"]
