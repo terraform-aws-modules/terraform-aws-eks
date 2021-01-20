@@ -1,7 +1,7 @@
 resource "aws_eks_node_group" "workers" {
   for_each = local.node_groups_expanded
 
-  node_group_name = lookup(each.value, "name", join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id]))
+  node_group_name = each.value["name"]
 
   cluster_name  = var.cluster_name
   node_role_arn = each.value["iam_role_arn"]
