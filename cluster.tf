@@ -46,6 +46,13 @@ resource "aws_eks_cluster" "this" {
     aws_iam_role_policy_attachment.cluster_AmazonEKSVPCResourceControllerPolicy,
     aws_cloudwatch_log_group.this
   ]
+
+  lifecycle {
+    ignore_changes = [
+      # TODO EKS Clusters cannot be moved from one subnet to another
+      vpc_config[0].subnet_ids
+    ]
+  }
 }
 
 resource "aws_security_group_rule" "cluster_private_access" {
