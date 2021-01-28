@@ -22,6 +22,10 @@ resource "aws_eks_cluster" "this" {
     public_access_cidrs     = var.cluster_endpoint_public_access_cidrs
   }
 
+  kubernetes_network_config {
+    service_ipv4_cidr = var.cluster_service_ipv4_cidr
+  }
+
   timeouts {
     create = var.cluster_create_timeout
     delete = var.cluster_delete_timeout
