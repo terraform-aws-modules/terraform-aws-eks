@@ -50,7 +50,7 @@ variable "manage_aws_auth" {
 }
 
 variable "aws_auth_additional_labels" {
-  description = "Additionnal kubernetes labels applied on aws-auth ConfigMap"
+  description = "Additional kubernetes labels applied on aws-auth ConfigMap"
   default     = {}
   type        = map(string)
 }
@@ -366,6 +366,12 @@ variable "create_fargate_pod_execution_role" {
 
 variable "fargate_pod_execution_role_name" {
   description = "The IAM Role that provides permissions for the EKS Fargate Profile."
+  type        = string
+  default     = null
+}
+
+variable "cluster_service_ipv4_cidr" {
+  description = "service ipv4 cidr for the kubernetes cluster"
   type        = string
   default     = null
 }

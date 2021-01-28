@@ -72,13 +72,13 @@ module "eks" {
   worker_groups_launch_template = [
     {
       name                 = "worker-group-1"
-      instance_type        = "t2.small"
+      instance_type        = "t3.small"
       asg_desired_capacity = 2
       public_ip            = true
     },
     {
       name                 = "worker-group-2"
-      instance_type        = "t2.medium"
+      instance_type        = "t3.medium"
       asg_desired_capacity = 1
       public_ip            = true
     },
