@@ -4,7 +4,7 @@ locals {
     {
       desired_capacity        = var.workers_group_defaults["asg_desired_capacity"]
       iam_role_arn            = var.default_iam_role_arn
-      instance_type           = var.workers_group_defaults["instance_type"]
+      instance_types          = [var.workers_group_defaults["instance_type"]]
       key_name                = var.workers_group_defaults["key_name"]
       launch_template_id      = var.workers_group_defaults["launch_template_id"]
       launch_template_version = var.workers_group_defaults["launch_template_version"]
