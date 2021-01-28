@@ -65,7 +65,7 @@ module "eks" {
   worker_groups = [
     {
       name                 = "worker-group-1"
-      instance_type        = "t2.medium"
+      instance_type        = "t3.medium"
       asg_desired_capacity = 1
       tags = [
         {
