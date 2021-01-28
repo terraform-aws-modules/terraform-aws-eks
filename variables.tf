@@ -3,11 +3,13 @@ variable "cluster_enabled_log_types" {
   description = "A list of the desired control plane logging to enable. For more information, see Amazon EKS Control Plane Logging documentation (https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html)"
   type        = list(string)
 }
+
 variable "cluster_log_kms_key_id" {
   default     = ""
   description = "If a KMS Key ARN is set, this key will be used to encrypt the corresponding log group. Please be sure that the KMS Key has an appropriate key policy (https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html)"
   type        = string
 }
+
 variable "cluster_log_retention_in_days" {
   default     = 90
   description = "Number of days to retain log events. Default retention - 90 days."
@@ -48,7 +50,7 @@ variable "manage_aws_auth" {
 }
 
 variable "aws_auth_additional_labels" {
-  description = "Additionnal kubernetes labels applied on aws-auth ConfigMap"
+  description = "Additional kubernetes labels applied on aws-auth ConfigMap"
   default     = {}
   type        = map(string)
 }
@@ -85,7 +87,7 @@ variable "subnets" {
 }
 
 variable "tags" {
-  description = "A map of tags to add to all resources. Tags added to launch coniguration or templates override these values for ASG Tags only."
+  description = "A map of tags to add to all resources. Tags added to launch configuration or templates override these values for ASG Tags only."
   type        = map(string)
   default     = {}
 }
@@ -288,7 +290,7 @@ variable "manage_cluster_iam_resources" {
 }
 
 variable "cluster_iam_role_name" {
-  description = "IAM role name for the cluster. Only applicable if manage_cluster_iam_resources is set to false."
+  description = "IAM role name for the cluster. Only applicable if manage_cluster_iam_resources is set to false. Set this to reuse an existing IAM role."
   type        = string
   default     = ""
 }
@@ -364,6 +366,12 @@ variable "create_fargate_pod_execution_role" {
 
 variable "fargate_pod_execution_role_name" {
   description = "The IAM Role that provides permissions for the EKS Fargate Profile."
+  type        = string
+  default     = null
+}
+
+variable "cluster_service_ipv4_cidr" {
+  description = "service ipv4 cidr for the kubernetes cluster"
   type        = string
   default     = null
 }
