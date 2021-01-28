@@ -41,7 +41,7 @@ data "aws_caller_identity" "current" {}
 
 module "vpc" {
   source               = "terraform-aws-modules/vpc/aws"
-  version              = "2.47.0"
+  version              = "2.64.0"
   name                 = "test-vpc"
   cidr                 = "10.0.0.0/16"
   azs                  = data.aws_availability_zones.available.names
