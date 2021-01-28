@@ -18,7 +18,7 @@ resource "aws_eks_fargate_profile" "this" {
   cluster_name           = var.cluster_name
   fargate_profile_name   = lookup(each.value, "name", format("%s-fargate-%s", var.cluster_name, replace(each.key, "_", "-")))
   pod_execution_role_arn = local.pod_execution_role_arn
-  subnet_ids             = var.subnets
+  subnet_ids             = lookup(each.value, "subnets", var.subnets)
   tags                   = each.value.tags
   selector {
     namespace = each.value.namespace
