@@ -13,6 +13,7 @@ Helper submodule to create and manage resources related to `aws_eks_fargate_prof
 | name | Fargate profile name | `string` | Auto generated in the following format `[cluster_name]-fargate-[fargate_profile_map_key]`| no |
 | selectors | A list of Kubernetes selectors. See examples/fargate/main.tf for example format. | <pre>list(object({namespace  = string<br> labels = map(string)<br>  }))</pre>| `[]` | no |
 | tags | Key-value map of resource tags. Will be merged with root module tags. | `map(string)` | `var.tags` | no |
+| subnets | List of subnet IDs. Will replace the root module subnets. | `list(string)` | `var.subnets` | no |
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
