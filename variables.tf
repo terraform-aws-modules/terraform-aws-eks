@@ -50,7 +50,7 @@ variable "manage_aws_auth" {
 }
 
 variable "aws_auth_additional_labels" {
-  description = "Additionnal kubernetes labels applied on aws-auth ConfigMap"
+  description = "Additional kubernetes labels applied on aws-auth ConfigMap"
   default     = {}
   type        = map(string)
 }
