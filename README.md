@@ -186,6 +186,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster\_security\_group\_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the workers | `string` | `""` | no |
 | cluster\_service\_ipv4\_cidr | service ipv4 cidr for the kubernetes cluster | `string` | `null` | no |
 | cluster\_version | Kubernetes version to use for the EKS cluster. | `string` | n/a | yes |
+| config\_output\_file\_permission | File permission of the Kubectl config file containing cluster configuration saved to `config_output_path.` | `string` | `"0600"` | no |
 | config\_output\_path | Where to save the Kubectl config file (if `write_kubeconfig = true`). Assumed to be a directory if the value ends with a forward slash `/`. | `string` | `"./"` | no |
 | create\_eks | Controls if EKS resources should be created (it affects almost all resources) | `bool` | `true` | no |
 | create\_fargate\_pod\_execution\_role | Controls if the EKS Fargate pod execution IAM role should be created. | `bool` | `true` | no |
