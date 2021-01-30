@@ -44,9 +44,9 @@ resource "aws_eks_node_group" "workers" {
   }
 
   timeouts {
-    create = lookup(var.node_group_timeouts, "create", null)
-    update = lookup(var.node_group_timeouts, "update", null)
-    delete = lookup(var.node_group_timeouts, "delete", null)
+    create = lookup(var.node_groups_timeouts, "create", null)
+    update = lookup(var.node_groups_timeouts, "update", null)
+    delete = lookup(var.node_groups_timeouts, "delete", null)
   }
 
   version = lookup(each.value, "version", null)
