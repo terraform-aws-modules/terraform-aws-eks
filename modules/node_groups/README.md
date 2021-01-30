@@ -58,6 +58,7 @@ No requirements.
 | ng\_depends\_on | List of references to other resources this submodule depends on | `any` | `null` | no |
 | node\_groups | Map of maps of `eks_node_groups` to create. See "`node_groups` and `node_groups_defaults` keys" section in README.md for more details | `any` | `{}` | no |
 | node\_groups\_defaults | map of maps of node groups to create. See "`node_groups` and `node_groups_defaults` keys" section in README.md for more details | `any` | n/a | yes |
+| node\_groups\_timeouts | A map of timeouts for create/update/delete operations. | `map(string)` | n/a | yes |
 | tags | A map of tags to add to all resources | `map(string)` | n/a | yes |
 | workers\_group\_defaults | Workers group defaults from parent | `any` | n/a | yes |
 
