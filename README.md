@@ -205,6 +205,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | map\_accounts | Additional AWS account numbers to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | `list(string)` | `[]` | no |
 | map\_roles | Additional IAM roles to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | <pre>list(object({<br>    rolearn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
 | map\_users | Additional IAM users to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | <pre>list(object({<br>    userarn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
+| node\_group\_timeouts | A map of timeouts for create/update/delete operations. | `map(string)` | `{}` | no |
 | node\_groups | Map of map of node groups to create. See `node_groups` module's documentation for more details | `any` | `{}` | no |
 | node\_groups\_defaults | Map of values to be applied to all node groups. See `node_groups` module's documentation for more details | `any` | `{}` | no |
 | permissions\_boundary | If provided, all IAM roles will be created with this permissions boundary attached. | `string` | `null` | no |

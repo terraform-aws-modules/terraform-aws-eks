@@ -35,6 +35,11 @@ variable "node_groups" {
   default     = {}
 }
 
+variable "node_group_timeouts" {
+  description = "A map of timeouts for create/update/delete operations."
+  type        = map(string)
+}
+
 # Hack for a homemade `depends_on` https://discuss.hashicorp.com/t/tips-howto-implement-module-depends-on-emulation/2305/2
 # Will be removed in Terraform 0.13 with the support of module's `depends_on` https://github.com/hashicorp/terraform/issues/10462
 variable "ng_depends_on" {

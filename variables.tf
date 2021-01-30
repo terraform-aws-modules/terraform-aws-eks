@@ -331,6 +331,12 @@ variable "node_groups" {
   default     = {}
 }
 
+variable "node_group_timeouts" {
+  description = "A map of timeouts for create/update/delete operations."
+  type        = map(string)
+  default     = {}
+}
+
 variable "enable_irsa" {
   description = "Whether to create OpenID Connect Provider for EKS to enable IRSA"
   type        = bool
