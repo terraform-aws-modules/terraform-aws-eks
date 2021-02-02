@@ -1,9 +1,19 @@
-data "template_file" "workers_userdata" {
-  for_each = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] }
-  template = file("${path.module}/templates/userdata.sh.tpl")
+data "cloudinit_config" "workers_userdata" {
+  for_each      = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] }
+  gzip          = false
+  base64_encode = true
+  boundary      = "//"
 
-  vars = {
-    kubelet_extra_args = each.value["kubelet_extra_args"]
+  part {
+    content_type = "text/x-shellscript"
+    content = templatefile("${path.module}/templates/userdata.sh.tpl",
+      {
+        pre_userdata        = each.value["pre_userdata"]
+        kubelet_extra_args  = each.value["kubelet_extra_args"]
+        additional_userdata = each.value["additional_userdata"]
+      }
+    )
+
   }
 }
 
@@ -23,26 +33,21 @@ resource "aws_launch_template" "workers" {
     device_name = "/dev/xvda"
 
     ebs {
-      volume_size           = lookup(each.value, "disk_size", 20)
-      volume_type           = "gp2"
+      volume_size           = lookup(each.value, "disk_size", null)
+      volume_type           = lookup(each.value, "disk_type", null)
       delete_on_termination = true
-      # encrypted             = true
-
-      # Enable this if you want to encrypt your node root volumes with a KMS/CMK. encryption of PVCs is handled via k8s StorageClass tho
-      # you also need to attach data.aws_iam_policy_document.ebs_decryption.json from the disk_encryption_policy.tf to the KMS/CMK key then !!
-      # kms_key_id            = var.kms_key_arn
     }
   }
 
   instance_type = each.value.instance_type
 
   monitoring {
-    enabled = true
+    enabled = lookup(each.value, "enable_monitoring", null)
   }
 
   network_interfaces {
-    associate_public_ip_address = false
-    delete_on_termination       = true
+    associate_public_ip_address = lookup(each.value, "public_ip", null)
+    delete_on_termination       = lookup(each.value, "eni_delete", null)
   }
 
   # if you want to use a custom AMI
@@ -53,9 +58,7 @@ resource "aws_launch_template" "workers" {
   #
   # (optionally you can use https://registry.terraform.io/providers/hashicorp/cloudinit/latest/docs/data-sources/cloudinit_config to render the script, example: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/997#issuecomment-705286151)
 
-  user_data = base64encode(
-    data.template_file.workers_userdata[each.key].rendered,
-  )
+  user_data = data.cloudinit_config.workers_userdata[each.key].rendered
 
   key_name = lookup(each.value, "key_name", null)
 
