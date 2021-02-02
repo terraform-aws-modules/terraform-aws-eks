@@ -15,11 +15,10 @@ locals {
       kubelet_extra_args      = var.workers_group_defaults["kubelet_extra_args"]
       disk_size               = var.workers_group_defaults["root_volume_size"]
       disk_type               = var.workers_group_defaults["root_volume_type"]
-      enabled_monitoring      = var.workers_group_defaults["enable_monitoring"]
+      enable_monitoring       = var.workers_group_defaults["enable_monitoring"]
       eni_delete              = var.workers_group_defaults["eni_delete"]
       public_ip               = var.workers_group_defaults["public_ip"]
       pre_userdata            = var.workers_group_defaults["pre_userdata"]
-      additional_userdata     = var.workers_group_defaults["additional_userdata"]
     },
     var.node_groups_defaults,
     v,
