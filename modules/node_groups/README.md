@@ -67,6 +67,8 @@ No requirements.
 | node\_groups | Map of maps of `eks_node_groups` to create. See "`node_groups` and `node_groups_defaults` keys" section in README.md for more details | `any` | `{}` | no |
 | node\_groups\_defaults | map of maps of node groups to create. See "`node_groups` and `node_groups_defaults` keys" section in README.md for more details | `any` | n/a | yes |
 | tags | A map of tags to add to all resources | `map(string)` | n/a | yes |
+| worker\_additional\_security\_group\_ids | A list of additional security group ids to attach to worker instances | `list(string)` | `[]` | no |
+| worker\_security\_group\_id | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the EKS cluster. | `string` | `""` | no |
 | workers\_group\_defaults | Workers group defaults from parent | `any` | n/a | yes |
 
 ## Outputs
