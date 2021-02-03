@@ -47,6 +47,15 @@ resource "aws_launch_template" "workers" {
   network_interfaces {
     associate_public_ip_address = lookup(each.value, "public_ip", null)
     delete_on_termination       = lookup(each.value, "eni_delete", null)
+    security_groups = flatten([
+      var.worker_security_group_id,
+      var.worker_additional_security_group_ids,
+      lookup(
+        each.value,
+        "additional_security_group_ids",
+        null,
+      ),
+    ])
   }
 
   # if you want to use a custom AMI
