@@ -145,7 +145,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | Name | Version |
 |------|---------|
 | terraform | >= 0.12.9, != 0.13.0 |
-| aws | >= 3.21.0 |
+| aws | >= 3.22.0 |
 | kubernetes | >= 1.11.1 |
 | local | >= 1.4 |
 | null | >= 2.1 |
@@ -156,7 +156,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 
 | Name | Version |
 |------|---------|
-| aws | >= 3.21.0 |
+| aws | >= 3.22.0 |
 | kubernetes | >= 1.11.1 |
 | local | >= 1.4 |
 | null | >= 2.1 |
@@ -168,7 +168,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | attach\_worker\_cni\_policy | Whether to attach the Amazon managed `AmazonEKS_CNI_Policy` IAM policy to the default worker IAM role. WARNING: If set `false` the permissions must be assigned to the `aws-node` DaemonSet pods via another method or nodes will not be able to join the cluster. | `bool` | `true` | no |
-| aws\_auth\_additional\_labels | Additionnal kubernetes labels applied on aws-auth ConfigMap | `map(string)` | `{}` | no |
+| aws\_auth\_additional\_labels | Additional kubernetes labels applied on aws-auth ConfigMap | `map(string)` | `{}` | no |
 | cluster\_create\_endpoint\_private\_access\_sg\_rule | Whether to create security group rules for the access to the Amazon EKS private API server endpoint. | `bool` | `false` | no |
 | cluster\_create\_security\_group | Whether to create a security group for the cluster or attach the cluster to `cluster_security_group_id`. | `bool` | `true` | no |
 | cluster\_create\_timeout | Timeout value when creating the EKS cluster. | `string` | `"30m"` | no |
@@ -184,6 +184,7 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | cluster\_log\_retention\_in\_days | Number of days to retain log events. Default retention - 90 days. | `number` | `90` | no |
 | cluster\_name | Name of the EKS cluster. Also used as a prefix in names of related resources. | `string` | n/a | yes |
 | cluster\_security\_group\_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the workers | `string` | `""` | no |
+| cluster\_service\_ipv4\_cidr | service ipv4 cidr for the kubernetes cluster | `string` | `null` | no |
 | cluster\_version | Kubernetes version to use for the EKS cluster. | `string` | n/a | yes |
 | config\_output\_path | Where to save the Kubectl config file (if `write_kubeconfig = true`). Assumed to be a directory if the value ends with a forward slash `/`. | `string` | `"./"` | no |
 | create\_eks | Controls if EKS resources should be created (it affects almost all resources) | `bool` | `true` | no |
