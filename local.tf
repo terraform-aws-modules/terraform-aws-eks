@@ -25,6 +25,16 @@ locals {
   sts_principal = "sts.${data.aws_partition.current.dns_suffix}"
 
   policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
+  volume_defaults = {
+    volume_size              = "100"                       # root volume size of workers instances.
+    volume_type              = "gp2"                       # root volume type of workers instances, can be 'standard', 'gp2', or 'io1'
+    iops                     = "0"                         # The amount of provisioned IOPS. This must be set with a volume_type of "io1".
+    volume_throughput        = null                        # The amount of throughput to provision for a gp3 volume.
+    delete_on_termination    = true
+    block_device_name        = data.aws_ami.eks_worker.root_device_name # Root device name for workers. If non is provided, will assume default AMI was used.
+    kms_key_id               = ""                                       # The KMS key to use when encrypting the root storage device
+    encrypted                = false                                    # Whether the volume should be encrypted or not
+  }
   workers_group_defaults_defaults = {
     name                          = "count.index"               # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
     tags                          = []                          # A list of map defining extra tags to be applied to the worker group autoscaling group.
@@ -42,10 +52,11 @@ locals {
     instance_type                 = "m4.large"                  # Size of the workers instances.
     spot_price                    = ""                          # Cost of spot instance.
     placement_tenancy             = ""                          # The tenancy of the instance. Valid values are "default" or "dedicated".
-    root_volume_size              = "100"                       # root volume size of workers instances.
-    root_volume_type              = "gp2"                       # root volume type of workers instances, can be 'standard', 'gp2', or 'io1'
-    root_iops                     = "0"                         # The amount of provisioned IOPS. This must be set with a volume_type of "io1".
-    root_volume_throughput        = null                        # The amount of throughput to provision for a gp3 volume.
+    root_volume_size              = local.volume_defaults.volume_size           # root volume size of workers instances.
+    root_volume_type              = local.volume_defaults.volume_type           # root volume type of workers instances, can be 'standard', 'gp2', or 'io1'
+    root_iops                     = local.volume_defaults.iops                  # The amount of provisioned IOPS. This must be set with a volume_type of "io1".
+    root_volume_throughput        = local.volume_defaults.volume_throughput     # The amount of throughput to provision for a gp3 volume.
+    root_delete_on_termination    = local.volume_defaults.delete_on_termination
     key_name                      = ""                          # The key pair name that should be used for the instances in the autoscaling group
     pre_userdata                  = ""                          # userdata to pre-append to the default userdata.
     userdata_template_file        = ""                          # alternate template to use for userdata
@@ -60,7 +71,7 @@ locals {
     additional_security_group_ids = []                          # A list of additional security group ids to include in worker launch config
     protect_from_scale_in         = false                       # Prevent AWS from scaling in, so that cluster-autoscaler is solely responsible.
     iam_instance_profile_name     = ""                          # A custom IAM instance profile name. Used when manage_worker_iam_resources is set to false. Incompatible with iam_role_id.
-    iam_role_id                   = "local.default_iam_role_id" # A custom IAM role id. Incompatible with iam_instance_profile_name.  Literal local.default_iam_role_id will never be used but if iam_role_id is not set, the local.default_iam_role_id interpolation will be used.
+    iam_role_id                   = local.default_iam_role_id   # A custom IAM role id. Incompatible with iam_instance_profile_name.  Literal local.default_iam_role_id will never be used but if iam_role_id is not set, the local.default_iam_role_id interpolation will be used.
     suspended_processes           = ["AZRebalance"]             # A list of processes to suspend. i.e. ["AZRebalance", "HealthCheck", "ReplaceUnhealthy"]
     target_group_arns             = null                        # A list of Application LoadBalancer (ALB) target group ARNs to be associated to the autoscaling group
     load_balancers                = null                        # A list of Classic LoadBalancer (CLB)'s name to be associated to the autoscaling group
@@ -71,13 +82,13 @@ locals {
     platform                      = "linux"                     # Platform of workers. either "linux" or "windows"
     additional_ebs_volumes        = []                          # A list of additional volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: block_device_name (required), volume_size, volume_type, iops, encrypted, kms_key_id (only on launch-template), delete_on_termination. Optional values are grabbed from root volume or from defaults
     # Settings for launch templates
-    root_block_device_name               = data.aws_ami.eks_worker.root_device_name # Root device name for workers. If non is provided, will assume default AMI was used.
-    root_kms_key_id                      = ""                                       # The KMS key to use when encrypting the root storage device
+    root_block_device_name               = local.volume_defaults.block_device_name  # Root device name for workers. If non is provided, will assume default AMI was used.
+    root_kms_key_id                      = local.volume_defaults.kms_key_id         # The KMS key to use when encrypting the root storage device
     launch_template_id                   = null                                     # The id of the launch template used for managed node_groups
     launch_template_version              = "$Latest"                                # The lastest version of the launch template to use in the autoscaling group
     launch_template_placement_tenancy    = "default"                                # The placement tenancy for instances
     launch_template_placement_group      = null                                     # The name of the placement group into which to launch the instances, if any.
-    root_encrypted                       = false                                    # Whether the volume should be encrypted or not
+    root_encrypted                       = local.volume_defaults.encrypted                                    # Whether the volume should be encrypted or not
     eni_delete                           = true                                     # Delete the Elastic Network Interface (ENI) on termination (if set to false you will have to manually delete before destroying)
     cpu_credits                          = "standard"                               # T2/T3 unlimited mode, can be 'standard' or 'unlimited'. Used 'standard' mode as default to avoid paying higher costs
     market_type                          = null
@@ -86,7 +97,7 @@ locals {
     metadata_http_put_response_hop_limit = null       # The desired HTTP PUT response hop limit for instance metadata requests.
     # Settings for launch templates with mixed instances policy
     override_instance_types                  = ["m5.large", "m5a.large", "m5d.large", "m5ad.large"] # A list of override instance types for mixed instances policy
-    on_demand_allocation_strategy            = null                                                 # Strategy to use when launching on-demand instances. Valid values: prioritized.
+    on_demand_allocation_strategy            = "prioritized"                                        # Strategy to use when launching on-demand instances. Valid values: prioritized.
     on_demand_base_capacity                  = "0"                                                  # Absolute minimum amount of desired capacity that must be fulfilled by on-demand instances
     on_demand_percentage_above_base_capacity = "0"                                                  # Percentage split between on-demand and Spot instances above the base on-demand capacity
     spot_allocation_strategy                 = "lowest-price"                                       # Valid options are 'lowest-price' and 'capacity-optimized'. If 'lowest-price', the Auto Scaling group launches instances using the Spot pools with the lowest price, and evenly allocates your instances across the number of Spot pools. If 'capacity-optimized', the Auto Scaling group launches instances using Spot pools that are optimally chosen based on the available Spot capacity.
@@ -99,6 +110,40 @@ locals {
     local.workers_group_defaults_defaults,
     var.workers_group_defaults,
   )
+
+  #worker_groups_with_defaults_2 = { for key, group in var.worker_groups: key => merge(local.workers_group_defaults, group) }
+
+  worker_groups_launch_template_with_defaults = { 
+    for key, template in var.worker_groups_launch_template: key => merge(
+      local.workers_group_defaults,
+      merge(
+        template,
+        {
+          additional_ebs_volumes = [
+          for volume_definition in template.additional_ebs_volumes: merge(
+            local.volume_defaults,
+            volume_definition)
+          ]
+        }
+      )
+    )
+  }
+
+  worker_groups_with_defaults = {
+    for group in var.worker_groups: group.name => merge(
+      local.workers_group_defaults,
+      merge(
+        group,
+        {
+          additional_ebs_volumes = [
+          for volume_definition in group.additional_ebs_volumes: merge(
+            local.volume_defaults,
+            volume_definition)
+          ]
+        }
+      )
+    )
+  }
 
   ebs_optimized_not_supported = [
     "c1.medium",
