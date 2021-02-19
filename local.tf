@@ -47,7 +47,7 @@ locals {
     spot_price                    = ""                          # Cost of spot instance.
     placement_tenancy             = ""                          # The tenancy of the instance. Valid values are "default" or "dedicated".
     root_volume_size              = "100"                       # root volume size of workers instances.
-    root_volume_type              = "gp2"                       # root volume type of workers instances, can be 'standard', 'gp2', or 'io1'
+    root_volume_type              = "gp3"                       # root volume type of workers instances, can be "standard", "gp3", "gp2", or "io1"
     root_iops                     = "0"                         # The amount of provisioned IOPS. This must be set with a volume_type of "io1".
     root_volume_throughput        = null                        # The amount of throughput to provision for a gp3 volume.
     key_name                      = ""                          # The key pair name that should be used for the instances in the autoscaling group
@@ -58,6 +58,7 @@ locals {
     additional_userdata           = ""                          # userdata to append to the default userdata.
     ebs_optimized                 = true                        # sets whether to use ebs optimization on supported types.
     enable_monitoring             = true                        # Enables/disables detailed monitoring.
+    enclave_support               = false                       # Enables/disables enclave support
     public_ip                     = false                       # Associate a public ip address with a worker
     kubelet_extra_args            = ""                          # This string is passed directly to kubelet if set. Useful for adding labels or taints.
     subnets                       = var.subnets                 # A list of subnets to place the worker nodes in. i.e. ["subnet-123", "subnet-456", "subnet-789"]

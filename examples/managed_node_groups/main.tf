@@ -100,7 +100,8 @@ module "eks" {
       max_capacity     = 10
       min_capacity     = 1
 
-      instance_type = "m5.large"
+      instance_types = ["m5.large"]
+      capacity_type  = "SPOT"
       k8s_labels = {
         Environment = "test"
         GithubRepo  = "terraform-aws-eks"
@@ -121,7 +122,7 @@ module "eks" {
   # worker_groups_launch_template = [
   #   {
   #     name                 = "worker-group-1"
-  #     instance_type        = "t2.small"
+  #     instance_type        = "t3.small"
   #     asg_desired_capacity = 2
   #     public_ip            = true
   #   }

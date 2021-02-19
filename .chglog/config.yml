@@ -18,7 +18,15 @@ options:
 
   commit_groups:
     group_by: Type
-    sort_by: Type
+    sort_by: Custom
+    title_order:
+      - feat
+      - improvement
+      - refactor
+      - fix
+      - docs
+      - test
+      - ci
     title_maps:
       feat: FEATURES
       fix: BUG FIXES
