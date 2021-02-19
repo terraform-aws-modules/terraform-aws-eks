@@ -66,5 +66,4 @@ No Modules.
 | fargate\_profile\_ids | EKS Cluster name and EKS Fargate Profile names separated by a colon (:). |
 | iam\_role\_arn | IAM role ARN for EKS Fargate pods |
 | iam\_role\_name | IAM role name for EKS Fargate pods |
-
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

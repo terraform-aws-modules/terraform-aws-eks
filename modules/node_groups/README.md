@@ -90,5 +90,4 @@ No Modules.
 |------|-------------|
 | aws\_auth\_roles | Roles for use in aws-auth ConfigMap |
 | node\_groups | Outputs from EKS node groups. Map of maps, keyed by `var.node_groups` keys. See `aws_eks_node_group` Terraform documentation for values |
-
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

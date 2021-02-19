@@ -303,5 +303,4 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | workers\_launch\_template\_ids | IDs of the worker launch templates. |
 | workers\_launch\_template\_latest\_versions | Latest versions of the worker launch templates. |
 | workers\_user\_data | User data of worker groups |
-
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
