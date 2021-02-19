@@ -163,6 +163,41 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | random | >= 2.1 |
 | template | >= 2.1 |
 
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| fargate | ./modules/fargate |  |
+| node_groups | ./modules/node_groups |  |
+
+## Resources
+
+| Name |
+|------|
+| [aws_ami](https://registry.terraform.io/providers/hashicorp/aws/3.22.0/docs/data-sources/ami) |
+| [aws_autoscaling_group](https://registry.terraform.io/providers/hashicorp/aws/3.22.0/docs/resources/autoscaling_group) |
+| [aws_caller_identity](https://registry.terraform.io/providers/hashicorp/aws/3.22.0/docs/data-sources/caller_identity) |
+| [aws_cloudwatch_log_group](https://registry.terraform.io/providers/hashicorp/aws/3.22.0/docs/resources/cloudwatch_log_group) |
+| [aws_eks_cluster](https://registry.terraform.io/providers/hashicorp/aws/3.22.0/docs/resources/eks_cluster) |
+| [aws_iam_instance_profile](https://registry.terraform.io/providers/hashicorp/aws/3.22.0/docs/data-sources/iam_instance_profile) |
+| [aws_iam_instance_profile](https://registry.terraform.io/providers/hashicorp/aws/3.22.0/docs/resources/iam_instance_profile) |
+| [aws_iam_openid_connect_provider](https://registry.terraform.io/providers/hashicorp/aws/3.22.0/docs/resources/iam_openid_connect_provider) |
+| [aws_iam_policy_document](https://registry.terraform.io/providers/hashicorp/aws/3.22.0/docs/data-sources/iam_policy_document) |
+| [aws_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/3.22.0/docs/resources/iam_policy) |
+| [aws_iam_role_policy_attachment](https://registry.terraform.io/providers/hashicorp/aws/3.22.0/docs/resources/iam_role_policy_attachment) |
+| [aws_iam_role](https://registry.terraform.io/providers/hashicorp/aws/3.22.0/docs/data-sources/iam_role) |
+| [aws_iam_role](https://registry.terraform.io/providers/hashicorp/aws/3.22.0/docs/resources/iam_role) |
+| [aws_launch_configuration](https://registry.terraform.io/providers/hashicorp/aws/3.22.0/docs/resources/launch_configuration) |
+| [aws_launch_template](https://registry.terraform.io/providers/hashicorp/aws/3.22.0/docs/resources/launch_template) |
+| [aws_partition](https://registry.terraform.io/providers/hashicorp/aws/3.22.0/docs/data-sources/partition) |
+| [aws_security_group_rule](https://registry.terraform.io/providers/hashicorp/aws/3.22.0/docs/resources/security_group_rule) |
+| [aws_security_group](https://registry.terraform.io/providers/hashicorp/aws/3.22.0/docs/resources/security_group) |
+| [kubernetes_config_map](https://registry.terraform.io/providers/hashicorp/kubernetes/1.11.1/docs/resources/config_map) |
+| [local_file](https://registry.terraform.io/providers/hashicorp/local/1.4/docs/resources/file) |
+| [null_resource](https://registry.terraform.io/providers/hashicorp/null/2.1/docs/resources/resource) |
+| [random_pet](https://registry.terraform.io/providers/hashicorp/random/2.1/docs/resources/pet) |
+| [template_file](https://registry.terraform.io/providers/hashicorp/template/2.1/docs/data-sources/file) |
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
