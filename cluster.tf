@@ -64,7 +64,7 @@ resource "aws_security_group_rule" "cluster_private_access" {
 }
 
 
-resource "null_resource" "wait_for_cluster" {
+resource "time_sleep" "wait_for_cluster" {
   count = var.create_eks && var.manage_aws_auth ? 1 : 0
 
   depends_on = [
@@ -72,13 +72,7 @@ resource "null_resource" "wait_for_cluster" {
     aws_security_group_rule.cluster_private_access,
   ]
 
-  provisioner "local-exec" {
-    command     = var.wait_for_cluster_cmd
-    interpreter = var.wait_for_cluster_interpreter
-    environment = {
-      ENDPOINT = aws_eks_cluster.this[0].endpoint
-    }
-  }
+  create_duration = "5m"
 }
 
 resource "aws_security_group" "cluster" {
