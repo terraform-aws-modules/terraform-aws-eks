@@ -1,9 +1,7 @@
 *.tfvars
 *.tfstate*
 .terraform/
-**/inspec.lock
-*.gem
-Gemfile.lock
+.terraform.lock.hcl
 terraform.tfstate.d/
 eks-admin-cluster-role-binding.yaml
 eks-admin-service-account.yaml
