@@ -31,7 +31,7 @@ locals {
     asg_min_size                  = "1"                         # Minimum worker capacity in the autoscaling group. NOTE: Change in this paramater will affect the asg_desired_capacity, like changing its value to 2 will change asg_desired_capacity value to 2 but bringing back it to 1 will not affect the asg_desired_capacity.
     asg_force_delete              = false                       # Enable forced deletion for the autoscaling group.
     asg_initial_lifecycle_hooks   = []                          # Initital lifecycle hook for the autoscaling group.
-    asg_recreate_on_change        = false                       # Recreate the autoscaling group when the Launch Template or Launch Configuration change.
+    asg_recreate_on_change        = var.asg_recreate_on_change  # Recreate the autoscaling group when the Launch Template or Launch Configuration change.
     instance_type                 = "m4.large"                  # Size of the workers instances.
     spot_price                    = ""                          # Cost of spot instance.
     placement_tenancy             = ""                          # The tenancy of the instance. Valid values are "default" or "dedicated".

@@ -126,6 +126,7 @@ variable "worker_ami_name_filter_windows" {
   default     = ""
 }
 
+
 variable "worker_ami_owner_id" {
   description = "The ID of the owner for the AMI to use for the AWS EKS workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft')."
   type        = string
@@ -298,4 +299,10 @@ variable "eks_oidc_root_ca_thumbprint" {
   type        = string
   description = "Thumbprint of Root CA for EKS OIDC, Valid until 2037"
   default     = "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
+}
+
+variable "asg_recreate_on_change" {
+  description = "Recreate the autoscaling group when the Launch Template or Launch Configuration change."
+  type        = bool
+  default     = false  
 }
