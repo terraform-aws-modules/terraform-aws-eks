@@ -296,6 +296,11 @@ resource "aws_launch_configuration" "workers" {
     aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly,
     aws_iam_role_policy_attachment.workers_additional_policies
   ]
+  
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
 }
 
 resource "random_pet" "workers" {
