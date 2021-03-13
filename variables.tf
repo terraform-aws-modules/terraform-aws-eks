@@ -259,6 +259,12 @@ variable "cluster_endpoint_private_access_cidrs" {
   default     = null
 }
 
+variable "cluster_endpoint_private_access_sg" {
+  description = "List of security group IDs which can access the Amazon EKS private API server endpoint."
+  type        = list(string)
+  default     = null
+}
+
 variable "cluster_endpoint_private_access" {
   description = "Indicates whether or not the Amazon EKS private API server endpoint is enabled."
   type        = bool
