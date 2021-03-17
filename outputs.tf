@@ -81,6 +81,11 @@ output "oidc_provider_arn" {
   value       = var.enable_irsa ? concat(aws_iam_openid_connect_provider.oidc_provider[*].arn, [""])[0] : null
 }
 
+output "oidc_provider_url" {
+  description = "The URL of the OIDC Provider if `enable_irsa = true`."
+  value       = var.enable_irsa ? concat(aws_iam_openid_connect_provider.oidc_provider[*].url, [""])[0] : null
+}
+
 output "workers_asg_arns" {
   description = "IDs of the autoscaling groups containing workers."
   value = concat(
