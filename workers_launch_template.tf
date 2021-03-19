@@ -432,7 +432,7 @@ resource "random_pet" "workers_launch_template" {
   length    = 2
 
   keepers = {
-    lt_name = join(
+    lt_name = lookup(var.worker_groups_launch_template[count.index], "asg_recreate_on_change", local.workers_group_defaults["asg_recreate_on_change"]) ? join(
       "-",
       compact(
         [
@@ -440,7 +440,7 @@ resource "random_pet" "workers_launch_template" {
           aws_launch_template.workers_launch_template[count.index].latest_version
         ]
       )
-    )
+    ) : aws_launch_template.workers_launch_template[count.index].name
   }
 }
 
