@@ -53,7 +53,7 @@ resource "random_string" "suffix" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "2.6.0"
+  version = "2.47.0"
 
   name                 = "test-vpc-lt"
   cidr                 = "10.0.0.0/16"
@@ -63,21 +63,22 @@ module "vpc" {
 }
 
 module "eks" {
-  source       = "../.."
-  cluster_name = local.cluster_name
-  subnets      = module.vpc.public_subnets
-  vpc_id       = module.vpc.vpc_id
+  source          = "../.."
+  cluster_name    = local.cluster_name
+  cluster_version = "1.17"
+  subnets         = module.vpc.public_subnets
+  vpc_id          = module.vpc.vpc_id
 
   worker_groups_launch_template = [
     {
       name                 = "worker-group-1"
-      instance_type        = "t2.small"
+      instance_type        = "t3.small"
       asg_desired_capacity = 2
       public_ip            = true
     },
     {
       name                 = "worker-group-2"
-      instance_type        = "t2.medium"
+      instance_type        = "t3.medium"
       asg_desired_capacity = 1
       public_ip            = true
     },

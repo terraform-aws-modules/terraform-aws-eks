@@ -13,16 +13,25 @@ project adheres to [Semantic Versioning](http://semver.org/).
 {{ .Title }}:
 {{ range .Commits -}}
 {{- if .Subject -}}
-- {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject }}
+- {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject | upperFirst }}
 {{ end -}}
 {{ end }}
 {{ end -}}
 {{ else }}
 {{ range .Unreleased.Commits -}}
 {{- if .Subject -}}
-- {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject }}
+- {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject | upperFirst}}
 {{ end -}}
 {{ end }}
+{{ end -}}
+
+{{- if .Unreleased.NoteGroups -}}
+{{ range .Unreleased.NoteGroups -}}
+{{ .Title }}:
+{{ range .Notes -}}
+- {{ .Body }}
+{{ end }}
+{{ end -}}
 {{ end -}}
 {{ end -}}
 
@@ -34,14 +43,14 @@ project adheres to [Semantic Versioning](http://semver.org/).
 {{ .Title }}:
 {{ range .Commits -}}
 {{- if .Subject -}}
-- {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject }}
+- {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject | upperFirst }}
 {{ end -}}
 {{ end }}
 {{ end -}}
 {{ else }}
 {{ range .Commits -}}
 {{- if .Subject -}}
-- {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject }}
+- {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject | upperFirst }}
 {{ end -}}
 {{ end }}
 {{ end -}}
@@ -49,8 +58,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 {{- if .NoteGroups -}}
 {{ range .NoteGroups -}}
 {{ .Title }}:
-{{ range .Notes }}
-{{ .Body }}
+{{ range .Notes -}}
+- {{ .Body }}
 {{ end }}
 {{ end -}}
 {{ end -}}

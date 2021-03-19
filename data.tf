@@ -1,13 +1,3 @@
-locals {
-  worker_ami_name_filter = var.worker_ami_name_filter != "" ? var.worker_ami_name_filter : "amazon-eks-node-${var.cluster_version}-v*"
-
-  # Windows nodes are available from k8s 1.14. If cluster version is less than 1.14, fix ami filter to some constant to not fail on 'terraform plan'.
-  worker_ami_name_filter_windows = (var.worker_ami_name_filter_windows != "" ?
-    var.worker_ami_name_filter_windows : "Windows_Server-2019-English-Core-EKS_Optimized-${tonumber(var.cluster_version) >= 1.14 ? var.cluster_version : 1.14}-*"
-  )
-  ec2_principal = "ec2.${data.aws_partition.current.dns_suffix}"
-}
-
 data "aws_iam_policy_document" "workers_assume_role_policy" {
   statement {
     sid = "EKSWorkerAssumeRole"
@@ -50,7 +40,6 @@ data "aws_ami" "eks_worker_windows" {
   owners = [var.worker_ami_owner_id_windows]
 }
 
-
 data "aws_iam_policy_document" "cluster_assume_role_policy" {
   statement {
     sid = "EKSClusterAssumeRole"
@@ -63,48 +52,6 @@ data "aws_iam_policy_document" "cluster_assume_role_policy" {
       type        = "Service"
       identifiers = ["eks.amazonaws.com"]
     }
-  }
-}
-
-data "template_file" "kubeconfig" {
-  count    = var.create_eks ? 1 : 0
-  template = file("${path.module}/templates/kubeconfig.tpl")
-
-  vars = {
-    kubeconfig_name           = local.kubeconfig_name
-    endpoint                  = aws_eks_cluster.this[0].endpoint
-    cluster_auth_base64       = aws_eks_cluster.this[0].certificate_authority[0].data
-    aws_authenticator_command = var.kubeconfig_aws_authenticator_command
-    aws_authenticator_command_args = length(var.kubeconfig_aws_authenticator_command_args) > 0 ? "        - ${join(
-      "\n        - ",
-      var.kubeconfig_aws_authenticator_command_args,
-      )}" : "        - ${join(
-      "\n        - ",
-      formatlist("\"%s\"", ["token", "-i", aws_eks_cluster.this[0].name]),
-    )}"
-    aws_authenticator_additional_args = length(var.kubeconfig_aws_authenticator_additional_args) > 0 ? "        - ${join(
-      "\n        - ",
-      var.kubeconfig_aws_authenticator_additional_args,
-    )}" : ""
-    aws_authenticator_env_variables = length(var.kubeconfig_aws_authenticator_env_variables) > 0 ? "      env:\n${join(
-      "\n",
-      data.template_file.aws_authenticator_env_variables.*.rendered,
-    )}" : ""
-  }
-}
-
-data "template_file" "aws_authenticator_env_variables" {
-  count = length(var.kubeconfig_aws_authenticator_env_variables)
-
-  template = <<EOF
-        - name: $${key}
-          value: $${value}
-EOF
-
-
-  vars = {
-    value = values(var.kubeconfig_aws_authenticator_env_variables)[count.index]
-    key   = keys(var.kubeconfig_aws_authenticator_env_variables)[count.index]
   }
 }
 
@@ -122,9 +69,9 @@ data "template_file" "userdata" {
 
   vars = merge({
     platform            = lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"])
-    cluster_name        = aws_eks_cluster.this[0].name
-    endpoint            = aws_eks_cluster.this[0].endpoint
-    cluster_auth_base64 = aws_eks_cluster.this[0].certificate_authority[0].data
+    cluster_name        = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
+    endpoint            = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
+    cluster_auth_base64 = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
     pre_userdata = lookup(
       var.worker_groups[count.index],
       "pre_userdata",
@@ -168,9 +115,9 @@ data "template_file" "launch_template_userdata" {
 
   vars = merge({
     platform            = lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"])
-    cluster_name        = aws_eks_cluster.this[0].name
-    endpoint            = aws_eks_cluster.this[0].endpoint
-    cluster_auth_base64 = aws_eks_cluster.this[0].certificate_authority[0].data
+    cluster_name        = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
+    endpoint            = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
+    cluster_auth_base64 = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
     pre_userdata = lookup(
       var.worker_groups_launch_template[count.index],
       "pre_userdata",

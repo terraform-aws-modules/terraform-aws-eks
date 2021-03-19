@@ -28,13 +28,14 @@ Nodes need to be able to connect to other AWS services plus pull down container 
 
 ### `aws-auth` ConfigMap not present
 
-The module configures the `aws-auth` ConfigMap. This is used by the cluster to grant IAM users RBAC permissions in the cluster. Sometimes the map fails to apply correctly, especially if terraform could not access the cluster endpoint during cluster creation.
+The module configures the `aws-auth` ConfigMap. This is used by the cluster to grant IAM users and roles RBAC permissions in the cluster, like the IAM role assigned to the worker nodes.
 
-Confirm that the ConfigMap matches the contents of the generated `config-map-aws-auth_${cluster_name}.yaml` file. You can retrieve the live config by running the following in your terraform folder:
+Confirm that the ConfigMap matches the contents of the `config_map_aws_auth` module output. You can retrieve the live config by running the following in your terraform folder:
 `kubectl --kubeconfig=kubeconfig_* -n kube-system get cm aws-auth -o yaml`
 
-Apply the config with:
-`kubectl --kubeconfig=kubeconfig_* apply -f config-map-aws-auth_*.yaml`
+If the ConfigMap is missing or the contents are incorrect then ensure that you have properly configured the kubernetes provider block by referring to [README.md](https://github.com/terraform-aws-modules/terraform-aws-eks/#usage-example) and run `terraform apply` again.
+
+Users with `manage_aws_auth = false` will need to apply the ConfigMap themselves.
 
 ## How can I work with the cluster if I disable the public endpoint?
 
@@ -42,9 +43,23 @@ You have to interact with the cluster from within the VPC that it's associated w
 
 Creating a new cluster with the public endpoint disabled is harder to achieve. You will either want to pass in a pre-configured cluster security group or apply the `aws-auth` configmap in a separate action.
 
+## ConfigMap "aws-auth" already exists
+
+This can happen if the kubernetes provider has not been configured for use with the cluster. The kubernetes provider will be accessing your default kubernetes cluster which already has the map defined. Read [README.md](https://github.com/terraform-aws-modules/terraform-aws-eks/#usage-example) for more details on how to configure the kubernetes provider correctly.
+
+Users upgrading from modules before 8.0.0 will need to import their existing aws-auth ConfigMap in to the terraform state. See 8.0.0's [CHANGELOG](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/v8.0.0/CHANGELOG.md#v800---2019-12-11) for more details.
+
+## `Error: Get http://localhost/api/v1/namespaces/kube-system/configmaps/aws-auth: dial tcp 127.0.0.1:80: connect: connection refused`
+
+Usually this means that the kubernetes provider has not been configured, there is no default `~/.kube/config` and so the kubernetes provider is attempting to talk to localhost.
+
+You need to configure the kubernetes provider correctly. See [README.md](https://github.com/terraform-aws-modules/terraform-aws-eks/#usage-example) for more details.
+
 ## How can I stop Terraform from removing the EKS tags from my VPC and subnets?
 
 You need to add the tags to the VPC and subnets yourself. See the [basic example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/basic).
+
+An alternative is to use the aws provider's [`ignore_tags` variable](https://www.terraform.io/docs/providers/aws/#ignore\_tags-configuration-block). However this can also cause terraform to display a perpetual difference.
 
 ## How do I safely remove old worker groups?
 
@@ -84,6 +99,16 @@ You are using the cluster autoscaler:
 
 Alternatively you can set the `asg_recreate_on_change = true` worker group option to get the ASG recreated after changes to the launch configuration or template. But be aware of the risks to cluster stability mentioned above.
 
+You can also use a 3rd party tool like Gruntwork's kubergrunt. See the [`eks deploy`](https://github.com/gruntwork-io/kubergrunt#deploy) subcommand.
+
+## How do I create kubernetes resources when creating the cluster?
+
+You do not need to do anything extra since v12.1.0 of the module as long as the following conditions are met:
+- `manage_aws_auth = true` on the module (default)
+- the kubernetes provider is correctly configured like in the [Usage Example](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/README.md#usage-example). Primarily the module's `cluster_id` output is used as input to the `aws_eks_cluster*` data sources.
+
+The `cluster_id` depends on a `null_resource` that polls the EKS cluster's endpoint until it is alive. This blocks initialisation of the kubernetes provider.
+
 ## `aws_auth.tf: At 2:14: Unknown token: 2:14 IDENT`
 
 You are attempting to use a Terraform 0.12 module with Terraform 0.11.
@@ -118,11 +143,11 @@ worker_groups = [
       instance_type                 = "m5.large"
       platform                      = "linux"
       asg_desired_capacity          = 2
-    },    
+    },
   ]
 ```
 
-2. Apply commands from https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support (use tab with name `Windows`) 
+2. Apply commands from https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support (use tab with name `Windows`)
 
 3. Add one more worker group for Windows with required field `platform = "windows"` and update your cluster. Worker group example:
 
@@ -143,4 +168,38 @@ worker_groups = [
   ]
 ```
 
-4. Wtih `kubectl get nodes` you can see cluster with mixed (Linux/Windows) nodes support.
+4. With `kubectl get nodes` you can see cluster with mixed (Linux/Windows) nodes support.
+
+## Deploying from Windows: `/bin/sh` file does not exist
+
+The module is almost pure Terraform apart from the `wait_for_cluster` `null_resource` that runs a local provisioner. The module has a default configuration for Unix-like systems. In order to run the provisioner on Windows systems you must set the interpreter to a valid value. [PR #795 (comment)](https://github.com/terraform-aws-modules/terraform-aws-eks/pull/795#issuecomment-599191029) suggests the following value:
+```hcl
+module "eks" {
+  # ...
+  wait_for_cluster_interpreter = ["c:/git/bin/sh.exe", "-c"]
+}
+```
+
+Alternatively, you can disable the `null_resource` by disabling creation of the `aws-auth` ConfigMap via setting `manage_aws_auth = false` on the module. The ConfigMap will then need creating via a different method.
+
+## Worker nodes with labels do not join a 1.16+ cluster
+
+Kubelet restricts the allowed list of labels in the `kubernetes.io` namespace that can be applied to nodes starting in 1.16.
+
+Older configurations used labels like `kubernetes.io/lifecycle=spot` and this is no longer allowed. Use `node.kubernetes.io/lifecycle=spot` instead.
+
+Reference the `--node-labels` argument for your version of Kubenetes for the allowed prefixes. [Documentation for 1.16](https://v1-16.docs.kubernetes.io/docs/reference/command-line-tools-reference/kubelet/)
+
+## What is the difference between `node_groups` and `worker_groups`?
+
+`node_groups` are [AWS-managed node groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) (configures "Node Groups" that you can find on the EKS dashboard). This system is supposed to ease some of the lifecycle around upgrading nodes. Although they do not do this automatically and you still need to manually trigger the updates.
+
+`worker_groups` are [self-managed nodes](https://docs.aws.amazon.com/eks/latest/userguide/worker.html) (provisions a typical "Autoscaling group" on EC2). It gives you full control over nodes in the cluster like using custom AMI for the nodes. As AWS says, "with worker groups the customer controls the data plane & AWS controls the control plane".
+
+Both can be used together in the same cluster.
+
+## I'm using both AWS-Managed node groups and Self-Managed worker groups and pods scheduled on a AWS Managed node groups are unable resolve DNS (even communication between pods)
+
+This happen because Core DNS can be scheduled on Self-Managed worker groups and by default, the terraform module doesn't create security group rules to ensure communication between pods schedulled on Self-Managed worker group and AWS-Managed node groups.
+
+You can set `var.worker_create_cluster_primary_security_group_rules` to `true` to create required rules.

@@ -6,7 +6,7 @@ resource "aws_autoscaling_group" "workers" {
     "-",
     compact(
       [
-        aws_eks_cluster.this[0].name,
+        coalescelist(aws_eks_cluster.this[*].name, [""])[0],
         lookup(var.worker_groups[count.index], "name", count.index),
         lookup(var.worker_groups[count.index], "asg_recreate_on_change", local.workers_group_defaults["asg_recreate_on_change"]) ? random_pet.workers[count.index].id : ""
       ]
@@ -36,6 +36,11 @@ resource "aws_autoscaling_group" "workers" {
     var.worker_groups[count.index],
     "target_group_arns",
     local.workers_group_defaults["target_group_arns"]
+  )
+  load_balancers = lookup(
+    var.worker_groups[count.index],
+    "load_balancers",
+    local.workers_group_defaults["load_balancers"]
   )
   service_linked_role_arn = lookup(
     var.worker_groups[count.index],
@@ -83,6 +88,11 @@ resource "aws_autoscaling_group" "workers" {
     "default_cooldown",
     local.workers_group_defaults["default_cooldown"]
   )
+  health_check_type = lookup(
+    var.worker_groups[count.index],
+    "health_check_type",
+    local.workers_group_defaults["health_check_type"]
+  )
   health_check_grace_period = lookup(
     var.worker_groups[count.index],
     "health_check_grace_period",
@@ -102,31 +112,46 @@ resource "aws_autoscaling_group" "workers" {
     }
   }
 
-  tags = concat(
-    [
-      {
-        "key"                 = "Name"
-        "value"               = "${aws_eks_cluster.this[0].name}-${lookup(var.worker_groups[count.index], "name", count.index)}-eks_asg"
-        "propagate_at_launch" = true
-      },
-      {
-        "key"                 = "kubernetes.io/cluster/${aws_eks_cluster.this[0].name}"
-        "value"               = "owned"
-        "propagate_at_launch" = true
-      },
-      {
-        "key"                 = "k8s.io/cluster/${aws_eks_cluster.this[0].name}"
-        "value"               = "owned"
-        "propagate_at_launch" = true
-      },
-    ],
-    local.asg_tags,
-    lookup(
-      var.worker_groups[count.index],
-      "tags",
-      local.workers_group_defaults["tags"]
+  dynamic "tag" {
+    for_each = concat(
+      [
+        {
+          "key"                 = "Name"
+          "value"               = "${coalescelist(aws_eks_cluster.this[*].name, [""])[0]}-${lookup(var.worker_groups[count.index], "name", count.index)}-eks_asg"
+          "propagate_at_launch" = true
+        },
+        {
+          "key"                 = "kubernetes.io/cluster/${coalescelist(aws_eks_cluster.this[*].name, [""])[0]}"
+          "value"               = "owned"
+          "propagate_at_launch" = true
+        },
+        {
+          "key"                 = "k8s.io/cluster/${coalescelist(aws_eks_cluster.this[*].name, [""])[0]}"
+          "value"               = "owned"
+          "propagate_at_launch" = true
+        },
+      ],
+      [
+        for tag_key, tag_value in var.tags :
+        map(
+          "key", tag_key,
+          "value", tag_value,
+          "propagate_at_launch", "true"
+        )
+        if tag_key != "Name" && !contains([for tag in lookup(var.worker_groups[count.index], "tags", local.workers_group_defaults["tags"]) : tag["key"]], tag_key)
+      ],
+      lookup(
+        var.worker_groups[count.index],
+        "tags",
+        local.workers_group_defaults["tags"]
+      )
     )
-  )
+    content {
+      key                 = tag.value.key
+      value               = tag.value.value
+      propagate_at_launch = tag.value.propagate_at_launch
+    }
+  }
 
   lifecycle {
     create_before_destroy = true
@@ -136,7 +161,7 @@ resource "aws_autoscaling_group" "workers" {
 
 resource "aws_launch_configuration" "workers" {
   count       = var.create_eks ? local.worker_group_count : 0
-  name_prefix = "${aws_eks_cluster.this[0].name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
+  name_prefix = "${coalescelist(aws_eks_cluster.this[*].name, [""])[0]}-${lookup(var.worker_groups[count.index], "name", count.index)}"
   associate_public_ip_address = lookup(
     var.worker_groups[count.index],
     "public_ip",
@@ -174,7 +199,7 @@ resource "aws_launch_configuration" "workers" {
   ebs_optimized = lookup(
     var.worker_groups[count.index],
     "ebs_optimized",
-    ! contains(
+    !contains(
       local.ebs_optimized_not_supported,
       lookup(
         var.worker_groups[count.index],
@@ -250,12 +275,27 @@ resource "aws_launch_configuration" "workers" {
       )
       delete_on_termination = lookup(ebs_block_device.value, "delete_on_termination", true)
     }
-
   }
 
   lifecycle {
     create_before_destroy = true
   }
+
+  # Prevent premature access of security group roles and policies by pods that
+  # require permissions on create/destroy that depend on workers.
+  depends_on = [
+    aws_security_group_rule.workers_egress_internet,
+    aws_security_group_rule.workers_ingress_self,
+    aws_security_group_rule.workers_ingress_cluster,
+    aws_security_group_rule.workers_ingress_cluster_kubelet,
+    aws_security_group_rule.workers_ingress_cluster_https,
+    aws_security_group_rule.workers_ingress_cluster_primary,
+    aws_security_group_rule.cluster_primary_ingress_workers,
+    aws_iam_role_policy_attachment.workers_AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.workers_AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly,
+    aws_iam_role_policy_attachment.workers_additional_policies
+  ]
 }
 
 resource "random_pet" "workers" {
@@ -267,18 +307,22 @@ resource "random_pet" "workers" {
   keepers = {
     lc_name = aws_launch_configuration.workers[count.index].name
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_security_group" "workers" {
   count       = var.worker_create_security_group && var.create_eks ? 1 : 0
-  name_prefix = aws_eks_cluster.this[0].name
+  name_prefix = var.cluster_name
   description = "Security group for all nodes in the cluster."
   vpc_id      = var.vpc_id
   tags = merge(
     var.tags,
     {
-      "Name"                                                  = "${aws_eks_cluster.this[0].name}-eks_worker_sg"
-      "kubernetes.io/cluster/${aws_eks_cluster.this[0].name}" = "owned"
+      "Name"                                      = "${var.cluster_name}-eks_worker_sg"
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     },
   )
 }
@@ -338,9 +382,31 @@ resource "aws_security_group_rule" "workers_ingress_cluster_https" {
   type                     = "ingress"
 }
 
+resource "aws_security_group_rule" "workers_ingress_cluster_primary" {
+  count                    = var.worker_create_security_group && var.worker_create_cluster_primary_security_group_rules && var.cluster_version >= 1.14 && var.create_eks ? 1 : 0
+  description              = "Allow pods running on workers to receive communication from cluster primary security group (e.g. Fargate pods)."
+  protocol                 = "all"
+  security_group_id        = local.worker_security_group_id
+  source_security_group_id = local.cluster_primary_security_group_id
+  from_port                = 0
+  to_port                  = 65535
+  type                     = "ingress"
+}
+
+resource "aws_security_group_rule" "cluster_primary_ingress_workers" {
+  count                    = var.worker_create_security_group && var.worker_create_cluster_primary_security_group_rules && var.cluster_version >= 1.14 && var.create_eks ? 1 : 0
+  description              = "Allow pods running on workers to send communication to cluster primary security group (e.g. Fargate pods)."
+  protocol                 = "all"
+  security_group_id        = local.cluster_primary_security_group_id
+  source_security_group_id = local.worker_security_group_id
+  from_port                = 0
+  to_port                  = 65535
+  type                     = "ingress"
+}
+
 resource "aws_iam_role" "workers" {
   count                 = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
-  name_prefix           = var.workers_role_name != "" ? null : aws_eks_cluster.this[0].name
+  name_prefix           = var.workers_role_name != "" ? null : coalescelist(aws_eks_cluster.this[*].name, [""])[0]
   name                  = var.workers_role_name != "" ? var.workers_role_name : null
   assume_role_policy    = data.aws_iam_policy_document.workers_assume_role_policy.json
   permissions_boundary  = var.permissions_boundary
@@ -351,7 +417,7 @@ resource "aws_iam_role" "workers" {
 
 resource "aws_iam_instance_profile" "workers" {
   count       = var.manage_worker_iam_resources && var.create_eks ? local.worker_group_count : 0
-  name_prefix = aws_eks_cluster.this[0].name
+  name_prefix = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
   role = lookup(
     var.worker_groups[count.index],
     "iam_role_id",
@@ -359,6 +425,10 @@ resource "aws_iam_instance_profile" "workers" {
   )
 
   path = var.iam_path
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {

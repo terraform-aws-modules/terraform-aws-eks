@@ -1,9 +1,9 @@
 terraform {
-  required_version = ">= 0.12.6"
+  required_version = ">= 0.12.9"
 }
 
 provider "aws" {
-  version = ">= 2.28.1"
+  version = ">= 3.3.0"
   region  = var.region
 }
 
@@ -12,7 +12,7 @@ provider "random" {
 }
 
 provider "local" {
-  version = "~> 1.2"
+  version = "~>1.4"
 }
 
 provider "null" {
@@ -43,7 +43,7 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  cluster_name = "test-eks-${random_string.suffix.result}"
+  cluster_name = "test-eks-lt-${random_string.suffix.result}"
 }
 
 resource "random_string" "suffix" {
@@ -64,14 +64,8 @@ module "vpc" {
   single_nat_gateway   = true
   enable_dns_hostnames = true
 
-  public_subnet_tags = {
-    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
-    "kubernetes.io/role/elb"                      = "1"
-  }
-
   private_subnet_tags = {
-    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
-    "kubernetes.io/role/internal-elb"             = "1"
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared" # EKS adds this and TF would want to remove then later
   }
 }
 
@@ -80,55 +74,20 @@ module "eks" {
   cluster_name    = local.cluster_name
   cluster_version = "1.17"
   subnets         = module.vpc.private_subnets
-
-  tags = {
-    Environment = "test"
-    GithubRepo  = "terraform-aws-eks"
-    GithubOrg   = "terraform-aws-modules"
-  }
-
-  vpc_id = module.vpc.vpc_id
-
-  node_groups_defaults = {
-    ami_type  = "AL2_x86_64"
-    disk_size = 50
-  }
+  vpc_id          = module.vpc.vpc_id
 
   node_groups = {
     example = {
       desired_capacity = 1
-      max_capacity     = 10
+      max_capacity     = 15
       min_capacity     = 1
 
-      instance_types = ["m5.large"]
-      capacity_type  = "SPOT"
-      k8s_labels = {
-        Environment = "test"
-        GithubRepo  = "terraform-aws-eks"
-        GithubOrg   = "terraform-aws-modules"
-      }
+      launch_template_id      = aws_launch_template.default.id
+      launch_template_version = aws_launch_template.default.default_version
+
       additional_tags = {
-        ExtraTag = "example"
+        CustomTag = "EKS example"
       }
     }
   }
-
-  # Create security group rules to allow communication between pods on workers and pods in managed node groups.
-  # Set this to true if you have AWS-Managed node groups and Self-Managed worker groups.
-  # See https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1089
-
-  # worker_create_cluster_primary_security_group_rules = true
-
-  # worker_groups_launch_template = [
-  #   {
-  #     name                 = "worker-group-1"
-  #     instance_type        = "t3.small"
-  #     asg_desired_capacity = 2
-  #     public_ip            = true
-  #   }
-  # ]
-
-  map_roles    = var.map_roles
-  map_users    = var.map_users
-  map_accounts = var.map_accounts
 }

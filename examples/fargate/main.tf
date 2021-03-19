@@ -89,44 +89,25 @@ module "eks" {
 
   vpc_id = module.vpc.vpc_id
 
-  node_groups_defaults = {
-    ami_type  = "AL2_x86_64"
-    disk_size = 50
-  }
-
-  node_groups = {
+  fargate_profiles = {
     example = {
-      desired_capacity = 1
-      max_capacity     = 10
-      min_capacity     = 1
+      namespace = "default"
 
-      instance_types = ["m5.large"]
-      capacity_type  = "SPOT"
-      k8s_labels = {
-        Environment = "test"
-        GithubRepo  = "terraform-aws-eks"
-        GithubOrg   = "terraform-aws-modules"
-      }
-      additional_tags = {
-        ExtraTag = "example"
+      # Kubernetes labels for selection
+      # labels = {
+      #   Environment = "test"
+      #   GithubRepo  = "terraform-aws-eks"
+      #   GithubOrg   = "terraform-aws-modules"
+      # }
+
+      # using specific subnets instead of all the ones configured in eks
+      # subnets = ["subnet-0ca3e3d1234a56c78"]
+
+      tags = {
+        Owner = "test"
       }
     }
   }
-
-  # Create security group rules to allow communication between pods on workers and pods in managed node groups.
-  # Set this to true if you have AWS-Managed node groups and Self-Managed worker groups.
-  # See https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1089
-
-  # worker_create_cluster_primary_security_group_rules = true
-
-  # worker_groups_launch_template = [
-  #   {
-  #     name                 = "worker-group-1"
-  #     instance_type        = "t3.small"
-  #     asg_desired_capacity = 2
-  #     public_ip            = true
-  #   }
-  # ]
 
   map_roles    = var.map_roles
   map_users    = var.map_users

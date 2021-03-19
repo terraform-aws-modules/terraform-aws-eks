@@ -53,7 +53,7 @@ resource "random_string" "suffix" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "2.6.0"
+  version = "2.47.0"
 
   name                 = "test-vpc-spot"
   cidr                 = "10.0.0.0/16"
@@ -63,10 +63,11 @@ module "vpc" {
 }
 
 module "eks" {
-  source       = "../.."
-  cluster_name = local.cluster_name
-  subnets      = module.vpc.public_subnets
-  vpc_id       = module.vpc.vpc_id
+  source          = "../.."
+  cluster_name    = local.cluster_name
+  cluster_version = "1.17"
+  subnets         = module.vpc.public_subnets
+  vpc_id          = module.vpc.vpc_id
 
   worker_groups_launch_template = [
     {
@@ -75,7 +76,7 @@ module "eks" {
       spot_instance_pools     = 4
       asg_max_size            = 5
       asg_desired_capacity    = 5
-      kubelet_extra_args      = "--node-labels=kubernetes.io/lifecycle=spot"
+      kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot"
       public_ip               = true
     },
   ]

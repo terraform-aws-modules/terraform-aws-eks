@@ -20,12 +20,15 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | additional\_tags | Additional tags to apply to node group | map(string) | Only `var.tags` applied |
 | ami\_release\_version | AMI version of workers | string | Provider default behavior |
 | ami\_type | AMI Type. See Terraform or AWS docs | string | Provider default behavior |
+| capacity\_type | Type of instance capacity to provision. Options are `ON_DEMAND` and `SPOT` | string | Provider default behavior |
 | desired\_capacity | Desired number of workers | number | `var.workers_group_defaults[asg_desired_capacity]` |
 | disk\_size | Workers' disk size | number | Provider default behavior |
 | iam\_role\_arn | IAM role ARN for workers | string | `var.default_iam_role_arn` |
-| instance\_type | Workers' instance type | string | `var.workers_group_defaults[instance_type]` |
+| instance\_types | Node group's instance type(s). Multiple types can be specified when `capacity_type="SPOT"`. | list | `[var.workers_group_defaults[instance_type]]` |
 | k8s\_labels | Kubernetes labels | map(string) | No labels applied |
 | key\_name | Key name for workers. Set to empty string to disable remote access | string | `var.workers_group_defaults[key_name]` |
+| launch_template_id | The id of a aws_launch_template to use | string | No LT used |
+| launch\_template_version | The version of the LT to use | string | none |
 | max\_capacity | Max number of workers | number | `var.workers_group_defaults[asg_max_size]` |
 | min\_capacity | Min number of workers | number | `var.workers_group_defaults[asg_min_size]` |
 | name | Name of the node group | string | Auto generated |
@@ -52,6 +55,7 @@ No requirements.
 | cluster\_name | Name of parent cluster | `string` | n/a | yes |
 | create\_eks | Controls if EKS resources should be created (it affects almost all resources) | `bool` | `true` | no |
 | default\_iam\_role\_arn | ARN of the default IAM worker role to use if one is not specified in `var.node_groups` or `var.node_groups_defaults` | `string` | n/a | yes |
+| ng\_depends\_on | List of references to other resources this submodule depends on | `any` | `null` | no |
 | node\_groups | Map of maps of `eks_node_groups` to create. See "`node_groups` and `node_groups_defaults` keys" section in README.md for more details | `any` | `{}` | no |
 | node\_groups\_defaults | map of maps of node groups to create. See "`node_groups` and `node_groups_defaults` keys" section in README.md for more details | `any` | n/a | yes |
 | tags | A map of tags to add to all resources | `map(string)` | n/a | yes |

@@ -23,6 +23,16 @@ users:
       apiVersion: client.authentication.k8s.io/v1alpha1
       command: ${aws_authenticator_command}
       args:
-${aws_authenticator_command_args}
-${aws_authenticator_additional_args}
-${aws_authenticator_env_variables}
+%{~ for i in aws_authenticator_command_args }
+        - "${i}"
+%{~ endfor ~}
+%{ for i in aws_authenticator_additional_args }
+        - ${i}
+%{~ endfor ~}
+%{ if length(aws_authenticator_env_variables) > 0 }
+      env:
+  %{~ for k, v in aws_authenticator_env_variables ~}
+        - name: ${k}
+          value: ${v}
+  %{~ endfor ~}
+%{ endif }

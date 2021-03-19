@@ -15,6 +15,22 @@ Read the [AWS docs on EKS to get connected to the k8s dashboard](https://docs.aw
 * You want these resources to exist within security groups that allow communication and coordination. These can be user provided or created within the module.
 * You've created a Virtual Private Cloud (VPC) and subnets where you intend to put the EKS resources. The VPC satisfies [EKS requirements](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html).
 
+## Important note
+
+The `cluster_version` is the required variable. Kubernetes is evolving a lot, and each major version includes new features, fixes, or changes.
+
+**Always check [Kubernetes Release Notes](https://kubernetes.io/docs/setup/release/notes/) before updating the major version.**
+
+You also need to ensure your applications and add ons are updated, or workloads could fail after the upgrade is complete. For action, you may need to take before upgrading, see the steps in the [EKS documentation](https://docs.aws.amazon.com/eks/latest/userguide/update-cluster.html).
+
+An example of harming update was the removal of several commonly used, but deprecated  APIs, in Kubernetes 1.16. More information on the API removals, see the [Kubernetes blog post](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/).
+
+By default, this module manages the `aws-auth` configmap for you (`manage_aws_auth=true`). To avoid the following [issue](https://github.com/aws/containers-roadmap/issues/654) where the EKS creation is `ACTIVE` but not ready, we implemented a retry logic with an `local-exec` provisioner and `wget` (by default) with failover to `curl`.
+
+**If you want to manage your `aws-auth` configmap, ensure you have `wget` (or `curl`) and `/bin/sh` installed where you're running Terraform or set `wait_for_cluster_cmd` and `wait_for_cluster_interpreter` to match your needs.**
+
+For windows users, please read the following [doc](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#deploying-from-windows-binsh-file-does-not-exist).
+
 ## Usage example
 
 A full example leveraging other community modules is contained in the [examples/basic directory](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/basic).
@@ -39,7 +55,7 @@ provider "kubernetes" {
 module "my-cluster" {
   source          = "terraform-aws-modules/eks/aws"
   cluster_name    = "my-cluster"
-  cluster_version = "1.14"
+  cluster_version = "1.17"
   subnets         = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
   vpc_id          = "vpc-1234556abcdef"
 
@@ -128,10 +144,10 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.12.9 |
-| aws | >= 2.52.0 |
+| terraform | >= 0.12.9, != 0.13.0 |
+| aws | >= 3.22.0 |
 | kubernetes | >= 1.11.1 |
-| local | >= 1.2 |
+| local | >= 1.4 |
 | null | >= 2.1 |
 | random | >= 2.1 |
 | template | >= 2.1 |
@@ -140,9 +156,9 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 
 | Name | Version |
 |------|---------|
-| aws | >= 2.52.0 |
+| aws | >= 3.22.0 |
 | kubernetes | >= 1.11.1 |
-| local | >= 1.2 |
+| local | >= 1.4 |
 | null | >= 2.1 |
 | random | >= 2.1 |
 | template | >= 2.1 |
@@ -152,25 +168,31 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | attach\_worker\_cni\_policy | Whether to attach the Amazon managed `AmazonEKS_CNI_Policy` IAM policy to the default worker IAM role. WARNING: If set `false` the permissions must be assigned to the `aws-node` DaemonSet pods via another method or nodes will not be able to join the cluster. | `bool` | `true` | no |
+| aws\_auth\_additional\_labels | Additional kubernetes labels applied on aws-auth ConfigMap | `map(string)` | `{}` | no |
+| cluster\_create\_endpoint\_private\_access\_sg\_rule | Whether to create security group rules for the access to the Amazon EKS private API server endpoint. | `bool` | `false` | no |
 | cluster\_create\_security\_group | Whether to create a security group for the cluster or attach the cluster to `cluster_security_group_id`. | `bool` | `true` | no |
 | cluster\_create\_timeout | Timeout value when creating the EKS cluster. | `string` | `"30m"` | no |
 | cluster\_delete\_timeout | Timeout value when deleting the EKS cluster. | `string` | `"15m"` | no |
 | cluster\_enabled\_log\_types | A list of the desired control plane logging to enable. For more information, see Amazon EKS Control Plane Logging documentation (https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html) | `list(string)` | `[]` | no |
 | cluster\_encryption\_config | Configuration block with encryption configuration for the cluster. See examples/secrets\_encryption/main.tf for example format | <pre>list(object({<br>    provider_key_arn = string<br>    resources        = list(string)<br>  }))</pre> | `[]` | no |
 | cluster\_endpoint\_private\_access | Indicates whether or not the Amazon EKS private API server endpoint is enabled. | `bool` | `false` | no |
-| cluster\_endpoint\_private\_access\_cidrs | List of CIDR blocks which can access the Amazon EKS private API server endpoint, when public access is disabled | `list(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
+| cluster\_endpoint\_private\_access\_cidrs | List of CIDR blocks which can access the Amazon EKS private API server endpoint. | `list(string)` | `null` | no |
 | cluster\_endpoint\_public\_access | Indicates whether or not the Amazon EKS public API server endpoint is enabled. | `bool` | `true` | no |
 | cluster\_endpoint\_public\_access\_cidrs | List of CIDR blocks which can access the Amazon EKS public API server endpoint. | `list(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
-| cluster\_iam\_role\_name | IAM role name for the cluster. Only applicable if manage\_cluster\_iam\_resources is set to false. | `string` | `""` | no |
+| cluster\_iam\_role\_name | IAM role name for the cluster. Only applicable if manage\_cluster\_iam\_resources is set to false. Set this to reuse an existing IAM role. | `string` | `""` | no |
 | cluster\_log\_kms\_key\_id | If a KMS Key ARN is set, this key will be used to encrypt the corresponding log group. Please be sure that the KMS Key has an appropriate key policy (https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html) | `string` | `""` | no |
 | cluster\_log\_retention\_in\_days | Number of days to retain log events. Default retention - 90 days. | `number` | `90` | no |
 | cluster\_name | Name of the EKS cluster. Also used as a prefix in names of related resources. | `string` | n/a | yes |
 | cluster\_security\_group\_id | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the workers | `string` | `""` | no |
-| cluster\_version | Kubernetes version to use for the EKS cluster. | `string` | `"1.15"` | no |
+| cluster\_service\_ipv4\_cidr | service ipv4 cidr for the kubernetes cluster | `string` | `null` | no |
+| cluster\_version | Kubernetes version to use for the EKS cluster. | `string` | n/a | yes |
 | config\_output\_path | Where to save the Kubectl config file (if `write_kubeconfig = true`). Assumed to be a directory if the value ends with a forward slash `/`. | `string` | `"./"` | no |
 | create\_eks | Controls if EKS resources should be created (it affects almost all resources) | `bool` | `true` | no |
+| create\_fargate\_pod\_execution\_role | Controls if the EKS Fargate pod execution IAM role should be created. | `bool` | `true` | no |
 | eks\_oidc\_root\_ca\_thumbprint | Thumbprint of Root CA for EKS OIDC, Valid until 2037 | `string` | `"9e99a48a9960b14926bb7f3b02e22da2b0ab7280"` | no |
 | enable\_irsa | Whether to create OpenID Connect Provider for EKS to enable IRSA | `bool` | `false` | no |
+| fargate\_pod\_execution\_role\_name | The IAM Role that provides permissions for the EKS Fargate Profile. | `string` | `null` | no |
+| fargate\_profiles | Fargate profiles to create. See `fargate_profile` keys section in fargate submodule's README.md for more details | `any` | `{}` | no |
 | iam\_path | If provided, all IAM roles will be created on this path. | `string` | `"/"` | no |
 | kubeconfig\_aws\_authenticator\_additional\_args | Any additional arguments to pass to the authenticator such as the role to assume. e.g. ["-r", "MyEksRole"]. | `list(string)` | `[]` | no |
 | kubeconfig\_aws\_authenticator\_command | Command to use to fetch AWS EKS credentials. | `string` | `"aws-iam-authenticator"` | no |
@@ -184,18 +206,19 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | map\_roles | Additional IAM roles to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | <pre>list(object({<br>    rolearn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
 | map\_users | Additional IAM users to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | <pre>list(object({<br>    userarn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
 | node\_groups | Map of map of node groups to create. See `node_groups` module's documentation for more details | `any` | `{}` | no |
-| node\_groups\_defaults | Map of values to be applied to all node groups. See `node_groups` module's documentaton for more details | `any` | `{}` | no |
+| node\_groups\_defaults | Map of values to be applied to all node groups. See `node_groups` module's documentation for more details | `any` | `{}` | no |
 | permissions\_boundary | If provided, all IAM roles will be created with this permissions boundary attached. | `string` | `null` | no |
 | subnets | A list of subnets to place the EKS cluster and workers within. | `list(string)` | n/a | yes |
-| tags | A map of tags to add to all resources. | `map(string)` | `{}` | no |
+| tags | A map of tags to add to all resources. Tags added to launch configuration or templates override these values for ASG Tags only. | `map(string)` | `{}` | no |
 | vpc\_id | VPC where the cluster and workers will be deployed. | `string` | n/a | yes |
-| wait\_for\_cluster\_cmd | Custom local-exec command to execute for determining if the eks cluster is healthy. Cluster endpoint will be available as an environment variable called ENDPOINT | `string` | `"for i in `seq 1 60`; do wget --no-check-certificate -O - -q $ENDPOINT/healthz \u003e/dev/null \u0026\u0026 exit 0 || true; sleep 5; done; echo TIMEOUT \u0026\u0026 exit 1"` | no |
+| wait\_for\_cluster\_cmd | Custom local-exec command to execute for determining if the eks cluster is healthy. Cluster endpoint will be available as an environment variable called ENDPOINT | `string` | `"for i in `seq 1 60`; do if `command -v wget > /dev/null`; then wget --no-check-certificate -O - -q $ENDPOINT/healthz >/dev/null && exit 0 || true; else curl -k -s $ENDPOINT/healthz >/dev/null && exit 0 || true;fi; sleep 5; done; echo TIMEOUT && exit 1"` | no |
 | wait\_for\_cluster\_interpreter | Custom local-exec command line interpreter for the command to determining if the eks cluster is healthy. | `list(string)` | <pre>[<br>  "/bin/sh",<br>  "-c"<br>]</pre> | no |
 | worker\_additional\_security\_group\_ids | A list of additional security group ids to attach to worker instances | `list(string)` | `[]` | no |
 | worker\_ami\_name\_filter | Name filter for AWS EKS worker AMI. If not provided, the latest official AMI for the specified 'cluster\_version' is used. | `string` | `""` | no |
 | worker\_ami\_name\_filter\_windows | Name filter for AWS EKS Windows worker AMI. If not provided, the latest official AMI for the specified 'cluster\_version' is used. | `string` | `""` | no |
-| worker\_ami\_owner\_id | The ID of the owner for the AMI to use for the AWS EKS workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft'). | `string` | `"602401143452"` | no |
-| worker\_ami\_owner\_id\_windows | The ID of the owner for the AMI to use for the AWS EKS Windows workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft'). | `string` | `"801119661308"` | no |
+| worker\_ami\_owner\_id | The ID of the owner for the AMI to use for the AWS EKS workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft'). | `string` | `"amazon"` | no |
+| worker\_ami\_owner\_id\_windows | The ID of the owner for the AMI to use for the AWS EKS Windows workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft'). | `string` | `"amazon"` | no |
+| worker\_create\_cluster\_primary\_security\_group\_rules | Whether to create security group rules to allow communication between pods on workers and pods using the primary cluster security group. | `bool` | `false` | no |
 | worker\_create\_initial\_lifecycle\_hooks | Whether to create initial lifecycle hooks provided in worker groups. | `bool` | `false` | no |
 | worker\_create\_security\_group | Whether to create a security group for the workers or attach the workers to `worker_security_group_id`. | `bool` | `true` | no |
 | worker\_groups | A list of maps defining worker group configurations to be defined using AWS Launch Configurations. See workers\_group\_defaults for valid keys. | `any` | `[]` | no |
@@ -211,22 +234,28 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 
 | Name | Description |
 |------|-------------|
+| cloudwatch\_log\_group\_arn | Arn of cloudwatch log group created |
 | cloudwatch\_log\_group\_name | Name of cloudwatch log group created |
 | cluster\_arn | The Amazon Resource Name (ARN) of the cluster. |
 | cluster\_certificate\_authority\_data | Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster. |
 | cluster\_endpoint | The endpoint for your EKS Kubernetes API. |
 | cluster\_iam\_role\_arn | IAM role ARN of the EKS cluster. |
 | cluster\_iam\_role\_name | IAM role name of the EKS cluster. |
-| cluster\_id | The name/id of the EKS cluster. |
+| cluster\_id | The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready |
 | cluster\_oidc\_issuer\_url | The URL on the EKS cluster OIDC Issuer |
 | cluster\_primary\_security\_group\_id | The cluster primary security group ID created by the EKS cluster on 1.14 or later. Referred to as 'Cluster security group' in the EKS console. |
 | cluster\_security\_group\_id | Security group ID attached to the EKS cluster. On 1.14 or later, this is the 'Additional security groups' in the EKS console. |
 | cluster\_version | The Kubernetes server version for the EKS cluster. |
 | config\_map\_aws\_auth | A kubernetes configuration to authenticate to this EKS cluster. |
+| fargate\_iam\_role\_arn | IAM role ARN for EKS Fargate pods |
+| fargate\_iam\_role\_name | IAM role name for EKS Fargate pods |
+| fargate\_profile\_arns | Amazon Resource Name (ARN) of the EKS Fargate Profiles. |
+| fargate\_profile\_ids | EKS Cluster name and EKS Fargate Profile names separated by a colon (:). |
 | kubeconfig | kubectl config file contents for this EKS cluster. |
 | kubeconfig\_filename | The filename of the generated kubectl config. |
 | node\_groups | Outputs from EKS node groups. Map of maps, keyed by var.node\_groups keys |
 | oidc\_provider\_arn | The ARN of the OIDC Provider if `enable_irsa = true`. |
+| security\_group\_rule\_cluster\_https\_worker\_ingress | Security group rule responsible for allowing pods to communicate with the EKS cluster API. |
 | worker\_iam\_instance\_profile\_arns | default IAM instance profile ARN for EKS worker groups |
 | worker\_iam\_instance\_profile\_names | default IAM instance profile name for EKS worker groups |
 | worker\_iam\_role\_arn | default IAM role ARN for EKS worker groups |

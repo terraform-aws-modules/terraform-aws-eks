@@ -3,11 +3,13 @@ variable "cluster_enabled_log_types" {
   description = "A list of the desired control plane logging to enable. For more information, see Amazon EKS Control Plane Logging documentation (https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html)"
   type        = list(string)
 }
+
 variable "cluster_log_kms_key_id" {
   default     = ""
   description = "If a KMS Key ARN is set, this key will be used to encrypt the corresponding log group. Please be sure that the KMS Key has an appropriate key policy (https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html)"
   type        = string
 }
+
 variable "cluster_log_retention_in_days" {
   default     = 90
   description = "Number of days to retain log events. Default retention - 90 days."
@@ -28,7 +30,6 @@ variable "cluster_security_group_id" {
 variable "cluster_version" {
   description = "Kubernetes version to use for the EKS cluster."
   type        = string
-  default     = "1.15"
 }
 
 variable "config_output_path" {
@@ -46,6 +47,12 @@ variable "write_kubeconfig" {
 variable "manage_aws_auth" {
   description = "Whether to apply the aws-auth configmap file."
   default     = true
+}
+
+variable "aws_auth_additional_labels" {
+  description = "Additional kubernetes labels applied on aws-auth ConfigMap"
+  default     = {}
+  type        = map(string)
 }
 
 variable "map_accounts" {
@@ -80,7 +87,7 @@ variable "subnets" {
 }
 
 variable "tags" {
-  description = "A map of tags to add to all resources."
+  description = "A map of tags to add to all resources. Tags added to launch configuration or templates override these values for ASG Tags only."
   type        = map(string)
   default     = {}
 }
@@ -129,13 +136,13 @@ variable "worker_ami_name_filter_windows" {
 variable "worker_ami_owner_id" {
   description = "The ID of the owner for the AMI to use for the AWS EKS workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft')."
   type        = string
-  default     = "602401143452" // The ID of the owner of the official AWS EKS AMIs.
+  default     = "amazon"
 }
 
 variable "worker_ami_owner_id_windows" {
   description = "The ID of the owner for the AMI to use for the AWS EKS Windows workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft')."
   type        = string
-  default     = "801119661308" // The ID of the owner of the official AWS EKS Windows AMIs.
+  default     = "amazon"
 }
 
 variable "worker_additional_security_group_ids" {
@@ -201,7 +208,7 @@ variable "cluster_delete_timeout" {
 variable "wait_for_cluster_cmd" {
   description = "Custom local-exec command to execute for determining if the eks cluster is healthy. Cluster endpoint will be available as an environment variable called ENDPOINT"
   type        = string
-  default     = "for i in `seq 1 60`; do wget --no-check-certificate -O - -q $ENDPOINT/healthz >/dev/null && exit 0 || true; sleep 5; done; echo TIMEOUT && exit 1"
+  default     = "for i in `seq 1 60`; do if `command -v wget > /dev/null`; then wget --no-check-certificate -O - -q $ENDPOINT/healthz >/dev/null && exit 0 || true; else curl -k -s $ENDPOINT/healthz >/dev/null && exit 0 || true;fi; sleep 5; done; echo TIMEOUT && exit 1"
 }
 
 variable "wait_for_cluster_interpreter" {
@@ -228,6 +235,12 @@ variable "worker_create_initial_lifecycle_hooks" {
   default     = false
 }
 
+variable "worker_create_cluster_primary_security_group_rules" {
+  description = "Whether to create security group rules to allow communication between pods on workers and pods using the primary cluster security group."
+  type        = bool
+  default     = false
+}
+
 variable "permissions_boundary" {
   description = "If provided, all IAM roles will be created with this permissions boundary attached."
   type        = string
@@ -240,10 +253,16 @@ variable "iam_path" {
   default     = "/"
 }
 
+variable "cluster_create_endpoint_private_access_sg_rule" {
+  description = "Whether to create security group rules for the access to the Amazon EKS private API server endpoint."
+  type        = bool
+  default     = false
+}
+
 variable "cluster_endpoint_private_access_cidrs" {
-  description = "List of CIDR blocks which can access the Amazon EKS private API server endpoint, when public access is disabled"
+  description = "List of CIDR blocks which can access the Amazon EKS private API server endpoint."
   type        = list(string)
-  default     = ["0.0.0.0/0"]
+  default     = null
 }
 
 variable "cluster_endpoint_private_access" {
@@ -271,7 +290,7 @@ variable "manage_cluster_iam_resources" {
 }
 
 variable "cluster_iam_role_name" {
-  description = "IAM role name for the cluster. Only applicable if manage_cluster_iam_resources is set to false."
+  description = "IAM role name for the cluster. Only applicable if manage_cluster_iam_resources is set to false. Set this to reuse an existing IAM role."
   type        = string
   default     = ""
 }
@@ -301,7 +320,7 @@ variable "create_eks" {
 }
 
 variable "node_groups_defaults" {
-  description = "Map of values to be applied to all node groups. See `node_groups` module's documentaton for more details"
+  description = "Map of values to be applied to all node groups. See `node_groups` module's documentation for more details"
   type        = any
   default     = {}
 }
@@ -331,4 +350,28 @@ variable "cluster_encryption_config" {
     resources        = list(string)
   }))
   default = []
+}
+
+variable "fargate_profiles" {
+  description = "Fargate profiles to create. See `fargate_profile` keys section in fargate submodule's README.md for more details"
+  type        = any
+  default     = {}
+}
+
+variable "create_fargate_pod_execution_role" {
+  description = "Controls if the EKS Fargate pod execution IAM role should be created."
+  type        = bool
+  default     = true
+}
+
+variable "fargate_pod_execution_role_name" {
+  description = "The IAM Role that provides permissions for the EKS Fargate Profile."
+  type        = string
+  default     = null
+}
+
+variable "cluster_service_ipv4_cidr" {
+  description = "service ipv4 cidr for the kubernetes cluster"
+  type        = string
+  default     = null
 }

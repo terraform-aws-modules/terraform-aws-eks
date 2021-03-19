@@ -57,7 +57,7 @@ resource "aws_kms_key" "eks" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "2.6.0"
+  version = "2.47.0"
 
   name                 = "test-vpc"
   cidr                 = "10.0.0.0/16"
@@ -80,9 +80,10 @@ module "vpc" {
 }
 
 module "eks" {
-  source       = "../.."
-  cluster_name = local.cluster_name
-  subnets      = module.vpc.private_subnets
+  source          = "../.."
+  cluster_name    = local.cluster_name
+  cluster_version = "1.17"
+  subnets         = module.vpc.private_subnets
 
   cluster_encryption_config = [
     {
@@ -102,7 +103,7 @@ module "eks" {
   worker_groups = [
     {
       name                 = "worker-group-1"
-      instance_type        = "t2.small"
+      instance_type        = "t3.small"
       additional_userdata  = "echo foo bar"
       asg_desired_capacity = 2
     },

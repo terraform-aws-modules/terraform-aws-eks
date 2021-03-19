@@ -21,19 +21,28 @@ jobs:
 
   docs:
     name: Docs
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Install Deps
-        run: brew update && brew install pre-commit terraform-docs terraform
+      - uses: actions/setup-python@v2
+      - name: Install terraform-docs
+        run: |
+          # Get the download url of the latest version of terraform-docs
+          tf_docs_download_url=$(curl -s https://api.github.com/repos/terraform-docs/terraform-docs/releases/latest | jq -rc '.assets[] | select( .name | contains("linux-amd64")).browser_download_url')
+          mkdir -p $GITHUB_WORKSPACE/bin
+          curl -Lo $GITHUB_WORKSPACE/bin/terraform-docs $tf_docs_download_url
+          chmod +x $GITHUB_WORKSPACE/bin/terraform-docs
+          echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
       - name: Check Docs
-        run: pre-commit run --show-diff-on-failure --all-files terraform_docs
+        uses: pre-commit/action@v2.0.0
+        with:
+          extra_args: --show-diff-on-failure --all-files terraform_docs
 
   validate:
     name: Validate
     runs-on: ubuntu-latest
     container:
-      image: hashicorp/terraform:latest
+      image: hashicorp/terraform:0.12.29
     steps:
       - uses: actions/checkout@master
       - name: Validate Code

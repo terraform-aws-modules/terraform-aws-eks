@@ -22,12 +22,16 @@ resource "aws_eks_cluster" "this" {
     public_access_cidrs     = var.cluster_endpoint_public_access_cidrs
   }
 
+  kubernetes_network_config {
+    service_ipv4_cidr = var.cluster_service_ipv4_cidr
+  }
+
   timeouts {
     create = var.cluster_create_timeout
     delete = var.cluster_delete_timeout
   }
 
-  dynamic encryption_config {
+  dynamic "encryption_config" {
     for_each = toset(var.cluster_encryption_config)
 
     content {
@@ -39,14 +43,17 @@ resource "aws_eks_cluster" "this" {
   }
 
   depends_on = [
+    aws_security_group_rule.cluster_egress_internet,
+    aws_security_group_rule.cluster_https_worker_ingress,
     aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy,
     aws_iam_role_policy_attachment.cluster_AmazonEKSServicePolicy,
+    aws_iam_role_policy_attachment.cluster_AmazonEKSVPCResourceControllerPolicy,
     aws_cloudwatch_log_group.this
   ]
 }
 
 resource "aws_security_group_rule" "cluster_private_access" {
-  count       = var.create_eks && var.manage_aws_auth && var.cluster_endpoint_private_access && var.cluster_endpoint_public_access == false ? 1 : 0
+  count       = var.create_eks && var.cluster_create_endpoint_private_access_sg_rule && var.cluster_endpoint_private_access ? 1 : 0
   type        = "ingress"
   from_port   = 443
   to_port     = 443
@@ -61,7 +68,7 @@ resource "null_resource" "wait_for_cluster" {
   count = var.create_eks && var.manage_aws_auth ? 1 : 0
 
   depends_on = [
-    aws_eks_cluster.this[0],
+    aws_eks_cluster.this,
     aws_security_group_rule.cluster_private_access,
   ]
 
@@ -128,5 +135,43 @@ resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSServicePolicy" {
   count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
   policy_arn = "${local.policy_arn_prefix}/AmazonEKSServicePolicy"
+  role       = local.cluster_iam_role_name
+}
+
+resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSVPCResourceControllerPolicy" {
+  count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
+  policy_arn = "${local.policy_arn_prefix}/AmazonEKSVPCResourceController"
+  role       = local.cluster_iam_role_name
+}
+
+/*
+ Adding a policy to cluster IAM role that allow permissions
+ required to create AWSServiceRoleForElasticLoadBalancing service-linked role by EKS during ELB provisioning
+*/
+
+data "aws_iam_policy_document" "cluster_elb_sl_role_creation" {
+  count = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:DescribeAccountAttributes",
+      "ec2:DescribeInternetGateways"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "cluster_elb_sl_role_creation" {
+  count       = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
+  name_prefix = "${var.cluster_name}-elb-sl-role-creation"
+  description = "Permissions for EKS to create AWSServiceRoleForElasticLoadBalancing service-linked role"
+  policy      = data.aws_iam_policy_document.cluster_elb_sl_role_creation[0].json
+  path        = var.iam_path
+}
+
+resource "aws_iam_role_policy_attachment" "cluster_elb_sl_role_creation" {
+  count      = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
+  policy_arn = aws_iam_policy.cluster_elb_sl_role_creation[0].arn
   role       = local.cluster_iam_role_name
 }

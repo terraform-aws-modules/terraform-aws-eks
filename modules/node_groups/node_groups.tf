@@ -15,8 +15,9 @@ resource "aws_eks_node_group" "workers" {
 
   ami_type        = lookup(each.value, "ami_type", null)
   disk_size       = lookup(each.value, "disk_size", null)
-  instance_types  = [each.value["instance_type"]]
+  instance_types  = lookup(each.value, "instance_types", null)
   release_version = lookup(each.value, "ami_release_version", null)
+  capacity_type   = lookup(each.value, "capacity_type", null)
 
   dynamic "remote_access" {
     for_each = each.value["key_name"] != "" ? [{
@@ -27,6 +28,18 @@ resource "aws_eks_node_group" "workers" {
     content {
       ec2_ssh_key               = remote_access.value["ec2_ssh_key"]
       source_security_group_ids = remote_access.value["source_security_group_ids"]
+    }
+  }
+
+  dynamic "launch_template" {
+    for_each = each.value["launch_template_id"] != null ? [{
+      id      = each.value["launch_template_id"]
+      version = each.value["launch_template_version"]
+    }] : []
+
+    content {
+      id      = launch_template.value["id"]
+      version = launch_template.value["version"]
     }
   }
 
@@ -47,4 +60,6 @@ resource "aws_eks_node_group" "workers" {
     create_before_destroy = true
     ignore_changes        = [scaling_config.0.desired_size]
   }
+
+  depends_on = [var.ng_depends_on]
 }

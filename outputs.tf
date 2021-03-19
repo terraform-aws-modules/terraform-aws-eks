@@ -1,6 +1,9 @@
 output "cluster_id" {
-  description = "The name/id of the EKS cluster."
+  description = "The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready"
   value       = element(concat(aws_eks_cluster.this.*.id, list("")), 0)
+  # So that calling plans wait for the cluster to be available before attempting
+  # to use it. They will not need to duplicate this null_resource
+  depends_on = [null_resource.wait_for_cluster]
 }
 
 output "cluster_arn" {
@@ -50,17 +53,22 @@ output "cluster_oidc_issuer_url" {
 
 output "cluster_primary_security_group_id" {
   description = "The cluster primary security group ID created by the EKS cluster on 1.14 or later. Referred to as 'Cluster security group' in the EKS console."
-  value       = var.cluster_version >= 1.14 ? element(concat(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, list("")), 0) : null
+  value       = local.cluster_primary_security_group_id
 }
 
 output "cloudwatch_log_group_name" {
   description = "Name of cloudwatch log group created"
-  value       = aws_cloudwatch_log_group.this[*].name
+  value       = element(concat(aws_cloudwatch_log_group.this[*].name, list("")), 0)
+}
+
+output "cloudwatch_log_group_arn" {
+  description = "Arn of cloudwatch log group created"
+  value       = element(concat(aws_cloudwatch_log_group.this[*].arn, list("")), 0)
 }
 
 output "kubeconfig" {
   description = "kubectl config file contents for this EKS cluster."
-  value       = concat(data.template_file.kubeconfig[*].rendered, [""])[0]
+  value       = local.kubeconfig
 }
 
 output "kubeconfig_filename" {
@@ -158,7 +166,32 @@ output "worker_iam_role_arn" {
   )[0]
 }
 
+output "fargate_profile_ids" {
+  description = "EKS Cluster name and EKS Fargate Profile names separated by a colon (:)."
+  value       = module.fargate.fargate_profile_ids
+}
+
+output "fargate_profile_arns" {
+  description = "Amazon Resource Name (ARN) of the EKS Fargate Profiles."
+  value       = module.fargate.fargate_profile_arns
+}
+
+output "fargate_iam_role_name" {
+  description = "IAM role name for EKS Fargate pods"
+  value       = module.fargate.iam_role_name
+}
+
+output "fargate_iam_role_arn" {
+  description = "IAM role ARN for EKS Fargate pods"
+  value       = module.fargate.iam_role_arn
+}
+
 output "node_groups" {
   description = "Outputs from EKS node groups. Map of maps, keyed by var.node_groups keys"
   value       = module.node_groups.node_groups
+}
+
+output "security_group_rule_cluster_https_worker_ingress" {
+  description = "Security group rule responsible for allowing pods to communicate with the EKS cluster API."
+  value       = aws_security_group_rule.cluster_https_worker_ingress
 }

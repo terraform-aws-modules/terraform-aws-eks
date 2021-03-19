@@ -8,7 +8,7 @@ You need to install a daemonset to catch the 2 minute warning before termination
 helm install stable/k8s-spot-termination-handler --namespace kube-system
 ```
 
-In the following examples at least 1 worker group that uses on-demand instances is included. This worker group has an added node label that can be used in scheduling. This could be used to schedule any workload not suitable for spot instances but is important for the [cluster-autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler) as it might be end up unscheduled when spot instances are terminated. You can add this to the values of the [cluster-autoscaler helm chart](https://github.com/helm/charts/tree/master/stable/cluster-autoscaler):
+In the following examples at least 1 worker group that uses on-demand instances is included. This worker group has an added node label that can be used in scheduling. This could be used to schedule any workload not suitable for spot instances but is important for the [cluster-autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler) as it might be end up unscheduled when spot instances are terminated. You can add this to the values of the [cluster-autoscaler helm chart](https://github.com/kubernetes/autoscaler/tree/master/charts/cluster-autoscaler-chart):
 
 ```yaml
 nodeSelector:
@@ -32,7 +32,7 @@ Example worker group configuration that uses an ASG with launch configuration fo
       name                = "on-demand-1"
       instance_type       = "m4.xlarge"
       asg_max_size        = 1
-      kubelet_extra_args  = "--node-labels=kubernetes.io/lifecycle=normal"
+      kubelet_extra_args  = "--node-labels=node.kubernetes.io/lifecycle=normal"
       suspended_processes = ["AZRebalance"]
     },
     {
@@ -40,7 +40,7 @@ Example worker group configuration that uses an ASG with launch configuration fo
       spot_price          = "0.199"
       instance_type       = "c4.xlarge"
       asg_max_size        = 20
-      kubelet_extra_args  = "--node-labels=kubernetes.io/lifecycle=spot"
+      kubelet_extra_args  = "--node-labels=node.kubernetes.io/lifecycle=spot"
       suspended_processes = ["AZRebalance"]
     },
     {
@@ -48,7 +48,7 @@ Example worker group configuration that uses an ASG with launch configuration fo
       spot_price          = "0.20"
       instance_type       = "m4.xlarge"
       asg_max_size        = 20
-      kubelet_extra_args  = "--node-labels=kubernetes.io/lifecycle=spot"
+      kubelet_extra_args  = "--node-labels=node.kubernetes.io/lifecycle=spot"
       suspended_processes = ["AZRebalance"]
     }
   ]
@@ -77,10 +77,34 @@ Launch Template support is a recent addition to both AWS and this module. It mig
       spot_instance_pools     = 4
       asg_max_size            = 5
       asg_desired_capacity    = 5
-      kubelet_extra_args      = "--node-labels=kubernetes.io/lifecycle=spot"
+      kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot"
       public_ip               = true
     },
   ]
+```
+
+## Using Launch Templates With Both Spot and On Demand
+
+Example launch template to launch 2 on demand instances of type m5.large, and have the ability to scale up using spot instances and on demand instances. The `node.kubernetes.io/lifecycle` node label will be set to the value queried from the EC2 meta-data service: either "on-demand" or "spot".
+
+`on_demand_percentage_above_base_capacity` is set to 25 so 1 in 4 new nodes, when auto-scaling, will be on-demand instances. If not set, all new nodes will be spot instances. The on-demand instances will be the primary instance type (first in the array if they are not weighted).
+
+```hcl
+  worker_groups_launch_template = [{
+    name                    = "mixed-demand-spot"
+    override_instance_types = ["m5.large", "m5a.large", "m4.large"]
+    root_encrypted          = true
+    root_volume_size        = 50
+
+    asg_min_size                             = 2
+    asg_desired_capacity                     = 2
+    on_demand_base_capacity                  = 3
+    on_demand_percentage_above_base_capacity = 25
+    asg_max_size                             = 20
+    spot_instance_pools                      = 3
+
+    kubelet_extra_args = "--node-labels=node.kubernetes.io/lifecycle=`curl -s http://169.254.169.254/latest/meta-data/instance-life-cycle`"
+  }]
 ```
 
 ## Important Notes
