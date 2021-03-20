@@ -8,6 +8,7 @@ locals {
       key_name                      = var.workers_group_defaults["key_name"]
       launch_template_id            = var.workers_group_defaults["launch_template_id"]
       launch_template_version       = var.workers_group_defaults["launch_template_version"]
+      set_instance_types_on_lt      = false
       max_capacity                  = var.workers_group_defaults["asg_max_size"]
       min_capacity                  = var.workers_group_defaults["asg_min_size"]
       subnets                       = var.workers_group_defaults["subnets"]

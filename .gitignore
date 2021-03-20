@@ -12,3 +12,4 @@ eks-admin-service-account.yaml
 config-map-aws-auth*.yaml
 kubeconfig_*
 *.swp
+.terraform.lock.hcl
