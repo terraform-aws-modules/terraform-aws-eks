@@ -1,6 +1,11 @@
+locals {
+  eks_fargate_pod_iam_role_prefix_raw = format("%s-fargate", var.cluster_name)
+  eks_fargate_pod_iam_role_prefix     = length(local.eks_fargate_pod_iam_role_prefix_raw) > 32 ? substr(local.eks_fargate_pod_iam_role_prefix_raw, 0, 32) : local.eks_fargate_pod_iam_role_prefix_raw
+}
+
 resource "aws_iam_role" "eks_fargate_pod" {
   count                = local.create_eks && var.create_fargate_pod_execution_role ? 1 : 0
-  name_prefix          = format("%s-fargate", var.cluster_name)
+  name_prefix          = local.eks_fargate_pod_iam_role_prefix
   assume_role_policy   = data.aws_iam_policy_document.eks_fargate_pod_assume_role[0].json
   permissions_boundary = var.permissions_boundary
   tags                 = var.tags
