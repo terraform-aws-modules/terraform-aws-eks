@@ -331,6 +331,12 @@ variable "node_groups" {
   default     = {}
 }
 
+variable "create_node_groups" {
+  description = "Whether to create node groups (managed EKS node groups) at all."
+  type        = bool
+  default     = true
+}
+
 variable "enable_irsa" {
   description = "Whether to create OpenID Connect Provider for EKS to enable IRSA"
   type        = bool
