@@ -167,15 +167,19 @@ resource "aws_launch_configuration" "workers" {
     "public_ip",
     local.workers_group_defaults["public_ip"],
   )
-  security_groups = flatten([
-    local.worker_security_group_id,
-    var.worker_additional_security_group_ids,
-    lookup(
-      var.worker_groups[count.index],
-      "additional_security_group_ids",
-      local.workers_group_defaults["additional_security_group_ids"]
-    )
-  ])
+  security_groups = lookup(
+    var.worker_groups[count.index],
+    "security_group_ids",
+    flatten([
+      local.worker_security_group_id,
+      var.worker_additional_security_group_ids,
+      lookup(
+        var.worker_groups[count.index],
+        "additional_security_group_ids",
+        local.workers_group_defaults["additional_security_group_ids"]
+      )
+    ])
+  )
   iam_instance_profile = coalescelist(
     aws_iam_instance_profile.workers.*.id,
     data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.name,

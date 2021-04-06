@@ -254,15 +254,19 @@ resource "aws_launch_template" "workers_launch_template" {
       "eni_delete",
       local.workers_group_defaults["eni_delete"],
     )
-    security_groups = flatten([
-      local.worker_security_group_id,
-      var.worker_additional_security_group_ids,
-      lookup(
-        var.worker_groups_launch_template[count.index],
-        "additional_security_group_ids",
-        local.workers_group_defaults["additional_security_group_ids"],
-      ),
-    ])
+    security_groups = lookup(
+      var.worker_groups_launch_template[count.index],
+      "security_group_ids",
+      flatten([
+        local.worker_security_group_id,
+        var.worker_additional_security_group_ids,
+        lookup(
+          var.worker_groups_launch_template[count.index],
+          "additional_security_group_ids",
+          local.workers_group_defaults["additional_security_group_ids"]
+        )
+      ])
+    )
   }
 
   iam_instance_profile {
