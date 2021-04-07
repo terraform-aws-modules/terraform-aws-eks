@@ -48,6 +48,17 @@ No requirements.
 | aws | n/a |
 | random | n/a |
 
+## Modules
+
+No Modules.
+
+## Resources
+
+| Name |
+|------|
+| [aws_eks_node_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group) |
+| [random_pet](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) |
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -67,5 +78,4 @@ No requirements.
 |------|-------------|
 | aws\_auth\_roles | Roles for use in aws-auth ConfigMap |
 | node\_groups | Outputs from EKS node groups. Map of maps, keyed by `var.node_groups` keys. See `aws_eks_node_group` Terraform documentation for values |
-
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
