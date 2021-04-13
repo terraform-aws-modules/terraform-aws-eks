@@ -53,6 +53,7 @@ resource "aws_eks_cluster" "this" {
 }
 
 resource "aws_security_group_rule" "cluster_private_access" {
+  description = "Allow private K8S API ingress from custom source."
   count       = var.create_eks && var.cluster_create_endpoint_private_access_sg_rule && var.cluster_endpoint_private_access ? 1 : 0
   type        = "ingress"
   from_port   = 443
