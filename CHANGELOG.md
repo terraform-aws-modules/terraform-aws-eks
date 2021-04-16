@@ -10,6 +10,12 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v15.1.0"></a>
+## [v15.1.0] - 2021-04-16
+BUG FIXES:
+- Fixed list and map usage ([#1307](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1307))
+
+
 <a name="v15.0.0"></a>
 ## [v15.0.0] - 2021-04-16
 BUG FIXES:
@@ -228,6 +234,7 @@ FEATURES:
 - Add interpreter option to `wait_for_cluster_cmd` ([#795](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/795))
 
 ENHANCEMENTS:
+- Require kubernetes provider >=1.11.1 ([#784](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/784))
 - Use `aws_partition` to build IAM policy ARNs ([#820](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/820))
 - Generate `aws-auth` configmap's roles from Object. No more string concat. ([#790](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/790))
 - Add timeout to default wait_for_cluster_cmd ([#791](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/791))
@@ -249,192 +256,8 @@ TESTS:
 - Remove unused kitchen test related stuff ([#787](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/787))
 
 
-<a name="v10.0.0"></a>
-## [v10.0.0] - 2020-03-12
-
-
-
-<a name="v9.0.0"></a>
-## [v9.0.0] - 2020-02-27
-
-- V9.0.0 ([#752](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/752))
-- {Create,Delete}OpenIDProviderConnect` to required IAM policies ([#729](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/729))
-- GetOpenIDConnectProvider grant to docs/iam-permissions.md ([#728](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/728))
-
-
-<a name="v8.2.0"></a>
-## [v8.2.0] - 2020-01-29
-
-
-
-<a name="v8.1.0"></a>
-## [v8.1.0] - 2020-01-17
-
-
-
-<a name="v8.0.0"></a>
-## [v8.0.0] - 2020-01-09
-
-- [#606](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/606) ([#611](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/611))
-
-
-<a name="v7.0.1"></a>
-## [v7.0.1] - 2019-11-20
-
-
-
-<a name="v7.0.0"></a>
-## [v7.0.0] - 2019-10-30
-
-
-
-<a name="v6.0.2"></a>
-## [v6.0.2] - 2019-10-07
-
-
-
-<a name="v6.0.1"></a>
-## [v6.0.1] - 2019-09-25
-
-
-
-<a name="v6.0.0"></a>
-## [v6.0.0] - 2019-09-18
-
-- Correct elb tags ([#458](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/458))
-
-
-<a name="v5.1.0"></a>
-## [v5.1.0] - 2019-07-30
-
-- `enable_dns_hostnames = true` in examples ([#446](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/446))
-- Fix README.md worker_groups tags syntax ([#405](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/405))
-
-
-<a name="v5.0.0"></a>
-## [v5.0.0] - 2019-06-19
-
-- Now supporting TF 0.12!! ([#399](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/399))
-
-
-<a name="v4.0.2"></a>
-## [v4.0.2] - 2019-05-08
-
-
-
-<a name="v4.0.1"></a>
-## [v4.0.1] - 2019-05-07
-
-- Worker_group_xx vs worker_groups_xx ([#374](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/374))
-
-
-<a name="v4.0.0"></a>
-## [v4.0.0] - 2019-05-07
-
-- AMI ID and work user-data ([#364](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/364))
-
-
-<a name="v3.0.0"></a>
-## [v3.0.0] - 2019-04-15
-
-- ENI's prevent SecGrps from being destroyed on tf destroy ([#311](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/311))
-
-
-<a name="v2.3.1"></a>
-## [v2.3.1] - 2019-03-26
-
-- 2.3.1 ([#321](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/321))
-
-
-<a name="v2.3.0"></a>
-## [v2.3.0] - 2019-03-20
-
-- DescribeLaunchTemplateVersions action to worker node iam role
-
-
-<a name="v2.2.1"></a>
-## [v2.2.1] - 2019-02-18
-
-
-
-<a name="v2.2.0"></a>
-## [v2.2.0] - 2019-02-07
-
-
-
-<a name="v2.1.0"></a>
-## [v2.1.0] - 2019-01-16
-
-
-
-<a name="v2.0.0"></a>
-## [v2.0.0] - 2018-12-17
-
-
-
-<a name="v1.8.0"></a>
-## [v1.8.0] - 2018-12-04
-
-
-
-<a name="v1.7.0"></a>
-## [v1.7.0] - 2018-10-09
-
-- 'aws_iam_instance_profile.workers' not found ([#141](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/141))
-
-
-<a name="v1.6.0"></a>
-## [v1.6.0] - 2018-09-04
-
-
-
-<a name="v1.5.0"></a>
-## [v1.5.0] - 2018-08-30
-
-
-
-<a name="v1.4.0"></a>
-## [v1.4.0] - 2018-08-02
-
-- //github.com/ozbillwang/terraform-aws-eks into [#57](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/57)
-
-
-<a name="v1.3.0"></a>
-## [v1.3.0] - 2018-07-11
-
-
-
-<a name="v1.2.0"></a>
-## [v1.2.0] - 2018-07-01
-
-
-
-<a name="v1.1.0"></a>
-## [v1.1.0] - 2018-06-25
-
-
-
-<a name="v1.0.0"></a>
-## [v1.0.0] - 2018-06-11
-
-
-
-<a name="v0.2.0"></a>
-## [v0.2.0] - 2018-06-08
-
-
-
-<a name="v0.1.1"></a>
-## [v0.1.1] - 2018-06-07
-
-
-
-<a name="v0.1.0"></a>
-## v0.1.0 - 2018-06-07
-
-
-
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v15.0.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v15.1.0...HEAD
+[v15.1.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v15.0.0...v15.1.0
 [v15.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v14.0.0...v15.0.0
 [v14.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v13.2.1...v14.0.0
 [v13.2.1]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v13.2.0...v13.2.1
@@ -446,36 +269,3 @@ TESTS:
 [v12.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v11.1.0...v12.0.0
 [v11.1.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v11.0.0...v11.1.0
 [v11.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v10.0.0...v11.0.0
-[v10.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v9.0.0...v10.0.0
-[v9.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.2.0...v9.0.0
-[v8.2.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.1.0...v8.2.0
-[v8.1.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...v8.1.0
-[v8.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v7.0.1...v8.0.0
-[v7.0.1]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v7.0.0...v7.0.1
-[v7.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.2...v7.0.0
-[v6.0.2]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.1...v6.0.2
-[v6.0.1]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.0...v6.0.1
-[v6.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.1.0...v6.0.0
-[v5.1.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.0.0...v5.1.0
-[v5.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.2...v5.0.0
-[v4.0.2]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.1...v4.0.2
-[v4.0.1]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.0...v4.0.1
-[v4.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v3.0.0...v4.0.0
-[v3.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.3.1...v3.0.0
-[v2.3.1]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.3.0...v2.3.1
-[v2.3.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.1...v2.3.0
-[v2.2.1]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.0...v2.2.1
-[v2.2.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.1.0...v2.2.0
-[v2.1.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.0.0...v2.1.0
-[v2.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.8.0...v2.0.0
-[v1.8.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.7.0...v1.8.0
-[v1.7.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.6.0...v1.7.0
-[v1.6.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.5.0...v1.6.0
-[v1.5.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.4.0...v1.5.0
-[v1.4.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.3.0...v1.4.0
-[v1.3.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.2.0...v1.3.0
-[v1.2.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.1.0...v1.2.0
-[v1.1.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.0.0...v1.1.0
-[v1.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v0.2.0...v1.0.0
-[v0.2.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v0.1.1...v0.2.0
-[v0.1.1]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v0.1.0...v0.1.1
