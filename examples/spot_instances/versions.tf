@@ -7,6 +7,6 @@ terraform {
     null       = ">= 2.1"
     template   = ">= 2.1"
     random     = ">= 2.1"
-    kubernetes = ">= 1.11.1"
+    kubernetes = "~> 1.11"
   }
 }
