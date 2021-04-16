@@ -39,14 +39,18 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.22.0 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.1 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
-| <a name="provider_random"></a> [random](#provider\_random) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.22.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 2.1 |
 
 ## Modules
 
