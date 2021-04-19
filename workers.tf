@@ -234,6 +234,24 @@ resource "aws_launch_configuration" "workers" {
     local.workers_group_defaults["placement_tenancy"],
   )
 
+  metadata_options {
+    http_endpoint = lookup(
+      var.worker_groups[count.index],
+      "metadata_http_endpoint",
+      local.workers_group_defaults["metadata_http_endpoint"],
+    )
+    http_tokens = lookup(
+      var.worker_groups[count.index],
+      "metadata_http_tokens",
+      local.workers_group_defaults["metadata_http_tokens"],
+    )
+    http_put_response_hop_limit = lookup(
+      var.worker_groups[count.index],
+      "metadata_http_put_response_hop_limit",
+      local.workers_group_defaults["metadata_http_put_response_hop_limit"],
+    )
+  }
+
   root_block_device {
     encrypted = lookup(
       var.worker_groups[count.index],
