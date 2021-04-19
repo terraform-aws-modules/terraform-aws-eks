@@ -94,6 +94,7 @@ locals {
     spot_instance_pools                      = 10                                                   # "Number of Spot pools per availability zone to allocate capacity. EC2 Auto Scaling selects the cheapest Spot pools and evenly allocates Spot capacity across the number of Spot pools that you specify."
     spot_max_price                           = ""                                                   # Maximum price per unit hour that the user is willing to pay for the Spot instances. Default is the on-demand price
     max_instance_lifetime                    = 0                                                    # Maximum number of seconds instances can run in the ASG. 0 is unlimited.
+    elastic_inference_accelerator            = null                                                 # Type of elastic inference accelerator to be attached. Example values are eia1.medium, eia2.large, etc.
   }
 
   workers_group_defaults = merge(
