@@ -156,7 +156,8 @@ data "aws_iam_policy_document" "cluster_elb_sl_role_creation" {
     effect = "Allow"
     actions = [
       "ec2:DescribeAccountAttributes",
-      "ec2:DescribeInternetGateways"
+      "ec2:DescribeInternetGateways",
+      "ec2:DescribeAddresses"
     ]
     resources = ["*"]
   }
