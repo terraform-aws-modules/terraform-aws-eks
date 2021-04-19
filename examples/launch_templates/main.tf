@@ -60,5 +60,12 @@ module "eks" {
       asg_desired_capacity = 1
       public_ip            = true
     },
+    {
+      name                          = "worker-group-3"
+      instance_type                 = "t2.large"
+      asg_desired_capacity          = 1
+      public_ip                     = true
+      elastic_inference_accelerator = "eia2.medium"
+    },
   ]
 }

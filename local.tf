@@ -43,7 +43,7 @@ locals {
     spot_price                    = ""                          # Cost of spot instance.
     placement_tenancy             = ""                          # The tenancy of the instance. Valid values are "default" or "dedicated".
     root_volume_size              = "100"                       # root volume size of workers instances.
-    root_volume_type              = "gp3"                       # root volume type of workers instances, can be "standard", "gp3", "gp2", or "io1"
+    root_volume_type              = "gp2"                       # root volume type of workers instances, can be 'standard', 'gp3' (for Launch Template), 'gp2', or 'io1'
     root_iops                     = "0"                         # The amount of provisioned IOPS. This must be set with a volume_type of "io1".
     root_volume_throughput        = null                        # The amount of throughput to provision for a gp3 volume.
     key_name                      = ""                          # The key pair name that should be used for the instances in the autoscaling group
@@ -71,6 +71,7 @@ locals {
     termination_policies          = []                          # A list of policies to decide how the instances in the auto scale group should be terminated.
     platform                      = "linux"                     # Platform of workers. either "linux" or "windows"
     additional_ebs_volumes        = []                          # A list of additional volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: block_device_name (required), volume_size, volume_type, iops, encrypted, kms_key_id (only on launch-template), delete_on_termination. Optional values are grabbed from root volume or from defaults
+    warm_pool                     = null                        # If this block is configured, add a Warm Pool to the specified Auto Scaling group.
     # Settings for launch templates
     root_block_device_name               = data.aws_ami.eks_worker.root_device_name # Root device name for workers. If non is provided, will assume default AMI was used.
     root_kms_key_id                      = ""                                       # The KMS key to use when encrypting the root storage device
@@ -94,6 +95,7 @@ locals {
     spot_instance_pools                      = 10                                                   # "Number of Spot pools per availability zone to allocate capacity. EC2 Auto Scaling selects the cheapest Spot pools and evenly allocates Spot capacity across the number of Spot pools that you specify."
     spot_max_price                           = ""                                                   # Maximum price per unit hour that the user is willing to pay for the Spot instances. Default is the on-demand price
     max_instance_lifetime                    = 0                                                    # Maximum number of seconds instances can run in the ASG. 0 is unlimited.
+    elastic_inference_accelerator            = null                                                 # Type of elastic inference accelerator to be attached. Example values are eia1.medium, eia2.large, etc.
   }
 
   workers_group_defaults = merge(

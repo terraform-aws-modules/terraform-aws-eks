@@ -189,6 +189,16 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     }
   }
 
+  dynamic "warm_pool" {
+    for_each = lookup(var.worker_groups_launch_template[count.index], "warm_pool", null) != null ? [lookup(var.worker_groups_launch_template[count.index], "warm_pool")] : []
+
+    content {
+      pool_state                  = lookup(warm_pool.value, "pool_state", null)
+      min_size                    = lookup(warm_pool.value, "min_size", null)
+      max_group_prepared_capacity = lookup(warm_pool.value, "max_group_prepared_capacity", null)
+    }
+  }
+
   dynamic "tag" {
     for_each = concat(
       [
@@ -290,6 +300,18 @@ resource "aws_launch_template" "workers_launch_template" {
     "instance_type",
     local.workers_group_defaults["instance_type"],
   )
+
+  dynamic "elastic_inference_accelerator" {
+    for_each = lookup(
+      var.worker_groups_launch_template[count.index],
+      "elastic_inference_accelerator",
+      local.workers_group_defaults["elastic_inference_accelerator"]
+    ) != null ? [lookup(var.worker_groups_launch_template[count.index], "elastic_inference_accelerator", local.workers_group_defaults["elastic_inference_accelerator"])] : []
+    content {
+      type = elastic_inference_accelerator.value
+    }
+  }
+
   key_name = lookup(
     var.worker_groups_launch_template[count.index],
     "key_name",
