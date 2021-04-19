@@ -1,4 +1,4 @@
-#!/bin/bash -xe
+#!/bin/bash -e
 
 # Allow user supplied pre userdata code
 ${pre_userdata}
