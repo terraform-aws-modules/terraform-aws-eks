@@ -71,6 +71,7 @@ locals {
     termination_policies          = []                          # A list of policies to decide how the instances in the auto scale group should be terminated.
     platform                      = "linux"                     # Platform of workers. either "linux" or "windows"
     additional_ebs_volumes        = []                          # A list of additional volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: block_device_name (required), volume_size, volume_type, iops, encrypted, kms_key_id (only on launch-template), delete_on_termination. Optional values are grabbed from root volume or from defaults
+    warm_pool                     = null                        # If this block is configured, add a Warm Pool to the specified Auto Scaling group.
     # Settings for launch templates
     root_block_device_name               = data.aws_ami.eks_worker.root_device_name # Root device name for workers. If non is provided, will assume default AMI was used.
     root_kms_key_id                      = ""                                       # The KMS key to use when encrypting the root storage device
