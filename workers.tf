@@ -112,6 +112,16 @@ resource "aws_autoscaling_group" "workers" {
     }
   }
 
+  dynamic "warm_pool" {
+    for_each = lookup(var.worker_groups[count.index], "warm_pool", null) != null ? [lookup(var.worker_groups[count.index], "warm_pool")] : []
+
+    content {
+      pool_state                  = lookup(warm_pool.value, "pool_state", null)
+      min_size                    = lookup(warm_pool.value, "min_size", null)
+      max_group_prepared_capacity = lookup(warm_pool.value, "max_group_prepared_capacity", null)
+    }
+  }
+
   dynamic "tag" {
     for_each = concat(
       [
@@ -133,11 +143,11 @@ resource "aws_autoscaling_group" "workers" {
       ],
       [
         for tag_key, tag_value in var.tags :
-        map(
-          "key", tag_key,
-          "value", tag_value,
-          "propagate_at_launch", "true"
-        )
+        {
+          "key"                 = tag_key,
+          "value"               = tag_value,
+          "propagate_at_launch" = "true"
+        }
         if tag_key != "Name" && !contains([for tag in lookup(var.worker_groups[count.index], "tags", local.workers_group_defaults["tags"]) : tag["key"]], tag_key)
       ],
       lookup(
