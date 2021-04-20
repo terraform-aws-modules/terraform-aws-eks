@@ -360,7 +360,7 @@ resource "aws_security_group_rule" "workers_egress_internet" {
   description       = "Allow nodes all egress to the Internet."
   protocol          = "-1"
   security_group_id = local.worker_security_group_id
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = var.workers_egress_cidrs
   from_port         = 0
   to_port           = 0
   type              = "egress"
