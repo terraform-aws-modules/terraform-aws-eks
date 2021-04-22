@@ -99,7 +99,7 @@ resource "aws_security_group_rule" "cluster_egress_internet" {
   description       = "Allow cluster egress access to the Internet."
   protocol          = "-1"
   security_group_id = local.cluster_security_group_id
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = var.cluster_egress_cidrs
   from_port         = 0
   to_port           = 0
   type              = "egress"
@@ -118,7 +118,8 @@ resource "aws_security_group_rule" "cluster_https_worker_ingress" {
 
 resource "aws_iam_role" "cluster" {
   count                 = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
-  name_prefix           = var.cluster_name
+  name_prefix           = var.cluster_iam_role_name != "" ? null : var.cluster_name
+  name                  = var.cluster_iam_role_name != "" ? var.cluster_iam_role_name : null
   assume_role_policy    = data.aws_iam_policy_document.cluster_assume_role_policy.json
   permissions_boundary  = var.permissions_boundary
   path                  = var.iam_path
@@ -156,7 +157,8 @@ data "aws_iam_policy_document" "cluster_elb_sl_role_creation" {
     effect = "Allow"
     actions = [
       "ec2:DescribeAccountAttributes",
-      "ec2:DescribeInternetGateways"
+      "ec2:DescribeInternetGateways",
+      "ec2:DescribeAddresses"
     ]
     resources = ["*"]
   }

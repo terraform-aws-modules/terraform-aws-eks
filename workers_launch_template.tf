@@ -100,7 +100,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
 
   dynamic "mixed_instances_policy" {
     iterator = item
-    for_each = (lookup(var.worker_groups_launch_template[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups_launch_template[count.index], "on_demand_allocation_strategy", local.workers_group_defaults["on_demand_allocation_strategy"]) != null) ? list(var.worker_groups_launch_template[count.index]) : []
+    for_each = (lookup(var.worker_groups_launch_template[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups_launch_template[count.index], "on_demand_allocation_strategy", local.workers_group_defaults["on_demand_allocation_strategy"]) != null) ? [var.worker_groups_launch_template[count.index]] : []
 
     content {
       instances_distribution {
@@ -164,7 +164,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
 
   dynamic "launch_template" {
     iterator = item
-    for_each = (lookup(var.worker_groups_launch_template[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups_launch_template[count.index], "on_demand_allocation_strategy", local.workers_group_defaults["on_demand_allocation_strategy"]) != null) ? [] : list(var.worker_groups_launch_template[count.index])
+    for_each = (lookup(var.worker_groups_launch_template[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups_launch_template[count.index], "on_demand_allocation_strategy", local.workers_group_defaults["on_demand_allocation_strategy"]) != null) ? [] : [var.worker_groups_launch_template[count.index]]
 
     content {
       id = aws_launch_template.workers_launch_template.*.id[count.index]
@@ -189,6 +189,16 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     }
   }
 
+  dynamic "warm_pool" {
+    for_each = lookup(var.worker_groups_launch_template[count.index], "warm_pool", null) != null ? [lookup(var.worker_groups_launch_template[count.index], "warm_pool")] : []
+
+    content {
+      pool_state                  = lookup(warm_pool.value, "pool_state", null)
+      min_size                    = lookup(warm_pool.value, "min_size", null)
+      max_group_prepared_capacity = lookup(warm_pool.value, "max_group_prepared_capacity", null)
+    }
+  }
+
   dynamic "tag" {
     for_each = concat(
       [
@@ -209,11 +219,11 @@ resource "aws_autoscaling_group" "workers_launch_template" {
       ],
       [
         for tag_key, tag_value in var.tags :
-        map(
-          "key", tag_key,
-          "value", tag_value,
-          "propagate_at_launch", "true"
-        )
+        tomap({
+          key                 = tag_key
+          value               = tag_value
+          propagate_at_launch = "true"
+        })
         if tag_key != "Name" && !contains([for tag in lookup(var.worker_groups_launch_template[count.index], "tags", local.workers_group_defaults["tags"]) : tag["key"]], tag_key)
       ],
       lookup(
@@ -290,6 +300,18 @@ resource "aws_launch_template" "workers_launch_template" {
     "instance_type",
     local.workers_group_defaults["instance_type"],
   )
+
+  dynamic "elastic_inference_accelerator" {
+    for_each = lookup(
+      var.worker_groups_launch_template[count.index],
+      "elastic_inference_accelerator",
+      local.workers_group_defaults["elastic_inference_accelerator"]
+    ) != null ? [lookup(var.worker_groups_launch_template[count.index], "elastic_inference_accelerator", local.workers_group_defaults["elastic_inference_accelerator"])] : []
+    content {
+      type = elastic_inference_accelerator.value
+    }
+  }
+
   key_name = lookup(
     var.worker_groups_launch_template[count.index],
     "key_name",
