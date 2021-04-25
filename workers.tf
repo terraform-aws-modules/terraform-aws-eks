@@ -112,6 +112,16 @@ resource "aws_autoscaling_group" "workers" {
     }
   }
 
+  dynamic "warm_pool" {
+    for_each = lookup(var.worker_groups[count.index], "warm_pool", null) != null ? [lookup(var.worker_groups[count.index], "warm_pool")] : []
+
+    content {
+      pool_state                  = lookup(warm_pool.value, "pool_state", null)
+      min_size                    = lookup(warm_pool.value, "min_size", null)
+      max_group_prepared_capacity = lookup(warm_pool.value, "max_group_prepared_capacity", null)
+    }
+  }
+
   dynamic "tag" {
     for_each = concat(
       [
@@ -133,11 +143,11 @@ resource "aws_autoscaling_group" "workers" {
       ],
       [
         for tag_key, tag_value in var.tags :
-        map(
-          "key", tag_key,
-          "value", tag_value,
-          "propagate_at_launch", "true"
-        )
+        {
+          "key"                 = tag_key,
+          "value"               = tag_value,
+          "propagate_at_launch" = "true"
+        }
         if tag_key != "Name" && !contains([for tag in lookup(var.worker_groups[count.index], "tags", local.workers_group_defaults["tags"]) : tag["key"]], tag_key)
       ],
       lookup(
@@ -223,6 +233,24 @@ resource "aws_launch_configuration" "workers" {
     "placement_tenancy",
     local.workers_group_defaults["placement_tenancy"],
   )
+
+  metadata_options {
+    http_endpoint = lookup(
+      var.worker_groups[count.index],
+      "metadata_http_endpoint",
+      local.workers_group_defaults["metadata_http_endpoint"],
+    )
+    http_tokens = lookup(
+      var.worker_groups[count.index],
+      "metadata_http_tokens",
+      local.workers_group_defaults["metadata_http_tokens"],
+    )
+    http_put_response_hop_limit = lookup(
+      var.worker_groups[count.index],
+      "metadata_http_put_response_hop_limit",
+      local.workers_group_defaults["metadata_http_put_response_hop_limit"],
+    )
+  }
 
   root_block_device {
     encrypted = lookup(
@@ -332,7 +360,7 @@ resource "aws_security_group_rule" "workers_egress_internet" {
   description       = "Allow nodes all egress to the Internet."
   protocol          = "-1"
   security_group_id = local.worker_security_group_id
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = var.workers_egress_cidrs
   from_port         = 0
   to_port           = 0
   type              = "egress"
