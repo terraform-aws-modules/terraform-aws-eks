@@ -30,7 +30,7 @@ Install the chart using the provided values file:
 ```
 $ helm repo add autoscaler https://kubernetes.github.io/autoscaler
 $ helm repo update
-$ helm install cluster-autoscaler --namespace kube-system autoscaler/cluster-autoscaler-chart --values=cluster-autoscaler-chart-values.yaml
+$ helm install cluster-autoscaler --namespace kube-system autoscaler/cluster-autoscaler --values cluster-autoscaler-chart-values.yaml
 ```
 
 ## Verify
