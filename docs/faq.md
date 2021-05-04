@@ -203,3 +203,74 @@ Both can be used together in the same cluster.
 This happen because Core DNS can be scheduled on Self-Managed worker groups and by default, the terraform module doesn't create security group rules to ensure communication between pods schedulled on Self-Managed worker group and AWS-Managed node groups.
 
 You can set `var.worker_create_cluster_primary_security_group_rules` to `true` to create required rules.
+
+## How do I upgrade the Kubernetes version of the cluster?
+
+To upgrade the minor version of Kubernetes deployed on the EKS cluster, you need to update the `cluster_version` variable. You can upgrade one minor version at a time, Because EKS does not support upgrading by more than one minor version. 
+After updating `cluster_version` in your terraform code, run
+```terraform
+$ terraform apply
+```
+After upgrading EKS control plane, you must also upgrade the core components(`kube-proxy, coredns, amazon-k8s-cni, amazon-k8s-cni-init`)
+
+You can follow the procedures at https://docs.aws.amazon.com/eks/latest/userguide/update-cluster.html or use [kubergrunt](https://github.com/gruntwork-io/kubergrunt#sync-core-components) to update them automatically.
+
+Example:
+
+```
+kubergrunt eks sync-core-components --eks-cluster-arn EKS_CLUSTER_ARN
+```
+
+
+You can get the value of `EKS_CLUSTER_ARN` by `cluster_arn` output.
+Example output:
+
+```
+$ kubergrunt eks sync-core-components  --eks-cluster-arn  arn:aws:eks:us-west-2:aws_account:cluster/test-eks-ShUIr78B
+[] INFO[2021-05-04T14:00:45+03:00] Looking up deployed Kubernetes version        name=kubergrunt
+[] INFO[2021-05-04T14:00:45+03:00] Retrieving details for EKS cluster arn:aws:eks:us-west-2:aws_account:cluster/test-eks-ShUIr78B  name=kubergrunt
+[] INFO[2021-05-04T14:00:45+03:00] Detected cluster deployed in region us-west-2  name=kubergrunt
+[] INFO[2021-05-04T14:00:47+03:00] Successfully retrieved EKS cluster details    name=kubergrunt
+[] INFO[2021-05-04T14:00:47+03:00] Syncing Kubernetes Applications to:           name=kubergrunt
+[] INFO[2021-05-04T14:00:47+03:00] 	kube-proxy:	1.18.8-eksbuild.1                name=kubergrunt
+[] INFO[2021-05-04T14:00:47+03:00] 	coredns:	1.7.0-eksbuild.1                    name=kubergrunt
+[] INFO[2021-05-04T14:00:47+03:00] 	VPC CNI Plugin:	1.7.5                        name=kubergrunt
+[] INFO[2021-05-04T14:00:47+03:00] Loading Kubernetes Client                     name=kubergrunt
+[] INFO[2021-05-04T14:00:47+03:00] Retrieving details for EKS cluster arn:aws:eks:us-west-2:aws_account:cluster/test-eks-ShUIr78B  name=kubergrunt
+[] INFO[2021-05-04T14:00:47+03:00] Detected cluster deployed in region us-west-2  name=kubergrunt
+
+```
+
+## How to upgrade worker nodes
+
+Terraform and AWS do not update worker instances automatically. You must do it by yourself.
+ You can use [kubergrunt eks deploy](https://github.com/gruntwork-io/kubergrunt##deploy) to update them automatically. 
+Before issuing `kubergrunt eks deploy`, you must double `Maximum capacity` value(`asg_max_size`  parameter in worker group) of ASG  to roll out an update to the instances. 
+For example, If you have 2 active nodes in ASG, set `asg_max_size` to 4 
+then run `kubergrunt eks deploy` for each worker group.
+
+Example:
+```
+kubergrunt eks deploy --region REGION --asg-name ASG_NAME
+```
+You can get the value of `ASG_NAME`parameter by `workers_asg_names` output.
+
+Example output:
+
+```
+$ kubergrunt eks deploy --region us-west-2 --asg-name test-eks-ShUIr78B-worker-group-120210504094135613300000015
+
+[] INFO[2021-05-04T14:04:29+03:00] No context name provided. Using default.      name=kubergrunt
+[] INFO[2021-05-04T14:04:29+03:00] No kube config path provided. Using default (/Users/ismail/.kube/config)  name=kubergrunt
+[] INFO[2021-05-04T14:04:29+03:00] Beginning roll out for EKS cluster worker group test-eks-ShUIr78B-worker-group-120210504094135613300000015 in us-west-2  name=kubergrunt
+[] INFO[2021-05-04T14:04:29+03:00] Successfully authenticated with AWS           name=kubergrunt
+[] INFO[2021-05-04T14:04:29+03:00] Retrieving current ASG info                   name=kubergrunt
+[] INFO[2021-05-04T14:04:30+03:00] Successfully retrieved current ASG info.      name=kubergrunt
+[] INFO[2021-05-04T14:04:30+03:00] 	Current desired capacity: 2                  name=kubergrunt
+[] INFO[2021-05-04T14:04:30+03:00] 	Current capacity: 2                          name=kubergrunt
+[] INFO[2021-05-04T14:04:30+03:00] No max retries set. Defaulted to 40 based on sleep between retries duration of 15s and scale up count 2.  name=kubergrunt
+[] INFO[2021-05-04T14:04:30+03:00] Starting with the following list of instances in ASG:  name=kubergrunt
+[] INFO[2021-05-04T14:04:30+03:00] i-078bae4c59976a878,i-0a15465f518afd336       name=kubergrunt
+[] INFO[2021-05-04T14:04:30+03:00] Launching new nodes with new launch config on ASG test-eks-ShUIr78B-worker-group-120210504094135613300000015  name=kubergrunt
+[] INFO[2021-05-04T14:04:30+03:00] Updating ASG test-eks-ShUIr78B-worker-group-120210504094135613300000015 desired capacity to 4.  name=kubergrunt
+```
