@@ -14,13 +14,13 @@ resource "aws_eks_node_group" "workers" {
   }
 
   ami_type        = lookup(each.value, "ami_type", null)
-  disk_size       = lookup(each.value, "disk_size", null)
-  instance_types  = lookup(each.value, "instance_types", null)
+  disk_size       = each.value["launch_template_id"] != null || each.value["create_launch_template"] ? null : lookup(each.value, "disk_size", null)
+  instance_types  = !each.value["set_instance_types_on_lt"] ? each.value["instance_types"] : null
   release_version = lookup(each.value, "ami_release_version", null)
   capacity_type   = lookup(each.value, "capacity_type", null)
 
   dynamic "remote_access" {
-    for_each = each.value["key_name"] != "" ? [{
+    for_each = each.value["key_name"] != "" && each.value["launch_template_id"] == null && !each.value["create_launch_template"] ? [{
       ec2_ssh_key               = each.value["key_name"]
       source_security_group_ids = lookup(each.value, "source_security_group_ids", [])
     }] : []
@@ -35,6 +35,18 @@ resource "aws_eks_node_group" "workers" {
     for_each = each.value["launch_template_id"] != null ? [{
       id      = each.value["launch_template_id"]
       version = each.value["launch_template_version"]
+    }] : []
+
+    content {
+      id      = launch_template.value["id"]
+      version = launch_template.value["version"]
+    }
+  }
+
+  dynamic "launch_template" {
+    for_each = each.value["launch_template_id"] == null && each.value["create_launch_template"] ? [{
+      id      = aws_launch_template.workers[each.key].id
+      version = aws_launch_template.workers[each.key].latest_version
     }] : []
 
     content {
