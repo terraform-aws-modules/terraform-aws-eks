@@ -56,94 +56,56 @@ data "aws_iam_policy_document" "cluster_assume_role_policy" {
 }
 
 data "template_file" "userdata" {
-  count = var.create_eks ? local.worker_group_count : 0
-  template = lookup(
-    var.worker_groups[count.index],
-    "userdata_template_file",
-    file(
-      lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"]) == "windows"
+  for_each = var.create_eks ? local.worker_groups_with_defaults : {}
+
+  template = (each.value.userdata_template_file != ""
+    ? each.value.userdata_template_file
+    : file(
+      each.value.platform == "windows"
       ? "${path.module}/templates/userdata_windows.tpl"
       : "${path.module}/templates/userdata.sh.tpl"
     )
   )
 
-  vars = merge({
-    platform            = lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"])
-    cluster_name        = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
-    endpoint            = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
-    cluster_auth_base64 = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
-    pre_userdata = lookup(
-      var.worker_groups[count.index],
-      "pre_userdata",
-      local.workers_group_defaults["pre_userdata"],
-    )
-    additional_userdata = lookup(
-      var.worker_groups[count.index],
-      "additional_userdata",
-      local.workers_group_defaults["additional_userdata"],
-    )
-    bootstrap_extra_args = lookup(
-      var.worker_groups[count.index],
-      "bootstrap_extra_args",
-      local.workers_group_defaults["bootstrap_extra_args"],
-    )
-    kubelet_extra_args = lookup(
-      var.worker_groups[count.index],
-      "kubelet_extra_args",
-      local.workers_group_defaults["kubelet_extra_args"],
-    )
+  vars = merge(
+    {
+      platform             = each.value.platform
+      cluster_name         = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
+      endpoint             = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
+      cluster_auth_base64  = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
+      pre_userdata         = each.value.pre_userdata
+      additional_userdata  = each.value.additional_userdata
+      bootstrap_extra_args = each.value.bootstrap_extra_args
+      kubelet_extra_args   = each.value.kubelet_extra_args
     },
-    lookup(
-      var.worker_groups[count.index],
-      "userdata_template_extra_args",
-      local.workers_group_defaults["userdata_template_extra_args"]
-    )
+    each.value.userdata_template_extra_args
   )
 }
 
 data "template_file" "launch_template_userdata" {
-  count = var.create_eks ? local.worker_group_launch_template_count : 0
-  template = lookup(
-    var.worker_groups_launch_template[count.index],
-    "userdata_template_file",
-    file(
-      lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"]) == "windows"
+  for_each = var.create_eks ? local.worker_groups_launch_template_with_defaults : {}
+
+  template = (each.value.userdata_template_file != ""
+    ? each.value.userdata_template_file
+    : file(
+      each.value.platform == "windows"
       ? "${path.module}/templates/userdata_windows.tpl"
       : "${path.module}/templates/userdata.sh.tpl"
     )
   )
 
-  vars = merge({
-    platform            = lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"])
-    cluster_name        = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
-    endpoint            = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
-    cluster_auth_base64 = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
-    pre_userdata = lookup(
-      var.worker_groups_launch_template[count.index],
-      "pre_userdata",
-      local.workers_group_defaults["pre_userdata"],
-    )
-    additional_userdata = lookup(
-      var.worker_groups_launch_template[count.index],
-      "additional_userdata",
-      local.workers_group_defaults["additional_userdata"],
-    )
-    bootstrap_extra_args = lookup(
-      var.worker_groups_launch_template[count.index],
-      "bootstrap_extra_args",
-      local.workers_group_defaults["bootstrap_extra_args"],
-    )
-    kubelet_extra_args = lookup(
-      var.worker_groups_launch_template[count.index],
-      "kubelet_extra_args",
-      local.workers_group_defaults["kubelet_extra_args"],
-    )
+  vars = merge(
+    {
+      platform             = each.value.platform
+      cluster_name         = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
+      endpoint             = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
+      cluster_auth_base64  = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
+      pre_userdata         = each.value.pre_userdata
+      additional_userdata  = each.value.additional_userdata
+      bootstrap_extra_args = each.value.bootstrap_extra_args
+      kubelet_extra_args   = each.value.kubelet_extra_args
     },
-    lookup(
-      var.worker_groups_launch_template[count.index],
-      "userdata_template_extra_args",
-      local.workers_group_defaults["userdata_template_extra_args"]
-    )
+    each.value.userdata_template_extra_args
   )
 }
 
@@ -153,21 +115,13 @@ data "aws_iam_role" "custom_cluster_iam_role" {
 }
 
 data "aws_iam_instance_profile" "custom_worker_group_iam_instance_profile" {
-  count = var.manage_worker_iam_resources ? 0 : local.worker_group_count
-  name = lookup(
-    var.worker_groups[count.index],
-    "iam_instance_profile_name",
-    local.workers_group_defaults["iam_instance_profile_name"],
-  )
+  for_each = var.manage_worker_iam_resources ? {} : local.worker_groups_with_defaults
+  name     = each.value.iam_instance_profile_name
 }
 
 data "aws_iam_instance_profile" "custom_worker_group_launch_template_iam_instance_profile" {
-  count = var.manage_worker_iam_resources ? 0 : local.worker_group_launch_template_count
-  name = lookup(
-    var.worker_groups_launch_template[count.index],
-    "iam_instance_profile_name",
-    local.workers_group_defaults["iam_instance_profile_name"],
-  )
+  for_each = var.manage_worker_iam_resources ? {} : local.worker_groups_launch_template_with_defaults
+  name     = each.value.iam_instance_profile_name
 }
 
 data "aws_partition" "current" {}

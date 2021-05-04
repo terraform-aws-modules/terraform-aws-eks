@@ -1,6 +1,6 @@
 output "cluster_id" {
   description = "The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready"
-  value       = element(concat(aws_eks_cluster.this.*.id, [""]), 0)
+  value       = element(concat(aws_eks_cluster.this[*].id, [""]), 0)
   # So that calling plans wait for the cluster to be available before attempting
   # to use it. They will not need to duplicate this null_resource
   depends_on = [null_resource.wait_for_cluster]
@@ -8,7 +8,7 @@ output "cluster_id" {
 
 output "cluster_arn" {
   description = "The Amazon Resource Name (ARN) of the cluster."
-  value       = element(concat(aws_eks_cluster.this.*.arn, [""]), 0)
+  value       = element(concat(aws_eks_cluster.this[*].arn, [""]), 0)
 }
 
 output "cluster_certificate_authority_data" {
@@ -18,7 +18,7 @@ output "cluster_certificate_authority_data" {
 
 output "cluster_endpoint" {
   description = "The endpoint for your EKS Kubernetes API."
-  value       = element(concat(aws_eks_cluster.this.*.endpoint, [""]), 0)
+  value       = element(concat(aws_eks_cluster.this[*].endpoint, [""]), 0)
 }
 
 output "cluster_version" {
@@ -33,7 +33,7 @@ output "cluster_security_group_id" {
 
 output "config_map_aws_auth" {
   description = "A kubernetes configuration to authenticate to this EKS cluster."
-  value       = kubernetes_config_map.aws_auth.*
+  value       = kubernetes_config_map.aws_auth[*]
 }
 
 output "cluster_iam_role_name" {
@@ -73,7 +73,7 @@ output "kubeconfig" {
 
 output "kubeconfig_filename" {
   description = "The filename of the generated kubectl config."
-  value       = concat(local_file.kubeconfig.*.filename, [""])[0]
+  value       = concat(local_file.kubeconfig[*].filename, [""])[0]
 }
 
 output "oidc_provider_arn" {
@@ -84,24 +84,24 @@ output "oidc_provider_arn" {
 output "workers_asg_arns" {
   description = "IDs of the autoscaling groups containing workers."
   value = concat(
-    aws_autoscaling_group.workers.*.arn,
-    aws_autoscaling_group.workers_launch_template.*.arn,
+    local.sorted_aws_autoscaling_group_workers[*].arn,
+    local.sorted_aws_autoscaling_group_workers_launch_templates[*].arn,
   )
 }
 
 output "workers_asg_names" {
   description = "Names of the autoscaling groups containing workers."
   value = concat(
-    aws_autoscaling_group.workers.*.id,
-    aws_autoscaling_group.workers_launch_template.*.id,
+    local.sorted_aws_autoscaling_group_workers[*].id,
+    local.sorted_aws_autoscaling_group_workers_launch_templates[*].id,
   )
 }
 
 output "workers_user_data" {
   description = "User data of worker groups"
   value = concat(
-    data.template_file.userdata.*.rendered,
-    data.template_file.launch_template_userdata.*.rendered,
+    local.sorted_data_template_file_userdata[*].rendered,
+    local.sorted_data_template_file_launch_template_userdata[*].rendered,
   )
 }
 
@@ -112,17 +112,17 @@ output "workers_default_ami_id" {
 
 output "workers_launch_template_ids" {
   description = "IDs of the worker launch templates."
-  value       = aws_launch_template.workers_launch_template.*.id
+  value       = local.sorted_aws_launch_template_workers_launch_template[*].id
 }
 
 output "workers_launch_template_arns" {
   description = "ARNs of the worker launch templates."
-  value       = aws_launch_template.workers_launch_template.*.arn
+  value       = local.sorted_aws_launch_template_workers_launch_template[*].arn
 }
 
 output "workers_launch_template_latest_versions" {
   description = "Latest versions of the worker launch templates."
-  value       = aws_launch_template.workers_launch_template.*.latest_version
+  value       = local.sorted_aws_launch_template_workers_launch_template[*].latest_version
 }
 
 output "worker_security_group_id" {
@@ -133,25 +133,25 @@ output "worker_security_group_id" {
 output "worker_iam_instance_profile_arns" {
   description = "default IAM instance profile ARN for EKS worker groups"
   value = concat(
-    aws_iam_instance_profile.workers.*.arn,
-    aws_iam_instance_profile.workers_launch_template.*.arn
+    local.sorted_aws_iam_instance_profile_workers[*].arn,
+    local.sorted_aws_iam_instance_profile_workers_launch_template[*].arn
   )
 }
 
 output "worker_iam_instance_profile_names" {
   description = "default IAM instance profile name for EKS worker groups"
   value = concat(
-    aws_iam_instance_profile.workers.*.name,
-    aws_iam_instance_profile.workers_launch_template.*.name
+    local.sorted_aws_iam_instance_profile_workers[*].name,
+    local.sorted_aws_iam_instance_profile_workers_launch_template[*].name
   )
 }
 
 output "worker_iam_role_name" {
   description = "default IAM role name for EKS worker groups"
   value = coalescelist(
-    aws_iam_role.workers.*.name,
-    data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_name,
-    data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_name,
+    aws_iam_role.workers[*].name,
+    local.sorted_data_aws_iam_instance_profile_custom_worker_group_iam_instance_profile[*].role_name,
+    local.sorted_data_aws_iam_instance_profile_custom_worker_group_launch_template_iam_instance_profile[*].role_name,
     [""]
   )[0]
 }
@@ -159,9 +159,9 @@ output "worker_iam_role_name" {
 output "worker_iam_role_arn" {
   description = "default IAM role ARN for EKS worker groups"
   value = coalescelist(
-    aws_iam_role.workers.*.arn,
-    data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_arn,
-    data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_arn,
+    aws_iam_role.workers[*].arn,
+    local.sorted_data_aws_iam_instance_profile_custom_worker_group_iam_instance_profile[*].role_arn,
+    local.sorted_data_aws_iam_instance_profile_custom_worker_group_launch_template_iam_instance_profile[*].role_arn,
     [""]
   )[0]
 }

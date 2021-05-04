@@ -2,38 +2,24 @@ data "aws_caller_identity" "current" {}
 
 locals {
   auth_launch_template_worker_roles = [
-    for index in range(0, var.create_eks ? local.worker_group_launch_template_count : 0) : {
-      worker_role_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${element(
-        coalescelist(
-          aws_iam_instance_profile.workers_launch_template.*.role,
-          data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_name,
-          [""]
-        ),
-        index
-      )}"
-      platform = lookup(
-        var.worker_groups_launch_template[index],
-        "platform",
-        local.workers_group_defaults["platform"]
-      )
+    for key, worker_group in(var.create_eks ? local.worker_groups_launch_template_with_defaults : {}) : {
+      worker_role_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${
+        var.manage_worker_iam_resources ?
+        aws_iam_instance_profile.workers_launch_template[key].role :
+        data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile[key].role_name
+      }"
+      platform = worker_group.platform
     }
   ]
 
   auth_worker_roles = [
-    for index in range(0, var.create_eks ? local.worker_group_count : 0) : {
-      worker_role_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${element(
-        coalescelist(
-          aws_iam_instance_profile.workers.*.role,
-          data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_name,
-          [""]
-        ),
-        index,
-      )}"
-      platform = lookup(
-        var.worker_groups[index],
-        "platform",
-        local.workers_group_defaults["platform"]
-      )
+    for key, worker_group in(var.create_eks ? local.worker_groups_with_defaults : {}) : {
+      worker_role_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${
+        var.manage_worker_iam_resources ?
+        aws_iam_instance_profile.workers[key].role :
+        data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile[key].role_name
+      }"
+      platform = worker_group.platform
     }
   ]
 
