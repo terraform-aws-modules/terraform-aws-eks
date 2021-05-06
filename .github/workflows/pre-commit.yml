@@ -38,7 +38,7 @@ jobs:
         uses: actions/setup-python@v2
       - name: Terraform min/max versions
         id: minMax
-        uses: clowdhaus/terraform-min-max@v1.0.1
+        uses: clowdhaus/terraform-min-max@v1.0.2
         with:
           directory: ${{ matrix.directory }}
       - name: Install Terraform v${{ steps.minMax.outputs.minVersion }}
@@ -50,14 +50,11 @@ jobs:
       - name: Execute pre-commit
         # Run only validate pre-commit check on min version supported
         if: ${{ matrix.directory !=  '.' }}
-        run:
-          pre-commit run terraform_validate --color=always --show-diff-on-failure --files ${{ matrix.directory }}/*
+        run: pre-commit run terraform_validate --color=always --show-diff-on-failure --files ${{ matrix.directory }}/*
       - name: Execute pre-commit
         # Run only validate pre-commit check on min version supported
         if: ${{ matrix.directory ==  '.' }}
-        run:
-          pre-commit run terraform_validate --color=always --show-diff-on-failure --files $(ls *.tf)
-
+        run: pre-commit run terraform_validate --color=always --show-diff-on-failure --files $(ls *.tf)
 
   # Max Terraform version
   getBaseVersion:
@@ -68,7 +65,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Terraform min/max versions
         id: minMax
-        uses: clowdhaus/terraform-min-max@v1.0.1
+        uses: clowdhaus/terraform-min-max@v1.0.2
     outputs:
       minVersion: ${{ steps.minMax.outputs.minVersion }}
       maxVersion: ${{ steps.minMax.outputs.maxVersion }}
@@ -94,7 +91,7 @@ jobs:
       - name: Install pre-commit dependencies
         run: |
           pip install pre-commit
-          curl -L "$(curl -s https://api.github.com/repos/terraform-docs/terraform-docs/releases/latest | grep -o -E "https://.+?-v0.12\..+?-linux-amd64" | head -n1)" > terraform-docs && chmod +x terraform-docs && sudo mv terraform-docs /usr/bin/
+          curl -Lo ./terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/v0.13.0/terraform-docs-v0.13.0-$(uname)-amd64.tar.gz && tar -xzf terraform-docs.tar.gz && chmod +x terraform-docs && sudo mv terraform-docs /usr/bin/
           curl -L "$(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" > tflint.zip && unzip tflint.zip && rm tflint.zip && sudo mv tflint /usr/bin/
       - name: Execute pre-commit
         # Run all pre-commit checks on max version supported

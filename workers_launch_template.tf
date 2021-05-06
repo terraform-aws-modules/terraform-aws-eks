@@ -385,7 +385,7 @@ resource "aws_launch_template" "workers_launch_template" {
   }
 
   dynamic "instance_market_options" {
-    for_each = lookup(var.worker_groups_launch_template[count.index], "market_type", null) == null ? [] : list(lookup(var.worker_groups_launch_template[count.index], "market_type", null))
+    for_each = lookup(var.worker_groups_launch_template[count.index], "market_type", null) == null ? [] : tolist([lookup(var.worker_groups_launch_template[count.index], "market_type", null)])
     content {
       market_type = instance_market_options.value
     }
@@ -563,6 +563,7 @@ resource "aws_iam_instance_profile" "workers_launch_template" {
     local.default_iam_role_id,
   )
   path = var.iam_path
+  tags = var.tags
 
   lifecycle {
     create_before_destroy = true
