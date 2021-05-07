@@ -219,8 +219,9 @@ resource "aws_autoscaling_group" "workers_launch_template" {
       lookup(
         var.worker_groups_launch_template[count.index],
         "tags",
-        local.workers_group_defaults["tags"]
-      )
+        []
+      ),
+      local.workers_group_defaults["tags"]
     )
     content {
       key                 = tag.value.key
