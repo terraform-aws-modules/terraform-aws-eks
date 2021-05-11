@@ -1,5 +1,5 @@
 output "cluster_id" {
-  description = "The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready"
+  description = "The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready."
   value       = element(concat(aws_eks_cluster.this.*.id, [""]), 0)
   # So that calling plans wait for the cluster to be available before attempting
   # to use it. They will not need to duplicate this null_resource
@@ -67,13 +67,21 @@ output "cloudwatch_log_group_arn" {
 }
 
 output "kubeconfig" {
-  description = "kubectl config file contents for this EKS cluster."
+  description = "kubectl config file contents for this EKS cluster. Will block on cluster creation until the cluster is really ready."
   value       = local.kubeconfig
+
+  # So that calling plans wait for the cluster to be available before attempting
+  # to use it. They will not need to duplicate this null_resource
+  depends_on = [data.http.wait_for_cluster]
 }
 
 output "kubeconfig_filename" {
-  description = "The filename of the generated kubectl config."
+  description = "The filename of the generated kubectl config. Will block on cluster creation until the cluster is really ready."
   value       = concat(local_file.kubeconfig.*.filename, [""])[0]
+
+  # So that calling plans wait for the cluster to be available before attempting
+  # to use it. They will not need to duplicate this null_resource
+  depends_on = [data.http.wait_for_cluster]
 }
 
 output "oidc_provider_arn" {
