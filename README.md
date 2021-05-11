@@ -25,7 +25,7 @@ You also need to ensure your applications and add ons are updated, or workloads 
 
 An example of harming update was the removal of several commonly used, but deprecated  APIs, in Kubernetes 1.16. More information on the API removals, see the [Kubernetes blog post](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/).
 
-By default, this module manages the `aws-auth` configmap for you (`manage_aws_auth=true`). To avoid the following [issue](https://github.com/aws/containers-roadmap/issues/654) where the EKS creation is `ACTIVE` but not ready, we implemented a retry logic with a fork of the http provider https://github.com/terraform-aws-modules/terraform-provider-http. This fork adds the support of self-signed CA certificate. The original PR is https://github.com/hashicorp/terraform-provider-http/pull/29
+By default, this module manages the `aws-auth` configmap for you (`manage_aws_auth=true`). To avoid the following [issue](https://github.com/aws/containers-roadmap/issues/654) where the EKS creation is `ACTIVE` but not ready. We implemented a "retry" logic with a fork of the http provider https://github.com/terraform-aws-modules/terraform-provider-http. This fork adds the support of a self-signed CA certificate. The original PR can be found at https://github.com/hashicorp/terraform-provider-http/pull/29.
 
 ## Usage example
 
