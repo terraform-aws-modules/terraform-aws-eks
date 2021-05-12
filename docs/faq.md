@@ -207,10 +207,8 @@ You can set `var.worker_create_cluster_primary_security_group_rules` to `true` t
 ## How do I upgrade the Kubernetes version of the cluster?
 
 To upgrade the minor version of Kubernetes deployed on the EKS cluster, you need to update the `cluster_version` variable. You can upgrade one minor version at a time, Because EKS does not support upgrading by more than one minor version. 
-After updating `cluster_version` in your terraform code, run
-```terraform
-$ terraform apply
-```
+After updating `cluster_version` in your terraform code, run terraform apply
+
 After upgrading EKS control plane, you must also upgrade the core components(`kube-proxy, coredns, amazon-k8s-cni, amazon-k8s-cni-init`)
 
 You can follow the procedures at https://docs.aws.amazon.com/eks/latest/userguide/update-cluster.html or use [kubergrunt](https://github.com/gruntwork-io/kubergrunt#sync-core-components) to update them automatically.
