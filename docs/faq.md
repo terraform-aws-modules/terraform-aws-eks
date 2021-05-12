@@ -238,8 +238,13 @@ $ kubergrunt eks sync-core-components  --eks-cluster-arn  arn:aws:eks:us-west-2:
 [] INFO[2021-05-04T14:00:47+03:00] Detected cluster deployed in region us-west-2  name=kubergrunt
 
 ```
+## How to upgrade managed node groups
 
-## How to upgrade worker nodes
+After upgrading EKS control plane by updating `cluster_version` and run running terraform apply.
+Update or set `version`parameter   to new Kubernetes version in node_groups map and run terraform apply again.
+
+
+## How to upgrade worker groups nodes
 
 Terraform and AWS do not update worker instances automatically. You must do it by yourself.
  You can use [kubergrunt eks deploy](https://github.com/gruntwork-io/kubergrunt##deploy) to update them automatically. 
