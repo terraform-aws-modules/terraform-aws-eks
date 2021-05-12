@@ -18,9 +18,9 @@ resource "random_pet" "node_groups" {
     source_security_group_ids = join("|", compact(
       lookup(each.value, "source_security_group_ids", [])
     ))
-    subnet_ids      = join("|", each.value["subnets"])
-    node_group_name = join("-", [var.cluster_name, each.key])
-    launch_template = lookup(each.value, "launch_template_id", null)
+    subnet_ids             = join("|", each.value["subnets"])
+    node_group_name        = join("-", [var.cluster_name, each.key])
+    launch_template        = lookup(each.value, "launch_template_id", null)
     create_launch_template = lookup(each.value, "create_launch_template", false)
   }
 
