@@ -1,36 +1,39 @@
 output "cluster_id" {
-  description = "The name/id of the EKS cluster."
-  value       = aws_eks_cluster.this.id
+  description = "The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready"
+  value       = element(concat(aws_eks_cluster.this.*.id, [""]), 0)
+  # So that calling plans wait for the cluster to be available before attempting
+  # to use it. They will not need to duplicate this null_resource
+  depends_on = [null_resource.wait_for_cluster]
 }
 
 output "cluster_arn" {
   description = "The Amazon Resource Name (ARN) of the cluster."
-  value       = aws_eks_cluster.this.arn
+  value       = element(concat(aws_eks_cluster.this.*.arn, [""]), 0)
 }
 
 output "cluster_certificate_authority_data" {
   description = "Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster."
-  value       = aws_eks_cluster.this.certificate_authority[0].data
+  value       = element(concat(aws_eks_cluster.this[*].certificate_authority[0].data, [""]), 0)
 }
 
 output "cluster_endpoint" {
   description = "The endpoint for your EKS Kubernetes API."
-  value       = aws_eks_cluster.this.endpoint
+  value       = element(concat(aws_eks_cluster.this.*.endpoint, [""]), 0)
 }
 
 output "cluster_version" {
   description = "The Kubernetes server version for the EKS cluster."
-  value       = aws_eks_cluster.this.version
+  value       = element(concat(aws_eks_cluster.this[*].version, [""]), 0)
 }
 
 output "cluster_security_group_id" {
-  description = "Security group ID attached to the EKS cluster."
+  description = "Security group ID attached to the EKS cluster. On 1.14 or later, this is the 'Additional security groups' in the EKS console."
   value       = local.cluster_security_group_id
 }
 
 output "config_map_aws_auth" {
   description = "A kubernetes configuration to authenticate to this EKS cluster."
-  value       = data.template_file.config_map_aws_auth.rendered
+  value       = kubernetes_config_map.aws_auth.*
 }
 
 output "cluster_iam_role_name" {
@@ -45,22 +48,37 @@ output "cluster_iam_role_arn" {
 
 output "cluster_oidc_issuer_url" {
   description = "The URL on the EKS cluster OIDC Issuer"
-  value       = concat(aws_eks_cluster.this.identity.*.oidc.0.issuer, [""])[0]
+  value       = flatten(concat(aws_eks_cluster.this[*].identity[*].oidc.0.issuer, [""]))[0]
+}
+
+output "cluster_primary_security_group_id" {
+  description = "The cluster primary security group ID created by the EKS cluster on 1.14 or later. Referred to as 'Cluster security group' in the EKS console."
+  value       = local.cluster_primary_security_group_id
 }
 
 output "cloudwatch_log_group_name" {
   description = "Name of cloudwatch log group created"
-  value       = aws_cloudwatch_log_group.this.*.name
+  value       = element(concat(aws_cloudwatch_log_group.this[*].name, [""]), 0)
+}
+
+output "cloudwatch_log_group_arn" {
+  description = "Arn of cloudwatch log group created"
+  value       = element(concat(aws_cloudwatch_log_group.this[*].arn, [""]), 0)
 }
 
 output "kubeconfig" {
   description = "kubectl config file contents for this EKS cluster."
-  value       = data.template_file.kubeconfig.rendered
+  value       = local.kubeconfig
 }
 
 output "kubeconfig_filename" {
   description = "The filename of the generated kubectl config."
   value       = concat(local_file.kubeconfig.*.filename, [""])[0]
+}
+
+output "oidc_provider_arn" {
+  description = "The ARN of the OIDC Provider if `enable_irsa = true`."
+  value       = var.enable_irsa ? concat(aws_iam_openid_connect_provider.oidc_provider[*].arn, [""])[0] : null
 }
 
 output "workers_asg_arns" {
@@ -114,12 +132,18 @@ output "worker_security_group_id" {
 
 output "worker_iam_instance_profile_arns" {
   description = "default IAM instance profile ARN for EKS worker groups"
-  value       = aws_iam_instance_profile.workers.*.arn
+  value = concat(
+    aws_iam_instance_profile.workers.*.arn,
+    aws_iam_instance_profile.workers_launch_template.*.arn
+  )
 }
 
 output "worker_iam_instance_profile_names" {
   description = "default IAM instance profile name for EKS worker groups"
-  value       = aws_iam_instance_profile.workers.*.name
+  value = concat(
+    aws_iam_instance_profile.workers.*.name,
+    aws_iam_instance_profile.workers_launch_template.*.name
+  )
 }
 
 output "worker_iam_role_name" {
@@ -142,3 +166,32 @@ output "worker_iam_role_arn" {
   )[0]
 }
 
+output "fargate_profile_ids" {
+  description = "EKS Cluster name and EKS Fargate Profile names separated by a colon (:)."
+  value       = module.fargate.fargate_profile_ids
+}
+
+output "fargate_profile_arns" {
+  description = "Amazon Resource Name (ARN) of the EKS Fargate Profiles."
+  value       = module.fargate.fargate_profile_arns
+}
+
+output "fargate_iam_role_name" {
+  description = "IAM role name for EKS Fargate pods"
+  value       = module.fargate.iam_role_name
+}
+
+output "fargate_iam_role_arn" {
+  description = "IAM role ARN for EKS Fargate pods"
+  value       = module.fargate.iam_role_arn
+}
+
+output "node_groups" {
+  description = "Outputs from EKS node groups. Map of maps, keyed by var.node_groups keys"
+  value       = module.node_groups.node_groups
+}
+
+output "security_group_rule_cluster_https_worker_ingress" {
+  description = "Security group rule responsible for allowing pods to communicate with the EKS cluster API."
+  value       = aws_security_group_rule.cluster_https_worker_ingress
+}
