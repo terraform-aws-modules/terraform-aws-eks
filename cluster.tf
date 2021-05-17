@@ -68,6 +68,7 @@ data "http" "wait_for_cluster" {
   count          = var.create_eks && var.manage_aws_auth ? 1 : 0
   url            = format("%s/healthz", aws_eks_cluster.this[0].endpoint)
   ca_certificate = base64decode(coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0])
+  timeout        = 300
 }
 
 resource "aws_security_group" "cluster" {
