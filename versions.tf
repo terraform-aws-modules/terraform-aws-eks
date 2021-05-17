@@ -8,7 +8,8 @@ terraform {
     random     = ">= 2.1"
     kubernetes = ">= 1.11.1"
     http = {
-      source = "terraform-aws-modules/http"
+      source  = "terraform-aws-modules/http"
+      version = ">= 2.2.0"
     }
   }
 }
