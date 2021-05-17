@@ -109,8 +109,8 @@ output "workers_asg_names" {
 output "workers_user_data" {
   description = "User data of worker groups"
   value = concat(
-    data.template_file.userdata.*.rendered,
-    data.template_file.launch_template_userdata.*.rendered,
+    local.userdata_rendered,
+    local.launch_template_userdata_rendered,
   )
 }
 
