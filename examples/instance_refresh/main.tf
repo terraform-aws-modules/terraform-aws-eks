@@ -190,9 +190,9 @@ resource "helm_release" "anth" {
   }
 }
 
-// Creating the lifecycle-hook outside of the ASG resource's
-// `initial_lifecycle_hook` ensures that node termination does not require the
-// lifecycle action to be completed, and thus allows the ASG to be destroyed cleanly.
+# Creating the lifecycle-hook outside of the ASG resource's `initial_lifecycle_hook`
+# ensures that node termination does not require the lifecycle action to be completed,
+# and thus allows the ASG to be destroyed cleanly.
 resource "aws_autoscaling_lifecycle_hook" "node_term" {
   name                   = "node_term-${local.cluster_name}"
   autoscaling_group_name = module.eks.workers_asg_names[0]
