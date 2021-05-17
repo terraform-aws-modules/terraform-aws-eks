@@ -10,6 +10,30 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v16.0.0"></a>
+## [v16.0.0] - 2021-05-17
+FEATURES:
+- Add support for Auto Scaling Group Instance Refresh for self-managed worker groups ([#1224](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1224))
+- Drop `asg_recreate_on_change` feature to encourage the usage of Instance Refresh for EC2 Auto Scaling ([#1360](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1360))
+- Add timeout of 5mn when waiting for cluster ([#1359](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1359))
+- Remove dependency on deprecated `hashicorp/template` provider ([#1297](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1297))
+- Replace the local-exec script with a http datasource for waiting cluster ([#1339](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1339))
+
+BUG FIXES:
+- Remove  provider from required providers ([#1357](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1357))
+- Bump AWS provider version to add Warm Pool support ([#1340](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1340))
+
+CI:
+- Bump terraform-docs to 0.13 ([#1335](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1335))
+
+BREAKING CHANGES:
+- This module used `random_pet` resources to create a random name for the autoscaling group to force the autoscaling group to be re-created when the launch configuration or launch template was changed (if `recreate_asg_when_lc_changes = true` was set), causing the instances to be removed and re-provisioned each time there was an update. Those random_pet resources has been removed and in its place there is now a set of functionality provided by AWS and the Terraform AWS provider - Instance Refresh. We encourage those users to move on Instance Refresh for EC2 Auto Scaling.
+- We remove the dependency on the deprecated `hashicorp/template` provider and use the Terraform built in `templatefile` function. This will broke some workflows due to previously being able to pass in the raw contents of a template file for processing. The `templatefile` function requires a template file that exists before running a plan.
+
+NOTES:
+- Using the [terraform-aws-modules/http](https://registry.terraform.io/providers/terraform-aws-modules/http/latest) provider is a more platform agnostic way to wait for the cluster availability than using a local-exec. With this change we're able to provision EKS clusters and manage the `aws_auth` configmap while still using the `hashicorp/tfc-agent` docker image.
+
+
 <a name="v15.2.0"></a>
 ## [v15.2.0] - 2021-05-04
 FEATURES:
@@ -277,7 +301,8 @@ CI:
 - Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v15.2.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.0.0...HEAD
+[v16.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v15.2.0...v16.0.0
 [v15.2.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v15.1.0...v15.2.0
 [v15.1.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v15.0.0...v15.1.0
 [v15.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v14.0.0...v15.0.0
