@@ -27,6 +27,8 @@ An example of harming update was the removal of several commonly used, but depre
 
 By default, this module manages the `aws-auth` configmap for you (`manage_aws_auth=true`). To avoid the following [issue](https://github.com/aws/containers-roadmap/issues/654) where the EKS creation is `ACTIVE` but not ready. We implemented a "retry" logic with a fork of the http provider https://github.com/terraform-aws-modules/terraform-provider-http. This fork adds the support of a self-signed CA certificate. The original PR can be found at https://github.com/hashicorp/terraform-provider-http/pull/29.
 
+Setting `instance_refresh_enabled` to true will recreate your worker nodes without draining them first. It is recommended to install [aws-node-termination-handler](https://github.com/aws/aws-node-termination-handler) for proper node draining. Find the complete example here [instance_refresh](examples/instance_refresh).
+
 ## Usage example
 
 A full example leveraging other community modules is contained in the [examples/basic directory](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/basic).
@@ -155,7 +157,6 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | <a name="provider_http"></a> [http](#provider\_http) | >= 2.3.0 |
 | <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | >= 1.11.1 |
 | <a name="provider_local"></a> [local](#provider\_local) | >= 1.4 |
-| <a name="provider_random"></a> [random](#provider\_random) | >= 2.1 |
 
 ## Modules
 
@@ -202,8 +203,6 @@ MIT Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-a
 | [aws_security_group_rule.workers_ingress_self](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
 | [kubernetes_config_map.aws_auth](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/config_map) | resource |
 | [local_file.kubeconfig](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
-| [random_pet.workers](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) | resource |
-| [random_pet.workers_launch_template](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) | resource |
 | [aws_ami.eks_worker](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_ami.eks_worker_windows](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |

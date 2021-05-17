@@ -34,7 +34,7 @@ locals {
     asg_max_size                  = "3"                         # Maximum worker capacity in the autoscaling group.
     asg_min_size                  = "1"                         # Minimum worker capacity in the autoscaling group. NOTE: Change in this paramater will affect the asg_desired_capacity, like changing its value to 2 will change asg_desired_capacity value to 2 but bringing back it to 1 will not affect the asg_desired_capacity.
     asg_force_delete              = false                       # Enable forced deletion for the autoscaling group.
-    asg_initial_lifecycle_hooks   = []                          # Initital lifecycle hook for the autoscaling group.
+    asg_initial_lifecycle_hooks   = []                          # Initial lifecycle hook for the autoscaling group.
     default_cooldown              = null                        # The amount of time, in seconds, after a scaling activity completes before another scaling activity can start.
     health_check_type             = null                        # Controls how health checking is done. Valid values are "EC2" or "ELB".
     health_check_grace_period     = null                        # Time in seconds after instance comes into service before checking health.
@@ -95,6 +95,11 @@ locals {
     spot_max_price                           = ""                                                   # Maximum price per unit hour that the user is willing to pay for the Spot instances. Default is the on-demand price
     max_instance_lifetime                    = 0                                                    # Maximum number of seconds instances can run in the ASG. 0 is unlimited.
     elastic_inference_accelerator            = null                                                 # Type of elastic inference accelerator to be attached. Example values are eia1.medium, eia2.large, etc.
+    instance_refresh_enabled                 = false                                                # Enable instance refresh for the worker autoscaling group.
+    instance_refresh_strategy                = "Rolling"                                            # Strategy to use for instance refresh. Default is 'Rolling' which the only valid value.
+    instance_refresh_min_healthy_percentage  = 90                                                   # The amount of capacity in the ASG that must remain healthy during an instance refresh, as a percentage of the ASG's desired capacity.
+    instance_refresh_instance_warmup         = null                                                 # The number of seconds until a newly launched instance is configured and ready to use. Defaults to the ASG's health check grace period.
+    instance_refresh_triggers                = []                                                   # Set of additional property names that will trigger an Instance Refresh. A refresh will always be triggered by a change in any of launch_configuration, launch_template, or mixed_instances_policy.
   }
 
   workers_group_defaults = merge(

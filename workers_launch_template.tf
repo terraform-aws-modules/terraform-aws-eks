@@ -156,7 +156,6 @@ resource "aws_autoscaling_group" "workers_launch_template" {
             instance_type = override.value
           }
         }
-
       }
     }
   }
@@ -235,6 +234,33 @@ resource "aws_autoscaling_group" "workers_launch_template" {
       key                 = tag.value.key
       value               = tag.value.value
       propagate_at_launch = tag.value.propagate_at_launch
+    }
+  }
+
+  # logic duplicated in workers.tf
+  dynamic "instance_refresh" {
+    for_each = lookup(var.worker_groups_launch_template[count.index],
+      "instance_refresh_enabled",
+    local.workers_group_defaults["instance_refresh_enabled"]) ? [1] : []
+    content {
+      strategy = lookup(
+        var.worker_groups_launch_template[count.index], "instance_refresh_strategy",
+        local.workers_group_defaults["instance_refresh_strategy"]
+      )
+      preferences {
+        instance_warmup = lookup(
+          var.worker_groups_launch_template[count.index], "instance_refresh_instance_warmup",
+          local.workers_group_defaults["instance_refresh_instance_warmup"]
+        )
+        min_healthy_percentage = lookup(
+          var.worker_groups_launch_template[count.index], "instance_refresh_min_healthy_percentage",
+          local.workers_group_defaults["instance_refresh_min_healthy_percentage"]
+        )
+      }
+      triggers = lookup(
+        var.worker_groups_launch_template[count.index], "instance_refresh_triggers",
+        local.workers_group_defaults["instance_refresh_triggers"]
+      )
     }
   }
 
