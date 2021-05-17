@@ -7,8 +7,7 @@ resource "aws_autoscaling_group" "workers" {
     compact(
       [
         coalescelist(aws_eks_cluster.this[*].name, [""])[0],
-        lookup(var.worker_groups[count.index], "name", count.index),
-        lookup(var.worker_groups[count.index], "asg_recreate_on_change", local.workers_group_defaults["asg_recreate_on_change"]) ? random_pet.workers[count.index].id : ""
+        lookup(var.worker_groups[count.index], "name", count.index)
       ]
     )
   )
@@ -324,21 +323,6 @@ resource "aws_launch_configuration" "workers" {
     aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly,
     aws_iam_role_policy_attachment.workers_additional_policies
   ]
-}
-
-resource "random_pet" "workers" {
-  count = var.create_eks ? local.worker_group_count : 0
-
-  separator = "-"
-  length    = 2
-
-  keepers = {
-    lc_name = aws_launch_configuration.workers[count.index].name
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "aws_security_group" "workers" {

@@ -7,8 +7,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     compact(
       [
         coalescelist(aws_eks_cluster.this[*].name, [""])[0],
-        lookup(var.worker_groups_launch_template[count.index], "name", count.index),
-        lookup(var.worker_groups_launch_template[count.index], "asg_recreate_on_change", local.workers_group_defaults["asg_recreate_on_change"]) ? random_pet.workers_launch_template[count.index].id : ""
+        lookup(var.worker_groups_launch_template[count.index], "name", count.index)
       ]
     )
   )
@@ -529,29 +528,6 @@ resource "aws_launch_template" "workers_launch_template" {
     aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly,
     aws_iam_role_policy_attachment.workers_additional_policies
   ]
-}
-
-resource "random_pet" "workers_launch_template" {
-  count = var.create_eks ? local.worker_group_launch_template_count : 0
-
-  separator = "-"
-  length    = 2
-
-  keepers = {
-    lt_name = join(
-      "-",
-      compact(
-        [
-          aws_launch_template.workers_launch_template[count.index].name,
-          aws_launch_template.workers_launch_template[count.index].latest_version
-        ]
-      )
-    )
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "aws_iam_instance_profile" "workers_launch_template" {
