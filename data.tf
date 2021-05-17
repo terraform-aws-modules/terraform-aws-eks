@@ -27,7 +27,7 @@ data "aws_ami" "eks_worker" {
 data "aws_ami" "eks_worker_windows" {
   filter {
     name   = "name"
-    values = [local.worker_ami_name_filter_windows]
+    values = [local.worker_ami_name_filter_windows, "Windows_Server-2019-English-Core-EKS_Optimized-*"]
   }
 
   filter {
