@@ -318,7 +318,7 @@ resource "aws_launch_template" "workers_launch_template" {
     local.workers_group_defaults["key_name"],
   )
   user_data = base64encode(
-    data.template_file.launch_template_userdata.*.rendered[count.index],
+    local.launch_template_userdata_rendered[count.index],
   )
 
   ebs_optimized = lookup(
