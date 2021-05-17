@@ -98,21 +98,16 @@ resource "aws_launch_template" "workers" {
     )
   }
 
-  # Supplying custom tags to EKS instances ENI's
+  # Supplying custom tags to EKS instances ENI's  
   tag_specifications {
     resource_type = "network-interface"
 
     tags = merge(
+      var.tags,
+      lookup(var.node_groups_defaults, "additional_tags", {}),
+      lookup(var.node_groups[each.key], "additional_tags", {}),
       {
-        "Name" = "${coalescelist(aws_eks_cluster.this[*].name, [""])[0]}-${lookup(
-          var.worker_groups_launch_template[count.index],
-          "name",
-          count.index,
-        )}-eks_asg"
-      },
-      { for tag_key, tag_value in var.tags :
-        tag_key => tag_value
-        if tag_key != "Name" && !contains([for tag in lookup(var.worker_groups_launch_template[count.index], "tags", local.workers_group_defaults["tags"]) : tag["key"]], tag_key)
+        Name = lookup(each.value, "name", join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id]))
       }
     )
   }
