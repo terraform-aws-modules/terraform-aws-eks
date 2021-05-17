@@ -2,10 +2,13 @@ terraform {
   required_version = ">= 0.13.1"
 
   required_providers {
-    aws        = ">= 3.35.0"
+    aws        = ">= 3.37.0"
     local      = ">= 1.4"
-    null       = ">= 2.1"
     random     = ">= 2.1"
     kubernetes = ">= 1.11.1"
+    http = {
+      source  = "terraform-aws-modules/http"
+      version = ">= 2.2.0"
+    }
   }
 }
