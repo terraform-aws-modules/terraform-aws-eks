@@ -115,6 +115,12 @@ variable "worker_groups_launch_template" {
   default     = []
 }
 
+variable "worker_groups_launch_template_use_map" {
+  description = "Whether to use a map for the state of worker groups created via a launch template."
+  type        = bool
+  default     = false
+}
+
 variable "worker_security_group_id" {
   description = "If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the EKS cluster."
   type        = string

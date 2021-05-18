@@ -14,6 +14,7 @@ locals {
 
   worker_group_count                 = length(var.worker_groups)
   worker_group_launch_template_count = length(var.worker_groups_launch_template)
+  worker_group_launch_template_map   = var.worker_groups_launch_template_use_map ? { for i, v in var.worker_groups_launch_template : join("-", compact([coalescelist(aws_eks_cluster.this[*].name, [""])[0], lookup(v, "name", i)])) => v } : {}
 
   worker_has_linux_ami   = length([for x in concat(var.worker_groups, var.worker_groups_launch_template) : x if lookup(x, "platform", "linux") == "linux"]) > 0
   worker_has_windows_ami = length([for x in concat(var.worker_groups, var.worker_groups_launch_template) : x if lookup(x, "platform", "linux") == "windows"]) > 0
