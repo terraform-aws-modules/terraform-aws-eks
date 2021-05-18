@@ -7,8 +7,7 @@ resource "aws_autoscaling_group" "workers" {
     compact(
       [
         coalescelist(aws_eks_cluster.this[*].name, [""])[0],
-        lookup(var.worker_groups[count.index], "name", count.index),
-        lookup(var.worker_groups[count.index], "asg_recreate_on_change", local.workers_group_defaults["asg_recreate_on_change"]) ? random_pet.workers[count.index].id : ""
+        lookup(var.worker_groups[count.index], "name", count.index)
       ]
     )
   )
@@ -160,6 +159,33 @@ resource "aws_autoscaling_group" "workers" {
       key                 = tag.value.key
       value               = tag.value.value
       propagate_at_launch = tag.value.propagate_at_launch
+    }
+  }
+
+  # logic duplicated in workers_launch_template.tf
+  dynamic "instance_refresh" {
+    for_each = lookup(var.worker_groups[count.index],
+      "instance_refresh_enabled",
+    local.workers_group_defaults["instance_refresh_enabled"]) ? [1] : []
+    content {
+      strategy = lookup(
+        var.worker_groups[count.index], "instance_refresh_strategy",
+        local.workers_group_defaults["instance_refresh_strategy"]
+      )
+      preferences {
+        instance_warmup = lookup(
+          var.worker_groups[count.index], "instance_refresh_instance_warmup",
+          local.workers_group_defaults["instance_refresh_instance_warmup"]
+        )
+        min_healthy_percentage = lookup(
+          var.worker_groups[count.index], "instance_refresh_min_healthy_percentage",
+          local.workers_group_defaults["instance_refresh_min_healthy_percentage"]
+        )
+      }
+      triggers = lookup(
+        var.worker_groups[count.index], "instance_refresh_triggers",
+        local.workers_group_defaults["instance_refresh_triggers"]
+      )
     }
   }
 
@@ -324,21 +350,6 @@ resource "aws_launch_configuration" "workers" {
     aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly,
     aws_iam_role_policy_attachment.workers_additional_policies
   ]
-}
-
-resource "random_pet" "workers" {
-  count = var.create_eks ? local.worker_group_count : 0
-
-  separator = "-"
-  length    = 2
-
-  keepers = {
-    lc_name = aws_launch_configuration.workers[count.index].name
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "aws_security_group" "workers" {

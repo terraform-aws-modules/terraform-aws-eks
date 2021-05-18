@@ -7,8 +7,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     compact(
       [
         coalescelist(aws_eks_cluster.this[*].name, [""])[0],
-        lookup(var.worker_groups_launch_template[count.index], "name", count.index),
-        lookup(var.worker_groups_launch_template[count.index], "asg_recreate_on_change", local.workers_group_defaults["asg_recreate_on_change"]) ? random_pet.workers_launch_template[count.index].id : ""
+        lookup(var.worker_groups_launch_template[count.index], "name", count.index)
       ]
     )
   )
@@ -157,7 +156,6 @@ resource "aws_autoscaling_group" "workers_launch_template" {
             instance_type = override.value
           }
         }
-
       }
     }
   }
@@ -236,6 +234,33 @@ resource "aws_autoscaling_group" "workers_launch_template" {
       key                 = tag.value.key
       value               = tag.value.value
       propagate_at_launch = tag.value.propagate_at_launch
+    }
+  }
+
+  # logic duplicated in workers.tf
+  dynamic "instance_refresh" {
+    for_each = lookup(var.worker_groups_launch_template[count.index],
+      "instance_refresh_enabled",
+    local.workers_group_defaults["instance_refresh_enabled"]) ? [1] : []
+    content {
+      strategy = lookup(
+        var.worker_groups_launch_template[count.index], "instance_refresh_strategy",
+        local.workers_group_defaults["instance_refresh_strategy"]
+      )
+      preferences {
+        instance_warmup = lookup(
+          var.worker_groups_launch_template[count.index], "instance_refresh_instance_warmup",
+          local.workers_group_defaults["instance_refresh_instance_warmup"]
+        )
+        min_healthy_percentage = lookup(
+          var.worker_groups_launch_template[count.index], "instance_refresh_min_healthy_percentage",
+          local.workers_group_defaults["instance_refresh_min_healthy_percentage"]
+        )
+      }
+      triggers = lookup(
+        var.worker_groups_launch_template[count.index], "instance_refresh_triggers",
+        local.workers_group_defaults["instance_refresh_triggers"]
+      )
     }
   }
 
@@ -529,29 +554,6 @@ resource "aws_launch_template" "workers_launch_template" {
     aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly,
     aws_iam_role_policy_attachment.workers_additional_policies
   ]
-}
-
-resource "random_pet" "workers_launch_template" {
-  count = var.create_eks ? local.worker_group_launch_template_count : 0
-
-  separator = "-"
-  length    = 2
-
-  keepers = {
-    lt_name = join(
-      "-",
-      compact(
-        [
-          aws_launch_template.workers_launch_template[count.index].name,
-          aws_launch_template.workers_launch_template[count.index].latest_version
-        ]
-      )
-    )
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "aws_iam_instance_profile" "workers_launch_template" {
