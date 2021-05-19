@@ -33,7 +33,8 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | launch\_template_version | The version of the LT to use | string | none |
 | max\_capacity | Max number of workers | number | `var.workers_group_defaults[asg_max_size]` |
 | min\_capacity | Min number of workers | number | `var.workers_group_defaults[asg_min_size]` |
-| name | Name of the node group | string | Auto generated |
+| name | Name of the node group | string | Will use autogenerate name prefix |
+| name_prefix | Name prefix of the node group | string | Auto generated |
 | source\_security\_group\_ids | Source security groups for remote access to workers | list(string) | If key\_name is specified: THE REMOTE ACCESS WILL BE OPENED TO THE WORLD |
 | subnets | Subnets to contain workers | list(string) | `var.workers_group_defaults[subnets]` |
 | version | Kubernetes version | string | Provider default behavior |
@@ -50,16 +51,14 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.22.0 |
-| <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.1 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.40.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.22.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.40.0 |
 | <a name="provider_cloudinit"></a> [cloudinit](#provider\_cloudinit) | n/a |
-| <a name="provider_random"></a> [random](#provider\_random) | >= 2.1 |
 
 ## Modules
 
@@ -71,7 +70,6 @@ No modules.
 |------|------|
 | [aws_eks_node_group.workers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group) | resource |
 | [aws_launch_template.workers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
-| [random_pet.node_groups](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) | resource |
 | [cloudinit_config.workers_userdata](https://registry.terraform.io/providers/hashicorp/cloudinit/latest/docs/data-sources/config) | data source |
 
 ## Inputs

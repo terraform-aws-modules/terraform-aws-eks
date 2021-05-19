@@ -1,3 +1,7 @@
+data "aws_partition" "current" {}
+
+data "aws_caller_identity" "current" {}
+
 data "aws_iam_policy_document" "workers_assume_role_policy" {
   statement {
     sid = "EKSWorkerAssumeRole"
@@ -81,8 +85,6 @@ data "aws_iam_instance_profile" "custom_worker_group_launch_template_iam_instanc
     local.workers_group_defaults["iam_instance_profile_name"],
   )
 }
-
-data "aws_partition" "current" {}
 
 data "http" "wait_for_cluster" {
   count          = var.create_eks && var.manage_aws_auth ? 1 : 0
