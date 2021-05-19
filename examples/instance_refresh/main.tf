@@ -1,3 +1,5 @@
+# Based on the official aws-node-termination-handler setup guide at https://github.com/aws/aws-node-termination-handler#infrastructure-setup
+
 provider "aws" {
   region = var.region
 }
@@ -50,7 +52,7 @@ module "vpc" {
   enable_dns_hostnames = true
 }
 
-data "aws_iam_policy_document" "node_term" {
+data "aws_iam_policy_document" "aws_node_termination_handler" {
   statement {
     effect = "Allow"
     actions = [
@@ -76,22 +78,17 @@ data "aws_iam_policy_document" "node_term" {
       "sqs:ReceiveMessage"
     ]
     resources = [
-      module.node_term_sqs.sqs_queue_arn
+      module.aws_node_termination_handler_sqs.sqs_queue_arn
     ]
   }
 }
 
-resource "aws_iam_policy" "node_term" {
-  name   = "node-term-${local.cluster_name}"
-  policy = data.aws_iam_policy_document.node_term.json
+resource "aws_iam_policy" "aws_node_termination_handler" {
+  name   = "${local.cluster_name}-aws-node-termination-handler"
+  policy = data.aws_iam_policy_document.aws_node_termination_handler.json
 }
 
-resource "aws_iam_role_policy_attachment" "node_term_policy" {
-  policy_arn = aws_iam_policy.node_term.arn
-  role       = module.eks.worker_iam_role_name
-}
-
-data "aws_iam_policy_document" "node_term_events" {
+data "aws_iam_policy_document" "aws_node_termination_handler_events" {
   statement {
     effect = "Allow"
     principals {
@@ -110,16 +107,16 @@ data "aws_iam_policy_document" "node_term_events" {
   }
 }
 
-module "node_term_sqs" {
+module "aws_node_termination_handler_sqs" {
   source                    = "terraform-aws-modules/sqs/aws"
   version                   = "~> 3.0.0"
   name                      = local.cluster_name
   message_retention_seconds = 300
-  policy                    = data.aws_iam_policy_document.node_term_events.json
+  policy                    = data.aws_iam_policy_document.aws_node_termination_handler_events.json
 }
 
-resource "aws_cloudwatch_event_rule" "node_term_event_rule" {
-  name        = "${local.cluster_name}-nth-rule"
+resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_asg" {
+  name        = "${local.cluster_name}-asg-termination"
   description = "Node termination event rule"
   event_pattern = jsonencode(
     {
@@ -134,24 +131,46 @@ resource "aws_cloudwatch_event_rule" "node_term_event_rule" {
   )
 }
 
-resource "aws_cloudwatch_event_target" "node_term_event_target" {
-  rule      = aws_cloudwatch_event_rule.node_term_event_rule.name
-  target_id = "ANTHandler"
-  arn       = module.node_term_sqs.sqs_queue_arn
+resource "aws_cloudwatch_event_target" "aws_node_termination_handler_asg" {
+  target_id = "${local.cluster_name}-asg-termination"
+  rule      = aws_cloudwatch_event_rule.aws_node_termination_handler_asg.name
+  arn       = module.aws_node_termination_handler_sqs.sqs_queue_arn
 }
 
-module "node_term_role" {
+resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_spot" {
+  name        = "${local.cluster_name}-spot-termination"
+  description = "Node termination event rule"
+  event_pattern = jsonencode(
+    {
+      "source" : [
+        "aws.ec2"
+      ],
+      "detail-type" : [
+        "EC2 Spot Instance Interruption Warning"
+      ]
+      "resources" : module.eks.workers_asg_arns
+    }
+  )
+}
+
+resource "aws_cloudwatch_event_target" "aws_node_termination_handler_spot" {
+  target_id = "${local.cluster_name}-spot-termination"
+  rule      = aws_cloudwatch_event_rule.aws_node_termination_handler_spot.name
+  arn       = module.aws_node_termination_handler_sqs.sqs_queue_arn
+}
+
+module "aws_node_termination_handler_role" {
   source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
   version                       = "4.1.0"
   create_role                   = true
   role_description              = "IRSA role for ANTH, cluster ${local.cluster_name}"
   role_name_prefix              = local.cluster_name
   provider_url                  = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
-  role_policy_arns              = [aws_iam_policy.node_term.arn]
+  role_policy_arns              = [aws_iam_policy.aws_node_termination_handler.arn]
   oidc_fully_qualified_subjects = ["system:serviceaccount:${var.namespace}:${var.serviceaccount}"]
 }
 
-resource "helm_release" "anth" {
+resource "helm_release" "aws_node_termination_handler" {
   depends_on = [
     module.eks
   ]
@@ -173,7 +192,7 @@ resource "helm_release" "anth" {
   }
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.node_term_role.iam_role_arn
+    value = module.aws_node_termination_handler_role.iam_role_arn
     type  = "string"
   }
   set {
@@ -181,21 +200,27 @@ resource "helm_release" "anth" {
     value = "true"
   }
   set {
+    name  = "enableSpotInterruptionDraining"
+    value = "true"
+  }
+  set {
     name  = "queueURL"
-    value = module.node_term_sqs.sqs_queue_id
+    value = module.aws_node_termination_handler_sqs.sqs_queue_id
   }
   set {
     name  = "logLevel"
-    value = "DEBUG"
+    value = "debug"
   }
 }
 
 # Creating the lifecycle-hook outside of the ASG resource's `initial_lifecycle_hook`
 # ensures that node termination does not require the lifecycle action to be completed,
 # and thus allows the ASG to be destroyed cleanly.
-resource "aws_autoscaling_lifecycle_hook" "node_term" {
-  name                   = "node_term-${local.cluster_name}"
-  autoscaling_group_name = module.eks.workers_asg_names[0]
+resource "aws_autoscaling_lifecycle_hook" "aws_node_termination_handler" {
+  for_each = toset(module.eks.workers_asg_names)
+
+  name                   = "aws-node-termination-handler"
+  autoscaling_group_name = each.value
   lifecycle_transition   = "autoscaling:EC2_INSTANCE_TERMINATING"
   heartbeat_timeout      = 300
   default_result         = "CONTINUE"
@@ -227,8 +252,8 @@ module "eks" {
           key                 = "foo"
           value               = "buzz"
           propagate_at_launch = true
-        },
+        }
       ]
-    },
+    }
   ]
 }
