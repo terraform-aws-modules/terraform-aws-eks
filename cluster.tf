@@ -65,21 +65,11 @@ resource "aws_security_group_rule" "cluster_private_access" {
 }
 
 
-resource "null_resource" "wait_for_cluster" {
-  count = var.create_eks && var.manage_aws_auth ? 1 : 0
-
-  depends_on = [
-    aws_eks_cluster.this,
-    aws_security_group_rule.cluster_private_access,
-  ]
-
-  provisioner "local-exec" {
-    command     = var.wait_for_cluster_cmd
-    interpreter = var.wait_for_cluster_interpreter
-    environment = {
-      ENDPOINT = aws_eks_cluster.this[0].endpoint
-    }
-  }
+data "http" "wait_for_cluster" {
+  count          = var.create_eks && var.manage_aws_auth ? 1 : 0
+  url            = format("%s/healthz", aws_eks_cluster.this[0].endpoint)
+  ca_certificate = base64decode(coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0])
+  timeout        = 300
 }
 
 resource "aws_security_group" "cluster" {
@@ -100,7 +90,7 @@ resource "aws_security_group_rule" "cluster_egress_internet" {
   description       = "Allow cluster egress access to the Internet."
   protocol          = "-1"
   security_group_id = local.cluster_security_group_id
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = var.cluster_egress_cidrs
   from_port         = 0
   to_port           = 0
   type              = "egress"
@@ -119,7 +109,8 @@ resource "aws_security_group_rule" "cluster_https_worker_ingress" {
 
 resource "aws_iam_role" "cluster" {
   count                 = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
-  name_prefix           = var.cluster_name
+  name_prefix           = var.cluster_iam_role_name != "" ? null : var.cluster_name
+  name                  = var.cluster_iam_role_name != "" ? var.cluster_iam_role_name : null
   assume_role_policy    = data.aws_iam_policy_document.cluster_assume_role_policy.json
   permissions_boundary  = var.permissions_boundary
   path                  = var.iam_path
@@ -157,7 +148,8 @@ data "aws_iam_policy_document" "cluster_elb_sl_role_creation" {
     effect = "Allow"
     actions = [
       "ec2:DescribeAccountAttributes",
-      "ec2:DescribeInternetGateways"
+      "ec2:DescribeInternetGateways",
+      "ec2:DescribeAddresses"
     ]
     resources = ["*"]
   }
@@ -169,6 +161,7 @@ resource "aws_iam_policy" "cluster_elb_sl_role_creation" {
   description = "Permissions for EKS to create AWSServiceRoleForElasticLoadBalancing service-linked role"
   policy      = data.aws_iam_policy_document.cluster_elb_sl_role_creation[0].json
   path        = var.iam_path
+  tags        = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_elb_sl_role_creation" {

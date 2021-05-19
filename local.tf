@@ -1,7 +1,7 @@
 locals {
 
   cluster_security_group_id         = var.cluster_create_security_group ? join("", aws_security_group.cluster.*.id) : var.cluster_security_group_id
-  cluster_primary_security_group_id = var.cluster_version >= 1.14 ? element(concat(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, list("")), 0) : null
+  cluster_primary_security_group_id = var.cluster_version >= 1.14 ? element(concat(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, [""]), 0) : null
   cluster_iam_role_name             = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.name) : var.cluster_iam_role_name
   cluster_iam_role_arn              = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.arn) : join("", data.aws_iam_role.custom_cluster_iam_role.*.arn)
   worker_security_group_id          = var.worker_create_security_group ? join("", aws_security_group.workers.*.id) : var.worker_security_group_id
@@ -34,8 +34,7 @@ locals {
     asg_max_size                  = "3"                         # Maximum worker capacity in the autoscaling group.
     asg_min_size                  = "1"                         # Minimum worker capacity in the autoscaling group. NOTE: Change in this paramater will affect the asg_desired_capacity, like changing its value to 2 will change asg_desired_capacity value to 2 but bringing back it to 1 will not affect the asg_desired_capacity.
     asg_force_delete              = false                       # Enable forced deletion for the autoscaling group.
-    asg_initial_lifecycle_hooks   = []                          # Initital lifecycle hook for the autoscaling group.
-    asg_recreate_on_change        = false                       # Recreate the autoscaling group when the Launch Template or Launch Configuration change.
+    asg_initial_lifecycle_hooks   = []                          # Initial lifecycle hook for the autoscaling group.
     default_cooldown              = null                        # The amount of time, in seconds, after a scaling activity completes before another scaling activity can start.
     health_check_type             = null                        # Controls how health checking is done. Valid values are "EC2" or "ELB".
     health_check_grace_period     = null                        # Time in seconds after instance comes into service before checking health.
@@ -43,7 +42,7 @@ locals {
     spot_price                    = ""                          # Cost of spot instance.
     placement_tenancy             = ""                          # The tenancy of the instance. Valid values are "default" or "dedicated".
     root_volume_size              = "100"                       # root volume size of workers instances.
-    root_volume_type              = "gp3"                       # root volume type of workers instances, can be "standard", "gp3", "gp2", or "io1"
+    root_volume_type              = "gp2"                       # root volume type of workers instances, can be 'standard', 'gp3' (for Launch Template), 'gp2', or 'io1'
     root_iops                     = "0"                         # The amount of provisioned IOPS. This must be set with a volume_type of "io1".
     root_volume_throughput        = null                        # The amount of throughput to provision for a gp3 volume.
     key_name                      = ""                          # The key pair name that should be used for the instances in the autoscaling group
@@ -71,6 +70,7 @@ locals {
     termination_policies          = []                          # A list of policies to decide how the instances in the auto scale group should be terminated.
     platform                      = "linux"                     # Platform of workers. either "linux" or "windows"
     additional_ebs_volumes        = []                          # A list of additional volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: block_device_name (required), volume_size, volume_type, iops, encrypted, kms_key_id (only on launch-template), delete_on_termination. Optional values are grabbed from root volume or from defaults
+    warm_pool                     = null                        # If this block is configured, add a Warm Pool to the specified Auto Scaling group.
     # Settings for launch templates
     root_block_device_name               = data.aws_ami.eks_worker.root_device_name # Root device name for workers. If non is provided, will assume default AMI was used.
     root_kms_key_id                      = ""                                       # The KMS key to use when encrypting the root storage device
@@ -94,6 +94,12 @@ locals {
     spot_instance_pools                      = 10                                                   # "Number of Spot pools per availability zone to allocate capacity. EC2 Auto Scaling selects the cheapest Spot pools and evenly allocates Spot capacity across the number of Spot pools that you specify."
     spot_max_price                           = ""                                                   # Maximum price per unit hour that the user is willing to pay for the Spot instances. Default is the on-demand price
     max_instance_lifetime                    = 0                                                    # Maximum number of seconds instances can run in the ASG. 0 is unlimited.
+    elastic_inference_accelerator            = null                                                 # Type of elastic inference accelerator to be attached. Example values are eia1.medium, eia2.large, etc.
+    instance_refresh_enabled                 = false                                                # Enable instance refresh for the worker autoscaling group.
+    instance_refresh_strategy                = "Rolling"                                            # Strategy to use for instance refresh. Default is 'Rolling' which the only valid value.
+    instance_refresh_min_healthy_percentage  = 90                                                   # The amount of capacity in the ASG that must remain healthy during an instance refresh, as a percentage of the ASG's desired capacity.
+    instance_refresh_instance_warmup         = null                                                 # The number of seconds until a newly launched instance is configured and ready to use. Defaults to the ASG's health check grace period.
+    instance_refresh_triggers                = []                                                   # Set of additional property names that will trigger an Instance Refresh. A refresh will always be triggered by a change in any of launch_configuration, launch_template, or mixed_instances_policy.
   }
 
   workers_group_defaults = merge(
@@ -148,4 +154,92 @@ locals {
     aws_authenticator_additional_args = var.kubeconfig_aws_authenticator_additional_args
     aws_authenticator_env_variables   = var.kubeconfig_aws_authenticator_env_variables
   }) : ""
+
+  userdata_rendered = [
+    for index in range(var.create_eks ? local.worker_group_count : 0) : templatefile(
+      lookup(
+        var.worker_groups[index],
+        "userdata_template_file",
+        lookup(var.worker_groups[index], "platform", local.workers_group_defaults["platform"]) == "windows"
+        ? "${path.module}/templates/userdata_windows.tpl"
+        : "${path.module}/templates/userdata.sh.tpl"
+      ),
+      merge({
+        platform            = lookup(var.worker_groups[index], "platform", local.workers_group_defaults["platform"])
+        cluster_name        = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
+        endpoint            = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
+        cluster_auth_base64 = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
+        pre_userdata = lookup(
+          var.worker_groups[index],
+          "pre_userdata",
+          local.workers_group_defaults["pre_userdata"],
+        )
+        additional_userdata = lookup(
+          var.worker_groups[index],
+          "additional_userdata",
+          local.workers_group_defaults["additional_userdata"],
+        )
+        bootstrap_extra_args = lookup(
+          var.worker_groups[index],
+          "bootstrap_extra_args",
+          local.workers_group_defaults["bootstrap_extra_args"],
+        )
+        kubelet_extra_args = lookup(
+          var.worker_groups[index],
+          "kubelet_extra_args",
+          local.workers_group_defaults["kubelet_extra_args"],
+        )
+        },
+        lookup(
+          var.worker_groups[index],
+          "userdata_template_extra_args",
+          local.workers_group_defaults["userdata_template_extra_args"]
+        )
+      )
+    )
+  ]
+
+  launch_template_userdata_rendered = [
+    for index in range(var.create_eks ? local.worker_group_launch_template_count : 0) : templatefile(
+      lookup(
+        var.worker_groups_launch_template[index],
+        "userdata_template_file",
+        lookup(var.worker_groups_launch_template[index], "platform", local.workers_group_defaults["platform"]) == "windows"
+        ? "${path.module}/templates/userdata_windows.tpl"
+        : "${path.module}/templates/userdata.sh.tpl"
+      ),
+      merge({
+        platform            = lookup(var.worker_groups_launch_template[index], "platform", local.workers_group_defaults["platform"])
+        cluster_name        = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
+        endpoint            = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
+        cluster_auth_base64 = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
+        pre_userdata = lookup(
+          var.worker_groups_launch_template[index],
+          "pre_userdata",
+          local.workers_group_defaults["pre_userdata"],
+        )
+        additional_userdata = lookup(
+          var.worker_groups_launch_template[index],
+          "additional_userdata",
+          local.workers_group_defaults["additional_userdata"],
+        )
+        bootstrap_extra_args = lookup(
+          var.worker_groups_launch_template[index],
+          "bootstrap_extra_args",
+          local.workers_group_defaults["bootstrap_extra_args"],
+        )
+        kubelet_extra_args = lookup(
+          var.worker_groups_launch_template[index],
+          "kubelet_extra_args",
+          local.workers_group_defaults["kubelet_extra_args"],
+        )
+        },
+        lookup(
+          var.worker_groups_launch_template[index],
+          "userdata_template_extra_args",
+          local.workers_group_defaults["userdata_template_extra_args"]
+        )
+      )
+    )
+  ]
 }
