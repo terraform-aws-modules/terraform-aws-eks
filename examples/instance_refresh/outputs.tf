@@ -25,10 +25,10 @@ output "region" {
 
 output "sqs_queue_asg_notification_arn" {
   description = "SQS queue ASG notification ARN"
-  value       = module.node_term_sqs.sqs_queue_arn
+  value       = module.aws_node_termination_handler_sqs.sqs_queue_arn
 }
 
 output "sqs_queue_asg_notification_url" {
   description = "SQS queue ASG notification URL"
-  value       = module.node_term_sqs.sqs_queue_id
+  value       = module.aws_node_termination_handler_sqs.sqs_queue_id
 }
