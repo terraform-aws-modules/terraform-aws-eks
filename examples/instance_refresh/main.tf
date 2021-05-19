@@ -217,10 +217,9 @@ resource "helm_release" "aws_node_termination_handler" {
 # ensures that node termination does not require the lifecycle action to be completed,
 # and thus allows the ASG to be destroyed cleanly.
 resource "aws_autoscaling_lifecycle_hook" "aws_node_termination_handler" {
-  for_each = toset(module.eks.workers_asg_names)
-
+  count                  = length(module.eks.workers_asg_names)
   name                   = "aws-node-termination-handler"
-  autoscaling_group_name = each.value
+  autoscaling_group_name = module.eks.workers_asg_names[count.index]
   lifecycle_transition   = "autoscaling:EC2_INSTANCE_TERMINATING"
   heartbeat_timeout      = 300
   default_result         = "CONTINUE"
@@ -239,9 +238,11 @@ module "eks" {
       asg_max_size                         = 2
       asg_desired_capacity                 = 2
       instance_refresh_enabled             = true
-      instance_refresh_triggers            = ["tag"]
+      instance_refresh_instance_warmup     = 60
       public_ip                            = true
       metadata_http_put_response_hop_limit = 3
+      update_default_version               = true
+      instance_refresh_triggers            = ["tag"]
       tags = [
         {
           key                 = "aws-node-termination-handler/managed"
