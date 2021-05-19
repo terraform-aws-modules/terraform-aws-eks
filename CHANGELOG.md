@@ -10,6 +10,72 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v16.0.1"></a>
+## [v16.0.1] - 2021-05-19
+BUG FIXES:
+- Bump `terraform-aws-modules/http` provider version to support darwin arm64 release ([#1369](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1369))
+
+DOCS:
+- Use IRSA for Node Termination Handler IAM policy attachement in Instance Refresh example ([#1373](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1373))
+
+
+<a name="v16.0.0"></a>
+## [v16.0.0] - 2021-05-17
+FEATURES:
+- Add support for Auto Scaling Group Instance Refresh for self-managed worker groups ([#1224](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1224))
+- Drop `asg_recreate_on_change` feature to encourage the usage of Instance Refresh for EC2 Auto Scaling ([#1360](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1360))
+- Add timeout of 5mn when waiting for cluster ([#1359](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1359))
+- Remove dependency on deprecated `hashicorp/template` provider ([#1297](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1297))
+- Replace the local-exec script with a http datasource for waiting cluster ([#1339](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1339))
+
+BUG FIXES:
+- Remove  provider from required providers ([#1357](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1357))
+- Bump AWS provider version to add Warm Pool support ([#1340](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1340))
+
+CI:
+- Bump terraform-docs to 0.13 ([#1335](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1335))
+
+BREAKING CHANGES:
+- This module used `random_pet` resources to create a random name for the autoscaling group to force the autoscaling group to be re-created when the launch configuration or launch template was changed (if `recreate_asg_when_lc_changes = true` was set), causing the instances to be removed and re-provisioned each time there was an update. Those random_pet resources has been removed and in its place there is now a set of functionality provided by AWS and the Terraform AWS provider - Instance Refresh. We encourage those users to move on Instance Refresh for EC2 Auto Scaling.
+- We remove the dependency on the deprecated `hashicorp/template` provider and use the Terraform built in `templatefile` function. This will broke some workflows due to previously being able to pass in the raw contents of a template file for processing. The `templatefile` function requires a template file that exists before running a plan.
+
+NOTES:
+- Using the [terraform-aws-modules/http](https://registry.terraform.io/providers/terraform-aws-modules/http/latest) provider is a more platform agnostic way to wait for the cluster availability than using a local-exec. With this change we're able to provision EKS clusters and manage the `aws_auth` configmap while still using the `hashicorp/tfc-agent` docker image.
+
+
+<a name="v15.2.0"></a>
+## [v15.2.0] - 2021-05-04
+FEATURES:
+- Add tags on additional IAM resources like IAM policies, instance profile, OIDC provider ([#1321](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1321))
+- Allow to override cluster and workers egress CIDRs ([#1237](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1237))
+- Allow to specify the managed cluster IAM role name ([#1199](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1199))
+- Add support for ASG Warm Pools ([#1310](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1310))
+- Add support for specifying elastic inference accelerator ([#1176](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1176))
+- Create launch template for Managed Node Groups ([#1138](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1138))
+
+BUG FIXES:
+- Replace `list` with `tolist` function for working with terraform v0.15.0 ([#1317](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1317))
+- Limit cluster_name when creating fargate IAM Role ([#1270](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1270))
+- Add mission metadata block for launch configuration ([#1301](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1301))
+- Add missing IAM permission for NLB with EIPs ([#1226](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1226))
+- Change back the default disk type to `gp2` ([#1208](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1208))
+
+DOCS:
+- Update helm instructions for irsa example ([#1251](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1251))
+
+
+<a name="v15.1.0"></a>
+## [v15.1.0] - 2021-04-16
+BUG FIXES:
+- Fixed list and map usage ([#1307](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1307))
+
+
+<a name="v15.0.0"></a>
+## [v15.0.0] - 2021-04-16
+BUG FIXES:
+- Updated code and version requirements to work with Terraform 0.15 ([#1165](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1165))
+
+
 <a name="v14.0.0"></a>
 ## [v14.0.0] - 2021-01-29
 FEATURES:
@@ -244,7 +310,12 @@ CI:
 - Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v14.0.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.0.1...HEAD
+[v16.0.1]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.0.0...v16.0.1
+[v16.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v15.2.0...v16.0.0
+[v15.2.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v15.1.0...v15.2.0
+[v15.1.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v15.0.0...v15.1.0
+[v15.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v14.0.0...v15.0.0
 [v14.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v13.2.1...v14.0.0
 [v13.2.1]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v13.2.0...v13.2.1
 [v13.2.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v13.1.0...v13.2.0

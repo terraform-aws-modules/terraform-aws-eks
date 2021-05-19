@@ -1,6 +1,6 @@
 resource "aws_iam_role" "eks_fargate_pod" {
   count                = local.create_eks && var.create_fargate_pod_execution_role ? 1 : 0
-  name_prefix          = format("%s-fargate", var.cluster_name)
+  name_prefix          = format("%s-fargate", substr(var.cluster_name, 0, 24))
   assume_role_policy   = data.aws_iam_policy_document.eks_fargate_pod_assume_role[0].json
   permissions_boundary = var.permissions_boundary
   tags                 = var.tags
