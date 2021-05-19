@@ -14,6 +14,8 @@ data "aws_iam_policy_document" "workers_assume_role_policy" {
 }
 
 data "aws_ami" "eks_worker" {
+  count = local.worker_has_linux_ami ? 1 : 0
+
   filter {
     name   = "name"
     values = [local.worker_ami_name_filter]
@@ -25,6 +27,8 @@ data "aws_ami" "eks_worker" {
 }
 
 data "aws_ami" "eks_worker_windows" {
+  count = local.worker_has_windows_ami ? 1 : 0
+
   filter {
     name   = "name"
     values = [local.worker_ami_name_filter_windows]

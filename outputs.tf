@@ -116,7 +116,12 @@ output "workers_user_data" {
 
 output "workers_default_ami_id" {
   description = "ID of the default worker group AMI"
-  value       = data.aws_ami.eks_worker.id
+  value       = local.default_ami_id_linux
+}
+
+output "workers_default_ami_id_windows" {
+  description = "ID of the default Windows worker group AMI"
+  value       = local.default_ami_id_windows
 }
 
 output "workers_launch_template_ids" {
