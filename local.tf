@@ -7,13 +7,16 @@ locals {
   worker_security_group_id          = var.worker_create_security_group ? join("", aws_security_group.workers.*.id) : var.worker_security_group_id
 
   default_iam_role_id    = concat(aws_iam_role.workers.*.id, [""])[0]
-  default_ami_id_linux   = coalesce(local.workers_group_defaults.ami_id, data.aws_ami.eks_worker.id)
-  default_ami_id_windows = coalesce(local.workers_group_defaults.ami_id_windows, data.aws_ami.eks_worker_windows.id)
+  default_ami_id_linux   = local.workers_group_defaults.ami_id != "" ? local.workers_group_defaults.ami_id : concat(data.aws_ami.eks_worker.*.id, [""])[0]
+  default_ami_id_windows = local.workers_group_defaults.ami_id_windows != "" ? local.workers_group_defaults.ami_id_windows : concat(data.aws_ami.eks_worker_windows.*.id, [""])[0]
 
   kubeconfig_name = var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name
 
   worker_group_count                 = length(var.worker_groups)
   worker_group_launch_template_count = length(var.worker_groups_launch_template)
+
+  worker_has_linux_ami   = length([for x in concat(var.worker_groups, var.worker_groups_launch_template) : x if lookup(x, "platform", "linux") == "linux"]) > 0
+  worker_has_windows_ami = length([for x in concat(var.worker_groups, var.worker_groups_launch_template) : x if lookup(x, "platform", "linux") == "windows"]) > 0
 
   worker_ami_name_filter = var.worker_ami_name_filter != "" ? var.worker_ami_name_filter : "amazon-eks-node-${var.cluster_version}-v*"
   # Windows nodes are available from k8s 1.14. If cluster version is less than 1.14, fix ami filter to some constant to not fail on 'terraform plan'.
@@ -72,16 +75,16 @@ locals {
     additional_ebs_volumes        = []                          # A list of additional volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: block_device_name (required), volume_size, volume_type, iops, encrypted, kms_key_id (only on launch-template), delete_on_termination. Optional values are grabbed from root volume or from defaults
     warm_pool                     = null                        # If this block is configured, add a Warm Pool to the specified Auto Scaling group.
     # Settings for launch templates
-    root_block_device_name               = data.aws_ami.eks_worker.root_device_name # Root device name for workers. If non is provided, will assume default AMI was used.
-    root_kms_key_id                      = ""                                       # The KMS key to use when encrypting the root storage device
-    launch_template_id                   = null                                     # The id of the launch template used for managed node_groups
-    launch_template_version              = "$Latest"                                # The latest version of the launch template to use in the autoscaling group
-    update_default_version               = false                                    # Update the autoscaling group launch template's default version upon each update
-    launch_template_placement_tenancy    = "default"                                # The placement tenancy for instances
-    launch_template_placement_group      = null                                     # The name of the placement group into which to launch the instances, if any.
-    root_encrypted                       = false                                    # Whether the volume should be encrypted or not
-    eni_delete                           = true                                     # Delete the Elastic Network Interface (ENI) on termination (if set to false you will have to manually delete before destroying)
-    cpu_credits                          = "standard"                               # T2/T3 unlimited mode, can be 'standard' or 'unlimited'. Used 'standard' mode as default to avoid paying higher costs
+    root_block_device_name               = concat(data.aws_ami.eks_worker.*.root_device_name, [""])[0] # Root device name for workers. If non is provided, will assume default AMI was used.
+    root_kms_key_id                      = ""                                                          # The KMS key to use when encrypting the root storage device
+    launch_template_id                   = null                                                        # The id of the launch template used for managed node_groups
+    launch_template_version              = "$Latest"                                                   # The latest version of the launch template to use in the autoscaling group
+    update_default_version               = false                                                       # Update the autoscaling group launch template's default version upon each update
+    launch_template_placement_tenancy    = "default"                                                   # The placement tenancy for instances
+    launch_template_placement_group      = null                                                        # The name of the placement group into which to launch the instances, if any.
+    root_encrypted                       = false                                                       # Whether the volume should be encrypted or not
+    eni_delete                           = true                                                        # Delete the Elastic Network Interface (ENI) on termination (if set to false you will have to manually delete before destroying)
+    cpu_credits                          = "standard"                                                  # T2/T3 unlimited mode, can be 'standard' or 'unlimited'. Used 'standard' mode as default to avoid paying higher costs
     market_type                          = null
     metadata_http_endpoint               = "enabled"  # The state of the metadata service: enabled, disabled.
     metadata_http_tokens                 = "optional" # If session tokens are required: optional, required.

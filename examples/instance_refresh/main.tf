@@ -228,7 +228,7 @@ resource "aws_autoscaling_lifecycle_hook" "aws_node_termination_handler" {
 module "eks" {
   source          = "../.."
   cluster_name    = local.cluster_name
-  cluster_version = "1.19"
+  cluster_version = "1.20"
   subnets         = module.vpc.public_subnets
   vpc_id          = module.vpc.vpc_id
   enable_irsa     = true
