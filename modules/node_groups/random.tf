@@ -23,5 +23,9 @@ resource "random_pet" "node_groups" {
     launch_template = lookup(each.value, "launch_template_id", null)
   }
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   depends_on = [var.ng_depends_on]
 }
