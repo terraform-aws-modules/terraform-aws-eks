@@ -239,9 +239,12 @@ module "eks" {
       asg_max_size                         = 2
       asg_desired_capacity                 = 2
       instance_refresh_enabled             = true
-      instance_refresh_triggers            = ["tag"]
+      instance_refresh_instance_warmup     = 60
       public_ip                            = true
       metadata_http_put_response_hop_limit = 3
+      use_latest_version                   = true
+      update_default_version               = true
+      instance_refresh_triggers            = ["tag"]
       tags = [
         {
           key                 = "aws-node-termination-handler/managed"

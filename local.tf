@@ -75,7 +75,9 @@ locals {
     root_block_device_name               = data.aws_ami.eks_worker.root_device_name # Root device name for workers. If non is provided, will assume default AMI was used.
     root_kms_key_id                      = ""                                       # The KMS key to use when encrypting the root storage device
     launch_template_id                   = null                                     # The id of the launch template used for managed node_groups
-    launch_template_version              = "$Latest"                                # The lastest version of the launch template to use in the autoscaling group
+    launch_template_version              = "$Latest"                                # The latest version of the launch template to use in the autoscaling and node groups. Must be explicitly set in `worker_groups_launch_template`.
+    use_latest_version                   = true                                     # Set the autoscaling group to use the latest version of the launch template, otherwise the default template version will be used. Ignored when `launch_template_version` is set in `worker_groups_launch_template`.
+    update_default_version               = false                                    # Update the autoscaling group launch template's default version upon each update
     launch_template_placement_tenancy    = "default"                                # The placement tenancy for instances
     launch_template_placement_group      = null                                     # The name of the placement group into which to launch the instances, if any.
     root_encrypted                       = false                                    # Whether the volume should be encrypted or not
