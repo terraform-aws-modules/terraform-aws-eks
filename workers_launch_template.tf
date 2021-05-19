@@ -143,9 +143,9 @@ resource "aws_autoscaling_group" "workers_launch_template" {
             "launch_template_version",
             lookup(
               var.worker_groups_launch_template[count.index],
-              "use_latest_version",
-              local.workers_group_defaults["use_latest_version"]
-            )
+              "launch_template_version",
+              local.workers_group_defaults["launch_template_version"]
+            ) == "$Latest"
             ? aws_launch_template.workers_launch_template.*.latest_version[count.index]
             : aws_launch_template.workers_launch_template.*.default_version[count.index]
           )
@@ -177,9 +177,9 @@ resource "aws_autoscaling_group" "workers_launch_template" {
         "launch_template_version",
         lookup(
           var.worker_groups_launch_template[count.index],
-          "use_latest_version",
-          local.workers_group_defaults["use_latest_version"]
-        )
+          "launch_template_version",
+          local.workers_group_defaults["launch_template_version"]
+        ) == "$Latest"
         ? aws_launch_template.workers_launch_template.*.latest_version[count.index]
         : aws_launch_template.workers_launch_template.*.default_version[count.index]
       )

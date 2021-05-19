@@ -241,7 +241,6 @@ module "eks" {
       instance_refresh_instance_warmup     = 60
       public_ip                            = true
       metadata_http_put_response_hop_limit = 3
-      use_latest_version                   = true
       update_default_version               = true
       instance_refresh_triggers            = ["tag"]
       tags = [
