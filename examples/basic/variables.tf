@@ -7,7 +7,7 @@ variable "map_accounts" {
   type        = list(string)
 
   default = [
-    "777777777777",
+    "711129375688",
     "888888888888",
   ]
 }
@@ -22,8 +22,9 @@ variable "map_roles" {
 
   default = [
     {
-      rolearn  = "arn:aws:iam::66666666666:role/role1"
-      username = "role1"
+      rolearn  = "arn:aws:iam::711129375688:role/role1"
+      rolearn  = "arn:aws:iam::711129375688:role/aws-service-role/eks.amazonaws.com/AWSServiceRoleForAmazonEKS"
+      username = "AWSServiceRoleForAmazonEKS"
       groups   = ["system:masters"]
     },
   ]
@@ -39,13 +40,8 @@ variable "map_users" {
 
   default = [
     {
-      userarn  = "arn:aws:iam::66666666666:user/user1"
-      username = "user1"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::66666666666:user/user2"
-      username = "user2"
+      userarn  = "arn:aws:iam::711129375688:user/dpeacock@hashicorp.com"
+      username = "dpeacock@hashicorp.com"
       groups   = ["system:masters"]
     },
   ]
