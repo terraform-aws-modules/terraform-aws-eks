@@ -22,7 +22,6 @@ variable "map_roles" {
 
   default = [
     {
-      rolearn  = "arn:aws:iam::711129375688:role/role1"
       rolearn  = "arn:aws:iam::711129375688:role/aws-service-role/eks.amazonaws.com/AWSServiceRoleForAmazonEKS"
       username = "AWSServiceRoleForAmazonEKS"
       groups   = ["system:masters"]
