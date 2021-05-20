@@ -21,7 +21,7 @@ resource "aws_eks_node_group" "workers" {
   force_update_version = lookup(each.value, "force_update_version", null)
 
   dynamic "remote_access" {
-    for_each = each.value["key_name"] != "" && each.value["launch_template_id"] == null && ! each.value["create_launch_template"] ? [{
+    for_each = each.value["key_name"] != "" && each.value["launch_template_id"] == null && !each.value["create_launch_template"] ? [{
       ec2_ssh_key               = each.value["key_name"]
       source_security_group_ids = lookup(each.value, "source_security_group_ids", [])
     }] : []
