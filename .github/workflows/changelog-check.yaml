@@ -6,6 +6,8 @@ on:
     branches-ignore:
       - releases/**
 
+permissions: write-all
+
 jobs:
   comment:
     name: Comment
@@ -21,11 +23,10 @@ jobs:
       - name: PR Comment
         if: ${{ steps.prc.outputs.comment-id == '' }}
         uses: peter-evans/create-or-update-comment@v1
-        # env:
-        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             Thank you for your contribution!
 
