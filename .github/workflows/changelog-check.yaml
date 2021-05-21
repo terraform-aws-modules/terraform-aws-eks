@@ -21,8 +21,8 @@ jobs:
       - name: PR Comment
         if: ${{ steps.prc.outputs.comment-id == '' }}
         uses: peter-evans/create-or-update-comment@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
