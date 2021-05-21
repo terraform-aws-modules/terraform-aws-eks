@@ -7,8 +7,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     compact(
       [
         coalescelist(aws_eks_cluster.this[*].name, [""])[0],
-        lookup(var.worker_groups_launch_template[count.index], "name", count.index),
-        lookup(var.worker_groups_launch_template[count.index], "asg_recreate_on_change", local.workers_group_defaults["asg_recreate_on_change"]) ? random_pet.workers_launch_template[count.index].id : ""
+        lookup(var.worker_groups_launch_template[count.index], "name", count.index)
       ]
     )
   )
@@ -142,7 +141,13 @@ resource "aws_autoscaling_group" "workers_launch_template" {
           version = lookup(
             var.worker_groups_launch_template[count.index],
             "launch_template_version",
-            local.workers_group_defaults["launch_template_version"],
+            lookup(
+              var.worker_groups_launch_template[count.index],
+              "launch_template_version",
+              local.workers_group_defaults["launch_template_version"]
+            ) == "$Latest"
+            ? aws_launch_template.workers_launch_template.*.latest_version[count.index]
+            : aws_launch_template.workers_launch_template.*.default_version[count.index]
           )
         }
 
@@ -157,7 +162,6 @@ resource "aws_autoscaling_group" "workers_launch_template" {
             instance_type = override.value
           }
         }
-
       }
     }
   }
@@ -171,7 +175,13 @@ resource "aws_autoscaling_group" "workers_launch_template" {
       version = lookup(
         var.worker_groups_launch_template[count.index],
         "launch_template_version",
-        local.workers_group_defaults["launch_template_version"],
+        lookup(
+          var.worker_groups_launch_template[count.index],
+          "launch_template_version",
+          local.workers_group_defaults["launch_template_version"]
+        ) == "$Latest"
+        ? aws_launch_template.workers_launch_template.*.latest_version[count.index]
+        : aws_launch_template.workers_launch_template.*.default_version[count.index]
       )
     }
   }
@@ -239,6 +249,33 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     }
   }
 
+  # logic duplicated in workers.tf
+  dynamic "instance_refresh" {
+    for_each = lookup(var.worker_groups_launch_template[count.index],
+      "instance_refresh_enabled",
+    local.workers_group_defaults["instance_refresh_enabled"]) ? [1] : []
+    content {
+      strategy = lookup(
+        var.worker_groups_launch_template[count.index], "instance_refresh_strategy",
+        local.workers_group_defaults["instance_refresh_strategy"]
+      )
+      preferences {
+        instance_warmup = lookup(
+          var.worker_groups_launch_template[count.index], "instance_refresh_instance_warmup",
+          local.workers_group_defaults["instance_refresh_instance_warmup"]
+        )
+        min_healthy_percentage = lookup(
+          var.worker_groups_launch_template[count.index], "instance_refresh_min_healthy_percentage",
+          local.workers_group_defaults["instance_refresh_min_healthy_percentage"]
+        )
+      }
+      triggers = lookup(
+        var.worker_groups_launch_template[count.index], "instance_refresh_triggers",
+        local.workers_group_defaults["instance_refresh_triggers"]
+      )
+    }
+  }
+
   lifecycle {
     create_before_destroy = true
     ignore_changes        = [desired_capacity]
@@ -252,6 +289,12 @@ resource "aws_launch_template" "workers_launch_template" {
     "name",
     count.index,
   )}"
+
+  update_default_version = lookup(
+    var.worker_groups_launch_template[count.index],
+    "update_default_version",
+    local.workers_group_defaults["update_default_version"],
+  )
 
   network_interfaces {
     associate_public_ip_address = lookup(
@@ -318,7 +361,7 @@ resource "aws_launch_template" "workers_launch_template" {
     local.workers_group_defaults["key_name"],
   )
   user_data = base64encode(
-    data.template_file.launch_template_userdata.*.rendered[count.index],
+    local.launch_template_userdata_rendered[count.index],
   )
 
   ebs_optimized = lookup(
@@ -385,7 +428,7 @@ resource "aws_launch_template" "workers_launch_template" {
   }
 
   dynamic "instance_market_options" {
-    for_each = lookup(var.worker_groups_launch_template[count.index], "market_type", null) == null ? [] : list(lookup(var.worker_groups_launch_template[count.index], "market_type", null))
+    for_each = lookup(var.worker_groups_launch_template[count.index], "market_type", null) == null ? [] : tolist([lookup(var.worker_groups_launch_template[count.index], "market_type", null)])
     content {
       market_type = instance_market_options.value
     }
@@ -543,29 +586,6 @@ resource "aws_launch_template" "workers_launch_template" {
   ]
 }
 
-resource "random_pet" "workers_launch_template" {
-  count = var.create_eks ? local.worker_group_launch_template_count : 0
-
-  separator = "-"
-  length    = 2
-
-  keepers = {
-    lt_name = join(
-      "-",
-      compact(
-        [
-          aws_launch_template.workers_launch_template[count.index].name,
-          aws_launch_template.workers_launch_template[count.index].latest_version
-        ]
-      )
-    )
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
 resource "aws_iam_instance_profile" "workers_launch_template" {
   count       = var.manage_worker_iam_resources && var.create_eks ? local.worker_group_launch_template_count : 0
   name_prefix = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
@@ -575,6 +595,7 @@ resource "aws_iam_instance_profile" "workers_launch_template" {
     local.default_iam_role_id,
   )
   path = var.iam_path
+  tags = var.tags
 
   lifecycle {
     create_before_destroy = true

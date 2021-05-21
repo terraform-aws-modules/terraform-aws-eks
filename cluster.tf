@@ -53,6 +53,7 @@ resource "aws_eks_cluster" "this" {
 }
 
 resource "aws_security_group_rule" "cluster_private_access" {
+  description = "Allow private K8S API ingress from custom source."
   count       = var.create_eks && var.cluster_create_endpoint_private_access_sg_rule && var.cluster_endpoint_private_access ? 1 : 0
   type        = "ingress"
   from_port   = 443
@@ -64,21 +65,11 @@ resource "aws_security_group_rule" "cluster_private_access" {
 }
 
 
-resource "null_resource" "wait_for_cluster" {
-  count = var.create_eks && var.manage_aws_auth ? 1 : 0
-
-  depends_on = [
-    aws_eks_cluster.this,
-    aws_security_group_rule.cluster_private_access,
-  ]
-
-  provisioner "local-exec" {
-    command     = var.wait_for_cluster_cmd
-    interpreter = var.wait_for_cluster_interpreter
-    environment = {
-      ENDPOINT = aws_eks_cluster.this[0].endpoint
-    }
-  }
+data "http" "wait_for_cluster" {
+  count          = var.create_eks && var.manage_aws_auth ? 1 : 0
+  url            = format("%s/healthz", aws_eks_cluster.this[0].endpoint)
+  ca_certificate = base64decode(coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0])
+  timeout        = 300
 }
 
 resource "aws_security_group" "cluster" {
@@ -170,6 +161,7 @@ resource "aws_iam_policy" "cluster_elb_sl_role_creation" {
   description = "Permissions for EKS to create AWSServiceRoleForElasticLoadBalancing service-linked role"
   policy      = data.aws_iam_policy_document.cluster_elb_sl_role_creation[0].json
   path        = var.iam_path
+  tags        = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_elb_sl_role_creation" {

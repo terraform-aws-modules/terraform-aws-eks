@@ -7,8 +7,7 @@ resource "aws_autoscaling_group" "workers" {
     compact(
       [
         coalescelist(aws_eks_cluster.this[*].name, [""])[0],
-        lookup(var.worker_groups[count.index], "name", count.index),
-        lookup(var.worker_groups[count.index], "asg_recreate_on_change", local.workers_group_defaults["asg_recreate_on_change"]) ? random_pet.workers[count.index].id : ""
+        lookup(var.worker_groups[count.index], "name", count.index)
       ]
     )
   )
@@ -163,6 +162,33 @@ resource "aws_autoscaling_group" "workers" {
     }
   }
 
+  # logic duplicated in workers_launch_template.tf
+  dynamic "instance_refresh" {
+    for_each = lookup(var.worker_groups[count.index],
+      "instance_refresh_enabled",
+    local.workers_group_defaults["instance_refresh_enabled"]) ? [1] : []
+    content {
+      strategy = lookup(
+        var.worker_groups[count.index], "instance_refresh_strategy",
+        local.workers_group_defaults["instance_refresh_strategy"]
+      )
+      preferences {
+        instance_warmup = lookup(
+          var.worker_groups[count.index], "instance_refresh_instance_warmup",
+          local.workers_group_defaults["instance_refresh_instance_warmup"]
+        )
+        min_healthy_percentage = lookup(
+          var.worker_groups[count.index], "instance_refresh_min_healthy_percentage",
+          local.workers_group_defaults["instance_refresh_min_healthy_percentage"]
+        )
+      }
+      triggers = lookup(
+        var.worker_groups[count.index], "instance_refresh_triggers",
+        local.workers_group_defaults["instance_refresh_triggers"]
+      )
+    }
+  }
+
   lifecycle {
     create_before_destroy = true
     ignore_changes        = [desired_capacity]
@@ -205,7 +231,7 @@ resource "aws_launch_configuration" "workers" {
     "key_name",
     local.workers_group_defaults["key_name"],
   )
-  user_data_base64 = base64encode(data.template_file.userdata.*.rendered[count.index])
+  user_data_base64 = base64encode(local.userdata_rendered[count.index])
   ebs_optimized = lookup(
     var.worker_groups[count.index],
     "ebs_optimized",
@@ -326,21 +352,6 @@ resource "aws_launch_configuration" "workers" {
   ]
 }
 
-resource "random_pet" "workers" {
-  count = var.create_eks ? local.worker_group_count : 0
-
-  separator = "-"
-  length    = 2
-
-  keepers = {
-    lc_name = aws_launch_configuration.workers[count.index].name
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
 resource "aws_security_group" "workers" {
   count       = var.worker_create_security_group && var.create_eks ? 1 : 0
   name_prefix = var.cluster_name
@@ -453,6 +464,7 @@ resource "aws_iam_instance_profile" "workers" {
   )
 
   path = var.iam_path
+  tags = var.tags
 
   lifecycle {
     create_before_destroy = true
