@@ -5,8 +5,7 @@ on:
       - CHANGELOG.md
     branches-ignore:
       - releases/**
-
-permissions: write-all
+  pull_request_target:
 
 jobs:
   comment:
