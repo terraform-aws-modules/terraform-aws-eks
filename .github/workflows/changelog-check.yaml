@@ -25,10 +25,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          body: |-
+          body: |
             Thank you for your contribution!
+
             The `CHANGELOG.md` file contents are handled by the maintainers during merge. This is to prevent pull request merge conflicts.
             Please see the Contributing Guide for additional pull request review items.
+
             Remove any changes to the `CHANGELOG.md` file and commit them in this pull request.
       - name: Fail the check if changelog change
         run: exit 1
