@@ -21,6 +21,7 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | ami\_release\_version | AMI version of workers | string | Provider default behavior |
 | ami\_type | AMI Type. See Terraform or AWS docs | string | Provider default behavior |
 | capacity\_type | Type of instance capacity to provision. Options are `ON_DEMAND` and `SPOT` | string | Provider default behavior |
+| force\_update\_version | Force version update if existing pods are unable to be drained due to a pod disruption budget issue. | bool | Provider default behavior |
 | desired\_capacity | Desired number of workers | number | `var.workers_group_defaults[asg_desired_capacity]` |
 | disk\_size | Workers' disk size | number | Provider default behavior |
 | disk\_type | Workers' disk type. Require `create_launch_template` to be `true`| number | `gp3` |
