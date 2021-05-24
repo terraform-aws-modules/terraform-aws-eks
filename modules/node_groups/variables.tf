@@ -19,6 +19,18 @@ variable "workers_group_defaults" {
   type        = any
 }
 
+variable "worker_security_group_id" {
+  description = "If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the EKS cluster."
+  type        = string
+  default     = ""
+}
+
+variable "worker_additional_security_group_ids" {
+  description = "A list of additional security group ids to attach to worker instances"
+  type        = list(string)
+  default     = []
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
