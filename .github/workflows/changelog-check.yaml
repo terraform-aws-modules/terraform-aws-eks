@@ -1,10 +1,11 @@
 name: CHANGELOG Checks
 on:
+  push:
+    branches:
+      - master
   pull_request:
     paths:
       - CHANGELOG.md
-    branches-ignore:
-      - releases/**
   pull_request_target:
 
 jobs:
