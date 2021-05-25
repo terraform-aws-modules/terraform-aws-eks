@@ -10,6 +10,18 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v16.2.0"></a>
+## [v16.2.0] - 2021-05-24
+FEATURES:
+- Add ability to forcefully update nodes in managed node groups ([#1380](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1380))
+
+BUG FIXES:
+- Bump `terraform-provider-http` required version to 2.4.1 to avoid TLS Cert Pool issue on Windows ([#1387](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1387))
+
+DOCS:
+- Update license to Apache 2 License ([#1375](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1375))
+
+
 <a name="v16.1.0"></a>
 ## [v16.1.0] - 2021-05-19
 FEATURES:
@@ -327,7 +339,8 @@ CI:
 - Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.1.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.2.0...HEAD
+[v16.2.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.1.0...v16.2.0
 [v16.1.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.0.1...v16.1.0
 [v16.0.1]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.0.0...v16.0.1
 [v16.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v15.2.0...v16.0.0
