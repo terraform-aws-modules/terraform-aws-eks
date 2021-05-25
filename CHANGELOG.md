@@ -10,6 +10,44 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v16.2.0"></a>
+## [v16.2.0] - 2021-05-24
+FEATURES:
+- Add ability to forcefully update nodes in managed node groups ([#1380](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1380))
+
+BUG FIXES:
+- Bump `terraform-provider-http` required version to 2.4.1 to avoid TLS Cert Pool issue on Windows ([#1387](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1387))
+
+DOCS:
+- Update license to Apache 2 License ([#1375](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1375))
+
+
+<a name="v16.1.0"></a>
+## [v16.1.0] - 2021-05-19
+FEATURES:
+- Search for Windows or Linux AMIs only if they are needed ([#1371](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1371))
+
+BUG FIXES:
+- Set an ASG's launch template version to an explicit version to automatically trigger instance refresh ([#1370](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1370))
+- Add description for private API ingress Security Group Rule ([#1299](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1299))
+
+DOCS:
+- Fix cluster autoscaler tags in IRSA example ([#1204](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1204))
+- Add Bottlerocket example ([#1296](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1296))
+
+NOTES:
+- Set an ASG's launch template version to an explicit version automatically. This will ensure that an instance refresh will be triggered whenever the launch template changes. The default `launch_template_version` is now used to determine the latest or default version of the created launch template for self-managed worker groups.
+
+
+<a name="v16.0.1"></a>
+## [v16.0.1] - 2021-05-19
+BUG FIXES:
+- Bump `terraform-aws-modules/http` provider version to support darwin arm64 release ([#1369](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1369))
+
+DOCS:
+- Use IRSA for Node Termination Handler IAM policy attachement in Instance Refresh example ([#1373](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1373))
+
+
 <a name="v16.0.0"></a>
 ## [v16.0.0] - 2021-05-17
 FEATURES:
@@ -301,7 +339,10 @@ CI:
 - Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.0.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.2.0...HEAD
+[v16.2.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.1.0...v16.2.0
+[v16.1.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.0.1...v16.1.0
+[v16.0.1]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.0.0...v16.0.1
 [v16.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v15.2.0...v16.0.0
 [v15.2.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v15.1.0...v15.2.0
 [v15.1.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v15.0.0...v15.1.0

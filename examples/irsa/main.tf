@@ -39,7 +39,7 @@ module "vpc" {
 module "eks" {
   source          = "../.."
   cluster_name    = local.cluster_name
-  cluster_version = "1.17"
+  cluster_version = "1.20"
   subnets         = module.vpc.public_subnets
   vpc_id          = module.vpc.vpc_id
   enable_irsa     = true
@@ -58,7 +58,7 @@ module "eks" {
         {
           "key"                 = "k8s.io/cluster-autoscaler/${local.cluster_name}"
           "propagate_at_launch" = "false"
-          "value"               = "true"
+          "value"               = "owned"
         }
       ]
     }

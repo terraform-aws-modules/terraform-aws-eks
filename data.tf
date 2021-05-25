@@ -14,6 +14,8 @@ data "aws_iam_policy_document" "workers_assume_role_policy" {
 }
 
 data "aws_ami" "eks_worker" {
+  count = local.worker_has_linux_ami ? 1 : 0
+
   filter {
     name   = "name"
     values = [local.worker_ami_name_filter]
@@ -25,6 +27,8 @@ data "aws_ami" "eks_worker" {
 }
 
 data "aws_ami" "eks_worker_windows" {
+  count = local.worker_has_windows_ami ? 1 : 0
+
   filter {
     name   = "name"
     values = [local.worker_ami_name_filter_windows]
@@ -79,3 +83,15 @@ data "aws_iam_instance_profile" "custom_worker_group_launch_template_iam_instanc
 }
 
 data "aws_partition" "current" {}
+
+data "http" "wait_for_cluster" {
+  count          = var.create_eks && var.manage_aws_auth ? 1 : 0
+  url            = format("%s/healthz", aws_eks_cluster.this[0].endpoint)
+  ca_certificate = base64decode(coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0])
+  timeout        = 300
+
+  depends_on = [
+    aws_eks_cluster.this,
+    aws_security_group_rule.cluster_private_access,
+  ]
+}

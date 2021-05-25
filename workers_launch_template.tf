@@ -141,7 +141,13 @@ resource "aws_autoscaling_group" "workers_launch_template" {
           version = lookup(
             var.worker_groups_launch_template[count.index],
             "launch_template_version",
-            local.workers_group_defaults["launch_template_version"],
+            lookup(
+              var.worker_groups_launch_template[count.index],
+              "launch_template_version",
+              local.workers_group_defaults["launch_template_version"]
+            ) == "$Latest"
+            ? aws_launch_template.workers_launch_template.*.latest_version[count.index]
+            : aws_launch_template.workers_launch_template.*.default_version[count.index]
           )
         }
 
@@ -169,7 +175,13 @@ resource "aws_autoscaling_group" "workers_launch_template" {
       version = lookup(
         var.worker_groups_launch_template[count.index],
         "launch_template_version",
-        local.workers_group_defaults["launch_template_version"],
+        lookup(
+          var.worker_groups_launch_template[count.index],
+          "launch_template_version",
+          local.workers_group_defaults["launch_template_version"]
+        ) == "$Latest"
+        ? aws_launch_template.workers_launch_template.*.latest_version[count.index]
+        : aws_launch_template.workers_launch_template.*.default_version[count.index]
       )
     }
   }
@@ -277,6 +289,12 @@ resource "aws_launch_template" "workers_launch_template" {
     "name",
     count.index,
   )}"
+
+  update_default_version = lookup(
+    var.worker_groups_launch_template[count.index],
+    "update_default_version",
+    local.workers_group_defaults["update_default_version"],
+  )
 
   network_interfaces {
     associate_public_ip_address = lookup(
