@@ -52,26 +52,6 @@ resource "aws_eks_cluster" "this" {
   ]
 }
 
-resource "aws_security_group_rule" "cluster_private_access" {
-  description = "Allow private K8S API ingress from custom source."
-  count       = var.create_eks && var.cluster_create_endpoint_private_access_sg_rule && var.cluster_endpoint_private_access ? 1 : 0
-  type        = "ingress"
-  from_port   = 443
-  to_port     = 443
-  protocol    = "tcp"
-  cidr_blocks = var.cluster_endpoint_private_access_cidrs
-
-  security_group_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
-}
-
-
-data "http" "wait_for_cluster" {
-  count          = var.create_eks && var.manage_aws_auth ? 1 : 0
-  url            = format("%s/healthz", aws_eks_cluster.this[0].endpoint)
-  ca_certificate = base64decode(coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0])
-  timeout        = 300
-}
-
 resource "aws_security_group" "cluster" {
   count       = var.cluster_create_security_group && var.create_eks ? 1 : 0
   name_prefix = var.cluster_name
@@ -105,6 +85,18 @@ resource "aws_security_group_rule" "cluster_https_worker_ingress" {
   from_port                = 443
   to_port                  = 443
   type                     = "ingress"
+}
+
+resource "aws_security_group_rule" "cluster_private_access" {
+  description = "Allow private K8S API ingress from custom source."
+  count       = var.create_eks && var.cluster_create_endpoint_private_access_sg_rule && var.cluster_endpoint_private_access ? 1 : 0
+  type        = "ingress"
+  from_port   = 443
+  to_port     = 443
+  protocol    = "tcp"
+  cidr_blocks = var.cluster_endpoint_private_access_cidrs
+
+  security_group_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
 }
 
 resource "aws_iam_role" "cluster" {
