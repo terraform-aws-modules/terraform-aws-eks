@@ -1,29 +1,30 @@
 output "cluster_id" {
-  description = "The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready"
-  value       = element(concat(aws_eks_cluster.this.*.id, list("")), 0)
-  # So that calling plans wait for the cluster to be available before attempting
-  # to use it. They will not need to duplicate this null_resource
-  depends_on = [null_resource.wait_for_cluster]
+  description = "The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready."
+  value       = element(concat(aws_eks_cluster.this.*.id, [""]), 0)
+
+  # So that calling plans wait for the cluster to be available before attempting to use it.
+  # There is no need to duplicate this datasource
+  depends_on = [data.http.wait_for_cluster]
 }
 
 output "cluster_arn" {
   description = "The Amazon Resource Name (ARN) of the cluster."
-  value       = element(concat(aws_eks_cluster.this.*.arn, list("")), 0)
+  value       = element(concat(aws_eks_cluster.this.*.arn, [""]), 0)
 }
 
 output "cluster_certificate_authority_data" {
   description = "Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster."
-  value       = element(concat(aws_eks_cluster.this[*].certificate_authority[0].data, list("")), 0)
+  value       = element(concat(aws_eks_cluster.this[*].certificate_authority[0].data, [""]), 0)
 }
 
 output "cluster_endpoint" {
   description = "The endpoint for your EKS Kubernetes API."
-  value       = element(concat(aws_eks_cluster.this.*.endpoint, list("")), 0)
+  value       = element(concat(aws_eks_cluster.this.*.endpoint, [""]), 0)
 }
 
 output "cluster_version" {
   description = "The Kubernetes server version for the EKS cluster."
-  value       = element(concat(aws_eks_cluster.this[*].version, list("")), 0)
+  value       = element(concat(aws_eks_cluster.this[*].version, [""]), 0)
 }
 
 output "cluster_security_group_id" {
@@ -58,22 +59,30 @@ output "cluster_primary_security_group_id" {
 
 output "cloudwatch_log_group_name" {
   description = "Name of cloudwatch log group created"
-  value       = element(concat(aws_cloudwatch_log_group.this[*].name, list("")), 0)
+  value       = element(concat(aws_cloudwatch_log_group.this[*].name, [""]), 0)
 }
 
 output "cloudwatch_log_group_arn" {
   description = "Arn of cloudwatch log group created"
-  value       = element(concat(aws_cloudwatch_log_group.this[*].arn, list("")), 0)
+  value       = element(concat(aws_cloudwatch_log_group.this[*].arn, [""]), 0)
 }
 
 output "kubeconfig" {
-  description = "kubectl config file contents for this EKS cluster."
+  description = "kubectl config file contents for this EKS cluster. Will block on cluster creation until the cluster is really ready."
   value       = local.kubeconfig
+
+  # So that calling plans wait for the cluster to be available before attempting to use it.
+  # There is no need to duplicate this datasource
+  depends_on = [data.http.wait_for_cluster]
 }
 
 output "kubeconfig_filename" {
-  description = "The filename of the generated kubectl config."
+  description = "The filename of the generated kubectl config. Will block on cluster creation until the cluster is really ready."
   value       = concat(local_file.kubeconfig.*.filename, [""])[0]
+
+  # So that calling plans wait for the cluster to be available before attempting to use it.
+  # There is no need to duplicate this datasource
+  depends_on = [data.http.wait_for_cluster]
 }
 
 output "oidc_provider_arn" {
@@ -100,14 +109,19 @@ output "workers_asg_names" {
 output "workers_user_data" {
   description = "User data of worker groups"
   value = concat(
-    data.template_file.userdata.*.rendered,
-    data.template_file.launch_template_userdata.*.rendered,
+    local.userdata_rendered,
+    local.launch_template_userdata_rendered,
   )
 }
 
 output "workers_default_ami_id" {
   description = "ID of the default worker group AMI"
-  value       = data.aws_ami.eks_worker.id
+  value       = local.default_ami_id_linux
+}
+
+output "workers_default_ami_id_windows" {
+  description = "ID of the default Windows worker group AMI"
+  value       = local.default_ami_id_windows
 }
 
 output "workers_launch_template_ids" {

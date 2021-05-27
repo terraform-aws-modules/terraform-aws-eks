@@ -109,6 +109,7 @@ Following IAM permissions are the minimum permissions needed for your IAM user o
                 "iam:DeleteInstanceProfile",
                 "iam:DeleteOpenIDConnectProvider",
                 "iam:DeletePolicy",
+                "iam:DeletePolicyVersion"
                 "iam:DeleteRole",
                 "iam:DeleteRolePolicy",
                 "iam:DeleteServiceLinkedRole",
@@ -133,11 +134,14 @@ Following IAM permissions are the minimum permissions needed for your IAM user o
                 "logs:ListTagsLogGroup",
                 "logs:PutRetentionPolicy",
                 // Following permissions for working with secrets_encryption example
+                "kms:CreateAlias",
                 "kms:CreateGrant",
                 "kms:CreateKey",
+                "kms:DeleteAlias",
                 "kms:DescribeKey",
                 "kms:GetKeyPolicy",
                 "kms:GetKeyRotationStatus",
+                "kms:ListAliases",
                 "kms:ListResourceTags",
                 "kms:ScheduleKeyDeletion"
             ],
