@@ -38,6 +38,12 @@ variable "config_output_path" {
   default     = "./"
 }
 
+variable "kubeconfig_file_permission" {
+  description = "File permission of the Kubectl config file containing cluster configuration saved to `config_output_path.`"
+  type        = string
+  default     = "0600"
+}
+
 variable "write_kubeconfig" {
   description = "Whether to write a Kubectl config file containing the cluster configuration. Saved to `config_output_path`."
   type        = bool
