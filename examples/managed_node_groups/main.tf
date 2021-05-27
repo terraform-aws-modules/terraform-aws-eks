@@ -78,7 +78,7 @@ module "eks" {
       max_capacity     = 10
       min_capacity     = 1
 
-      instance_types = ["m5.large"]
+      instance_types = ["t3.large"]
       capacity_type  = "SPOT"
       k8s_labels = {
         Environment = "test"

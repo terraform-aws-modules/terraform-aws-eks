@@ -1,5 +1,6 @@
 data "cloudinit_config" "workers_userdata" {
-  for_each      = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] }
+  for_each = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] }
+
   gzip          = false
   base64_encode = true
   boundary      = "//"
@@ -12,7 +13,6 @@ data "cloudinit_config" "workers_userdata" {
         kubelet_extra_args = each.value["kubelet_extra_args"]
       }
     )
-
   }
 }
 
@@ -23,9 +23,10 @@ data "cloudinit_config" "workers_userdata" {
 # Trivia: AWS transparently creates a copy of your LaunchTemplate and actually uses that copy then for the node group. If you DONT use a custom AMI,
 # then the default user-data for bootstrapping a cluster is merged in the copy.
 resource "aws_launch_template" "workers" {
-  for_each               = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] }
-  name_prefix            = lookup(each.value, "name", join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id]))
-  description            = lookup(each.value, "name", join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id]))
+  for_each = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] }
+
+  name_prefix            = local.node_groups_names[each.key]
+  description            = format("EKS Managed Node Group custom LT for %s", local.node_groups_names[each.key])
   update_default_version = true
 
   block_device_mappings {
@@ -79,7 +80,7 @@ resource "aws_launch_template" "workers" {
       lookup(var.node_groups_defaults, "additional_tags", {}),
       lookup(var.node_groups[each.key], "additional_tags", {}),
       {
-        Name = lookup(each.value, "name", join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id]))
+        Name = local.node_groups_names[each.key]
       }
     )
   }
@@ -93,12 +94,12 @@ resource "aws_launch_template" "workers" {
       lookup(var.node_groups_defaults, "additional_tags", {}),
       lookup(var.node_groups[each.key], "additional_tags", {}),
       {
-        Name = lookup(each.value, "name", join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id]))
+        Name = local.node_groups_names[each.key]
       }
     )
   }
 
-  # Supplying custom tags to EKS instances ENI's  
+  # Supplying custom tags to EKS instances ENI's
   tag_specifications {
     resource_type = "network-interface"
 
@@ -107,7 +108,7 @@ resource "aws_launch_template" "workers" {
       lookup(var.node_groups_defaults, "additional_tags", {}),
       lookup(var.node_groups[each.key], "additional_tags", {}),
       {
-        Name = lookup(each.value, "name", join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id]))
+        Name = local.node_groups_names[each.key]
       }
     )
   }

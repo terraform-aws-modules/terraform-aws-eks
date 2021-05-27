@@ -1,5 +1,3 @@
-data "aws_caller_identity" "current" {}
-
 locals {
   auth_launch_template_worker_roles = [
     for index in range(0, var.create_eks ? local.worker_group_launch_template_count : 0) : {
