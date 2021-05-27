@@ -518,6 +518,18 @@ resource "aws_launch_template" "workers_launch_template" {
 
   }
 
+  dynamic "block_device_mappings" {
+    for_each = lookup(var.worker_groups_launch_template[count.index], "additional_instance_store_volumes", local.workers_group_defaults["additional_instance_store_volumes"])
+    content {
+      device_name = block_device_mappings.value.block_device_name
+      virtual_name = lookup(
+        block_device_mappings.value,
+        "virtual_name",
+        local.workers_group_defaults["instance_store_virtual_name"],
+      )
+    }
+  }
+
   tag_specifications {
     resource_type = "volume"
 
