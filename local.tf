@@ -20,13 +20,21 @@ locals {
     x,
     "platform",
     # Fallback on default `platform` if it's not defined in current worker group
-    lookup(merge({ platform = local.default_platform }, var.workers_group_defaults), "platform", null)
+    lookup(
+      merge({ platform = local.default_platform }, var.workers_group_defaults),
+      "platform",
+      null
+    )
   ) == "linux"]) > 0
   worker_has_windows_ami = length([for x in concat(var.worker_groups, var.worker_groups_launch_template) : x if lookup(
     x,
     "platform",
     # Fallback on default `platform` if it's not defined in current worker group
-    lookup(merge({ platform = local.default_platform }, var.workers_group_defaults), "platform", null)
+    lookup(
+      merge({ platform = local.default_platform }, var.workers_group_defaults),
+      "platform",
+      null
+    )
   ) == "windows"]) > 0
 
   worker_ami_name_filter = var.worker_ami_name_filter != "" ? var.worker_ami_name_filter : "amazon-eks-node-${var.cluster_version}-v*"
