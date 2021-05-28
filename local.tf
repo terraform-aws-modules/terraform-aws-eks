@@ -16,7 +16,7 @@ locals {
   worker_group_launch_template_count = length(var.worker_groups_launch_template)
 
   worker_has_linux_ami   = length([for x in concat(var.worker_groups, var.worker_groups_launch_template) : x if lookup(x, "platform", "linux") == "linux"]) > 0
-  worker_has_windows_ami = length([for x in concat(var.worker_groups, var.worker_groups_launch_template) : x if lookup(x, "platform", "linux") == "windows"]) > 0
+  worker_has_windows_ami = length([for x in concat(var.worker_groups, var.worker_groups_launch_template) : x if lookup(x, "platform", "windows") == "windows"]) > 0
 
   worker_ami_name_filter = var.worker_ami_name_filter != "" ? var.worker_ami_name_filter : "amazon-eks-node-${var.cluster_version}-v*"
   # Windows nodes are available from k8s 1.14. If cluster version is less than 1.14, fix ami filter to some constant to not fail on 'terraform plan'.
