@@ -10,6 +10,12 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v17.0.2"></a>
+## [v17.0.2] - 2021-05-28
+BUG FIXES:
+- Don't add tags on network interfaces because it's not supported yet in `terraform-provider-aws` ([#1407](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1407))
+
+
 <a name="v17.0.1"></a>
 ## [v17.0.1] - 2021-05-28
 BUG FIXES:
@@ -375,7 +381,8 @@ CI:
 - Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.1...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.2...HEAD
+[v17.0.2]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.1...v17.0.2
 [v17.0.1]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.0...v17.0.1
 [v17.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.2.0...v17.0.0
 [v16.2.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.1.0...v16.2.0
