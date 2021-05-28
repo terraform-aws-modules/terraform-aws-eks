@@ -272,7 +272,7 @@ variable "cluster_endpoint_private_access" {
 }
 
 variable "cluster_endpoint_public_access" {
-  description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled. When you this to `false` ensure you have a proper private access with `cluster_endpoint_private_access = true`."
+  description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled. When it's set to `false` ensure to have a proper private access with `cluster_endpoint_private_access = true`."
   type        = bool
   default     = true
 }
