@@ -10,6 +10,16 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v17.0.3"></a>
+## [v17.0.3] - 2021-05-28
+BUG FIXES:
+- Fix AMI filtering when the default platform is provided in `var.workers_group_defaults` ([#1413](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1413))
+- Remove duplicated security group rule for EKS private access endpoint ([#1412](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1412))
+
+NOTES:
+- In this bug fix, we remove a duplicated security rule introduced during a merge conflict resolution in [[#1274](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1274)](https://github.com/terraform-aws-modules/terraform-aws-eks/pull/1274)
+
+
 <a name="v17.0.2"></a>
 ## [v17.0.2] - 2021-05-28
 BUG FIXES:
@@ -381,7 +391,8 @@ CI:
 - Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.2...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.3...HEAD
+[v17.0.3]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.2...v17.0.3
 [v17.0.2]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.1...v17.0.2
 [v17.0.1]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.0...v17.0.1
 [v17.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.2.0...v17.0.0
