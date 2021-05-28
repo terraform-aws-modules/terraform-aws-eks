@@ -6,6 +6,7 @@ locals {
   cluster_iam_role_arn              = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.arn) : join("", data.aws_iam_role.custom_cluster_iam_role.*.arn)
   worker_security_group_id          = var.worker_create_security_group ? join("", aws_security_group.workers.*.id) : var.worker_security_group_id
 
+  default_platform       = "linux"
   default_iam_role_id    = concat(aws_iam_role.workers.*.id, [""])[0]
   default_ami_id_linux   = local.workers_group_defaults.ami_id != "" ? local.workers_group_defaults.ami_id : concat(data.aws_ami.eks_worker.*.id, [""])[0]
   default_ami_id_windows = local.workers_group_defaults.ami_id_windows != "" ? local.workers_group_defaults.ami_id_windows : concat(data.aws_ami.eks_worker_windows.*.id, [""])[0]
@@ -15,8 +16,26 @@ locals {
   worker_group_count                 = length(var.worker_groups)
   worker_group_launch_template_count = length(var.worker_groups_launch_template)
 
-  worker_has_linux_ami   = length([for x in concat(var.worker_groups, var.worker_groups_launch_template) : x if lookup(x, "platform", "linux") == "linux"]) > 0
-  worker_has_windows_ami = length([for x in concat(var.worker_groups, var.worker_groups_launch_template) : x if lookup(x, "platform", "linux") == "windows"]) > 0
+  worker_has_linux_ami = length([for x in concat(var.worker_groups, var.worker_groups_launch_template) : x if lookup(
+    x,
+    "platform",
+    # Fallback on default `platform` if it's not defined in current worker group
+    lookup(
+      merge({ platform = local.default_platform }, var.workers_group_defaults),
+      "platform",
+      null
+    )
+  ) == "linux"]) > 0
+  worker_has_windows_ami = length([for x in concat(var.worker_groups, var.worker_groups_launch_template) : x if lookup(
+    x,
+    "platform",
+    # Fallback on default `platform` if it's not defined in current worker group
+    lookup(
+      merge({ platform = local.default_platform }, var.workers_group_defaults),
+      "platform",
+      null
+    )
+  ) == "windows"]) > 0
 
   worker_ami_name_filter = var.worker_ami_name_filter != "" ? var.worker_ami_name_filter : "amazon-eks-node-${var.cluster_version}-v*"
   # Windows nodes are available from k8s 1.14. If cluster version is less than 1.14, fix ami filter to some constant to not fail on 'terraform plan'.
@@ -72,7 +91,7 @@ locals {
     placement_group                   = null                        # The name of the placement group into which to launch the instances, if any.
     service_linked_role_arn           = ""                          # Arn of custom service linked role that Auto Scaling group will use. Useful when you have encrypted EBS
     termination_policies              = []                          # A list of policies to decide how the instances in the auto scale group should be terminated.
-    platform                          = "linux"                     # Platform of workers. either "linux" or "windows"
+    platform                          = local.default_platform      # Platform of workers. Either "linux" or "windows".
     additional_ebs_volumes            = []                          # A list of additional volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: block_device_name (required), volume_size, volume_type, iops, encrypted, kms_key_id (only on launch-template), delete_on_termination. Optional values are grabbed from root volume or from defaults
     additional_instance_store_volumes = []                          # A list of additional instance store (local disk) volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: block_device_name (required), virtual_name.
     warm_pool                         = null                        # If this block is configured, add a Warm Pool to the specified Auto Scaling group.
