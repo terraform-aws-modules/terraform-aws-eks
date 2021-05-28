@@ -57,4 +57,4 @@ Plan: 0 to add, 0 to change, 1 to destroy.
 ```
 5. If everything sounds good to you, run `terraform apply`
 
-After the first apply, we recommand you to create a new node group and let the module use the `node_group_name_prefix` (by removing the `name` argument) to generate names and collision during node groups re-creation if needed, because the lifce cycle is `create_before_destroy = true`.
+After the first apply, we recommand you to create a new node group and let the module use the `node_group_name_prefix` (by removing the `name` argument) to generate names and avoid collision during node groups re-creation if needed, because the lifce cycle is `create_before_destroy = true`.
