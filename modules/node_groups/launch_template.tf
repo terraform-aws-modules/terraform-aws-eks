@@ -99,20 +99,6 @@ resource "aws_launch_template" "workers" {
     )
   }
 
-  # Supplying custom tags to EKS instances ENI's
-  tag_specifications {
-    resource_type = "network-interface"
-
-    tags = merge(
-      var.tags,
-      lookup(var.node_groups_defaults, "additional_tags", {}),
-      lookup(var.node_groups[each.key], "additional_tags", {}),
-      {
-        Name = local.node_groups_names[each.key]
-      }
-    )
-  }
-
   # Tag the LT itself
   tags = merge(
     var.tags,
