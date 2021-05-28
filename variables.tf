@@ -32,14 +32,20 @@ variable "cluster_version" {
   type        = string
 }
 
-variable "config_output_path" {
+variable "kubeconfig_output_path" {
   description = "Where to save the Kubectl config file (if `write_kubeconfig = true`). Assumed to be a directory if the value ends with a forward slash `/`."
   type        = string
   default     = "./"
 }
 
+variable "kubeconfig_file_permission" {
+  description = "File permission of the Kubectl config file containing cluster configuration saved to `kubeconfig_output_path.`"
+  type        = string
+  default     = "0600"
+}
+
 variable "write_kubeconfig" {
-  description = "Whether to write a Kubectl config file containing the cluster configuration. Saved to `config_output_path`."
+  description = "Whether to write a Kubectl config file containing the cluster configuration. Saved to `kubeconfig_output_path`."
   type        = bool
   default     = true
 }
@@ -205,18 +211,6 @@ variable "cluster_delete_timeout" {
   default     = "15m"
 }
 
-variable "wait_for_cluster_cmd" {
-  description = "Custom local-exec command to execute for determining if the eks cluster is healthy. Cluster endpoint will be available as an environment variable called ENDPOINT"
-  type        = string
-  default     = "for i in `seq 1 60`; do if `command -v wget > /dev/null`; then wget --no-check-certificate -O - -q $ENDPOINT/healthz >/dev/null && exit 0 || true; else curl -k -s $ENDPOINT/healthz >/dev/null && exit 0 || true;fi; sleep 5; done; echo TIMEOUT && exit 1"
-}
-
-variable "wait_for_cluster_interpreter" {
-  description = "Custom local-exec command line interpreter for the command to determining if the eks cluster is healthy."
-  type        = list(string)
-  default     = ["/bin/sh", "-c"]
-}
-
 variable "cluster_create_security_group" {
   description = "Whether to create a security group for the cluster or attach the cluster to `cluster_security_group_id`."
   type        = bool
@@ -290,7 +284,7 @@ variable "manage_cluster_iam_resources" {
 }
 
 variable "cluster_iam_role_name" {
-  description = "IAM role name for the cluster. Only applicable if manage_cluster_iam_resources is set to false. Set this to reuse an existing IAM role."
+  description = "IAM role name for the cluster. If manage_cluster_iam_resources is set to false, set this to reuse an existing IAM role. If manage_cluster_iam_resources is set to true, set this to force the created role name."
   type        = string
   default     = ""
 }
@@ -374,4 +368,16 @@ variable "cluster_service_ipv4_cidr" {
   description = "service ipv4 cidr for the kubernetes cluster"
   type        = string
   default     = null
+}
+
+variable "cluster_egress_cidrs" {
+  description = "List of CIDR blocks that are permitted for cluster egress traffic."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "workers_egress_cidrs" {
+  description = "List of CIDR blocks that are permitted for workers egress traffic."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
 }
