@@ -88,7 +88,7 @@ resource "aws_security_group_rule" "cluster_https_worker_ingress" {
 }
 
 resource "aws_security_group_rule" "cluster_private_access_cidrs_source" {
-  count       = var.create_eks && var.cluster_create_endpoint_private_access_sg_rule && var.cluster_endpoint_private_access && (var.cluster_endpoint_private_access_cidrs != null) ? 1 : 0
+  count       = var.create_eks && var.cluster_create_endpoint_private_access_sg_rule && var.cluster_endpoint_private_access && var.cluster_endpoint_private_access_cidrs != null ? 1 : 0
   type        = "ingress"
   from_port   = 443
   to_port     = 443
@@ -99,7 +99,7 @@ resource "aws_security_group_rule" "cluster_private_access_cidrs_source" {
 }
 
 resource "aws_security_group_rule" "cluster_private_access_sg_source" {
-  count                    = var.create_eks && var.cluster_create_endpoint_private_access_sg_rule && var.cluster_endpoint_private_access && (var.cluster_endpoint_private_access_sg != null) ? length(var.cluster_endpoint_private_access_sg) : 0
+  count                    = var.create_eks && var.cluster_create_endpoint_private_access_sg_rule && var.cluster_endpoint_private_access && var.cluster_endpoint_private_access_sg != null ? length(var.cluster_endpoint_private_access_sg) : 0
   type                     = "ingress"
   from_port                = 443
   to_port                  = 443
