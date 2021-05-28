@@ -438,7 +438,7 @@ resource "aws_launch_template" "workers_launch_template" {
     device_name = lookup(
       var.worker_groups_launch_template[count.index],
       "root_block_device_name",
-      local.workers_group_defaults["root_block_device_name"],
+      lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"]) == "windows" ? local.workers_group_defaults["root_block_device_name_windows"] : local.workers_group_defaults["root_block_device_name"],
     )
 
     ebs {

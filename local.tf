@@ -78,16 +78,17 @@ locals {
     warm_pool                         = null                        # If this block is configured, add a Warm Pool to the specified Auto Scaling group.
 
     # Settings for launch templates
-    root_block_device_name               = concat(data.aws_ami.eks_worker.*.root_device_name, [""])[0] # Root device name for workers. If non is provided, will assume default AMI was used.
-    root_kms_key_id                      = ""                                                          # The KMS key to use when encrypting the root storage device
-    launch_template_id                   = null                                                        # The id of the launch template used for managed node_groups
-    launch_template_version              = "$Latest"                                                   # The latest version of the launch template to use in the autoscaling group
-    update_default_version               = false                                                       # Update the autoscaling group launch template's default version upon each update
-    launch_template_placement_tenancy    = "default"                                                   # The placement tenancy for instances
-    launch_template_placement_group      = null                                                        # The name of the placement group into which to launch the instances, if any.
-    root_encrypted                       = false                                                       # Whether the volume should be encrypted or not
-    eni_delete                           = true                                                        # Delete the Elastic Network Interface (ENI) on termination (if set to false you will have to manually delete before destroying)
-    cpu_credits                          = "standard"                                                  # T2/T3 unlimited mode, can be 'standard' or 'unlimited'. Used 'standard' mode as default to avoid paying higher costs
+    root_block_device_name               = concat(data.aws_ami.eks_worker.*.root_device_name, [""])[0]         # Root device name for Linux workers. If not provided, will assume default Linux AMI was used.
+    root_block_device_name_windows       = concat(data.aws_ami.eks_worker_windows.*.root_device_name, [""])[0] # Root device name for Windows workers. If not provided, will assume default Windows AMI was used.
+    root_kms_key_id                      = ""                                                                  # The KMS key to use when encrypting the root storage device
+    launch_template_id                   = null                                                                # The id of the launch template used for managed node_groups
+    launch_template_version              = "$Latest"                                                           # The latest version of the launch template to use in the autoscaling group
+    update_default_version               = false                                                               # Update the autoscaling group launch template's default version upon each update
+    launch_template_placement_tenancy    = "default"                                                           # The placement tenancy for instances
+    launch_template_placement_group      = null                                                                # The name of the placement group into which to launch the instances, if any.
+    root_encrypted                       = false                                                               # Whether the volume should be encrypted or not
+    eni_delete                           = true                                                                # Delete the Elastic Network Interface (ENI) on termination (if set to false you will have to manually delete before destroying)
+    cpu_credits                          = "standard"                                                          # T2/T3 unlimited mode, can be 'standard' or 'unlimited'. Used 'standard' mode as default to avoid paying higher costs
     market_type                          = null
     metadata_http_endpoint               = "enabled"  # The state of the metadata service: enabled, disabled.
     metadata_http_tokens                 = "optional" # If session tokens are required: optional, required.
