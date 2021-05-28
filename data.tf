@@ -94,6 +94,7 @@ data "http" "wait_for_cluster" {
 
   depends_on = [
     aws_eks_cluster.this,
-    aws_security_group_rule.cluster_private_access,
+    aws_security_group_rule.cluster_private_access_sg_source,
+    aws_security_group_rule.cluster_private_access_cidrs_source,
   ]
 }
