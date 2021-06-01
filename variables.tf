@@ -388,7 +388,7 @@ variable "workers_egress_cidrs" {
   default     = ["0.0.0.0/0"]
 }
 
-variable "wait_for_cluster_create_timeout" {
+variable "wait_for_cluster_timeout" {
   description = "A timeout of 5mn when waiting for cluster to be available."
   default     = 300
 }
