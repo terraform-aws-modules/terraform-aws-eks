@@ -387,3 +387,8 @@ variable "workers_egress_cidrs" {
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
+
+variable "wait_for_cluster_create_timeout" {
+  description = "A timeout of 5mn when waiting for cluster to be available."
+  default     = 300
+}
