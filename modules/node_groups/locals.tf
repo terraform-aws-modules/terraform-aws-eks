@@ -32,7 +32,7 @@ locals {
     lookup(
       v,
       "name_prefix",
-      join("-", [var.cluster_name, k])
+      join("-", [var.cluster_name, k, ""])
     )
   ) }
 }
