@@ -88,6 +88,13 @@ module "eks" {
       additional_tags = {
         ExtraTag = "example"
       }
+      taints = [
+        {
+          key    = "dedicated"
+          value  = "gpuGroup"
+          effect = "NO_SCHEDULE"
+        }
+      ]
     }
   }
 
