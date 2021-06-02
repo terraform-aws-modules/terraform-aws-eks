@@ -124,6 +124,7 @@ Following IAM permissions are the minimum permissions needed for your IAM user o
                 "iam:PassRole",
                 "iam:PutRolePolicy",
                 "iam:RemoveRoleFromInstanceProfile",
+                "iam:TagOpenIDConnectProvider",
                 "iam:TagRole",
                 "iam:UntagRole",
                 "iam:UpdateAssumeRolePolicy",
