@@ -75,5 +75,7 @@ resource "aws_eks_node_group" "workers" {
     ignore_changes        = [scaling_config.0.desired_size]
   }
 
+  taint = lookup(each.value, "taint", null)
+
   depends_on = [var.ng_depends_on]
 }
