@@ -96,6 +96,11 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     "health_check_grace_period",
     local.workers_group_defaults["health_check_grace_period"]
   )
+  capacity_rebalance = lookup(
+    var.worker_groups_launch_template[count.index],
+    "capacity_rebalance",
+    local.workers_group_defaults["capacity_rebalance"]
+  )
 
   dynamic "mixed_instances_policy" {
     iterator = item

@@ -97,6 +97,11 @@ resource "aws_autoscaling_group" "workers" {
     "health_check_grace_period",
     local.workers_group_defaults["health_check_grace_period"]
   )
+  capacity_rebalance = lookup(
+    var.worker_groups[count.index],
+    "capacity_rebalance",
+    local.workers_group_defaults["capacity_rebalance"]
+  )
 
   dynamic "initial_lifecycle_hook" {
     for_each = var.worker_create_initial_lifecycle_hooks ? lookup(var.worker_groups[count.index], "asg_initial_lifecycle_hooks", local.workers_group_defaults["asg_initial_lifecycle_hooks"]) : []
