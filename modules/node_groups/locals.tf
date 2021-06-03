@@ -21,6 +21,7 @@ locals {
       public_ip                     = var.workers_group_defaults["public_ip"]
       pre_userdata                  = var.workers_group_defaults["pre_userdata"]
       additional_security_group_ids = var.workers_group_defaults["additional_security_group_ids"]
+      taints                        = []
     },
     var.node_groups_defaults,
     v,
