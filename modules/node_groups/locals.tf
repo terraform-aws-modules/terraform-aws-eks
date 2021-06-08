@@ -13,6 +13,8 @@ locals {
       min_capacity                         = var.workers_group_defaults["asg_min_size"]
       subnets                              = var.workers_group_defaults["subnets"]
       create_launch_template               = false
+      container_runtime                    = "dockerd"
+      use_max_pods                         = true
       kubelet_extra_args                   = var.workers_group_defaults["kubelet_extra_args"]
       disk_size                            = var.workers_group_defaults["root_volume_size"]
       disk_type                            = var.workers_group_defaults["root_volume_type"]

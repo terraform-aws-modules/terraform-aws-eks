@@ -9,10 +9,12 @@ data "cloudinit_config" "workers_userdata" {
     content_type = "text/x-shellscript"
     content = templatefile("${path.module}/templates/userdata.sh.tpl",
       {
-        pre_userdata         = each.value["pre_userdata"]
+        container_runtime    = each.value["container_runtime"]
+        use_max_pods         = each.value["use_max_pods"]
         kubelet_extra_args   = each.value["kubelet_extra_args"]
-        cluster_name         = var.cluster_name
+        pre_userdata         = each.value["pre_userdata"]
         run_bootstrap_script = lookup(each.value, "ami_id", null) != null
+        cluster_name         = var.cluster_name
       }
     )
   }
