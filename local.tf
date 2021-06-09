@@ -189,8 +189,8 @@ locals {
         var.worker_groups[index],
         "userdata_template_file",
         lookup(var.worker_groups[index], "platform", local.workers_group_defaults["platform"]) == "windows"
-        ? "${path.module}/templates/userdata_windows.tpl"
-        : "${path.module}/templates/userdata.sh.tpl"
+        ? coalesce(local.workers_group_defaults["userdata_template_file"], "${path.module}/templates/userdata_windows.tpl")
+        : coalesce(local.workers_group_defaults["userdata_template_file"], "${path.module}/templates/userdata.sh.tpl")
       ),
       merge({
         platform            = lookup(var.worker_groups[index], "platform", local.workers_group_defaults["platform"])
