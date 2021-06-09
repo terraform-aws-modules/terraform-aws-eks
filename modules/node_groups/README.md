@@ -23,6 +23,8 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | capacity\_type | Type of instance capacity to provision. Options are `ON_DEMAND` and `SPOT` | string | Provider default behavior |
 | create_launch_template | Create and use a default launch template | bool |  `false` |
 | desired\_capacity | Desired number of workers | number | `var.workers_group_defaults[asg_desired_capacity]` |
+| disk\_encrypted | Whether the root disk will be encrypyted. Require `create_launch_template` to be `true` and require `disk_kms_key_id` to be set | bool | false |
+| disk\_kms\_key\_id | KMS Key used to encrypt the root disk. Require both `create_launch_template` and `disk_encrypted` to be `true` | string | "" |
 | disk\_size | Workers' disk size | number | Provider default behavior |
 | disk\_type | Workers' disk type. Require `create_launch_template` to be `true`| number | `gp3` |
 | enable_monitoring | Enables/disables detailed monitoring. Require `create_launch_template` to be `true`| bool | `true` |

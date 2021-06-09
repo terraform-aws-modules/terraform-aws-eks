@@ -35,6 +35,8 @@ resource "aws_launch_template" "workers" {
     ebs {
       volume_size           = lookup(each.value, "disk_size", null)
       volume_type           = lookup(each.value, "disk_type", null)
+      encrypted             = lookup(each.value, "disk_encrypted", null)
+      kms_key_id            = lookup(each.value, "disk_kms_key_id", null)
       delete_on_termination = true
     }
   }
