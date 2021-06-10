@@ -1,7 +1,8 @@
 resource "aws_eks_node_group" "workers" {
   for_each = local.node_groups_expanded
 
-  node_group_name = lookup(each.value, "name", join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id]))
+  node_group_name_prefix = lookup(each.value, "name", null) == null ? local.node_groups_names[each.key] : null
+  node_group_name        = lookup(each.value, "name", null)
 
   cluster_name  = var.cluster_name
   node_role_arn = each.value["iam_role_arn"]
@@ -47,12 +48,22 @@ resource "aws_eks_node_group" "workers" {
   dynamic "launch_template" {
     for_each = each.value["launch_template_id"] == null && each.value["create_launch_template"] ? [{
       id      = aws_launch_template.workers[each.key].id
-      version = aws_launch_template.workers[each.key].latest_version
+      version = each.value["launch_template_version"]
     }] : []
 
     content {
       id      = launch_template.value["id"]
       version = launch_template.value["version"]
+    }
+  }
+
+  dynamic "taint" {
+    for_each = each.value["taints"]
+
+    content {
+      key    = taint.value["key"]
+      value  = taint.value["value"]
+      effect = taint.value["effect"]
     }
   }
 

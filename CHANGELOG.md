@@ -10,6 +10,67 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v17.1.0"></a>
+## [v17.1.0] - 2021-06-04
+FEATURES:
+- Add support for Managed Node Groups (`node_groups`) taints ([#1424](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1424))
+- Allow to choose launch template version for Managed Node Groups when `create_launch_template` is set to `true` ([#1419](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1419))
+- Add `capacity_rebalance` support for self-managed worker groups ([#1326](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1326))
+- Add `var.wait_for_cluster_timeout` to allow configuring the wait for cluster timeout ([#1420](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1420))
+
+
+<a name="v17.0.3"></a>
+## [v17.0.3] - 2021-05-28
+BUG FIXES:
+- Fix AMI filtering when the default platform is provided in `var.workers_group_defaults` ([#1413](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1413))
+- Remove duplicated security group rule for EKS private access endpoint ([#1412](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1412))
+
+NOTES:
+- In this bug fix, we remove a duplicated security rule introduced during a merge conflict resolution in [[#1274](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1274)](https://github.com/terraform-aws-modules/terraform-aws-eks/pull/1274)
+
+
+<a name="v17.0.2"></a>
+## [v17.0.2] - 2021-05-28
+BUG FIXES:
+- Don't add tags on network interfaces because it's not supported yet in `terraform-provider-aws` ([#1407](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1407))
+
+
+<a name="v17.0.1"></a>
+## [v17.0.1] - 2021-05-28
+BUG FIXES:
+- Default `root_volume_type` must be `gp2` ([#1404](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1404))
+
+
+<a name="v17.0.0"></a>
+## [v17.0.0] - 2021-05-28
+FEATURES:
+- Add ability to use Security Groups as source for private endpoint access ([#1274](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1274))
+- Define Root device name for Windows self-managed worker groups ([#1401](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1401))
+- Drop random pets from Managed Node Groups ([#1372](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1372))
+- Add multiple selectors on the creation of Fargate profile ([#1378](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1378))
+- Rename `config_output_path` into `kubeconfig_output_path` for naming consistency ([#1399](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1399))
+- Kubeconfig file should not be world or group readable by default ([#1114](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1114))
+- Add tags on network interfaces ([#1362](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1362))
+- Add instance store volume option for instances with local disk ([#1213](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1213))
+
+BUG FIXES:
+- Add back `depends_on` for `data.wait_for_cluster` ([#1389](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1389))
+
+DOCS:
+- Clarify about the `cluster_endpoint_private_access_cidrs` usage ([#1400](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1400))
+- Add KMS aliases handling to IAM permissions ([#1288](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1288))
+
+BREAKING CHANGES:
+- The private endpoint security group rule has been renamed to allow the use of CIDR blocks and Security Groups as source. This will delete the `cluster_private_access` Security Group Rule for existing cluster. Please rename by `aws_security_group_rule.cluster_private_access[0]` into `aws_security_group_rule.cluster_private_access_cidrs_source[0]`.
+- We now decided to remove `random_pet` resources in Managed Node Groups (MNG). Those were used to recreate MNG if something change and also simulate the newly added argument `node_group_name_prefix`. But they were causing a lot of troubles. To upgrade the module without recreating your MNG, you will need to explicitly reuse their previous name and set them in your MNG `name` argument. Please see [upgrade docs](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/upgrades.md#upgrade-module-to-v1700-for-managed-node-groups) for more details.
+- To support multiple selectors for Fargate profiles, we introduced the `selectors` argument which is a list of map. This will break previous configuration with  a single selector `namespace` and `labels`. You'll need to rewrite your configuration to use the `selectors` argument. See [examples](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/examples/fargate/main.tf) dans [docs](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/modules/fargate/README.md) for details.
+- The  variable `config_output_path` is renamed into `kubeconfig_output_path` for naming consistency. Please upgrade your configuration accordingly.
+
+NOTES:
+- Since we now search only for Linux or Windows AMI if there is a worker groups for the corresponding plateform, we can now define different default root block device name for each plateform. Use locals `root_block_device_name` and `root_block_device_name_windows` to define your owns.
+- The kubeconfig file permission is not world and group readable anymore. The default permission is now `600`. This value can be changed with the variable `var.kubeconfig_file_permission`.
+
+
 <a name="v16.2.0"></a>
 ## [v16.2.0] - 2021-05-24
 FEATURES:
@@ -339,7 +400,12 @@ CI:
 - Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.2.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.1.0...HEAD
+[v17.1.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.3...v17.1.0
+[v17.0.3]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.2...v17.0.3
+[v17.0.2]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.1...v17.0.2
+[v17.0.1]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.0...v17.0.1
+[v17.0.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.2.0...v17.0.0
 [v16.2.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.1.0...v16.2.0
 [v16.1.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.0.1...v16.1.0
 [v16.0.1]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v16.0.0...v16.0.1
