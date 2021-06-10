@@ -9,8 +9,9 @@ data "cloudinit_config" "workers_userdata" {
     content_type = "text/x-shellscript"
     content = templatefile("${path.module}/templates/userdata.sh.tpl",
       {
-        pre_userdata       = each.value["pre_userdata"]
+        use_max_pods       = each.value["use_max_pods"]
         kubelet_extra_args = each.value["kubelet_extra_args"]
+        pre_userdata       = each.value["pre_userdata"]
       }
     )
   }
