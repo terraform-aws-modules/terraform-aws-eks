@@ -58,3 +58,70 @@ Plan: 0 to add, 0 to change, 1 to destroy.
 5. If everything sounds good to you, run `terraform apply`
 
 After the first apply, we recommand you to create a new node group and let the module use the `node_group_name_prefix` (by removing the `name` argument) to generate names and avoid collision during node groups re-creation if needed, because the lifce cycle is `create_before_destroy = true`.
+
+## Upgrade module to vXX.X.X for Worker Groups Managed as maps
+
+In this release, we added ability to manage Worker Groups as maps (not lists) which improves the ability to add/remove worker groups.
+
+>NOTE: The new functionality supports only creating groups using Launch Templates!
+
+1. Run `terraform apply` with the previous module version. Make sure all changes are applied before proceeding.
+
+2. Upgrade your module and configure your worker groups by renaming existing variable names as follows:
+
+```
+worker_groups = [...] => worker_groups_legacy = [...]
+
+worker_groups_launch_template = [...] => worker_groups_launch_template_legacy = [...]
+```
+
+Example:
+
+FROM:
+
+```hcl
+  worker_groups_launch_template = [
+    {
+      name                 = "worker-group-1"
+      instance_type        = "t3.small"
+      asg_desired_capacity = 2
+      public_ip            = true
+    },
+  ]
+```
+
+TO:
+
+```hcl
+  worker_groups_launch_template_legacy = [
+    {
+      name                 = "worker-group-1"
+      instance_type        = "t3.small"
+      asg_desired_capacity = 2
+      public_ip            = true
+    },
+  ]
+```
+
+3. Run `terraform plan`. No infrastructure changes expected
+
+4. Starting from now on you could define worker groups in a new way and migrate your workload there. Eventually the legacy groups could be deleted.
+
+Example:
+
+```hcl
+  worker_groups_launch_template_legacy = [
+    {
+      name                 = "worker-group-1"
+      instance_type        = "t3.small"
+      asg_desired_capacity = 2
+    },
+  ]
+
+  worker_groups = {
+    worker-group-1 = {
+      instance_type = "t3.small"
+      asg_desired_capacity = 2
+    },
+  }
+```

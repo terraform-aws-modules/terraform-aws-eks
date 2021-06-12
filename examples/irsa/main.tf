@@ -30,6 +30,10 @@ module "vpc" {
   public_subnets       = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
   enable_dns_hostnames = true
 
+  private_subnet_tags = {
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+  }
+
   public_subnet_tags = {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
     "kubernetes.io/role/elb"                      = "1"
@@ -44,11 +48,11 @@ module "eks" {
   vpc_id          = module.vpc.vpc_id
   enable_irsa     = true
 
-  worker_groups = [
-    {
-      name                 = "worker-group-1"
+  worker_groups = {
+    worker-group-1 = {
       instance_type        = "t3.medium"
       asg_desired_capacity = 1
+
       tags = [
         {
           "key"                 = "k8s.io/cluster-autoscaler/enabled"
@@ -62,5 +66,5 @@ module "eks" {
         }
       ]
     }
-  ]
+  }
 }

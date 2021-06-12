@@ -104,6 +104,12 @@ variable "vpc_id" {
 }
 
 variable "worker_groups" {
+  description = "A map of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys."
+  type        = any
+  default     = {}
+}
+
+variable "worker_groups_legacy" {
   description = "A list of maps defining worker group configurations to be defined using AWS Launch Configurations. See workers_group_defaults for valid keys."
   type        = any
   default     = []
@@ -115,7 +121,7 @@ variable "workers_group_defaults" {
   default     = {}
 }
 
-variable "worker_groups_launch_template" {
+variable "worker_groups_launch_template_legacy" {
   description = "A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys."
   type        = any
   default     = []

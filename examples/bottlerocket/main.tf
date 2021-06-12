@@ -22,7 +22,7 @@ module "eks" {
   write_kubeconfig = false
   manage_aws_auth  = false
 
-  worker_groups_launch_template = [
+  worker_groups_launch_template_legacy = [
     {
       name = "bottlerocket-nodes"
       # passing bottlerocket ami id

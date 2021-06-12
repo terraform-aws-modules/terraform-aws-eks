@@ -64,23 +64,23 @@ data "aws_iam_policy_document" "cluster_assume_role_policy" {
 }
 
 data "aws_iam_role" "custom_cluster_iam_role" {
-  count = var.manage_cluster_iam_resources ? 0 : 1
+  count = var.create_eks && !var.manage_cluster_iam_resources ? 1 : 0
   name  = var.cluster_iam_role_name
 }
 
 data "aws_iam_instance_profile" "custom_worker_group_iam_instance_profile" {
-  count = var.manage_worker_iam_resources ? 0 : local.worker_group_count
+  count = var.create_eks && !var.manage_worker_iam_resources ? local.worker_group_legacy_count : 0
   name = lookup(
-    var.worker_groups[count.index],
+    var.worker_groups_legacy[count.index],
     "iam_instance_profile_name",
     local.workers_group_defaults["iam_instance_profile_name"],
   )
 }
 
 data "aws_iam_instance_profile" "custom_worker_group_launch_template_iam_instance_profile" {
-  count = var.manage_worker_iam_resources ? 0 : local.worker_group_launch_template_count
+  count = var.create_eks && !var.manage_worker_iam_resources ? local.worker_group_launch_template_legacy_count : 0
   name = lookup(
-    var.worker_groups_launch_template[count.index],
+    var.worker_groups_launch_template_legacy[count.index],
     "iam_instance_profile_name",
     local.workers_group_defaults["iam_instance_profile_name"],
   )

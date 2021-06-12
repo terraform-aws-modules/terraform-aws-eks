@@ -23,3 +23,7 @@ output "region" {
   value       = var.region
 }
 
+output "worker_group_instance_profile_arns" {
+  description = "EKS cluster worker groups arns."
+  value       = module.eks.worker_iam_instance_profile_arns
+}

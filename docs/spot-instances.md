@@ -22,57 +22,19 @@ Notes:
 - There is an AWS blog article about this [here](https://aws.amazon.com/blogs/compute/run-your-kubernetes-workloads-on-amazon-ec2-spot-instances-with-amazon-eks/).
 - Consider using [k8s-spot-rescheduler](https://github.com/pusher/k8s-spot-rescheduler) to move pods from on-demand to spot instances.
 
-## Using Launch Configuration
-
-Example worker group configuration that uses an ASG with launch configuration for each worker group:
-
-```hcl
-  worker_groups = [
-    {
-      name                = "on-demand-1"
-      instance_type       = "m4.xlarge"
-      asg_max_size        = 1
-      kubelet_extra_args  = "--node-labels=node.kubernetes.io/lifecycle=normal"
-      suspended_processes = ["AZRebalance"]
-    },
-    {
-      name                = "spot-1"
-      spot_price          = "0.199"
-      instance_type       = "c4.xlarge"
-      asg_max_size        = 20
-      kubelet_extra_args  = "--node-labels=node.kubernetes.io/lifecycle=spot"
-      suspended_processes = ["AZRebalance"]
-    },
-    {
-      name                = "spot-2"
-      spot_price          = "0.20"
-      instance_type       = "m4.xlarge"
-      asg_max_size        = 20
-      kubelet_extra_args  = "--node-labels=node.kubernetes.io/lifecycle=spot"
-      suspended_processes = ["AZRebalance"]
-    }
-  ]
-```
-
 ## Using Launch Templates
 
 Launch Template support is a recent addition to both AWS and this module. It might not be as tried and tested but it's more suitable for spot instances as it allowed multiple instance types in the same worker group:
 
 ```hcl
-  worker_groups = [
-    {
-      name                = "on-demand-1"
+  worker_groups = {
+    on-demand-1 = {
       instance_type       = "m4.xlarge"
       asg_max_size        = 10
       kubelet_extra_args  = "--node-labels=spot=false"
       suspended_processes = ["AZRebalance"]
-    }
-  ]
-
-
-  worker_groups_launch_template = [
-    {
-      name                    = "spot-1"
+    },
+    spot-1 = {
       override_instance_types = ["m5.large", "m5a.large", "m5d.large", "m5ad.large"]
       spot_instance_pools     = 4
       asg_max_size            = 5
@@ -80,7 +42,7 @@ Launch Template support is a recent addition to both AWS and this module. It mig
       kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot"
       public_ip               = true
     },
-  ]
+  }
 ```
 
 ## Using Launch Templates With Both Spot and On Demand

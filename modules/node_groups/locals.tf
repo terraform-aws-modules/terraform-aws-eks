@@ -35,5 +35,6 @@ locals {
       "name_prefix",
       join("-", [var.cluster_name, k])
     )
-  ) }
+    )
+  }
 }

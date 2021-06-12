@@ -47,9 +47,8 @@ module "eks" {
   subnets         = module.vpc.public_subnets
   vpc_id          = module.vpc.vpc_id
 
-  worker_groups_launch_template = [
-    {
-      name                    = "spot-1"
+  worker_groups = {
+    spot-1 = {
       override_instance_types = ["m5.large", "m5a.large", "m5d.large", "m5ad.large"]
       spot_instance_pools     = 4
       asg_max_size            = 5
@@ -57,5 +56,5 @@ module "eks" {
       kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot"
       public_ip               = true
     },
-  ]
+  }
 }
