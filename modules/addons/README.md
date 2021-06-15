@@ -146,4 +146,16 @@ Default:
 
 ## Outputs
 
-No outputs.
+The following outputs are exported:
+
+### <a name="output_coredns_id"></a> [coredns\_id](#output\_coredns\_id)
+
+Description: The id of the CoreDns addon
+
+### <a name="output_kube_proxy_id"></a> [kube\_proxy\_id](#output\_kube\_proxy\_id)
+
+Description: The id of the kube-proxy addon
+
+### <a name="output_vpc_cni_id"></a> [vpc\_cni\_id](#output\_vpc\_cni\_id)
+
+Description: The id of the Amazon VPC CNI addon
