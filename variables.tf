@@ -393,3 +393,21 @@ variable "wait_for_cluster_timeout" {
   type        = number
   default     = 300
 }
+
+variable "create_vpc_cni_addon" {
+  type        = bool
+  description = "Controls if vpc cni addon should be deployed"
+  default     = true
+}
+
+variable "create_kube_proxy_addon" {
+  type        = bool
+  description = "Controls if kube proxy addon should be deployed"
+  default     = true
+}
+
+variable "create_coredns_addon" {
+  type        = bool
+  description = "Controls if coredns addon should be deployed"
+  default     = true
+}
