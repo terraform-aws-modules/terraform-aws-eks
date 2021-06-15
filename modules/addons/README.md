@@ -139,7 +139,8 @@ Default:
 ```json
 {
   "1.18": "v1.7.10-eksbuild.1",
-  "1.19": "v1.7.10-eksbuild.1"
+  "1.19": "v1.7.10-eksbuild.1",
+  "1.20": "v1.7.10-eksbuild.1"
 }
 ```
 
