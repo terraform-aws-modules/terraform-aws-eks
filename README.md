@@ -152,17 +152,18 @@ Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraf
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.40.0 |
-| <a name="provider_http"></a> [http](#provider\_http) | >= 2.4.1 |
-| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | >= 1.11.1 |
-| <a name="provider_local"></a> [local](#provider\_local) | >= 1.4 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 3.45.0 |
+| <a name="provider_http"></a> [http](#provider\_http) | 2.4.1 |
+| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | 2.3.2 |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.1.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_fargate"></a> [fargate](#module\_fargate) | ./modules/fargate |  |
-| <a name="module_node_groups"></a> [node\_groups](#module\_node\_groups) | ./modules/node_groups |  |
+| <a name="module_addons"></a> [addons](#module\_addons) | ./modules/addons | n/a |
+| <a name="module_fargate"></a> [fargate](#module\_fargate) | ./modules/fargate | n/a |
+| <a name="module_node_groups"></a> [node\_groups](#module\_node\_groups) | ./modules/node_groups | n/a |
 
 ## Resources
 
@@ -240,8 +241,11 @@ Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraf
 | <a name="input_cluster_security_group_id"></a> [cluster\_security\_group\_id](#input\_cluster\_security\_group\_id) | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the workers | `string` | `""` | no |
 | <a name="input_cluster_service_ipv4_cidr"></a> [cluster\_service\_ipv4\_cidr](#input\_cluster\_service\_ipv4\_cidr) | service ipv4 cidr for the kubernetes cluster | `string` | `null` | no |
 | <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | Kubernetes version to use for the EKS cluster. | `string` | n/a | yes |
+| <a name="input_create_coredns_addon"></a> [create\_coredns\_addon](#input\_create\_coredns\_addon) | Controls if coredns addon should be deployed | `bool` | `true` | no |
 | <a name="input_create_eks"></a> [create\_eks](#input\_create\_eks) | Controls if EKS resources should be created (it affects almost all resources) | `bool` | `true` | no |
 | <a name="input_create_fargate_pod_execution_role"></a> [create\_fargate\_pod\_execution\_role](#input\_create\_fargate\_pod\_execution\_role) | Controls if the EKS Fargate pod execution IAM role should be created. | `bool` | `true` | no |
+| <a name="input_create_kube_proxy_addon"></a> [create\_kube\_proxy\_addon](#input\_create\_kube\_proxy\_addon) | Controls if kube proxy addon should be deployed | `bool` | `true` | no |
+| <a name="input_create_vpc_cni_addon"></a> [create\_vpc\_cni\_addon](#input\_create\_vpc\_cni\_addon) | Controls if vpc cni addon should be deployed | `bool` | `true` | no |
 | <a name="input_eks_oidc_root_ca_thumbprint"></a> [eks\_oidc\_root\_ca\_thumbprint](#input\_eks\_oidc\_root\_ca\_thumbprint) | Thumbprint of Root CA for EKS OIDC, Valid until 2037 | `string` | `"9e99a48a9960b14926bb7f3b02e22da2b0ab7280"` | no |
 | <a name="input_enable_irsa"></a> [enable\_irsa](#input\_enable\_irsa) | Whether to create OpenID Connect Provider for EKS to enable IRSA | `bool` | `false` | no |
 | <a name="input_fargate_pod_execution_role_name"></a> [fargate\_pod\_execution\_role\_name](#input\_fargate\_pod\_execution\_role\_name) | The IAM Role that provides permissions for the EKS Fargate Profile. | `string` | `null` | no |
@@ -266,7 +270,7 @@ Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraf
 | <a name="input_subnets"></a> [subnets](#input\_subnets) | A list of subnets to place the EKS cluster and workers within. | `list(string)` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources. Tags added to launch configuration or templates override these values for ASG Tags only. | `map(string)` | `{}` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC where the cluster and workers will be deployed. | `string` | n/a | yes |
-| <a name="input_wait_for_cluster_timeout"></a> [wait\_for\_cluster\_timeout](#wait\_for\_cluster\_timeout) | Allows for a configurable timeout (in seconds) when waiting for a cluster to come up | `number` | `300` | no |
+| <a name="input_wait_for_cluster_timeout"></a> [wait\_for\_cluster\_timeout](#input\_wait\_for\_cluster\_timeout) | A timeout (in seconds) to wait for cluster to be available. | `number` | `300` | no |
 | <a name="input_worker_additional_security_group_ids"></a> [worker\_additional\_security\_group\_ids](#input\_worker\_additional\_security\_group\_ids) | A list of additional security group ids to attach to worker instances | `list(string)` | `[]` | no |
 | <a name="input_worker_ami_name_filter"></a> [worker\_ami\_name\_filter](#input\_worker\_ami\_name\_filter) | Name filter for AWS EKS worker AMI. If not provided, the latest official AMI for the specified 'cluster\_version' is used. | `string` | `""` | no |
 | <a name="input_worker_ami_name_filter_windows"></a> [worker\_ami\_name\_filter\_windows](#input\_worker\_ami\_name\_filter\_windows) | Name filter for AWS EKS Windows worker AMI. If not provided, the latest official AMI for the specified 'cluster\_version' is used. | `string` | `""` | no |
