@@ -1,5 +1,5 @@
 resource "aws_eks_addon" "vpc_cni" {
-  count = var.create_vpc_cni_addon ? 1 : 0
+  count = var.create_vpc_cni_addon && var.enable_irsa ? 1 : 0
 
   cluster_name             = var.cluster_name
   addon_name               = "vpc-cni"

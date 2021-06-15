@@ -106,7 +106,7 @@ Default: `null`
 
 ### <a name="input_enable_irsa"></a> [enable\_irsa](#input\_enable\_irsa)
 
-Description: Whether to create iam role for vpc cni and attach it to the service account
+Description: Whether to create iam role for vpc cni and attach it to the service account, if irsa=false vpc cni plugin will not be deployed
 
 Type: `bool`
 

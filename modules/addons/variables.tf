@@ -77,7 +77,7 @@ variable "cluster_oidc_issuer_url" {
 
 variable "enable_irsa" {
   type        = bool
-  description = "Whether to create iam role for vpc cni and attach it to the service account"
+  description = "Whether to create iam role for vpc cni and attach it to the service account, if irsa=false vpc cni plugin will not be deployed"
   default     = true
 }
 
