@@ -1,14 +1,14 @@
-output "vpc_cni_id" {
-  description = "The id of the Amazon VPC CNI addon"
-  value       = aws_eks_addon.vpc_cni[0].id
+output "vpc_cni_arn" {
+  description = "The arn of the Amazon VPC CNI addon"
+  value       = length(aws_eks_addon.vpc_cni) > 0 ? aws_eks_addon.vpc_cni[0].arn : "Not deployed"
 }
 
-output "coredns_id" {
-  description = "The id of the CoreDns addon"
-  value       = aws_eks_addon.coredns[0].id
+output "coredns_arn" {
+  description = "The arn of the CoreDns addon"
+  value       = length(aws_eks_addon.coredns) > 0 ? aws_eks_addon.coredns[0].arn : "Not deployed"
 }
 
-output "kube_proxy_id" {
-  description = "The id of the kube-proxy addon"
-  value       = aws_eks_addon.kube_proxy[0].id
+output "kube_proxy_arn" {
+  description = "The arn of the kube-proxy addon"
+  value       = length(aws_eks_addon.kube_proxy) > 0 ? aws_eks_addon.kube_proxy[0].arn : "Not deployed"
 }

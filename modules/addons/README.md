@@ -60,7 +60,7 @@ The following input variables are optional (have default values):
 
 Description: The CoreDns plugin version for the corresponding version
 
-Type: `map(any)`
+Type: `map(string)`
 
 Default:
 
@@ -116,7 +116,7 @@ Default: `true`
 
 Description: The Kube proxy plugin version for the corresponding eks version
 
-Type: `map(any)`
+Type: `map(string)`
 
 Default:
 
@@ -132,15 +132,14 @@ Default:
 
 Description: The VPC CNI plugin version for the corresponding eks version
 
-Type: `map(any)`
+Type: `map(string)`
 
 Default:
 
 ```json
 {
   "1.18": "v1.7.10-eksbuild.1",
-  "1.19": "v1.7.10-eksbuild.1",
-  "1.20": "v1.7.10-eksbuild.1"
+  "1.19": "v1.7.10-eksbuild.1"
 }
 ```
 
@@ -148,14 +147,14 @@ Default:
 
 The following outputs are exported:
 
-### <a name="output_coredns_id"></a> [coredns\_id](#output\_coredns\_id)
+### <a name="output_coredns_arn"></a> [coredns\_arn](#output\_coredns\_arn)
 
-Description: The id of the CoreDns addon
+Description: The arn of the CoreDns addon
 
-### <a name="output_kube_proxy_id"></a> [kube\_proxy\_id](#output\_kube\_proxy\_id)
+### <a name="output_kube_proxy_arn"></a> [kube\_proxy\_arn](#output\_kube\_proxy\_arn)
 
-Description: The id of the kube-proxy addon
+Description: The arn of the kube-proxy addon
 
-### <a name="output_vpc_cni_id"></a> [vpc\_cni\_id](#output\_vpc\_cni\_id)
+### <a name="output_vpc_cni_arn"></a> [vpc\_cni\_arn](#output\_vpc\_cni\_arn)
 
-Description: The id of the Amazon VPC CNI addon
+Description: The arn of the Amazon VPC CNI addon

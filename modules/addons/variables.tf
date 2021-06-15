@@ -21,7 +21,6 @@ variable "cluster_name" {
   description = "Name of parent cluster"
 }
 
-
 variable "cluster_version" {
   type        = string
   description = "Kubernetes version to use for the EKS cluster."
@@ -29,7 +28,7 @@ variable "cluster_version" {
 
 variable "coredns_versions" {
   # Versions are taken from https://docs.aws.amazon.com/eks/latest/userguide/managing-coredns.html#updating-coredns-add-on
-  type        = map(any)
+  type        = map(string)
   description = "The CoreDns plugin version for the corresponding version"
   default = {
     "1.18" = "v1.8.3-eksbuild.1"
@@ -41,7 +40,7 @@ variable "coredns_versions" {
 
 variable "kube_proxy_versions" {
   # Versions are taken from https://docs.aws.amazon.com/eks/latest/userguide/managing-kube-proxy.html#updating-kube-proxy-add-on
-  type        = map(any)
+  type        = map(string)
   description = "The Kube proxy plugin version for the corresponding eks version"
   default = {
     "1.18" = "v1.18.8-eksbuild.1"
@@ -53,12 +52,12 @@ variable "kube_proxy_versions" {
 variable "vpc_cni_versions" {
   # Versions are taken from https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html#updating-vpc-cni-add-on
   # Latest patch version is taken from https://github.com/aws/amazon-vpc-cni-k8s
-  type        = map(any)
+  type        = map(string)
   description = "The VPC CNI plugin version for the corresponding eks version"
   default = {
     "1.18" = "v1.7.10-eksbuild.1"
     "1.19" = "v1.7.10-eksbuild.1"
-    "1.20" = "v1.7.10-eksbuild.1"
+    # "1.20" = "v1.7.10-eksbuild.1"
   }
 }
 

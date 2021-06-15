@@ -209,3 +209,18 @@ output "security_group_rule_cluster_https_worker_ingress" {
   description = "Security group rule responsible for allowing pods to communicate with the EKS cluster API."
   value       = aws_security_group_rule.cluster_https_worker_ingress
 }
+
+output "vpc_cni_arn" {
+  description = "The arn of the Amazon VPC CNI addon"
+  value       = module.addons.vpc_cni_arn
+}
+
+output "coredns_arn" {
+  description = "The arn of the CoreDns addon"
+  value       = module.addons.coredns_arn
+}
+
+output "kube_proxy_arn" {
+  description = "The arn of the kube-proxy addon"
+  value       = module.addons.kube_proxy_arn
+}
