@@ -27,7 +27,7 @@ resource "aws_launch_template" "workers" {
 
   name_prefix            = local.node_groups_names[each.key]
   description            = format("EKS Managed Node Group custom LT for %s", local.node_groups_names[each.key])
-  update_default_version = true
+  update_default_version = lookup(each.value, "update_default_version", true)
 
   block_device_mappings {
     device_name = "/dev/xvda"
