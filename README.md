@@ -241,11 +241,11 @@ Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraf
 | <a name="input_cluster_security_group_id"></a> [cluster\_security\_group\_id](#input\_cluster\_security\_group\_id) | If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the workers | `string` | `""` | no |
 | <a name="input_cluster_service_ipv4_cidr"></a> [cluster\_service\_ipv4\_cidr](#input\_cluster\_service\_ipv4\_cidr) | service ipv4 cidr for the kubernetes cluster | `string` | `null` | no |
 | <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | Kubernetes version to use for the EKS cluster. | `string` | n/a | yes |
-| <a name="input_create_coredns_addon"></a> [create\_coredns\_addon](#input\_create\_coredns\_addon) | Controls if coredns addon should be deployed | `bool` | `true` | no |
+| <a name="input_create_coredns_addon"></a> [create\_coredns\_addon](#input\_create\_coredns\_addon) | Controls if coredns addon should be deployed | `bool` | `false` | no |
 | <a name="input_create_eks"></a> [create\_eks](#input\_create\_eks) | Controls if EKS resources should be created (it affects almost all resources) | `bool` | `true` | no |
 | <a name="input_create_fargate_pod_execution_role"></a> [create\_fargate\_pod\_execution\_role](#input\_create\_fargate\_pod\_execution\_role) | Controls if the EKS Fargate pod execution IAM role should be created. | `bool` | `true` | no |
-| <a name="input_create_kube_proxy_addon"></a> [create\_kube\_proxy\_addon](#input\_create\_kube\_proxy\_addon) | Controls if kube proxy addon should be deployed | `bool` | `true` | no |
-| <a name="input_create_vpc_cni_addon"></a> [create\_vpc\_cni\_addon](#input\_create\_vpc\_cni\_addon) | Controls if vpc cni addon should be deployed | `bool` | `true` | no |
+| <a name="input_create_kube_proxy_addon"></a> [create\_kube\_proxy\_addon](#input\_create\_kube\_proxy\_addon) | Controls if kube proxy addon should be deployed | `bool` | `false` | no |
+| <a name="input_create_vpc_cni_addon"></a> [create\_vpc\_cni\_addon](#input\_create\_vpc\_cni\_addon) | Controls if vpc cni addon should be deployed | `bool` | `false` | no |
 | <a name="input_eks_oidc_root_ca_thumbprint"></a> [eks\_oidc\_root\_ca\_thumbprint](#input\_eks\_oidc\_root\_ca\_thumbprint) | Thumbprint of Root CA for EKS OIDC, Valid until 2037 | `string` | `"9e99a48a9960b14926bb7f3b02e22da2b0ab7280"` | no |
 | <a name="input_enable_irsa"></a> [enable\_irsa](#input\_enable\_irsa) | Whether to create OpenID Connect Provider for EKS to enable IRSA | `bool` | `false` | no |
 | <a name="input_fargate_pod_execution_role_name"></a> [fargate\_pod\_execution\_role\_name](#input\_fargate\_pod\_execution\_role\_name) | The IAM Role that provides permissions for the EKS Fargate Profile. | `string` | `null` | no |
