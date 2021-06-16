@@ -22,6 +22,7 @@ locals {
       pre_userdata                  = var.workers_group_defaults["pre_userdata"]
       additional_security_group_ids = var.workers_group_defaults["additional_security_group_ids"]
       taints                        = []
+      update_default_version        = true
     },
     var.node_groups_defaults,
     v,

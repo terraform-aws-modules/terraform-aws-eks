@@ -45,6 +45,7 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | subnets | Subnets to contain workers | list(string) | `var.workers_group_defaults[subnets]` |
 | version | Kubernetes version | string | Provider default behavior |
 | taints | Kubernetes node taints | list(map) | empty |
+| update_default_version | Whether or not to set the new launch template version the Default | bool | `true` |
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
