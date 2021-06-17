@@ -393,3 +393,9 @@ variable "wait_for_cluster_timeout" {
   type        = number
   default     = 300
 }
+
+variable "openid_connect_audiences" {
+  description = "List of OpenID Connect audience client IDs to add to the IRSA provider."
+  type        = list(string)
+  default     = []
+}
