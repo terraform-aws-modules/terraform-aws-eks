@@ -355,6 +355,12 @@ resource "aws_launch_configuration" "workers" {
     aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly,
     aws_iam_role_policy_attachment.workers_additional_policies
   ]
+
+  metadata_options {
+    http_endpoint               = local.workers_group_defaults["metadata_http_endpoint"]
+    http_tokens                 = local.workers_group_defaults["metadata_http_tokens"]
+    http_put_response_hop_limit = local.workers_group_defaults["metadata_http_put_response_hop_limit"]
+  }
 }
 
 resource "aws_security_group" "workers" {
