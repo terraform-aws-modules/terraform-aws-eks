@@ -109,7 +109,7 @@ Following IAM permissions are the minimum permissions needed for your IAM user o
                 "iam:DeleteInstanceProfile",
                 "iam:DeleteOpenIDConnectProvider",
                 "iam:DeletePolicy",
-                "iam:DeletePolicyVersion"
+                "iam:DeletePolicyVersion",
                 "iam:DeleteRole",
                 "iam:DeleteRolePolicy",
                 "iam:DeleteServiceLinkedRole",
