@@ -308,7 +308,7 @@ variable "workers_role_name" {
 }
 
 variable "attach_worker_cni_policy" {
-  description = "Whether to attach the Amazon managed `AmazonEKS_CNI_Policy` IAM policy to the default worker IAM role. WARNING: If set `false` the permissions must be assigned to the `aws-node` DaemonSet pods via another method or nodes will not be able to join the cluster."
+  description = "Whether to attach the Amazon managed `AmazonEKS_CNI_Policy` IAM policy to the default worker IAM role. WARNING: If set `false` the permissions must be assigned to the `aws-node` DaemonSet pods via another method or nodes will not be able to join the cluster. Note: Set to `false` if you enable the vpc_cni addon with `create_vpc_cni_addon = true`"
   type        = bool
   default     = true
 }
@@ -392,4 +392,22 @@ variable "wait_for_cluster_timeout" {
   description = "A timeout (in seconds) to wait for cluster to be available."
   type        = number
   default     = 300
+}
+
+variable "create_vpc_cni_addon" {
+  type        = bool
+  description = "Controls if vpc cni addon should be deployed"
+  default     = false
+}
+
+variable "create_kube_proxy_addon" {
+  type        = bool
+  description = "Controls if kube proxy addon should be deployed"
+  default     = false
+}
+
+variable "create_coredns_addon" {
+  type        = bool
+  description = "Controls if coredns addon should be deployed"
+  default     = false
 }

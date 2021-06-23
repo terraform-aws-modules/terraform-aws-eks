@@ -1,0 +1,14 @@
+awsRegion: us-west-2
+
+rbac:
+  create: true
+  serviceAccount:
+    # This value should match local.k8s_service_account_name in locals.tf
+    name: cluster-autoscaler-aws-cluster-autoscaler-chart
+    annotations:
+      # This value should match the ARN of the role created by module.iam_assumable_role_admin in irsa.tf
+      eks.amazonaws.com/role-arn: "arn:aws:iam::<ACCOUNT ID>:role/cluster-autoscaler"
+
+autoDiscovery:
+  clusterName: test-eks-irsa
+  enabled: true
