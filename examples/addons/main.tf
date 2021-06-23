@@ -37,15 +37,16 @@ module "vpc" {
 }
 
 module "eks" {
-  source                  = "../.."
-  cluster_name            = local.cluster_name
-  cluster_version         = "1.20"
-  subnets                 = module.vpc.public_subnets
-  vpc_id                  = module.vpc.vpc_id
-  enable_irsa             = true # required for vpc cni addon
-  create_vpc_cni_addon    = true
-  create_kube_proxy_addon = true
-  create_coredns_addon    = true
+  source                   = "../.."
+  cluster_name             = local.cluster_name
+  cluster_version          = "1.20"
+  subnets                  = module.vpc.public_subnets
+  vpc_id                   = module.vpc.vpc_id
+  enable_irsa              = true # required for vpc cni addon
+  create_vpc_cni_addon     = true
+  attach_worker_cni_policy = false # recommanded to disable the worker node cni policy attachment by aws as described here https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html
+  create_kube_proxy_addon  = true
+  create_coredns_addon     = true
 
 
   worker_groups = [
