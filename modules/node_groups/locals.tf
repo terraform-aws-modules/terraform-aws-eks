@@ -27,13 +27,23 @@ locals {
     v,
   ) if var.create_eks }
 
-  node_groups_names = { for k, v in local.node_groups_expanded : k => lookup(
-    v,
-    "name",
-    lookup(
-      v,
-      "name_prefix",
-      join("-", [var.cluster_name, k])
-    )
-  ) }
+  # This node_groups_names construct is a consequence of not explicitly
+  # declaring the node_group object.
+  #
+  # lookup will *always* return the default condition if an attribute exists,
+  # but Terraform will set an attribute to null when it is supposed to be
+  # omitted -- the attribute will exist, but shouldn't be used.
+  #
+  # With the decision to implicitly define the node_group object, we have to
+  # first check if an attribute exists, and then check if the attribute is null
+  # if it does exist. We cannot take a shortcut by chaining the lookups in the
+  # default condition, since the default condition will not be reached if the
+  # attribute exists and is null.
+  #
+  # It would be ideal to rework this module to explicitly declare
+  # the node_group object, as that would simplify the logic.
+  #
+  # For more information, refer to this issue:
+  # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1462
+  node_groups_names = { for k, v in local.node_groups_expanded : k => lookup(v, "name", null) != null ? v["name"] : lookup(v, "name_prefix", null) != null ? v["name_prefix"] : join("-", [var.cluster_name, k]) }
 }
