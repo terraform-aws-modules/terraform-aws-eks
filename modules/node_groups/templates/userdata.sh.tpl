@@ -4,3 +4,4 @@
 ${pre_userdata}
 
 sed -i '/^KUBELET_EXTRA_ARGS=/a KUBELET_EXTRA_ARGS+=" ${kubelet_extra_args}"' /etc/eks/bootstrap.sh
+/etc/eks/bootstrap.sh ${cluster_name}

@@ -27,7 +27,7 @@ Helper submodule to create and manage resources related to `aws_eks_fargate_prof
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.40.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 3.47.0 |
 
 ## Modules
 
