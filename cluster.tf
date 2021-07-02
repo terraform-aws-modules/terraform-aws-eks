@@ -12,7 +12,10 @@ resource "aws_eks_cluster" "this" {
   enabled_cluster_log_types = var.cluster_enabled_log_types
   role_arn                  = local.cluster_iam_role_arn
   version                   = var.cluster_version
-  tags                      = var.tags
+  tags                      = merge(
+    var.tags,
+    var.cluster_tags,
+  )
 
   vpc_config {
     security_group_ids      = compact([local.cluster_security_group_id])
