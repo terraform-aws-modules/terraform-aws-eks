@@ -55,9 +55,9 @@ variable "vpc_cni_versions" {
   type        = map(string)
   description = "The VPC CNI plugin version for the corresponding eks version"
   default = {
-    "1.18" = "v1.7.10-eksbuild.1"
-    "1.19" = "v1.7.10-eksbuild.1"
-    "1.20" = "v1.7.10-eksbuild.1"
+    "1.18" = "v1.8.0-eksbuild.1"
+    "1.19" = "v1.8.0-eksbuild.1"
+    "1.20" = "v1.8.0-eksbuild.1"
   }
 }
 
@@ -78,5 +78,10 @@ variable "enable_irsa" {
   type        = bool
   description = "Whether to create iam role for vpc cni and attach it to the service account, if irsa=false vpc cni plugin will not be deployed"
   default     = true
+}
+
+variable "tags" {
+  description = "A map of tags to add to all resources"
+  type        = map(string)
 }
 

@@ -52,6 +52,12 @@ Description: Kubernetes version to use for the EKS cluster.
 
 Type: `string`
 
+### <a name="input_tags"></a> [tags](#input\_tags)
+
+Description: A map of tags to add to all resources
+
+Type: `map(string)`
+
 ## Optional Inputs
 
 The following input variables are optional (have default values):
@@ -138,9 +144,9 @@ Default:
 
 ```json
 {
-  "1.18": "v1.7.10-eksbuild.1",
-  "1.19": "v1.7.10-eksbuild.1",
-  "1.20": "v1.7.10-eksbuild.1"
+  "1.18": "v1.8.0-eksbuild.1",
+  "1.19": "v1.8.0-eksbuild.1",
+  "1.20": "v1.8.0-eksbuild.1"
 }
 ```
 

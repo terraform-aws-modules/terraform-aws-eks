@@ -5,6 +5,7 @@ resource "aws_eks_addon" "coredns" {
   addon_name        = "coredns"
   resolve_conflicts = "OVERWRITE"
   addon_version     = lookup(var.coredns_versions, var.cluster_version, "Not Found")
+  tags              = var.tags
 
   depends_on = [
     var.eks_depends_on

@@ -93,7 +93,13 @@ variable "subnets" {
 }
 
 variable "tags" {
-  description = "A map of tags to add to all resources. Tags added to launch configuration or templates override these values for ASG Tags only."
+  description = "A map of tags to add to all resources except addons. Tags added to launch configuration or templates override these values for ASG Tags only."
+  type        = map(string)
+  default     = {}
+}
+
+variable "addon_tags" {
+  description = "A map of tags to add to addons."
   type        = map(string)
   default     = {}
 }

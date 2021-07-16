@@ -5,6 +5,7 @@ resource "aws_eks_addon" "kube_proxy" {
   addon_name        = "kube-proxy"
   resolve_conflicts = "OVERWRITE"
   addon_version     = lookup(var.kube_proxy_versions, var.cluster_version, "Not Found")
+  tags              = var.tags
 
   depends_on = [
     var.eks_depends_on

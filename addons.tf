@@ -7,6 +7,7 @@ module "addons" {
   create_coredns_addon    = var.create_coredns_addon
   cluster_oidc_issuer_url = flatten(concat(aws_eks_cluster.this[*].identity[*].oidc.0.issuer, [""]))[0]
   enable_irsa             = var.enable_irsa
+  tags                    = var.addon_tags
 
   eks_depends_on = [
     aws_eks_cluster.this,
