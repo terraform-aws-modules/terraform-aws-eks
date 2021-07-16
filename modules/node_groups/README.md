@@ -53,6 +53,9 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | taints | Kubernetes node taints | list(map) | empty |
 | timeouts | A map of timeouts for create/update/delete operations. | `map(string)` | Provider default behavior |
 | update_default_version | Whether or not to set the new launch template version the Default | bool | `true` |
+| metadata_http_endpoint | The state of the instance metadata service. Requires `create_launch_template` to be `true` | string | `var.workers_group_defaults[metadata_http_endpoint]` |
+| metadata_http_tokens | If session tokens are required. Requires `create_launch_template` to be `true` | string | `var.workers_group_defaults[metadata_http_tokens]` |
+| metadata_http_put_response_hop_limit | The desired HTTP PUT response hop limit for instance metadata requests. Requires `create_launch_template` to be `true` | number | `var.workers_group_defaults[metadata_http_put_response_hop_limit]` |
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
