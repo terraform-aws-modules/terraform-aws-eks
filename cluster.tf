@@ -32,7 +32,7 @@ resource "aws_eks_cluster" "this" {
   }
 
   dynamic "encryption_config" {
-    for_each = toset(var.cluster_encryption_config)
+    for_each = var.cluster_encryption_config
 
     content {
       provider {
