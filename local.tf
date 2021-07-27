@@ -270,4 +270,10 @@ locals {
       )
     )
   ]
+
+  launch_templates_with_instance_ami = merge(values(
+    { for k, v in { for i, t in var.worker_groups_launch_template : i => merge(lookup(t, "override_instance_ami", {}), { "default" : null }) } :
+    k => { for instance, ami in v : "${k}-${instance}" => { launch_template : k, ami : ami } } }
+  )...)
+
 }
