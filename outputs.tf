@@ -126,17 +126,17 @@ output "workers_default_ami_id_windows" {
 
 output "workers_launch_template_ids" {
   description = "IDs of the worker launch templates."
-  value       = { for k, v in aws_launch_template.workers_launch_template : k => v.id }
+  value       = [ for k, v in aws_launch_template.workers_launch_template : v.id ]
 }
 
 output "workers_launch_template_arns" {
   description = "ARNs of the worker launch templates."
-  value       = { for k, v in aws_launch_template.workers_launch_template : k => v.arn }
+  value       = [ for k, v in aws_launch_template.workers_launch_template : v.arn ]
 }
 
 output "workers_launch_template_latest_versions" {
   description = "Latest versions of the worker launch templates."
-  value       = { for k, v in aws_launch_template.workers_launch_template : k => v.latest_version }
+  value       = [ for k, v in aws_launch_template.workers_launch_template : v.latest_version ]
 }
 
 output "worker_security_group_id" {
