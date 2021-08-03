@@ -60,7 +60,7 @@ module "vpc" {
 module "eks" {
   source          = "../.."
   cluster_name    = local.cluster_name
-  cluster_version = "1.17"
+  cluster_version = "1.20"
   subnets         = module.vpc.private_subnets
 
   tags = {
@@ -72,15 +72,25 @@ module "eks" {
   vpc_id = module.vpc.vpc_id
 
   fargate_profiles = {
-    example = {
-      namespace = "default"
-
-      # Kubernetes labels for selection
-      # labels = {
-      #   Environment = "test"
-      #   GithubRepo  = "terraform-aws-eks"
-      #   GithubOrg   = "terraform-aws-modules"
-      # }
+    default = {
+      name = "default"
+      selectors = [
+        {
+          namespace = "kube-system"
+          labels = {
+            k8s-app = "kube-dns"
+          }
+        },
+        {
+          namespace = "default"
+          # Kubernetes labels for selection
+          # labels = {
+          #   Environment = "test"
+          #   GithubRepo  = "terraform-aws-eks"
+          #   GithubOrg   = "terraform-aws-modules"
+          # }
+        }
+      ]
 
       # using specific subnets instead of all the ones configured in eks
       # subnets = ["subnet-0ca3e3d1234a56c78"]

@@ -21,27 +21,30 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | ami\_release\_version | AMI version of workers | string | Provider default behavior |
 | ami\_type | AMI Type. See Terraform or AWS docs | string | Provider default behavior |
 | capacity\_type | Type of instance capacity to provision. Options are `ON_DEMAND` and `SPOT` | string | Provider default behavior |
+| create_launch_template | Create and use a default launch template | bool |  `false` |
 | desired\_capacity | Desired number of workers | number | `var.workers_group_defaults[asg_desired_capacity]` |
 | disk\_size | Workers' disk size | number | Provider default behavior |
 | disk\_type | Workers' disk type. Require `create_launch_template` to be `true`| number | `gp3` |
+| enable_monitoring | Enables/disables detailed monitoring. Require `create_launch_template` to be `true`| bool | `true` |
+| eni_delete | Delete the Elastic Network Interface (ENI) on termination (if set to false you will have to manually delete before destroying) | bool | `true` |
+| force\_update\_version | Force version update if existing pods are unable to be drained due to a pod disruption budget issue. | bool | Provider default behavior |
 | iam\_role\_arn | IAM role ARN for workers | string | `var.default_iam_role_arn` |
 | instance\_types | Node group's instance type(s). Multiple types can be specified when `capacity_type="SPOT"`. | list | `[var.workers_group_defaults[instance_type]]` |
 | k8s\_labels | Kubernetes labels | map(string) | No labels applied |
 | key\_name | Key name for workers. Set to empty string to disable remote access | string | `var.workers_group_defaults[key_name]` |
+| kubelet_extra_args | This string is passed directly to kubelet if set. Useful for adding labels or taints. Require `create_launch_template` to be `true`| string | "" |
 | launch_template_id | The id of a aws_launch_template to use | string | No LT used |
 | launch\_template_version | The version of the LT to use | string | none |
 | max\_capacity | Max number of workers | number | `var.workers_group_defaults[asg_max_size]` |
 | min\_capacity | Min number of workers | number | `var.workers_group_defaults[asg_min_size]` |
-| name | Name of the node group | string | Auto generated |
+| name | Name of the node group. If you don't really need this, we recommend you to use `name_prefix` instead. | string | Will use the autogenerate name prefix |
+| name_prefix | Name prefix of the node group | string | Auto generated |
+| pre_userdata | userdata to pre-append to the default userdata. Require `create_launch_template` to be `true`| string | "" |
+| public_ip | Associate a public ip address with a worker. Require `create_launch_template` to be `true`| string | `false`
 | source\_security\_group\_ids | Source security groups for remote access to workers | list(string) | If key\_name is specified: THE REMOTE ACCESS WILL BE OPENED TO THE WORLD |
 | subnets | Subnets to contain workers | list(string) | `var.workers_group_defaults[subnets]` |
 | version | Kubernetes version | string | Provider default behavior |
-| create_launch_template | Create and use a default launch template | bool |  `false` |
-| kubelet_extra_args | This string is passed directly to kubelet if set. Useful for adding labels or taints. Require `create_launch_template` to be `true`| string | "" |
-| enable_monitoring | Enables/disables detailed monitoring. Require `create_launch_template` to be `true`| bool | `true` |
-| eni_delete | Delete the Elastic Network Interface (ENI) on termination (if set to false you will have to manually delete before destroying) | bool | `true` |
-| public_ip | Associate a public ip address with a worker. Require `create_launch_template` to be `true`| string | `false`
-| pre_userdata | userdata to pre-append to the default userdata. Require `create_launch_template` to be `true`| string | "" |
+| taints | Kubernetes node taints | list(map) | empty |
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
@@ -49,16 +52,14 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.22.0 |
-| <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.1 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.43.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.22.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.43.0 |
 | <a name="provider_cloudinit"></a> [cloudinit](#provider\_cloudinit) | n/a |
-| <a name="provider_random"></a> [random](#provider\_random) | >= 2.1 |
 
 ## Modules
 
@@ -70,7 +71,6 @@ No modules.
 |------|------|
 | [aws_eks_node_group.workers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group) | resource |
 | [aws_launch_template.workers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
-| [random_pet.node_groups](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet) | resource |
 | [cloudinit_config.workers_userdata](https://registry.terraform.io/providers/hashicorp/cloudinit/latest/docs/data-sources/config) | data source |
 
 ## Inputs
