@@ -34,6 +34,7 @@ variable "coredns_versions" {
     "1.18" = "v1.8.3-eksbuild.1"
     "1.19" = "v1.8.3-eksbuild.1"
     "1.20" = "v1.8.3-eksbuild.1"
+    "1.21" = "v1.8.4-eksbuild.1"
   }
 }
 
@@ -46,6 +47,7 @@ variable "kube_proxy_versions" {
     "1.18" = "v1.18.8-eksbuild.1"
     "1.19" = "v1.19.6-eksbuild.2"
     "1.20" = "v1.20.4-eksbuild.2"
+    "1.21" = "v1.21.2-eksbuild.2"
   }
 }
 
@@ -55,9 +57,10 @@ variable "vpc_cni_versions" {
   type        = map(string)
   description = "The VPC CNI plugin version for the corresponding eks version"
   default = {
-    "1.18" = "v1.8.0-eksbuild.1"
-    "1.19" = "v1.8.0-eksbuild.1"
-    "1.20" = "v1.8.0-eksbuild.1"
+    "1.18" = "v1.9.0-eksbuild.1"
+    "1.19" = "v1.9.0-eksbuild.1"
+    "1.20" = "v1.9.0-eksbuild.1"
+    "1.21" = "v1.9.0-eksbuild.1"
   }
 }
 
