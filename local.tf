@@ -34,6 +34,7 @@ locals {
     asg_recreate_on_change        = var.asg_recreate_on_change  # Recreate the autoscaling group when the Launch Template or Launch Configuration change.
     instance_type                 = ""                          # Size of the workers/on-demand node group instances.
     instance_types                = []                          # Size of the spot node group instances.
+    capacity_type                 = null                        # Capacity type of node group; Can be SPOT, ONDEMAND (default is null, which creates ONDEMAND)
     spot_price                    = ""                          # Cost of spot instance.
     placement_tenancy             = ""                          # The tenancy of the instance. Valid values are "default" or "dedicated".
     root_volume_size              = "100"                       # root volume size of workers instances.

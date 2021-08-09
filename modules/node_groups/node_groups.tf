@@ -18,7 +18,7 @@ resource "aws_eks_node_group" "workers" {
   ami_type        = lookup(each.value, "ami_type", null)
   disk_size       = lookup(each.value, "disk_size", null)
   instance_types  = lookup(each.value, "instance_types", null)
-  instance_type  = lookup(each.value, "instance_type", null)
+  instance_type   = lookup(each.value, "instance_type", null)
   release_version = lookup(each.value, "ami_release_version", null)
 
   dynamic "remote_access" {
