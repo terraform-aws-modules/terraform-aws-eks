@@ -12,6 +12,6 @@ data "aws_iam_policy_document" "eks_fargate_pod_assume_role" {
 }
 
 data "aws_iam_role" "custom_fargate_iam_role" {
-  count = local.create_eks && !var.create_fargate_pod_execution_role ? 1 : 0
+  count = local.create_eks && ! var.create_fargate_pod_execution_role ? 1 : 0
   name  = var.fargate_pod_execution_role_name
 }

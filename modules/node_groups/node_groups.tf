@@ -16,13 +16,13 @@ resource "aws_eks_node_group" "workers" {
 
   ami_type             = lookup(each.value, "ami_type", null)
   disk_size            = each.value["launch_template_id"] != null || each.value["create_launch_template"] ? null : lookup(each.value, "disk_size", null)
-  instance_types       = !each.value["set_instance_types_on_lt"] ? each.value["instance_types"] : null
+  instance_types       = ! each.value["set_instance_types_on_lt"] ? each.value["instance_types"] : null
   release_version      = lookup(each.value, "ami_release_version", null)
   capacity_type        = lookup(each.value, "capacity_type", null)
   force_update_version = lookup(each.value, "force_update_version", null)
 
   dynamic "remote_access" {
-    for_each = each.value["key_name"] != "" && each.value["launch_template_id"] == null && !each.value["create_launch_template"] ? [{
+    for_each = each.value["key_name"] != "" && each.value["launch_template_id"] == null && ! each.value["create_launch_template"] ? [{
       ec2_ssh_key               = each.value["key_name"]
       source_security_group_ids = lookup(each.value, "source_security_group_ids", [])
     }] : []
