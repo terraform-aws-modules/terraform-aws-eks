@@ -115,7 +115,7 @@ output "workers_user_data" {
 }
 
 output "workers_group_defaults" {
-  description = "Merged defaults to use as input to node_group submodule"
+  description = "Merged defaults to use as input to node_groups submodule"
   value       = local.workers_group_defaults
 }
 
