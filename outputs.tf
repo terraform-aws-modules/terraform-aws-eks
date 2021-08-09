@@ -114,6 +114,11 @@ output "workers_user_data" {
   )
 }
 
+output "workers_group_defaults" {
+  description = "Merged defaults to use as input to node_group submodule"
+  value       = local.workers_group_defaults
+}
+
 output "workers_default_ami_id" {
   description = "ID of the default worker group AMI"
   value       = local.default_ami_id_linux
