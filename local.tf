@@ -32,7 +32,8 @@ locals {
     asg_force_delete              = false                       # Enable forced deletion for the autoscaling group.
     asg_initial_lifecycle_hooks   = []                          # Initital lifecycle hook for the autoscaling group.
     asg_recreate_on_change        = var.asg_recreate_on_change  # Recreate the autoscaling group when the Launch Template or Launch Configuration change.
-    instance_type                 = "m4.large"                  # Size of the workers instances.
+    instance_type                 = ""                          # Size of the workers/on-demand node group instances.
+    instance_types                = []                          # Size of the spot node group instances.
     spot_price                    = ""                          # Cost of spot instance.
     placement_tenancy             = ""                          # The tenancy of the instance. Valid values are "default" or "dedicated".
     root_volume_size              = "100"                       # root volume size of workers instances.

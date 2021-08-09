@@ -17,7 +17,7 @@ data "null_data_source" "node_groups" {
 }
 
 module "node_groups" {
-  source                 = "./modules/node_groups"
+  source                 = "./modules/node_groups" # git::https://github.com/cloudposse/terraform-aws-eks-node-group.git?ref=tags/0.24.0
   create_eks             = var.create_eks
   cluster_name           = coalescelist(data.null_data_source.node_groups[*].outputs["cluster_name"], [""])[0]
   default_iam_role_arn   = coalescelist(aws_iam_role.workers[*].arn, [""])[0]
