@@ -32,7 +32,7 @@ locals {
     asg_force_delete              = false                       # Enable forced deletion for the autoscaling group.
     asg_initial_lifecycle_hooks   = []                          # Initital lifecycle hook for the autoscaling group.
     asg_recreate_on_change        = var.asg_recreate_on_change  # Recreate the autoscaling group when the Launch Template or Launch Configuration change.
-    instance_type                 = ""                          # Size of the workers/on-demand node group instances.
+    instance_type                 = ""                          # Size of the workers (non-managed).
     instance_types                = []                          # Size of the spot node group instances.
     capacity_type                 = null                        # Capacity type of node group; Can be SPOT, ONDEMAND (default is null, which creates ONDEMAND)
     spot_price                    = ""                          # Cost of spot instance.
