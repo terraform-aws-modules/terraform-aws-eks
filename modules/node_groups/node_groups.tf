@@ -8,7 +8,7 @@ resource "aws_eks_node_group" "workers" {
   cluster_name  = var.cluster_name
   node_role_arn = each.value["iam_role_arn"]
   subnet_ids    = each.value["subnets"]
-
+  disk_size     = each.value["node_disk_size"]
   scaling_config {
     desired_size = each.value["desired_capacity"]
     max_size     = each.value["max_capacity"]
@@ -41,6 +41,9 @@ resource "aws_eks_node_group" "workers" {
   )
 
   tags = merge(
+    {
+      Name = "${each.value["name"]}node"
+    }
     var.tags,
     lookup(var.node_groups_defaults, "additional_tags", {}),
     lookup(var.node_groups[each.key], "additional_tags", {}),
