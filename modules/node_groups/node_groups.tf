@@ -1,9 +1,9 @@
 resource "aws_eks_node_group" "workers" {
   for_each = local.node_groups_expanded
 
-  capacity_type = each.value["capacity_type"]
-
   node_group_name = each.value["name"]
+  version = lookup(each.value, "version", null)
+  capacity_type = each.value["capacity_type"] # SPOT or ON_DEMAND
 
   cluster_name  = var.cluster_name
   node_role_arn = each.value["iam_role_arn"]
@@ -15,10 +15,11 @@ resource "aws_eks_node_group" "workers" {
     min_size     = each.value["min_capacity"]
   }
 
-  ami_type        = lookup(each.value, "ami_type", null)
   disk_size       = lookup(each.value, "disk_size", null)
   instance_types  = each.value["instance_types"]
-  #instance_type   = lookup(each.value, "instance_type", null)
+
+  # These shouldn't be needed as we specify the version
+  ami_type        = lookup(each.value, "ami_type", null)
   release_version = lookup(each.value, "ami_release_version", null)
 
   dynamic "remote_access" {
@@ -33,7 +34,6 @@ resource "aws_eks_node_group" "workers" {
     }
   }
 
-  version = lookup(each.value, "version", null)
 
   labels = merge(
     lookup(var.node_groups_defaults, "k8s_labels", {}),
@@ -42,7 +42,7 @@ resource "aws_eks_node_group" "workers" {
 
   tags = merge(
     {
-      Name = "${each.value["name"]}node"
+      Name = "${each.value["name"]}_node"
     },
     var.tags,
     lookup(var.node_groups_defaults, "additional_tags", {}),
