@@ -38,8 +38,8 @@ locals {
     spot_price                    = ""                          # Cost of spot instance.
     placement_tenancy             = ""                          # The tenancy of the instance. Valid values are "default" or "dedicated".
     node_disk_size                = ""                          # root volume size of nodes.
-    root_volume_size              = "100"                       # root volume size of workers instances.
-    root_volume_type              = "gp2"                       # root volume type of workers instances, can be 'standard', 'gp2', or 'io1'
+    root_volume_size              = "20"                       # root volume size of workers instances.
+    root_volume_type              = "gp3"                       # root volume type of workers instances, can be 'standard', 'gp2', 'gp3', or 'io1'
     root_iops                     = "0"                         # The amount of provisioned IOPS. This must be set with a volume_type of "io1".
     key_name                      = ""                          # The key name that should be used for the instances in the autoscaling group
     pre_userdata                  = ""                          # userdata to pre-append to the default userdata.
@@ -66,6 +66,7 @@ locals {
     # Settings for launch templates
     root_block_device_name            = data.aws_ami.eks_worker.root_device_name # Root device name for workers. If non is provided, will assume default AMI was used.
     root_kms_key_id                   = ""                                       # The KMS key to use when encrypting the root storage device
+    launch_template_id                = ""                                       # The ID of the launch template to use in the autoscaling group/node group
     launch_template_version           = "$Latest"                                # The lastest version of the launch template to use in the autoscaling group
     launch_template_placement_tenancy = "default"                                # The placement tenancy for instances
     launch_template_placement_group   = ""                                       # The name of the placement group into which to launch the instances, if any.
