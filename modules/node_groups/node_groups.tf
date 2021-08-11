@@ -15,7 +15,7 @@ resource "aws_eks_node_group" "workers" {
     min_size     = each.value["min_capacity"]
   }
 
-  disk_size       = var.node_group_defaults["disk_size"]
+  disk_size       = var.node_groups_defaults["disk_size"]
   instance_types  = each.value["instance_types"]
 
   # These shouldn't be needed as we specify the version
