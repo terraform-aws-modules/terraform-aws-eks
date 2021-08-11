@@ -1,5 +1,4 @@
 resource "aws_eks_node_group" "workers" {
-  depends_on = [aws_launch_template.workers]
   for_each = local.node_groups_expanded
 
   node_group_name = each.value["name"]
@@ -35,31 +34,31 @@ resource "aws_eks_node_group" "workers" {
     }
   }
 
-  launch_template = aws_launch_configuration.workers.*.id[count.index]
+  # launch_template = aws_launch_configuration.workers.*.id[count.index]
 
-  # dynamic "launch_template" {
-  #   for_each = each.value["launch_template_id"] != null ? [{
-  #     id      = each.value["launch_template_id"]
-  #     version = each.value["launch_template_version"]
-  #   }] : []
+  dynamic "launch_template" {
+    for_each = each.value["launch_template_id"] != null ? [{
+      id      = each.value["launch_template_id"]
+      version = each.value["launch_template_version"]
+    }] : []
 
-  #   content {
-  #     id      = launch_template.value["id"]
-  #     version = launch_template.value["version"]
-  #   }
-  # }
+    content {
+      id      = launch_template.value["id"]
+      version = launch_template.value["version"]
+    }
+  }
 
-  # dynamic "launch_template" {
-  #   for_each = each.value["launch_template_id"] == null && each.value["create_launch_template"] ? [{
-  #     id      = aws_launch_template.workers[each.key].id
-  #     version = each.value["launch_template_version"]
-  #   }] : []
+  dynamic "launch_template" {
+    for_each = each.value["launch_template_id"] == null && each.value["create_launch_template"] ? [{
+      id      = aws_launch_template.workers[each.key].id
+      version = each.value["launch_template_version"]
+    }] : []
 
-  #   content {
-  #     id      = launch_template.value["id"]
-  #     version = launch_template.value["version"]
-  #   }
-  # }
+    content {
+      id      = launch_template.value["id"]
+      version = launch_template.value["version"]
+    }
+  }
 
 
 
@@ -81,5 +80,7 @@ resource "aws_eks_node_group" "workers" {
     create_before_destroy = true
     ignore_changes        = [scaling_config.0.desired_size]
   }
+
+  depends_on = [aws_launch_template.workers]
 
 }
