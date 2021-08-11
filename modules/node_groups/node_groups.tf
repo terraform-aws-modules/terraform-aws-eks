@@ -1,9 +1,10 @@
 resource "aws_eks_node_group" "workers" {
+  depends_on = local.node_groups_defaults["launch_template_id"] == null && local.node_groups_defaults["create_launch_template"] ? [aws_launch_template.workers] : []
   for_each = local.node_groups_expanded
 
   node_group_name = each.value["name"]
-  version = lookup(each.value, "version", null)
-  capacity_type = each.value["capacity_type"] # SPOT or ON_DEMAND
+  version         = lookup(each.value, "version", null)
+  capacity_type   = each.value["capacity_type"] # SPOT or ON_DEMAND
 
   cluster_name  = var.cluster_name
   node_role_arn = each.value["iam_role_arn"]
@@ -78,4 +79,5 @@ resource "aws_eks_node_group" "workers" {
     create_before_destroy = true
     ignore_changes        = [scaling_config.0.desired_size]
   }
+
 }
