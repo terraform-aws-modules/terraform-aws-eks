@@ -35,29 +35,31 @@ resource "aws_eks_node_group" "workers" {
     }
   }
 
-  dynamic "launch_template" {
-    for_each = each.value["launch_template_id"] != null ? [{
-      id      = each.value["launch_template_id"]
-      version = each.value["launch_template_version"]
-    }] : []
+  launch_template = aws_launch_configuration.workers.*.id[count.index]
 
-    content {
-      id      = launch_template.value["id"]
-      version = launch_template.value["version"]
-    }
-  }
+  # dynamic "launch_template" {
+  #   for_each = each.value["launch_template_id"] != null ? [{
+  #     id      = each.value["launch_template_id"]
+  #     version = each.value["launch_template_version"]
+  #   }] : []
 
-  dynamic "launch_template" {
-    for_each = each.value["launch_template_id"] == null && each.value["create_launch_template"] ? [{
-      id      = aws_launch_template.workers[each.key].id
-      version = each.value["launch_template_version"]
-    }] : []
+  #   content {
+  #     id      = launch_template.value["id"]
+  #     version = launch_template.value["version"]
+  #   }
+  # }
 
-    content {
-      id      = launch_template.value["id"]
-      version = launch_template.value["version"]
-    }
-  }
+  # dynamic "launch_template" {
+  #   for_each = each.value["launch_template_id"] == null && each.value["create_launch_template"] ? [{
+  #     id      = aws_launch_template.workers[each.key].id
+  #     version = each.value["launch_template_version"]
+  #   }] : []
+
+  #   content {
+  #     id      = launch_template.value["id"]
+  #     version = launch_template.value["version"]
+  #   }
+  # }
 
 
 
