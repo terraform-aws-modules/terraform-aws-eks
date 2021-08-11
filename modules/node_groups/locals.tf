@@ -56,5 +56,5 @@ locals {
   ) }
 
   # Hack for dependency
-  ng_dependency = local.node_groups_defaults["launch_template_id"] == null && local.node_groups_defaults["create_launch_template"] ? [aws_launch_template.workers] : []
+  ng_dependency = local.node_groups_defaults["launch_template_id"] == null && local.node_groups_defaults["create_launch_template"] ? aws_launch_template.workers : ""
 }
