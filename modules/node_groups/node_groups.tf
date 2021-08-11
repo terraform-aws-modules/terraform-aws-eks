@@ -1,5 +1,5 @@
 resource "aws_eks_node_group" "workers" {
-  depends_on = local.node_groups_defaults["launch_template_id"] == null && local.node_groups_defaults["create_launch_template"] ? [aws_launch_template.workers] : []
+  depends_on = local.ng_dependency
   for_each = local.node_groups_expanded
 
   node_group_name = each.value["name"]
