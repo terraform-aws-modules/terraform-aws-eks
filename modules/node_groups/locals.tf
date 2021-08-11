@@ -55,6 +55,6 @@ locals {
     )
   ) }
 
-  # Hack for dependency
-  ng_dependency = local.node_groups_defaults["launch_template_id"] == null && local.node_groups_defaults["create_launch_template"] ? aws_launch_template.workers : ""
+  # Hack for dependency on launch templates - forces launch templates to create before node groups
+  ng_dependency = node_groups_defaults["launch_template_id"] == null && node_groups_defaults["create_launch_template"] ? aws_launch_template.workers : ""
 }
