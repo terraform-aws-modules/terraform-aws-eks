@@ -15,7 +15,6 @@ resource "aws_eks_node_group" "workers" {
     min_size     = each.value["min_capacity"]
   }
 
-  disk_size       = var.node_groups_defaults["disk_size"]
   instance_types  = each.value["instance_types"]
 
   # These shouldn't be needed as we specify the version
@@ -38,31 +37,6 @@ resource "aws_eks_node_group" "workers" {
     id = aws_launch_template.workers[each.key].id
     version = aws_launch_template.workers[each.key].default_version
   }
-  # dynamic "launch_template" {
-  #   for_each = each.value["launch_template_id"] != null ? [{
-  #     id      = each.value["launch_template_id"]
-  #     version = each.value["launch_template_version"]
-  #   }] : []
-
-  #   content {
-  #     id      = launch_template.value["id"]
-  #     version = launch_template.value["version"]
-  #   }
-  # }
-
-  # dynamic "launch_template" {
-  #   for_each = each.value["launch_template_id"] == null && each.value["create_launch_template"] ? [{
-  #     id      = aws_launch_template.workers[each.key].id
-  #     version = each.value["launch_template_version"]
-  #   }] : []
-
-  #   content {
-  #     id      = launch_template.value["id"]
-  #     version = launch_template.value["version"]
-  #   }
-  # }
-
-
 
   labels = merge(
     lookup(var.node_groups_defaults, "k8s_labels", {}),
