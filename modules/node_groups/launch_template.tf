@@ -50,7 +50,7 @@ resource "aws_launch_template" "workers" {
     delete_on_termination       = lookup(each.value, "eni_delete", null)
     security_groups = flatten([
       local.workers_group_defaults["node_sg_group_id"],
-      lookup(local.workers_group_defaults, "additional_security_group_ids", null],
+      lookup(local.workers_group_defaults, "additional_security_group_ids", null),
       lookup(each.value, "additional_security_group_ids", null)
       ),
     ])
