@@ -34,8 +34,10 @@ resource "aws_eks_node_group" "workers" {
     }
   }
 
-  launch_template = aws_launch_template.workers[each.key].id
-
+  launch_template {
+    id = aws_launch_template.workers[each.key].id
+    version = aws_launch_template.workers[each.key].default_version
+  }
   # dynamic "launch_template" {
   #   for_each = each.value["launch_template_id"] != null ? [{
   #     id      = each.value["launch_template_id"]
