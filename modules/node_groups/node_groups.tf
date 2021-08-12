@@ -21,18 +21,6 @@ resource "aws_eks_node_group" "workers" {
   ami_type        = lookup(each.value, "ami_type", null)
   release_version = lookup(each.value, "ami_release_version", null)
 
-  dynamic "remote_access" {
-    for_each = each.value["key_name"] != "" ? [{
-      ec2_ssh_key               = each.value["key_name"]
-      source_security_group_ids = lookup(each.value, "source_security_group_ids", [])
-    }] : []
-
-    content {
-      ec2_ssh_key               = remote_access.value["ec2_ssh_key"]
-      source_security_group_ids = remote_access.value["source_security_group_ids"]
-    }
-  }
-
   launch_template {
     id = aws_launch_template.workers[each.key].id
     version = aws_launch_template.workers[each.key].default_version
