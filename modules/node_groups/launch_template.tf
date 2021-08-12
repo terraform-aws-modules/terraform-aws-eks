@@ -49,11 +49,12 @@ resource "aws_launch_template" "workers" {
     associate_public_ip_address = lookup(each.value, "public_ip", null)
     delete_on_termination       = lookup(each.value, "eni_delete", null)
     security_groups = flatten([
-      #lookup(var.node_groups_defaults, "additional_security_group_ids",null),
+      local.worker_security_group_id,
+      var.worker_additional_security_group_ids,
       lookup(
-        each.value,
+        var.worker_groups_launch_template[count.index],
         "additional_security_group_ids",
-        null,
+        local.workers_group_defaults["additional_security_group_ids"],
       ),
     ])
   }
