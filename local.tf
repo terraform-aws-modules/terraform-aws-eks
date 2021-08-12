@@ -89,8 +89,8 @@ locals {
     var.workers_group_defaults,
   )
 
-  node_groups_defaults = merge(
-    {node_sg_group_id = aws_security_group.workers.id},
+  nodes_groups_defaults = merge(
+    {node_sg_group_id = aws_security_group.workers.*.id},
     var.node_groups_defaults
   )
 
