@@ -54,7 +54,4 @@ locals {
       join("-", [var.cluster_name, k])
     )
   ) }
-
-  # Hack for dependency on launch templates - forces launch templates to create before node groups
-  #ng_dependency = var.node_groups_defaults["launch_template_id"] == null && var.node_groups_defaults["create_launch_template"] ? aws_launch_template.workers : null
 }
