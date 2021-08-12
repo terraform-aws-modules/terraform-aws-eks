@@ -23,6 +23,6 @@ module "node_groups" {
   default_iam_role_arn   = coalescelist(aws_iam_role.workers[*].arn, [""])[0]
   workers_group_defaults = local.workers_group_defaults
   tags                   = var.tags
-  node_groups_defaults   = local.node_groups_defaults
+  node_groups_defaults   = local.nodes_groups_defaults
   node_groups            = var.node_groups
 }
