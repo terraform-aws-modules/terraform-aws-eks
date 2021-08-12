@@ -41,8 +41,6 @@ resource "aws_launch_template" "workers" {
     }
   }
 
-  instance_type = each.value["instance_types"]
-
   monitoring {
     enabled = lookup(each.value, "enable_monitoring", null)
   }
