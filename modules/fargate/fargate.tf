@@ -14,7 +14,7 @@ resource "aws_iam_role_policy_attachment" "eks_fargate_pod" {
 }
 
 resource "aws_eks_fargate_profile" "this" {
-  for_each               = local.create_eks ? local.fargate_profiles_expanded : {}
+  for_each               = local.fargate_profiles_expanded
   cluster_name           = var.cluster_name
   fargate_profile_name   = lookup(each.value, "name", format("%s-fargate-%s", var.cluster_name, replace(each.key, "_", "-")))
   pod_execution_role_arn = local.pod_execution_role_arn
