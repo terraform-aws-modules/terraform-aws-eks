@@ -153,10 +153,10 @@ output "worker_iam_role_arn" {
   )[0]
 }
 
-# output "node_groups" {
-#   description = "Outputs from EKS node groups. Map of maps, keyed by var.node_groups keys"
-#   value       = module.node_groups.node_groups
-# }
+output "node_groups" {
+  description = "Outputs from EKS node groups. Map of maps, keyed by var.node_groups keys"
+  value       = module.node_groups.node_groups
+}
 
 output "node_group_LTs" {
   value       = module.node_groups.launch_templates
