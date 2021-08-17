@@ -68,7 +68,7 @@ resource "aws_launch_template" "workers" {
   #
   # (optionally you can use https://registry.terraform.io/providers/hashicorp/cloudinit/latest/docs/data-sources/cloudinit_config to render the script, example: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/997#issuecomment-705286151)
 
-  user_data = data.cloudinit_config.workers_userdata[each.key].rendered
+  user_data = data.cloudinit_config.workers_userdata[count.index].rendered
 
   key_name = lookup(local.node_groups_expanded[count.index], "key_name", null)
 
@@ -79,9 +79,9 @@ resource "aws_launch_template" "workers" {
     tags = merge(
       var.tags,
       lookup(var.node_groups_defaults, "additional_tags", {}),
-      lookup(var.node_groups[each.key], "additional_tags", {}),
+      lookup(var.node_groups[count.index], "additional_tags", {}),
       {
-        Name = "eks-${local.node_groups_names[each.key]}"
+        Name = "eks-${local.node_groups_names[count.index]}"
       }
     )
   }
@@ -93,9 +93,9 @@ resource "aws_launch_template" "workers" {
     tags = merge(
       var.tags,
       lookup(var.node_groups_defaults, "additional_tags", {}),
-      lookup(var.node_groups[each.key], "additional_tags", {}),
+      lookup(var.node_groups[count.index], "additional_tags", {}),
       {
-        Name = "eks-${local.node_groups_names[each.key]}"
+        Name = "eks-${local.node_groups_names[count.index]}"
       }
     )
   }
@@ -104,7 +104,7 @@ resource "aws_launch_template" "workers" {
   tags = merge(
     var.tags,
     lookup(var.node_groups_defaults, "additional_tags", {}),
-    lookup(var.node_groups[each.key], "additional_tags", {}),
+    lookup(var.node_groups[count.index], "additional_tags", {}),
   )
 
   lifecycle {
