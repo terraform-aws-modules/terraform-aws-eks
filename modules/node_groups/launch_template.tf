@@ -1,5 +1,6 @@
 data "cloudinit_config" "workers_userdata" {
-  for_each = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] }
+  count = var.create_eks ? length(local.node_groups_expanded) : 0
+  #for_each = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] }
 
   gzip          = false
   base64_encode = true
@@ -9,8 +10,8 @@ data "cloudinit_config" "workers_userdata" {
     content_type = "text/x-shellscript"
     content = templatefile("${path.module}/templates/userdata.sh.tpl",
       {
-        pre_userdata       = each.value["pre_userdata"]
-        kubelet_extra_args = each.value["kubelet_extra_args"]
+        pre_userdata       = local.node_groups_expanded[count.index]["pre_userdata"]
+        kubelet_extra_args = local.node_groups_expanded[count.index]["kubelet_extra_args"]
       }
     )
   }
