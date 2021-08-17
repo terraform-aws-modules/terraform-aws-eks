@@ -42,7 +42,7 @@ resource "aws_launch_template" "workers" {
   }
 
   iam_instance_profile {
-    arn = each.key["node_instance_profile"]
+    arn = each.value["node_instance_profile"]
   }
 
   monitoring {
