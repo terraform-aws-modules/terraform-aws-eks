@@ -41,6 +41,10 @@ resource "aws_launch_template" "workers" {
     }
   }
 
+  iam_instance_profile {
+    each.key["node_instance_profile"]
+  }
+
   monitoring {
     enabled = lookup(each.value, "enable_monitoring", null)
   }

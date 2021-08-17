@@ -91,7 +91,8 @@ locals {
 
   nodes_groups_defaults = merge(
     {node_sg_group_id = aws_security_group.workers.*.id},
-    var.node_groups_defaults
+    var.node_groups_defaults,
+    {node_instance_profile = aws_iam_instance_profile.node_group_instance_profile.id}
   )
 
   ebs_optimized_not_supported = [
