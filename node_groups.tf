@@ -32,6 +32,5 @@ resource "aws_iam_instance_profile" "node_group_instance_profile" {
   count       = var.create_eks ? 1 : 0
   name_prefix = aws_eks_cluster.this[0].name
   role = local.default_iam_role_id
-  )
   path = var.iam_path
 }
