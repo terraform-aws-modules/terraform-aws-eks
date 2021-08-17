@@ -23,39 +23,40 @@ data "cloudinit_config" "workers_userdata" {
 # Trivia: AWS transparently creates a copy of your LaunchTemplate and actually uses that copy then for the node group. If you DONT use a custom AMI,
 # then the default user-data for bootstrapping a cluster is merged in the copy.
 resource "aws_launch_template" "workers" {
-  for_each = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] }
+  count = var.create_eks ? length(local.node_groups_expanded) : 0
+  #for_each = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] }
 
-  name_prefix            = local.node_groups_names[each.key]
-  description            = format("EKS Managed Node Group custom LT for %s", local.node_groups_names[each.key])
+  name_prefix            = local.node_groups_names[count.index]
+  description            = format("EKS Managed Node Group custom LT for %s", local.node_groups_names[count.index])
   update_default_version = true
 
   block_device_mappings {
     device_name = "/dev/xvda"
 
     ebs {
-      volume_size           = lookup(each.value, "disk_size", null)
-      volume_type           = lookup(each.value, "disk_type", null)
-      encrypted = lookup(each.value, "root_encrypted", null)
-      kms_key_id = lookup(each.value, "root_kms_key_id", null)
+      volume_size           = lookup(local.node_groups_expanded[count.index], "disk_size", null)
+      volume_type           = lookup(local.node_groups_expanded[count.index], "disk_type", null)
+      encrypted = lookup(local.node_groups_expanded[count.index], "root_encrypted", null)
+      kms_key_id = lookup(local.node_groups_expanded[count.index], "root_kms_key_id", null)
       delete_on_termination = true
     }
   }
 
   iam_instance_profile {
-    arn = each.value["node_instance_profile"]
+    arn = local.node_groups_expanded[count.index]["node_instance_profile"]
   }
 
   monitoring {
-    enabled = lookup(each.value, "enable_monitoring", null)
+    enabled = lookup(local.node_groups_expanded[count.index], "enable_monitoring", null)
   }
 
   network_interfaces {
-    associate_public_ip_address = lookup(each.value, "public_ip", null)
-    delete_on_termination       = lookup(each.value, "eni_delete", null)
+    associate_public_ip_address = lookup(local.node_groups_expanded[count.index], "public_ip", null)
+    delete_on_termination       = lookup(local.node_groups_expanded[count.index], "eni_delete", null)
     security_groups = flatten([
       var.node_groups_defaults["node_sg_group_id"],
       lookup(var.node_groups_defaults, "additional_security_group_ids", null),
-      lookup(each.value, "additional_security_group_ids", null)
+      lookup(local.node_groups_expanded[count.index], "additional_security_group_ids", null)
     ])
   }
 
@@ -69,7 +70,7 @@ resource "aws_launch_template" "workers" {
 
   user_data = data.cloudinit_config.workers_userdata[each.key].rendered
 
-  key_name = lookup(each.value, "key_name", null)
+  key_name = lookup(local.node_groups_expanded[count.index], "key_name", null)
 
   # Supplying custom tags to EKS instances is another use-case for LaunchTemplates
   tag_specifications {
