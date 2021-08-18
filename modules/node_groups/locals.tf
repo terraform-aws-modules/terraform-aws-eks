@@ -20,7 +20,6 @@ locals {
   # Merge defaults and per-group values to make code cleaner
   node_groups_expanded = { for k, v in var.node_groups : k => merge(
     {
-      desired_capacity              = var.workers_group_defaults["asg_desired_capacity"]
       iam_role_arn                  = var.default_iam_role_arn
       instance_types                = [var.workers_group_defaults["instance_type"]]
       key_name                      = var.workers_group_defaults["key_name"]
