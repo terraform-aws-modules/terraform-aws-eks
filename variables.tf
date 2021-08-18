@@ -193,6 +193,12 @@ variable "cluster_create_timeout" {
   default     = "15m"
 }
 
+variable "cluster_update_timeout" {
+  description = "Timeout value when updating the EKS cluster."
+  type        = string
+  default     = "15m"
+}
+
 variable "cluster_delete_timeout" {
   description = "Timeout value when deleting the EKS cluster."
   type        = string

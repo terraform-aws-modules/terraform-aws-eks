@@ -3,6 +3,10 @@ output "node_groups" {
   value       = aws_eks_node_group.workers
 }
 
+output "launch_templates" {
+  value = aws_launch_template.workers
+}
+
 output "aws_auth_roles" {
   description = "Roles for use in aws-auth ConfigMap"
   value = [

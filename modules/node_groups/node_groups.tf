@@ -1,36 +1,30 @@
 resource "aws_eks_node_group" "workers" {
   for_each = local.node_groups_expanded
 
-  node_group_name = lookup(each.value, "name", join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id]))
+  node_group_name = each.value["name"]
+  version         = lookup(each.value, "version", null)
+  capacity_type   = each.value["capacity_type"] # SPOT or ON_DEMAND
 
   cluster_name  = var.cluster_name
   node_role_arn = each.value["iam_role_arn"]
   subnet_ids    = each.value["subnets"]
 
   scaling_config {
-    desired_size = each.value["desired_capacity"]
+    desired_size = each.value["node_group_desired_capacity"]
     max_size     = each.value["max_capacity"]
     min_size     = each.value["min_capacity"]
   }
 
+  instance_types  = each.value["instance_types"]
+
+  # These shouldn't be needed as we specify the version
   ami_type        = lookup(each.value, "ami_type", null)
-  disk_size       = lookup(each.value, "disk_size", null)
-  instance_types  = [each.value["instance_type"]]
   release_version = lookup(each.value, "ami_release_version", null)
 
-  dynamic "remote_access" {
-    for_each = each.value["key_name"] != "" ? [{
-      ec2_ssh_key               = each.value["key_name"]
-      source_security_group_ids = lookup(each.value, "source_security_group_ids", [])
-    }] : []
-
-    content {
-      ec2_ssh_key               = remote_access.value["ec2_ssh_key"]
-      source_security_group_ids = remote_access.value["source_security_group_ids"]
-    }
+  launch_template {
+    id = aws_launch_template.workers[each.key].id
+    version = aws_launch_template.workers[each.key].default_version
   }
-
-  version = lookup(each.value, "version", null)
 
   labels = merge(
     lookup(var.node_groups_defaults, "k8s_labels", {}),
@@ -38,6 +32,9 @@ resource "aws_eks_node_group" "workers" {
   )
 
   tags = merge(
+    {
+      Name = "${each.value["name"]}_node"
+    },
     var.tags,
     lookup(var.node_groups_defaults, "additional_tags", {}),
     lookup(var.node_groups[each.key], "additional_tags", {}),
@@ -47,4 +44,7 @@ resource "aws_eks_node_group" "workers" {
     create_before_destroy = true
     ignore_changes        = [scaling_config.0.desired_size]
   }
+
+  depends_on = [aws_launch_template.workers]
+
 }

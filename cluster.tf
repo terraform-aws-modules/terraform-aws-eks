@@ -24,6 +24,7 @@ resource "aws_eks_cluster" "this" {
 
   timeouts {
     create = var.cluster_create_timeout
+    update = var.cluster_update_timeout
     delete = var.cluster_delete_timeout
   }
 
