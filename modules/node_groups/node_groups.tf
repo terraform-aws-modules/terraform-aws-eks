@@ -10,7 +10,7 @@ resource "aws_eks_node_group" "workers" {
   subnet_ids    = each.value["subnets"]
 
   scaling_config {
-    desired_size = each.value["desired_capacity"]
+    desired_size = each.value["node_group_desired_capacity"]
     max_size     = each.value["max_capacity"]
     min_size     = each.value["min_capacity"]
   }
