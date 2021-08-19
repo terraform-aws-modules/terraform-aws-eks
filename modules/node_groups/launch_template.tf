@@ -41,8 +41,6 @@ resource "aws_launch_template" "workers" {
     }
   }
 
-  instance_types  = each.value["instance_types"]
-
   # iam_instance_profile {
   #   arn = each.value["node_instance_profile"]
   # }
