@@ -15,7 +15,7 @@ resource "aws_eks_node_group" "workers" {
     min_size     = each.value["min_capacity"]
   }
 
-  instance_types  = each.value["instance_types"]
+  #instance_types  = each.value["instance_types"]
 
   # These shouldn't be needed as we specify the version
   ami_type        = lookup(each.value, "ami_type", null)
