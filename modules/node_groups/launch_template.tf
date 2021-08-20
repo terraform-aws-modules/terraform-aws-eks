@@ -41,8 +41,6 @@ resource "aws_launch_template" "workers" {
     }
   }
 
-  instance_types  = each.value["capacity_type"] == "ON_DEMAND" ? each.value["instance_types"] : null
-
   monitoring {
     enabled = lookup(each.value, "enable_monitoring", null)
   }

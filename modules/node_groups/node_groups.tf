@@ -15,7 +15,7 @@ resource "aws_eks_node_group" "workers" {
     min_size     = each.value["min_capacity"]
   }
 
-  instance_types  = each.value["capacity_type"] == "SPOT" ? each.value["instance_types"] : null
+  instance_types  = each.value["instance_types"]
 
   # These shouldn't be needed as we specify the version
   ami_type        = lookup(each.value, "ami_type", null)
