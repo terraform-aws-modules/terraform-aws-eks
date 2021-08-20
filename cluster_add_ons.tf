@@ -12,7 +12,7 @@ resource "aws_eks_addon" "coredns" {
   count = var.create_eks && var.enable_coredns_addon ? 1 : 0
   cluster_name = aws_eks_cluster.this.*.name
   addon_name   = "coredns"
-  addon_version = var.cordns_version
+  addon_version = var.coredns_version
   resolve_conflicts = var.coredns_resolve_conflicts
 }
 
