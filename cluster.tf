@@ -88,13 +88,13 @@ resource "aws_security_group_rule" "cluster_https_worker_ingress" {
 }
 
 resource "aws_security_group_rule" "cluster_private_access_cidrs_source" {
-  count       = var.create_eks && var.cluster_create_endpoint_private_access_sg_rule && var.cluster_endpoint_private_access && var.cluster_endpoint_private_access_cidrs != null ? 1 : 0
+  for_each    = var.create_eks && var.cluster_create_endpoint_private_access_sg_rule && var.cluster_endpoint_private_access && var.cluster_endpoint_private_access_cidrs != null ? toset(var.cluster_endpoint_private_access_cidrs) : []
   description = "Allow private K8S API ingress from custom CIDR source."
   type        = "ingress"
   from_port   = 443
   to_port     = 443
   protocol    = "tcp"
-  cidr_blocks = var.cluster_endpoint_private_access_cidrs
+  cidr_blocks = [each.value]
 
   security_group_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
 }
