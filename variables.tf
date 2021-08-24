@@ -90,6 +90,58 @@ variable "vpc_id" {
   type        = string
 }
 
+# Cluster addons vars
+variable "enable_vpc_cni_addon" {
+  description = "Whether or not to install the vpc-cni addon in the cluster"
+  type        = bool
+  default     = false
+}
+
+variable "vpc_cni_version" {
+  description = "Version of the vpc-cni container to install"
+  type        = string
+}
+
+variable "vpc_cni_resolve_conflicts" {
+  description = "Whether or not to force overwrite of the config. Options: NONE, OVERWRITE"
+  type        = string
+  default     = "NONE"
+}
+
+variable "enable_coredns_addon" {
+  description = "Whether or not to install the coredns addon in the cluster"
+  type        = bool
+  default     = false
+}
+
+variable "coredns_version" {
+  description = "Version of the coredns container to install"
+  type        = string
+}
+
+variable "coredns_resolve_conflicts" {
+  description = "Whether or not to force overwrite of the config. Options: NONE, OVERWRITE"
+  type        = string
+  default     = "NONE"
+}
+
+variable "enable_kube_proxy_addon" {
+  description = "Whether or not to install the kube-proxy addon in the cluster"
+  type        = bool
+  default     = false
+}
+
+variable "kube_proxy_version" {
+  description = "Version of the kube-proxy container to install"
+  type        = string
+}
+
+variable "kube_proxy_resolve_conflicts" {
+  description = "Whether or not to force overwrite of the config. Options: NONE, OVERWRITE"
+  type        = string
+  default     = "NONE"
+}
+
 variable "worker_groups" {
   description = "A list of maps defining worker group configurations to be defined using AWS Launch Configurations. See workers_group_defaults for valid keys."
   type        = any
