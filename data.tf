@@ -1,3 +1,7 @@
+data "aws_partition" "current" {}
+
+data "aws_caller_identity" "current" {}
+
 data "aws_iam_policy_document" "workers_assume_role_policy" {
   statement {
     sid = "EKSWorkerAssumeRole"
@@ -14,6 +18,8 @@ data "aws_iam_policy_document" "workers_assume_role_policy" {
 }
 
 data "aws_ami" "eks_worker" {
+  count = local.worker_has_linux_ami ? 1 : 0
+
   filter {
     name   = "name"
     values = [local.worker_ami_name_filter]
@@ -25,6 +31,8 @@ data "aws_ami" "eks_worker" {
 }
 
 data "aws_ami" "eks_worker_windows" {
+  count = local.worker_has_windows_ami ? 1 : 0
+
   filter {
     name   = "name"
     values = [local.worker_ami_name_filter_windows]
@@ -55,98 +63,6 @@ data "aws_iam_policy_document" "cluster_assume_role_policy" {
   }
 }
 
-data "template_file" "userdata" {
-  count = var.create_eks ? local.worker_group_count : 0
-  template = lookup(
-    var.worker_groups[count.index],
-    "userdata_template_file",
-    file(
-      lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"]) == "windows"
-      ? "${path.module}/templates/userdata_windows.tpl"
-      : "${path.module}/templates/userdata.sh.tpl"
-    )
-  )
-
-  vars = merge({
-    platform            = lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"])
-    cluster_name        = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
-    endpoint            = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
-    cluster_auth_base64 = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
-    pre_userdata = lookup(
-      var.worker_groups[count.index],
-      "pre_userdata",
-      local.workers_group_defaults["pre_userdata"],
-    )
-    additional_userdata = lookup(
-      var.worker_groups[count.index],
-      "additional_userdata",
-      local.workers_group_defaults["additional_userdata"],
-    )
-    bootstrap_extra_args = lookup(
-      var.worker_groups[count.index],
-      "bootstrap_extra_args",
-      local.workers_group_defaults["bootstrap_extra_args"],
-    )
-    kubelet_extra_args = lookup(
-      var.worker_groups[count.index],
-      "kubelet_extra_args",
-      local.workers_group_defaults["kubelet_extra_args"],
-    )
-    },
-    lookup(
-      var.worker_groups[count.index],
-      "userdata_template_extra_args",
-      local.workers_group_defaults["userdata_template_extra_args"]
-    )
-  )
-}
-
-data "template_file" "launch_template_userdata" {
-  count = var.create_eks ? local.worker_group_launch_template_count : 0
-  template = lookup(
-    var.worker_groups_launch_template[count.index],
-    "userdata_template_file",
-    file(
-      lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"]) == "windows"
-      ? "${path.module}/templates/userdata_windows.tpl"
-      : "${path.module}/templates/userdata.sh.tpl"
-    )
-  )
-
-  vars = merge({
-    platform            = lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"])
-    cluster_name        = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
-    endpoint            = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
-    cluster_auth_base64 = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
-    pre_userdata = lookup(
-      var.worker_groups_launch_template[count.index],
-      "pre_userdata",
-      local.workers_group_defaults["pre_userdata"],
-    )
-    additional_userdata = lookup(
-      var.worker_groups_launch_template[count.index],
-      "additional_userdata",
-      local.workers_group_defaults["additional_userdata"],
-    )
-    bootstrap_extra_args = lookup(
-      var.worker_groups_launch_template[count.index],
-      "bootstrap_extra_args",
-      local.workers_group_defaults["bootstrap_extra_args"],
-    )
-    kubelet_extra_args = lookup(
-      var.worker_groups_launch_template[count.index],
-      "kubelet_extra_args",
-      local.workers_group_defaults["kubelet_extra_args"],
-    )
-    },
-    lookup(
-      var.worker_groups_launch_template[count.index],
-      "userdata_template_extra_args",
-      local.workers_group_defaults["userdata_template_extra_args"]
-    )
-  )
-}
-
 data "aws_iam_role" "custom_cluster_iam_role" {
   count = var.manage_cluster_iam_resources ? 0 : 1
   name  = var.cluster_iam_role_name
@@ -170,4 +86,15 @@ data "aws_iam_instance_profile" "custom_worker_group_launch_template_iam_instanc
   )
 }
 
-data "aws_partition" "current" {}
+data "http" "wait_for_cluster" {
+  count          = var.create_eks && var.manage_aws_auth ? 1 : 0
+  url            = format("%s/healthz", aws_eks_cluster.this[0].endpoint)
+  ca_certificate = base64decode(coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0])
+  timeout        = var.wait_for_cluster_timeout
+
+  depends_on = [
+    aws_eks_cluster.this,
+    aws_security_group_rule.cluster_private_access_sg_source,
+    aws_security_group_rule.cluster_private_access_cidrs_source,
+  ]
+}

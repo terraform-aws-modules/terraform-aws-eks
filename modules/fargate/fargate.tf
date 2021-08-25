@@ -20,9 +20,13 @@ resource "aws_eks_fargate_profile" "this" {
   pod_execution_role_arn = local.pod_execution_role_arn
   subnet_ids             = lookup(each.value, "subnets", var.subnets)
   tags                   = each.value.tags
-  selector {
-    namespace = each.value.namespace
-    labels    = lookup(each.value, "labels", null)
+
+  dynamic "selector" {
+    for_each = each.value.selectors
+    content {
+      namespace = selector.value["namespace"]
+      labels    = lookup(selector.value, "labels", {})
+    }
   }
 
   depends_on = [var.eks_depends_on]

@@ -56,7 +56,7 @@ module "vpc" {
 module "eks" {
   source          = "../.."
   cluster_name    = local.cluster_name
-  cluster_version = "1.17"
+  cluster_version = "1.20"
   subnets         = module.vpc.private_subnets
 
   tags = {
@@ -78,7 +78,7 @@ module "eks" {
       max_capacity     = 10
       min_capacity     = 1
 
-      instance_types = ["m5.large"]
+      instance_types = ["t3.large"]
       capacity_type  = "SPOT"
       k8s_labels = {
         Environment = "test"
@@ -88,6 +88,13 @@ module "eks" {
       additional_tags = {
         ExtraTag = "example"
       }
+      taints = [
+        {
+          key    = "dedicated"
+          value  = "gpuGroup"
+          effect = "NO_SCHEDULE"
+        }
+      ]
     }
   }
 

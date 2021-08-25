@@ -7,8 +7,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     compact(
       [
         coalescelist(aws_eks_cluster.this[*].name, [""])[0],
-        lookup(var.worker_groups_launch_template[count.index], "name", count.index),
-        lookup(var.worker_groups_launch_template[count.index], "asg_recreate_on_change", local.workers_group_defaults["asg_recreate_on_change"]) ? random_pet.workers_launch_template[count.index].id : ""
+        lookup(var.worker_groups_launch_template[count.index], "name", count.index)
       ]
     )
   )
@@ -97,6 +96,11 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     "health_check_grace_period",
     local.workers_group_defaults["health_check_grace_period"]
   )
+  capacity_rebalance = lookup(
+    var.worker_groups_launch_template[count.index],
+    "capacity_rebalance",
+    local.workers_group_defaults["capacity_rebalance"]
+  )
 
   dynamic "mixed_instances_policy" {
     iterator = item
@@ -142,7 +146,13 @@ resource "aws_autoscaling_group" "workers_launch_template" {
           version = lookup(
             var.worker_groups_launch_template[count.index],
             "launch_template_version",
-            local.workers_group_defaults["launch_template_version"],
+            lookup(
+              var.worker_groups_launch_template[count.index],
+              "launch_template_version",
+              local.workers_group_defaults["launch_template_version"]
+            ) == "$Latest"
+            ? aws_launch_template.workers_launch_template.*.latest_version[count.index]
+            : aws_launch_template.workers_launch_template.*.default_version[count.index]
           )
         }
 
@@ -157,7 +167,6 @@ resource "aws_autoscaling_group" "workers_launch_template" {
             instance_type = override.value
           }
         }
-
       }
     }
   }
@@ -171,7 +180,13 @@ resource "aws_autoscaling_group" "workers_launch_template" {
       version = lookup(
         var.worker_groups_launch_template[count.index],
         "launch_template_version",
-        local.workers_group_defaults["launch_template_version"],
+        lookup(
+          var.worker_groups_launch_template[count.index],
+          "launch_template_version",
+          local.workers_group_defaults["launch_template_version"]
+        ) == "$Latest"
+        ? aws_launch_template.workers_launch_template.*.latest_version[count.index]
+        : aws_launch_template.workers_launch_template.*.default_version[count.index]
       )
     }
   }
@@ -239,6 +254,33 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     }
   }
 
+  # logic duplicated in workers.tf
+  dynamic "instance_refresh" {
+    for_each = lookup(var.worker_groups_launch_template[count.index],
+      "instance_refresh_enabled",
+    local.workers_group_defaults["instance_refresh_enabled"]) ? [1] : []
+    content {
+      strategy = lookup(
+        var.worker_groups_launch_template[count.index], "instance_refresh_strategy",
+        local.workers_group_defaults["instance_refresh_strategy"]
+      )
+      preferences {
+        instance_warmup = lookup(
+          var.worker_groups_launch_template[count.index], "instance_refresh_instance_warmup",
+          local.workers_group_defaults["instance_refresh_instance_warmup"]
+        )
+        min_healthy_percentage = lookup(
+          var.worker_groups_launch_template[count.index], "instance_refresh_min_healthy_percentage",
+          local.workers_group_defaults["instance_refresh_min_healthy_percentage"]
+        )
+      }
+      triggers = lookup(
+        var.worker_groups_launch_template[count.index], "instance_refresh_triggers",
+        local.workers_group_defaults["instance_refresh_triggers"]
+      )
+    }
+  }
+
   lifecycle {
     create_before_destroy = true
     ignore_changes        = [desired_capacity]
@@ -252,6 +294,12 @@ resource "aws_launch_template" "workers_launch_template" {
     "name",
     count.index,
   )}"
+
+  update_default_version = lookup(
+    var.worker_groups_launch_template[count.index],
+    "update_default_version",
+    local.workers_group_defaults["update_default_version"],
+  )
 
   network_interfaces {
     associate_public_ip_address = lookup(
@@ -318,7 +366,7 @@ resource "aws_launch_template" "workers_launch_template" {
     local.workers_group_defaults["key_name"],
   )
   user_data = base64encode(
-    data.template_file.launch_template_userdata.*.rendered[count.index],
+    local.launch_template_userdata_rendered[count.index],
   )
 
   ebs_optimized = lookup(
@@ -395,7 +443,7 @@ resource "aws_launch_template" "workers_launch_template" {
     device_name = lookup(
       var.worker_groups_launch_template[count.index],
       "root_block_device_name",
-      local.workers_group_defaults["root_block_device_name"],
+      lookup(var.worker_groups_launch_template[count.index], "platform", local.workers_group_defaults["platform"]) == "windows" ? local.workers_group_defaults["root_block_device_name_windows"] : local.workers_group_defaults["root_block_device_name"],
     )
 
     ebs {
@@ -475,6 +523,18 @@ resource "aws_launch_template" "workers_launch_template" {
 
   }
 
+  dynamic "block_device_mappings" {
+    for_each = lookup(var.worker_groups_launch_template[count.index], "additional_instance_store_volumes", local.workers_group_defaults["additional_instance_store_volumes"])
+    content {
+      device_name = block_device_mappings.value.block_device_name
+      virtual_name = lookup(
+        block_device_mappings.value,
+        "virtual_name",
+        local.workers_group_defaults["instance_store_virtual_name"],
+      )
+    }
+  }
+
   tag_specifications {
     resource_type = "volume"
 
@@ -529,29 +589,6 @@ resource "aws_launch_template" "workers_launch_template" {
     aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly,
     aws_iam_role_policy_attachment.workers_additional_policies
   ]
-}
-
-resource "random_pet" "workers_launch_template" {
-  count = var.create_eks ? local.worker_group_launch_template_count : 0
-
-  separator = "-"
-  length    = 2
-
-  keepers = {
-    lt_name = join(
-      "-",
-      compact(
-        [
-          aws_launch_template.workers_launch_template[count.index].name,
-          aws_launch_template.workers_launch_template[count.index].latest_version
-        ]
-      )
-    )
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "aws_iam_instance_profile" "workers_launch_template" {

@@ -107,7 +107,7 @@ You do not need to do anything extra since v12.1.0 of the module as long as the 
 - `manage_aws_auth = true` on the module (default)
 - the kubernetes provider is correctly configured like in the [Usage Example](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/README.md#usage-example). Primarily the module's `cluster_id` output is used as input to the `aws_eks_cluster*` data sources.
 
-The `cluster_id` depends on a `null_resource` that polls the EKS cluster's endpoint until it is alive. This blocks initialisation of the kubernetes provider.
+The `cluster_id` depends on a `data.http.wait_for_cluster` that polls the EKS cluster's endpoint until it is alive. This blocks initialisation of the kubernetes provider.
 
 ## `aws_auth.tf: At 2:14: Unknown token: 2:14 IDENT`
 
@@ -169,18 +169,6 @@ worker_groups = [
 ```
 
 4. With `kubectl get nodes` you can see cluster with mixed (Linux/Windows) nodes support.
-
-## Deploying from Windows: `/bin/sh` file does not exist
-
-The module is almost pure Terraform apart from the `wait_for_cluster` `null_resource` that runs a local provisioner. The module has a default configuration for Unix-like systems. In order to run the provisioner on Windows systems you must set the interpreter to a valid value. [PR #795 (comment)](https://github.com/terraform-aws-modules/terraform-aws-eks/pull/795#issuecomment-599191029) suggests the following value:
-```hcl
-module "eks" {
-  # ...
-  wait_for_cluster_interpreter = ["c:/git/bin/sh.exe", "-c"]
-}
-```
-
-Alternatively, you can disable the `null_resource` by disabling creation of the `aws-auth` ConfigMap via setting `manage_aws_auth = false` on the module. The ConfigMap will then need creating via a different method.
 
 ## Worker nodes with labels do not join a 1.16+ cluster
 

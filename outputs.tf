@@ -1,9 +1,10 @@
 output "cluster_id" {
-  description = "The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready"
+  description = "The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready."
   value       = element(concat(aws_eks_cluster.this.*.id, [""]), 0)
-  # So that calling plans wait for the cluster to be available before attempting
-  # to use it. They will not need to duplicate this null_resource
-  depends_on = [null_resource.wait_for_cluster]
+
+  # So that calling plans wait for the cluster to be available before attempting to use it.
+  # There is no need to duplicate this datasource
+  depends_on = [data.http.wait_for_cluster]
 }
 
 output "cluster_arn" {
@@ -67,13 +68,21 @@ output "cloudwatch_log_group_arn" {
 }
 
 output "kubeconfig" {
-  description = "kubectl config file contents for this EKS cluster."
+  description = "kubectl config file contents for this EKS cluster. Will block on cluster creation until the cluster is really ready."
   value       = local.kubeconfig
+
+  # So that calling plans wait for the cluster to be available before attempting to use it.
+  # There is no need to duplicate this datasource
+  depends_on = [data.http.wait_for_cluster]
 }
 
 output "kubeconfig_filename" {
-  description = "The filename of the generated kubectl config."
+  description = "The filename of the generated kubectl config. Will block on cluster creation until the cluster is really ready."
   value       = concat(local_file.kubeconfig.*.filename, [""])[0]
+
+  # So that calling plans wait for the cluster to be available before attempting to use it.
+  # There is no need to duplicate this datasource
+  depends_on = [data.http.wait_for_cluster]
 }
 
 output "oidc_provider_arn" {
@@ -100,14 +109,19 @@ output "workers_asg_names" {
 output "workers_user_data" {
   description = "User data of worker groups"
   value = concat(
-    data.template_file.userdata.*.rendered,
-    data.template_file.launch_template_userdata.*.rendered,
+    local.userdata_rendered,
+    local.launch_template_userdata_rendered,
   )
 }
 
 output "workers_default_ami_id" {
   description = "ID of the default worker group AMI"
-  value       = data.aws_ami.eks_worker.id
+  value       = local.default_ami_id_linux
+}
+
+output "workers_default_ami_id_windows" {
+  description = "ID of the default Windows worker group AMI"
+  value       = local.default_ami_id_windows
 }
 
 output "workers_launch_template_ids" {
