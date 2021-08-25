@@ -59,6 +59,7 @@ module "eks" {
       instance_type        = "t3.medium"
       asg_desired_capacity = 1
       public_ip            = true
+      ebs_optimized        = true
     },
     {
       name                          = "worker-group-3"
