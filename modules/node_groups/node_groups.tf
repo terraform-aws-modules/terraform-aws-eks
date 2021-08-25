@@ -47,8 +47,10 @@ resource "aws_eks_node_group" "workers" {
 
   dynamic "launch_template" {
     for_each = each.value["launch_template_id"] == null && each.value["create_launch_template"] ? [{
-      id      = aws_launch_template.workers[each.key].id
-      version = each.value["launch_template_version"]
+      id = aws_launch_template.workers[each.key].id
+      version = each.value["launch_template_version"] == "$Latest" ? aws_launch_template.workers[each.key].latest_version : (
+        each.value["launch_template_version"] == "$Default" ? aws_launch_template.workers[each.key].default_version : each.value["launch_template_version"]
+      )
     }] : []
 
     content {
