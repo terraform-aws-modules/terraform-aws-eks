@@ -54,3 +54,9 @@ variable "ng_depends_on" {
   type        = any
   default     = null
 }
+
+variable "ebs_optimized_not_supported" {
+  description = "List of instance types that do not support EBS optimization"
+  type        = list(string)
+  default     = []
+}
