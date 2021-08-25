@@ -39,10 +39,7 @@ resource "aws_launch_template" "workers" {
     }
   }
 
-  ebs_optimized = coalesce(
-    lookup(each.value, "ebs_optimized", null),
-    length(setintersection(var.ebs_optimized_not_supported, each.value.instance_types)) == 0
-  )
+  ebs_optimized = lookup(each.value, "ebs_optimized", !contains(var.ebs_optimized_not_supported, element(each.value.instance_types, 0)))
 
   instance_type = each.value["set_instance_types_on_lt"] ? element(each.value.instance_types, 0) : null
 
