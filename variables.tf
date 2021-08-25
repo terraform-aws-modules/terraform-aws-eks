@@ -337,6 +337,12 @@ variable "enable_irsa" {
   default     = false
 }
 
+variable "client_id_list" {
+  description = "A list of client IDs (also known as audiences) to extend Global region endpoint. This is the value that's sent as the client_id parameter on OAuth requests."
+  type        = list(any)
+  default     = []
+}
+
 variable "eks_oidc_root_ca_thumbprint" {
   type        = string
   description = "Thumbprint of Root CA for EKS OIDC, Valid until 2037"

@@ -46,6 +46,8 @@ locals {
   ec2_principal = "ec2.${data.aws_partition.current.dns_suffix}"
   sts_principal = "sts.${data.aws_partition.current.dns_suffix}"
 
+  client_id_list = distinct(compact(concat([local.sts_principal], var.client_id_list)))
+
   policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
   workers_group_defaults_defaults = {
     name                              = "count.index"               # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
