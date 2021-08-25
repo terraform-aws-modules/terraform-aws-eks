@@ -35,9 +35,13 @@ resource "aws_launch_template" "workers" {
     ebs {
       volume_size           = lookup(each.value, "disk_size", null)
       volume_type           = lookup(each.value, "disk_type", null)
+      encrypted             = lookup(each.value, "disk_encrypted", null)
+      kms_key_id            = lookup(each.value, "disk_kms_key_id", null)
       delete_on_termination = true
     }
   }
+
+  ebs_optimized = lookup(each.value, "ebs_optimized", !contains(var.ebs_optimized_not_supported, element(each.value.instance_types, 0)))
 
   instance_type = each.value["set_instance_types_on_lt"] ? element(each.value.instance_types, 0) : null
 

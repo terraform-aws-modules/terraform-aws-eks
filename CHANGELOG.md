@@ -10,8 +10,15 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v17.2.0"></a>
+## [v17.2.0] - 2021-08-25
+FEATURES:
+- Support for encrypted root disk in node_groups ([#1428](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1428))
+- Enable ebs_optimized setting for node_groups ([#1459](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1459))
+
+
 <a name="v17.1.0"></a>
-## [v17.1.0] - 2021-06-04
+## [v17.1.0] - 2021-06-09
 FEATURES:
 - Add support for Managed Node Groups (`node_groups`) taints ([#1424](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1424))
 - Allow to choose launch template version for Managed Node Groups when `create_launch_template` is set to `true` ([#1419](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1419))
@@ -400,7 +407,8 @@ CI:
 - Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.1.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.2.0...HEAD
+[v17.2.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.1.0...v17.2.0
 [v17.1.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.3...v17.1.0
 [v17.0.3]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.2...v17.0.3
 [v17.0.2]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.1...v17.0.2
