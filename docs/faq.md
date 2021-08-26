@@ -192,7 +192,9 @@ This happen because Core DNS can be scheduled on Self-Managed worker groups and 
 
 You can set `var.worker_create_cluster_primary_security_group_rules` to `true` to create required rules.
 
-## How do I upgrade the Kubernetes version of the cluster?
+## How do I upgrade the cluster and its components?
+
+### Update cluster version
 
 To upgrade the minor version of Kubernetes deployed on the EKS cluster, you need to update the `cluster_version` variable. You can upgrade one minor version at a time, Because EKS does not support upgrading by more than one minor version. 
 After updating `cluster_version` in your terraform code, run terraform apply
