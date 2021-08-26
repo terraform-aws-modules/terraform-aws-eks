@@ -81,11 +81,11 @@ resource "aws_launch_template" "workers" {
 
     tags = merge(
       var.tags,
-      lookup(var.node_groups_defaults, "additional_tags", {}),
-      lookup(var.node_groups[each.key], "additional_tags", {}),
       {
         Name = local.node_groups_names[each.key]
-      }
+      },
+      lookup(var.node_groups_defaults, "additional_tags", {}),
+      lookup(var.node_groups[each.key], "additional_tags", {})
     )
   }
 
@@ -95,11 +95,11 @@ resource "aws_launch_template" "workers" {
 
     tags = merge(
       var.tags,
-      lookup(var.node_groups_defaults, "additional_tags", {}),
-      lookup(var.node_groups[each.key], "additional_tags", {}),
       {
         Name = local.node_groups_names[each.key]
-      }
+      },
+      lookup(var.node_groups_defaults, "additional_tags", {}),
+      lookup(var.node_groups[each.key], "additional_tags", {})
     )
   }
 
