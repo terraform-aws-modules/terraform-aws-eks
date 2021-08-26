@@ -234,7 +234,7 @@ After upgrading EKS control plane by updating `cluster_version` and run running 
 Update or set `version`parameter   to new Kubernetes version in node_groups map and run terraform apply again.
 
 
-## How to upgrade worker groups nodes
+### Update worker nodes
 
 Terraform and AWS do not update worker instances automatically. You must do it by yourself.
  You can use [kubergrunt eks deploy](https://github.com/gruntwork-io/kubergrunt##deploy) to update them automatically. 
