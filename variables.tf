@@ -191,7 +191,12 @@ variable "workers_additional_policies" {
   type        = list(string)
   default     = []
 }
+variable "kubeconfig_api_version" {
+  description = "KubeConfig API version. Defaults to client.authentication.k8s.io/v1alpha1"
+  type        = string
+  default     = "client.authentication.k8s.io/v1alpha1"
 
+}
 variable "kubeconfig_aws_authenticator_command" {
   description = "Command to use to fetch AWS EKS credentials."
   type        = string
