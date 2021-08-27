@@ -13,7 +13,7 @@ If you don't want to use IRSA then you will need to attach the IAM policy to the
 ```hcl
 resource "aws_iam_role_policy_attachment" "workers_autoscaling" {
   policy_arn = aws_iam_policy.worker_autoscaling.arn
-  role       = module.my_cluster.worker_iam_role_name[0]
+  role       = module.my_cluster.worker_iam_role_name
 }
 
 resource "aws_iam_policy" "worker_autoscaling" {
