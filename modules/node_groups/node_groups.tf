@@ -69,6 +69,12 @@ resource "aws_eks_node_group" "workers" {
     }
   }
 
+  timeouts {
+    create = lookup(each.value["timeouts"], "create", "60m")
+    update = lookup(each.value["timeouts"], "update", "30m")
+    delete = lookup(each.value["timeouts"], "delete", "15m")
+  }
+
   version = lookup(each.value, "version", null)
 
   labels = merge(
