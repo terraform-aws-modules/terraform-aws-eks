@@ -57,8 +57,7 @@ EOT
 
 # SSM policy for bottlerocket control container access
 # https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-EKS.md#enabling-ssm
-resource "aws_iam_policy_attachment" "ssm" {
-  name       = "ssm"
-  roles      = [module.eks.worker_iam_role_name]
+resource "aws_iam_role_policy_attachment" "ssm" {
+  role       = module.eks.worker_iam_role_name
   policy_arn = data.aws_iam_policy.ssm.arn
 }

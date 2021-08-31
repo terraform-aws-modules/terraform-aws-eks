@@ -10,8 +10,39 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v17.5.0"></a>
+## [v17.5.0] - 2021-08-31
+FEATURES:
+- Allow users to add more Audiences to OpenID Connect ([#1451](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1451))
+
+
+<a name="v17.4.0"></a>
+## [v17.4.0] - 2021-08-27
+BUG FIXES:
+- Discourage usage of iam_policy_attachment in example ([#1529](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1529))
+- Allow instance `Name` tag to be overwritten ([#1538](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1538))
+
+DOCS:
+- Fix cluster-autoscaler tags in irsa example ([#1436](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1436))
+- Add missing comma to docs/iam-permissions.md ([#1437](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1437))
+- Updated autoscaling.md ([#1515](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1515))
+
+
+<a name="v17.3.0"></a>
+## [v17.3.0] - 2021-08-25
+BUG FIXES:
+- Fixed launch template version infinite plan issue and improved rolling updates ([#1447](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1447))
+
+
+<a name="v17.2.0"></a>
+## [v17.2.0] - 2021-08-25
+FEATURES:
+- Support for encrypted root disk in node_groups ([#1428](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1428))
+- Enable ebs_optimized setting for node_groups ([#1459](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1459))
+
+
 <a name="v17.1.0"></a>
-## [v17.1.0] - 2021-06-04
+## [v17.1.0] - 2021-06-09
 FEATURES:
 - Add support for Managed Node Groups (`node_groups`) taints ([#1424](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1424))
 - Allow to choose launch template version for Managed Node Groups when `create_launch_template` is set to `true` ([#1419](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1419))
@@ -400,7 +431,11 @@ CI:
 - Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.1.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.5.0...HEAD
+[v17.5.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.4.0...v17.5.0
+[v17.4.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.3.0...v17.4.0
+[v17.3.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.2.0...v17.3.0
+[v17.2.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.1.0...v17.2.0
 [v17.1.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.3...v17.1.0
 [v17.0.3]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.2...v17.0.3
 [v17.0.2]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.0.1...v17.0.2
