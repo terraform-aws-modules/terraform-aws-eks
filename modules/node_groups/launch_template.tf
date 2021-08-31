@@ -1,5 +1,6 @@
 data "cloudinit_config" "workers_userdata" {
-  for_each      = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] }
+  for_each = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] }
+
   gzip          = false
   base64_encode = true
   boundary      = "//"
@@ -12,7 +13,6 @@ data "cloudinit_config" "workers_userdata" {
         kubelet_extra_args = each.value["kubelet_extra_args"]
       }
     )
-
   }
 }
 
@@ -23,10 +23,11 @@ data "cloudinit_config" "workers_userdata" {
 # Trivia: AWS transparently creates a copy of your LaunchTemplate and actually uses that copy then for the node group. If you DONT use a custom AMI,
 # then the default user-data for bootstrapping a cluster is merged in the copy.
 resource "aws_launch_template" "workers" {
-  for_each               = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] }
-  name_prefix            = lookup(each.value, "name", join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id]))
-  description            = lookup(each.value, "name", join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id]))
-  update_default_version = true
+  for_each = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] }
+
+  name_prefix            = local.node_groups_names[each.key]
+  description            = format("EKS Managed Node Group custom LT for %s", local.node_groups_names[each.key])
+  update_default_version = lookup(each.value, "update_default_version", true)
 
   block_device_mappings {
     device_name = "/dev/xvda"
@@ -34,9 +35,13 @@ resource "aws_launch_template" "workers" {
     ebs {
       volume_size           = lookup(each.value, "disk_size", null)
       volume_type           = lookup(each.value, "disk_type", null)
+      encrypted             = lookup(each.value, "disk_encrypted", null)
+      kms_key_id            = lookup(each.value, "disk_kms_key_id", null)
       delete_on_termination = true
     }
   }
+
+  ebs_optimized = lookup(each.value, "ebs_optimized", !contains(var.ebs_optimized_not_supported, element(each.value.instance_types, 0)))
 
   instance_type = each.value["set_instance_types_on_lt"] ? element(each.value.instance_types, 0) : null
 
@@ -76,11 +81,11 @@ resource "aws_launch_template" "workers" {
 
     tags = merge(
       var.tags,
-      lookup(var.node_groups_defaults, "additional_tags", {}),
-      lookup(var.node_groups[each.key], "additional_tags", {}),
       {
-        Name = lookup(each.value, "name", join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id]))
-      }
+        Name = local.node_groups_names[each.key]
+      },
+      lookup(var.node_groups_defaults, "additional_tags", {}),
+      lookup(var.node_groups[each.key], "additional_tags", {})
     )
   }
 
@@ -90,11 +95,11 @@ resource "aws_launch_template" "workers" {
 
     tags = merge(
       var.tags,
-      lookup(var.node_groups_defaults, "additional_tags", {}),
-      lookup(var.node_groups[each.key], "additional_tags", {}),
       {
-        Name = lookup(each.value, "name", join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id]))
-      }
+        Name = local.node_groups_names[each.key]
+      },
+      lookup(var.node_groups_defaults, "additional_tags", {}),
+      lookup(var.node_groups[each.key], "additional_tags", {})
     )
   }
 
