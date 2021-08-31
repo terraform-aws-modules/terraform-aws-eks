@@ -547,6 +547,11 @@ resource "aws_launch_template" "workers_launch_template" {
         )}-eks_asg"
       },
       var.tags,
+      {
+        for tag in lookup(var.worker_groups_launch_template[count.index], "tags", local.workers_group_defaults["tags"]) :
+        tag["key"] => tag["value"]
+        if tag["key"] != "Name" && tag["propagate_at_launch"]
+      }
     )
   }
 
