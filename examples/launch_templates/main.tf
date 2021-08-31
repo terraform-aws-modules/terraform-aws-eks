@@ -53,6 +53,11 @@ module "eks" {
       instance_type        = "t3.small"
       asg_desired_capacity = 2
       public_ip            = true
+      tags = [{
+        key                 = "ExtraTag"
+        value               = "TagValue"
+        propagate_at_launch = true
+      }]
     },
     {
       name                 = "worker-group-2"
