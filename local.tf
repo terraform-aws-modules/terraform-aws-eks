@@ -44,7 +44,7 @@ locals {
   )
 
   ec2_principal = "ec2.${data.aws_partition.current.dns_suffix}"
-  sts_principal = "sts.${data.aws_partition.current.dns_suffix}"
+  sts_principal = compact(concat(["sts.${data.aws_partition.current.dns_suffix}"], var.openid_connect_audiences))
 
   policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
   workers_group_defaults_defaults = {
