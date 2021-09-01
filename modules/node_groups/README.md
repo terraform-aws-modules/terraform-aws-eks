@@ -30,6 +30,9 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | ebs\_optimized | Enables/disables EBS optimization. Require `create_launch_template` to be `true` | bool | `true` if defined `instance\_types` are not present in `var.ebs\_optimized\_not\_supported` |
 | enable_monitoring | Enables/disables detailed monitoring. Require `create_launch_template` to be `true`| bool | `true` |
 | eni_delete | Delete the Elastic Network Interface (ENI) on termination (if set to false you will have to manually delete before destroying) | bool | `true` |
+| metadata\_http\_endpoint | Whether the metadata service is available. Can be `enabled` or `disabled`| string | Provider default behavior |
+| metadata\_http\_tokens | Whether or not the metadata service requires session tokens, also referred to as IMDSv2. Can be `optional` or `required`| string | Provider default behavior |
+| metadata\_http\_put\_response\_hop\_limit | The desired HTTP PUT response hop limit for instance metadata requests.| number | Provider default behavior |
 | force\_update\_version | Force version update if existing pods are unable to be drained due to a pod disruption budget issue. | bool | Provider default behavior |
 | iam\_role\_arn | IAM role ARN for workers | string | `var.default_iam_role_arn` |
 | instance\_types | Node group's instance type(s). Multiple types can be specified when `capacity_type="SPOT"`. | list | `[var.workers_group_defaults[instance_type]]` |
