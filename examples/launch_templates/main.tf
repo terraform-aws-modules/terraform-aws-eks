@@ -81,6 +81,14 @@ module "eks" {
       root_volume_size       = 150
       root_volume_type       = "gp3"
       root_volume_throughput = 300
+      additional_ebs_volumes = [
+        {
+          block_device_name = "/dev/xvdb"
+          volume_size       = 100
+          volume_type       = "gp3"
+          throughput        = 150
+        },
+      ]
     },
   ]
 }

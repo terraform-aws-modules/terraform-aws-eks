@@ -332,6 +332,11 @@ resource "aws_launch_configuration" "workers" {
         "iops",
         local.workers_group_defaults["root_iops"],
       )
+      throughput = lookup(
+        ebs_block_device.value,
+        "throughput",
+        local.workers_group_defaults["root_volume_throughput"],
+      )
       encrypted = lookup(
         ebs_block_device.value,
         "encrypted",
