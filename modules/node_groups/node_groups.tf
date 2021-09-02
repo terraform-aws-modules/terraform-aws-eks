@@ -69,6 +69,11 @@ resource "aws_eks_node_group" "workers" {
     }
   }
 
+  update_config {
+    max_unavailable_percentage = lookup(each.value.update_config, "max_unavailable_percentage", null)
+    max_unavailable            = lookup(each.value.update_config, "max_unavailable", null)
+  }
+
   version = lookup(each.value, "version", null)
 
   labels = merge(

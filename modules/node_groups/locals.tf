@@ -26,6 +26,7 @@ locals {
       taints                        = []
       update_default_version        = true
       ebs_optimized                 = null
+      update_config                 = tomap({ "max_unavailable" : 1 })
     },
     var.node_groups_defaults,
     v,
