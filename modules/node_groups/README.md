@@ -49,9 +49,7 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | version | Kubernetes version | string | Provider default behavior |
 | taints | Kubernetes node taints | list(map) | empty |
 | update_default_version | Whether or not to set the new launch template version the Default | bool | `true` |
-| metadata_http_endpoint | The state of the instance metadata service. Requires `create_launch_template` to be `true` | string | `var.workers_group_defaults[metadata_http_endpoint]` |
-| metadata_http_tokens | If session tokens are required. Requires `create_launch_template` to be `true` | string | `var.workers_group_defaults[metadata_http_tokens]` |
-| metadata_http_put_response_hop_limit | The desired HTTP PUT response hop limit for instance metadata requests. Requires `create_launch_template` to be `true` | number | `var.workers_group_defaults[metadata_http_put_response_hop_limit]` |
+| metadata\_options | Configure the instance metadata options (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-options.html)| map(string) | Provider default behavior |
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements

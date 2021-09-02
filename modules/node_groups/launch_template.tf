@@ -75,10 +75,13 @@ resource "aws_launch_template" "workers" {
 
   key_name = lookup(each.value, "key_name", null)
 
-  metadata_options {
-    http_endpoint               = lookup(each.value, "metadata_http_endpoint", null)
-    http_tokens                 = lookup(each.value, "metadata_http_tokens", null)
-    http_put_response_hop_limit = lookup(each.value, "metadata_http_put_response_hop_limit", null)
+  dynamic "metadata_options" {
+    for_each = lookup(each.value, "metadata_options", null) != null ? [lookup(each.value, "metadata_options", null)] : []
+    content {
+      http_endpoint               = lookup(metadata_options.value, "http_endpoint", null)
+      http_tokens                 = lookup(metadata_options.value, "http_tokens", null)
+      http_put_response_hop_limit = lookup(metadata_options.value, "http_put_response_hop_limit", null)
+    }
   }
 
   # Supplying custom tags to EKS instances is another use-case for LaunchTemplates
