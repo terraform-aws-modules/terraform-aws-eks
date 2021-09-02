@@ -43,8 +43,9 @@ locals {
     var.worker_ami_name_filter_windows : "Windows_Server-2019-English-Core-EKS_Optimized-${tonumber(var.cluster_version) >= 1.14 ? var.cluster_version : 1.14}-*"
   )
 
-  ec2_principal = "ec2.${data.aws_partition.current.dns_suffix}"
-  sts_principal = compact(concat(["sts.${data.aws_partition.current.dns_suffix}"], var.openid_connect_audiences))
+  ec2_principal  = "ec2.${data.aws_partition.current.dns_suffix}"
+  sts_principal  = "sts.${data.aws_partition.current.dns_suffix}"
+  client_id_list = distinct(compact(concat([local.sts_principal], var.openid_connect_audiences)))
 
   policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
   workers_group_defaults_defaults = {
