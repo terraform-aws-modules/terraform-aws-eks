@@ -53,12 +53,18 @@ module "eks" {
       instance_type        = "t3.small"
       asg_desired_capacity = 2
       public_ip            = true
+      tags = [{
+        key                 = "ExtraTag"
+        value               = "TagValue"
+        propagate_at_launch = true
+      }]
     },
     {
       name                 = "worker-group-2"
       instance_type        = "t3.medium"
       asg_desired_capacity = 1
       public_ip            = true
+      ebs_optimized        = true
     },
     {
       name                          = "worker-group-3"
@@ -66,6 +72,23 @@ module "eks" {
       asg_desired_capacity          = 1
       public_ip                     = true
       elastic_inference_accelerator = "eia2.medium"
+    },
+    {
+      name                   = "worker-group-4"
+      instance_type          = "t3.small"
+      asg_desired_capacity   = 1
+      public_ip              = true
+      root_volume_size       = 150
+      root_volume_type       = "gp3"
+      root_volume_throughput = 300
+      additional_ebs_volumes = [
+        {
+          block_device_name = "/dev/xvdb"
+          volume_size       = 100
+          volume_type       = "gp3"
+          throughput        = 150
+        },
+      ]
     },
   ]
 }

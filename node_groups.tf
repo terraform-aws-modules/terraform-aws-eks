@@ -9,6 +9,7 @@ module "node_groups" {
   tags                                 = var.tags
   node_groups_defaults                 = var.node_groups_defaults
   node_groups                          = var.node_groups
+  ebs_optimized_not_supported          = local.ebs_optimized_not_supported
 
   # Hack to ensure ordering of resource creation.
   # This is a homemade `depends_on` https://discuss.hashicorp.com/t/tips-howto-implement-module-depends-on-emulation/2305/2

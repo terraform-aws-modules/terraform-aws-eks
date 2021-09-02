@@ -43,16 +43,17 @@ locals {
     var.worker_ami_name_filter_windows : "Windows_Server-2019-English-Core-EKS_Optimized-${tonumber(var.cluster_version) >= 1.14 ? var.cluster_version : 1.14}-*"
   )
 
-  ec2_principal = "ec2.${data.aws_partition.current.dns_suffix}"
-  sts_principal = "sts.${data.aws_partition.current.dns_suffix}"
+  ec2_principal  = "ec2.${data.aws_partition.current.dns_suffix}"
+  sts_principal  = "sts.${data.aws_partition.current.dns_suffix}"
+  client_id_list = distinct(compact(concat([local.sts_principal], var.openid_connect_audiences)))
 
   policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
   workers_group_defaults_defaults = {
     name                              = "count.index"               # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
-    tags                              = []                          # A list of map defining extra tags to be applied to the worker group autoscaling group.
+    tags                              = []                          # A list of maps defining extra tags to be applied to the worker group autoscaling group and volumes.
     ami_id                            = ""                          # AMI ID for the eks linux based workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI based on platform.
     ami_id_windows                    = ""                          # AMI ID for the eks windows based workers. If none is provided, Terraform will search for the latest version of their EKS optimized worker AMI based on platform.
-    asg_desired_capacity              = "1"                         # Desired worker capacity in the autoscaling group and changing its value will not affect the autoscaling group's desired capacity because the cluster-autoscaler manages up and down scaling of the nodes. Cluster-autoscaler add nodes when pods are in pending state and remove the nodes when they are not required by modifying the desirec_capacity of the autoscaling group. Although an issue exists in which if the value of the asg_min_size is changed it modifies the value of asg_desired_capacity.
+    asg_desired_capacity              = "1"                         # Desired worker capacity in the autoscaling group and changing its value will not affect the autoscaling group's desired capacity because the cluster-autoscaler manages up and down scaling of the nodes. Cluster-autoscaler add nodes when pods are in pending state and remove the nodes when they are not required by modifying the desired_capacity of the autoscaling group. Although an issue exists in which if the value of the asg_min_size is changed it modifies the value of asg_desired_capacity.
     asg_max_size                      = "3"                         # Maximum worker capacity in the autoscaling group.
     asg_min_size                      = "1"                         # Minimum worker capacity in the autoscaling group. NOTE: Change in this paramater will affect the asg_desired_capacity, like changing its value to 2 will change asg_desired_capacity value to 2 but bringing back it to 1 will not affect the asg_desired_capacity.
     asg_force_delete                  = false                       # Enable forced deletion for the autoscaling group.
@@ -92,7 +93,7 @@ locals {
     service_linked_role_arn           = ""                          # Arn of custom service linked role that Auto Scaling group will use. Useful when you have encrypted EBS
     termination_policies              = []                          # A list of policies to decide how the instances in the auto scale group should be terminated.
     platform                          = local.default_platform      # Platform of workers. Either "linux" or "windows".
-    additional_ebs_volumes            = []                          # A list of additional volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: block_device_name (required), volume_size, volume_type, iops, encrypted, kms_key_id (only on launch-template), delete_on_termination. Optional values are grabbed from root volume or from defaults
+    additional_ebs_volumes            = []                          # A list of additional volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: block_device_name (required), volume_size, volume_type, iops, throughput, encrypted, kms_key_id (only on launch-template), delete_on_termination. Optional values are grabbed from root volume or from defaults
     additional_instance_store_volumes = []                          # A list of additional instance store (local disk) volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: block_device_name (required), virtual_name.
     warm_pool                         = null                        # If this block is configured, add a Warm Pool to the specified Auto Scaling group.
 
