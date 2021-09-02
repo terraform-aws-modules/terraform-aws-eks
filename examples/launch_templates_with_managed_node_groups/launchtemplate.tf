@@ -80,6 +80,15 @@ resource "aws_launch_template" "default" {
     }
   }
 
+  # Supplying custom tags to EKS instances ENI's is another use-case for LaunchTemplates
+  tag_specifications {
+    resource_type = "network-interface"
+
+    tags = {
+      CustomTag = "EKS example"
+    }
+  }
+
   # Tag the LT itself
   tags = {
     CustomTag = "EKS example"
