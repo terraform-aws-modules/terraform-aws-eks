@@ -12,7 +12,7 @@ data "cloudinit_config" "workers_userdata" {
         pre_userdata       = each.value["pre_userdata"]
         kubelet_extra_args = each.value["kubelet_extra_args"]
         cluster_name       = var.cluster_name
-        image_id           = lookup(each.value, "ami_id", null)
+        run_bootstrap_script = lookup(each.value, "ami_id", null) != null
       }
     )
   }
