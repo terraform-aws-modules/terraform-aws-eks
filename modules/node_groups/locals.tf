@@ -26,7 +26,6 @@ locals {
       taints                        = []
       update_default_version        = true
       ebs_optimized                 = null
-      metadata_options              = var.workers_group_defaults["metadata_options"]
     },
     var.node_groups_defaults,
     v,
