@@ -40,6 +40,8 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | launch\_template_version | The version of the LT to use | string | none |
 | max\_capacity | Max number of workers | number | `var.workers_group_defaults[asg_max_size]` |
 | min\_capacity | Min number of workers | number | `var.workers_group_defaults[asg_min_size]` |
+| update_config.max\_unavailable\_percentage | Max percentage of unavailable nodes during update. (e.g. 25, 50, etc) | number | `null` if `update_config.max_unavailable` is set |
+| update_config.max\_unavailable | Max number of unavailable nodes during update  | number | `null` if `update_config.max_unavailable_percentage` is set |
 | name | Name of the node group. If you don't really need this, we recommend you to use `name_prefix` instead. | string | Will use the autogenerate name prefix |
 | name_prefix | Name prefix of the node group | string | Auto generated |
 | pre_userdata | userdata to pre-append to the default userdata. Require `create_launch_template` to be `true`| string | "" |

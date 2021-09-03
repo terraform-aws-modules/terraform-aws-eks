@@ -69,6 +69,15 @@ resource "aws_eks_node_group" "workers" {
     }
   }
 
+  dynamic "update_config" {
+    for_each = try(each.value.update_config.max_unavailable_percentage > 0, each.value.update_config.max_unavailable > 0, false) ? [true] : []
+
+    content {
+      max_unavailable_percentage = try(each.value.update_config.max_unavailable_percentage, null)
+      max_unavailable            = try(each.value.update_config.max_unavailable, null)
+    }
+  }
+
   timeouts {
     create = lookup(each.value["timeouts"], "create", null)
     update = lookup(each.value["timeouts"], "update", null)
