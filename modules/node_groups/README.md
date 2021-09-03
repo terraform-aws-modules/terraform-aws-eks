@@ -48,6 +48,7 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | subnets | Subnets to contain workers | list(string) | `var.workers_group_defaults[subnets]` |
 | version | Kubernetes version | string | Provider default behavior |
 | taints | Kubernetes node taints | list(map) | empty |
+| timeouts | A map of timeouts for create/update/delete operations. | `map(string)` | Provider default behavior |
 | update_default_version | Whether or not to set the new launch template version the Default | bool | `true` |
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
@@ -89,6 +90,7 @@ No modules.
 | <a name="input_node_groups"></a> [node\_groups](#input\_node\_groups) | Map of maps of `eks_node_groups` to create. See "`node_groups` and `node_groups_defaults` keys" section in README.md for more details | `any` | `{}` | no |
 | <a name="input_node_groups_defaults"></a> [node\_groups\_defaults](#input\_node\_groups\_defaults) | map of maps of node groups to create. See "`node_groups` and `node_groups_defaults` keys" section in README.md for more details | `any` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map(string)` | n/a | yes |
+| <a name="input_timeouts"></a> [timeouts](#input\_timeouts) | A map of timeouts for create/update/delete operations. | `map(string)` | n/a | yes |
 | <a name="input_worker_additional_security_group_ids"></a> [worker\_additional\_security\_group\_ids](#input\_worker\_additional\_security\_group\_ids) | A list of additional security group ids to attach to worker instances | `list(string)` | `[]` | no |
 | <a name="input_worker_security_group_id"></a> [worker\_security\_group\_id](#input\_worker\_security\_group\_id) | If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the EKS cluster. | `string` | `""` | no |
 | <a name="input_workers_group_defaults"></a> [workers\_group\_defaults](#input\_workers\_group\_defaults) | Workers group defaults from parent | `any` | n/a | yes |
