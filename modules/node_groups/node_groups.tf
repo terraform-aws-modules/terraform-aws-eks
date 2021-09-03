@@ -70,15 +70,11 @@ resource "aws_eks_node_group" "workers" {
   }
 
   dynamic "update_config" {
-    for_each = try(each.value.update_config.max_unavailable_percentage > 0, false) ? {
-      max_unavailable_percentage = each.value.update_config.max_unavailable_percentage
-      } : try(each.value.update_config.max_unavailable > 0, false) ? {
-      max_unavailable = each.value.update_config.max_unavailable
-    } : {}
+    for_each = try(each.value.update_config.max_unavailable_percentage > 0, each.value.update_config.max_unavailable > 0, false) ? [true] : []
 
     content {
-      max_unavailable_percentage = update_config.key == "max_unavailable_percentage" ? update_config.value : null
-      max_unavailable            = update_config.key == "max_unavailable" ? update_config.value : null
+      max_unavailable_percentage = try(each.value.update_config.max_unavailable_percentage, null)
+      max_unavailable            = try(each.value.update_config.max_unavailable, null)
     }
   }
 
