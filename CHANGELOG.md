@@ -10,6 +10,13 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v17.9.0"></a>
+## [v17.9.0] - 2021-09-03
+FEATURES:
+- Allow override of timeouts in node_groups ([#1552](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1552))
+- Ability to tag just EKS cluster ([#1569](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1569))
+
+
 <a name="v17.8.0"></a>
 ## [v17.8.0] - 2021-09-03
 BUG FIXES:
@@ -449,7 +456,8 @@ CI:
 - Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.8.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.9.0...HEAD
+[v17.9.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.8.0...v17.9.0
 [v17.8.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.7.0...v17.8.0
 [v17.7.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.6.0...v17.7.0
 [v17.6.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.5.0...v17.6.0
