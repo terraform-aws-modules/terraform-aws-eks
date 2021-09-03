@@ -304,6 +304,11 @@ resource "aws_launch_configuration" "workers" {
       "root_iops",
       local.workers_group_defaults["root_iops"],
     )
+    throughput = lookup(
+      var.worker_groups[count.index],
+      "root_volume_throughput",
+      local.workers_group_defaults["root_volume_throughput"],
+    )
     delete_on_termination = true
   }
 
@@ -326,6 +331,11 @@ resource "aws_launch_configuration" "workers" {
         ebs_block_device.value,
         "iops",
         local.workers_group_defaults["root_iops"],
+      )
+      throughput = lookup(
+        ebs_block_device.value,
+        "throughput",
+        local.workers_group_defaults["root_volume_throughput"],
       )
       encrypted = lookup(
         ebs_block_device.value,

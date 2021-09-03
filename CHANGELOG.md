@@ -10,6 +10,12 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v17.7.0"></a>
+## [v17.7.0] - 2021-09-02
+FEATURES:
+- Added throughput support for root and EBS disks ([#1445](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1445))
+
+
 <a name="v17.6.0"></a>
 ## [v17.6.0] - 2021-08-31
 FEATURES:
@@ -437,7 +443,8 @@ CI:
 - Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.6.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.7.0...HEAD
+[v17.7.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.6.0...v17.7.0
 [v17.6.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.5.0...v17.6.0
 [v17.5.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.4.0...v17.5.0
 [v17.4.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.3.0...v17.4.0
