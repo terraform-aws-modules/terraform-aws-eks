@@ -98,6 +98,18 @@ variable "tags" {
   default     = {}
 }
 
+variable "cluster_tags" {
+  description = "A map of tags to add to just the eks resource."
+  type        = map(string)
+  default     = {}
+}
+
+variable "timeouts" {
+  description = "A map of timeouts for create/update/delete operations."
+  type        = map(string)
+  default     = {}
+}
+
 variable "vpc_id" {
   description = "VPC where the cluster and workers will be deployed."
   type        = string
@@ -399,3 +411,4 @@ variable "openid_connect_audiences" {
   type        = list(string)
   default     = []
 }
+
