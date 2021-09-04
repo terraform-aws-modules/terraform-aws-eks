@@ -2,7 +2,7 @@ terraform {
   required_version = ">= 0.13.1"
 
   required_providers {
-    aws        = ">= 3.44.0"
+    aws        = ">= 3.56.0"
     local      = ">= 1.4"
     kubernetes = ">= 1.11.1"
     http = {
