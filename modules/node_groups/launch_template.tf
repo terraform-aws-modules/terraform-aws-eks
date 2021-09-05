@@ -108,12 +108,12 @@ resource "aws_launch_template" "workers" {
     resource_type = "network-interface"
 
     tags = merge(
-    var.tags,
-    {
-      Name = local.node_groups_names[each.key]
-    },
-    lookup(var.node_groups_defaults, "additional_tags", {}),
-    lookup(var.node_groups[each.key], "additional_tags", {})
+      var.tags,
+      {
+        Name = local.node_groups_names[each.key]
+      },
+      lookup(var.node_groups_defaults, "additional_tags", {}),
+      lookup(var.node_groups[each.key], "additional_tags", {})
     )
   }
 
