@@ -10,6 +10,24 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v17.14.0"></a>
+## [v17.14.0] - 2021-09-06
+FEATURES:
+- Create SG rule for each new cluster_endpoint_private_access_cidr block ([#1549](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1549))
+
+
+<a name="v17.13.0"></a>
+## [v17.13.0] - 2021-09-06
+BUG FIXES:
+- Worker security group handling when worker_create_security_group=false ([#1461](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1461))
+
+
+<a name="v17.12.0"></a>
+## [v17.12.0] - 2021-09-06
+FEATURES:
+- Add ability to tag network-interface using Launch Template ([#1563](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1563))
+
+
 <a name="v17.11.0"></a>
 ## [v17.11.0] - 2021-09-04
 BUG FIXES:
@@ -468,7 +486,10 @@ CI:
 - Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.11.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.14.0...HEAD
+[v17.14.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.13.0...v17.14.0
+[v17.13.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.12.0...v17.13.0
+[v17.12.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.11.0...v17.12.0
 [v17.11.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.10.0...v17.11.0
 [v17.10.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.9.0...v17.10.0
 [v17.9.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.8.0...v17.9.0
