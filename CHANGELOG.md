@@ -10,6 +10,37 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v17.11.0"></a>
+## [v17.11.0] - 2021-09-04
+BUG FIXES:
+- Updated required version of AWS provider to 3.56.0 ([#1571](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1571))
+
+
+<a name="v17.10.0"></a>
+## [v17.10.0] - 2021-09-03
+FEATURES:
+- Added support for update_config in EKS managed node groups ([#1560](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1560))
+
+
+<a name="v17.9.0"></a>
+## [v17.9.0] - 2021-09-03
+FEATURES:
+- Allow override of timeouts in node_groups ([#1552](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1552))
+- Ability to tag just EKS cluster ([#1569](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1569))
+
+
+<a name="v17.8.0"></a>
+## [v17.8.0] - 2021-09-03
+BUG FIXES:
+- Put KubeletExtraArgs in double quotes for Windows ([#1082](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1082))
+
+
+<a name="v17.7.0"></a>
+## [v17.7.0] - 2021-09-02
+FEATURES:
+- Added throughput support for root and EBS disks ([#1445](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1445))
+
+
 <a name="v17.6.0"></a>
 ## [v17.6.0] - 2021-08-31
 FEATURES:
@@ -437,7 +468,12 @@ CI:
 - Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.6.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.11.0...HEAD
+[v17.11.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.10.0...v17.11.0
+[v17.10.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.9.0...v17.10.0
+[v17.9.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.8.0...v17.9.0
+[v17.8.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.7.0...v17.8.0
+[v17.7.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.6.0...v17.7.0
 [v17.6.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.5.0...v17.6.0
 [v17.5.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.4.0...v17.5.0
 [v17.4.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.3.0...v17.4.0

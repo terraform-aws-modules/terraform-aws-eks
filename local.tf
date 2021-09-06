@@ -43,8 +43,9 @@ locals {
     var.worker_ami_name_filter_windows : "Windows_Server-2019-English-Core-EKS_Optimized-${tonumber(var.cluster_version) >= 1.14 ? var.cluster_version : 1.14}-*"
   )
 
-  ec2_principal = "ec2.${data.aws_partition.current.dns_suffix}"
-  sts_principal = compact(concat(["sts.${data.aws_partition.current.dns_suffix}"], var.openid_connect_audiences))
+  ec2_principal  = "ec2.${data.aws_partition.current.dns_suffix}"
+  sts_principal  = "sts.${data.aws_partition.current.dns_suffix}"
+  client_id_list = distinct(compact(concat([local.sts_principal], var.openid_connect_audiences)))
 
   policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
   workers_group_defaults_defaults = {
@@ -92,9 +93,10 @@ locals {
     service_linked_role_arn           = ""                          # Arn of custom service linked role that Auto Scaling group will use. Useful when you have encrypted EBS
     termination_policies              = []                          # A list of policies to decide how the instances in the auto scale group should be terminated.
     platform                          = local.default_platform      # Platform of workers. Either "linux" or "windows".
-    additional_ebs_volumes            = []                          # A list of additional volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: block_device_name (required), volume_size, volume_type, iops, encrypted, kms_key_id (only on launch-template), delete_on_termination. Optional values are grabbed from root volume or from defaults
+    additional_ebs_volumes            = []                          # A list of additional volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: block_device_name (required), volume_size, volume_type, iops, throughput, encrypted, kms_key_id (only on launch-template), delete_on_termination. Optional values are grabbed from root volume or from defaults
     additional_instance_store_volumes = []                          # A list of additional instance store (local disk) volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: block_device_name (required), virtual_name.
     warm_pool                         = null                        # If this block is configured, add a Warm Pool to the specified Auto Scaling group.
+    timeouts                          = {}                          # A map of timeouts for create/update/delete operations
 
     # Settings for launch templates
     root_block_device_name               = concat(data.aws_ami.eks_worker.*.root_device_name, [""])[0]         # Root device name for Linux workers. If not provided, will assume default Linux AMI was used.

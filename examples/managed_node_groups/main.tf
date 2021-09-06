@@ -95,6 +95,9 @@ module "eks" {
           effect = "NO_SCHEDULE"
         }
       ]
+      update_config = {
+        max_unavailable_percentage = 50 # or set `max_unavailable`
+      }
     }
   }
 
