@@ -61,7 +61,8 @@ module "eks" {
   source          = "../.."
   cluster_name    = local.cluster_name
   cluster_version = "1.20"
-  subnets         = module.vpc.private_subnets
+  subnets         = concat(module.vpc.private_subnets,module.vpc.public_subnets)
+  fargate_subnets = module.vpc.private_subnets
 
   tags = {
     Environment = "test"
