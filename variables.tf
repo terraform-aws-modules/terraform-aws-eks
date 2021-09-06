@@ -87,6 +87,12 @@ variable "map_users" {
   default = []
 }
 
+variable "fargate_subnets" {
+  description = "A list of subnets to place fargate workers within (if different from subnets)."
+  type        = list(string)
+  default     = []
+}
+
 variable "subnets" {
   description = "A list of subnets to place the EKS cluster and workers within."
   type        = list(string)
