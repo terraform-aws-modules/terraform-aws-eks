@@ -27,7 +27,7 @@ resource "aws_launch_template" "workers" {
 
   name_prefix            = local.node_groups_names[each.key]
   description            = format("EKS Managed Node Group custom LT for %s", local.node_groups_names[each.key])
-  update_default_version = true
+  update_default_version = lookup(each.value, "update_default_version", true)
 
   block_device_mappings {
     device_name = "/dev/xvda"
@@ -35,9 +35,13 @@ resource "aws_launch_template" "workers" {
     ebs {
       volume_size           = lookup(each.value, "disk_size", null)
       volume_type           = lookup(each.value, "disk_type", null)
+      encrypted             = lookup(each.value, "disk_encrypted", null)
+      kms_key_id            = lookup(each.value, "disk_kms_key_id", null)
       delete_on_termination = true
     }
   }
+
+  ebs_optimized = lookup(each.value, "ebs_optimized", !contains(var.ebs_optimized_not_supported, element(each.value.instance_types, 0)))
 
   instance_type = each.value["set_instance_types_on_lt"] ? element(each.value.instance_types, 0) : null
 
@@ -48,7 +52,7 @@ resource "aws_launch_template" "workers" {
   network_interfaces {
     associate_public_ip_address = lookup(each.value, "public_ip", null)
     delete_on_termination       = lookup(each.value, "eni_delete", null)
-    security_groups = flatten([
+    security_groups = compact(flatten([
       var.worker_security_group_id,
       var.worker_additional_security_group_ids,
       lookup(
@@ -56,7 +60,7 @@ resource "aws_launch_template" "workers" {
         "additional_security_group_ids",
         null,
       ),
-    ])
+    ]))
   }
 
   # if you want to use a custom AMI
@@ -77,11 +81,11 @@ resource "aws_launch_template" "workers" {
 
     tags = merge(
       var.tags,
-      lookup(var.node_groups_defaults, "additional_tags", {}),
-      lookup(var.node_groups[each.key], "additional_tags", {}),
       {
         Name = local.node_groups_names[each.key]
-      }
+      },
+      lookup(var.node_groups_defaults, "additional_tags", {}),
+      lookup(var.node_groups[each.key], "additional_tags", {})
     )
   }
 
@@ -91,11 +95,25 @@ resource "aws_launch_template" "workers" {
 
     tags = merge(
       var.tags,
-      lookup(var.node_groups_defaults, "additional_tags", {}),
-      lookup(var.node_groups[each.key], "additional_tags", {}),
       {
         Name = local.node_groups_names[each.key]
-      }
+      },
+      lookup(var.node_groups_defaults, "additional_tags", {}),
+      lookup(var.node_groups[each.key], "additional_tags", {})
+    )
+  }
+
+  # Supplying custom tags to EKS instances ENI's is another use-case for LaunchTemplates
+  tag_specifications {
+    resource_type = "network-interface"
+
+    tags = merge(
+      var.tags,
+      {
+        Name = local.node_groups_names[each.key]
+      },
+      lookup(var.node_groups_defaults, "additional_tags", {}),
+      lookup(var.node_groups[each.key], "additional_tags", {})
     )
   }
 

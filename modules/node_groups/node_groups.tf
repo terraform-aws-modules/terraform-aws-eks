@@ -47,8 +47,10 @@ resource "aws_eks_node_group" "workers" {
 
   dynamic "launch_template" {
     for_each = each.value["launch_template_id"] == null && each.value["create_launch_template"] ? [{
-      id      = aws_launch_template.workers[each.key].id
-      version = each.value["launch_template_version"]
+      id = aws_launch_template.workers[each.key].id
+      version = each.value["launch_template_version"] == "$Latest" ? aws_launch_template.workers[each.key].latest_version : (
+        each.value["launch_template_version"] == "$Default" ? aws_launch_template.workers[each.key].default_version : each.value["launch_template_version"]
+      )
     }] : []
 
     content {
@@ -65,6 +67,21 @@ resource "aws_eks_node_group" "workers" {
       value  = taint.value["value"]
       effect = taint.value["effect"]
     }
+  }
+
+  dynamic "update_config" {
+    for_each = try(each.value.update_config.max_unavailable_percentage > 0, each.value.update_config.max_unavailable > 0, false) ? [true] : []
+
+    content {
+      max_unavailable_percentage = try(each.value.update_config.max_unavailable_percentage, null)
+      max_unavailable            = try(each.value.update_config.max_unavailable, null)
+    }
+  }
+
+  timeouts {
+    create = lookup(each.value["timeouts"], "create", null)
+    update = lookup(each.value["timeouts"], "update", null)
+    delete = lookup(each.value["timeouts"], "delete", null)
   }
 
   version = lookup(each.value, "version", null)

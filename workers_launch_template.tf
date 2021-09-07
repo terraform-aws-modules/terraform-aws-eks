@@ -572,6 +572,11 @@ resource "aws_launch_template" "workers_launch_template" {
         )}-eks_asg"
       },
       var.tags,
+      {
+        for tag in lookup(var.worker_groups_launch_template[count.index], "tags", local.workers_group_defaults["tags"]) :
+        tag["key"] => tag["value"]
+        if tag["key"] != "Name" && tag["propagate_at_launch"]
+      }
     )
   }
 
@@ -589,6 +594,26 @@ resource "aws_launch_template" "workers_launch_template" {
       { for tag_key, tag_value in var.tags :
         tag_key => tag_value
         if tag_key != "Name" && !contains([for tag in lookup(var.worker_groups_launch_template[each.value.launch_template], "tags", local.workers_group_defaults["tags"]) : tag["key"]], tag_key)
+      }
+    )
+  }
+
+  tag_specifications {
+    resource_type = "network-interface"
+
+    tags = merge(
+      {
+        "Name" = "${coalescelist(aws_eks_cluster.this[*].name, [""])[0]}-${lookup(
+          var.worker_groups_launch_template[count.index],
+          "name",
+          count.index,
+        )}-eks_asg"
+      },
+      var.tags,
+      {
+        for tag in lookup(var.worker_groups_launch_template[count.index], "tags", local.workers_group_defaults["tags"]) :
+        tag["key"] => tag["value"]
+        if tag["key"] != "Name" && tag["propagate_at_launch"]
       }
     )
   }

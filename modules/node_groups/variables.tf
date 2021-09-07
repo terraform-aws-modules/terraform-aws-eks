@@ -36,6 +36,11 @@ variable "tags" {
   type        = map(string)
 }
 
+variable "timeouts" {
+  description = "A map of timeouts for create/update/delete operations."
+  type        = map(string)
+}
+
 variable "node_groups_defaults" {
   description = "map of maps of node groups to create. See \"`node_groups` and `node_groups_defaults` keys\" section in README.md for more details"
   type        = any
@@ -53,4 +58,10 @@ variable "ng_depends_on" {
   description = "List of references to other resources this submodule depends on"
   type        = any
   default     = null
+}
+
+variable "ebs_optimized_not_supported" {
+  description = "List of instance types that do not support EBS optimization"
+  type        = list(string)
+  default     = []
 }
