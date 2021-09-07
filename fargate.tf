@@ -8,7 +8,7 @@ module "fargate" {
   permissions_boundary              = var.permissions_boundary
   iam_path                          = var.iam_path
   iam_policy_arn_prefix             = local.policy_arn_prefix
-  subnets                           = var.subnets
+  subnets                           = coalescelist(var.fargate_subnets, var.subnets)
   tags                              = var.tags
 
   # Hack to ensure ordering of resource creation.

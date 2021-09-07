@@ -54,7 +54,7 @@ resource "aws_launch_template" "workers" {
   network_interfaces {
     associate_public_ip_address = lookup(each.value, "public_ip", null)
     delete_on_termination       = lookup(each.value, "eni_delete", null)
-    security_groups = flatten([
+    security_groups = compact(flatten([
       var.worker_security_group_id,
       var.worker_additional_security_group_ids,
       lookup(
@@ -62,7 +62,7 @@ resource "aws_launch_template" "workers" {
         "additional_security_group_ids",
         null,
       ),
-    ])
+    ]))
   }
 
   # if you want to use a custom AMI
@@ -94,6 +94,20 @@ resource "aws_launch_template" "workers" {
   # Supplying custom tags to EKS instances root volumes is another use-case for LaunchTemplates. (doesnt add tags to dynamically provisioned volumes via PVC tho)
   tag_specifications {
     resource_type = "volume"
+
+    tags = merge(
+      var.tags,
+      {
+        Name = local.node_groups_names[each.key]
+      },
+      lookup(var.node_groups_defaults, "additional_tags", {}),
+      lookup(var.node_groups[each.key], "additional_tags", {})
+    )
+  }
+
+  # Supplying custom tags to EKS instances ENI's is another use-case for LaunchTemplates
+  tag_specifications {
+    resource_type = "network-interface"
 
     tags = merge(
       var.tags,

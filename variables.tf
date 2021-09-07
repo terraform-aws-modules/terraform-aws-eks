@@ -87,6 +87,12 @@ variable "map_users" {
   default = []
 }
 
+variable "fargate_subnets" {
+  description = "A list of subnets to place fargate workers within (if different from subnets)."
+  type        = list(string)
+  default     = []
+}
+
 variable "subnets" {
   description = "A list of subnets to place the EKS cluster and workers within."
   type        = list(string)
@@ -94,6 +100,18 @@ variable "subnets" {
 
 variable "tags" {
   description = "A map of tags to add to all resources. Tags added to launch configuration or templates override these values for ASG Tags only."
+  type        = map(string)
+  default     = {}
+}
+
+variable "cluster_tags" {
+  description = "A map of tags to add to just the eks resource."
+  type        = map(string)
+  default     = {}
+}
+
+variable "timeouts" {
+  description = "A map of timeouts for create/update/delete operations."
   type        = map(string)
   default     = {}
 }
@@ -399,3 +417,4 @@ variable "openid_connect_audiences" {
   type        = list(string)
   default     = []
 }
+
