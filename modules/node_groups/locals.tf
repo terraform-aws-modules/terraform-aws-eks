@@ -32,13 +32,19 @@ locals {
     v,
   ) if var.create_eks }
 
-  node_groups_names = { for k, v in local.node_groups_expanded : k => lookup(
-    v,
-    "name",
-    lookup(
-      v,
-      "name_prefix",
-      join("-", [var.cluster_name, k])
-    )
-  ) }
+  # This node_groups_names construct is a consequence of not explicitly
+  # declaring the node_group object. For more information, refer to this issue:
+  # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1462
+  node_groups_names = {
+    for k, v in local.node_groups_expanded :
+      k => (
+        lookup(v, "name", null) != null
+          ? v["name"]
+          : (
+            lookup(v, "name_prefix", null) != null
+              ? v["name_prefix"]
+              : join("-", [var.cluster_name, k])
+          )
+      )
+  }
 }
