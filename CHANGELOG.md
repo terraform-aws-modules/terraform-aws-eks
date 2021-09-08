@@ -10,6 +10,12 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v17.18.0"></a>
+## [v17.18.0] - 2021-09-08
+FEATURES:
+- Add metadata_options for node_groups ([#1485](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1485))
+
+
 <a name="v17.17.0"></a>
 ## [v17.17.0] - 2021-09-08
 FEATURES:
@@ -504,7 +510,8 @@ CI:
 - Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.17.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.18.0...HEAD
+[v17.18.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.17.0...v17.18.0
 [v17.17.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.16.0...v17.17.0
 [v17.16.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.15.0...v17.16.0
 [v17.15.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.14.0...v17.15.0
