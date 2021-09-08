@@ -9,8 +9,10 @@ data "cloudinit_config" "workers_userdata" {
     content_type = "text/x-shellscript"
     content = templatefile("${path.module}/templates/userdata.sh.tpl",
       {
-        pre_userdata       = each.value["pre_userdata"]
-        kubelet_extra_args = each.value["kubelet_extra_args"]
+        pre_userdata         = each.value["pre_userdata"]
+        kubelet_extra_args   = each.value["kubelet_extra_args"]
+        cluster_name         = var.cluster_name
+        run_bootstrap_script = lookup(each.value, "ami_id", null) != null
       }
     )
   }
@@ -64,7 +66,7 @@ resource "aws_launch_template" "workers" {
   }
 
   # if you want to use a custom AMI
-  # image_id      = var.ami_id
+  image_id = lookup(each.value, "ami_id", null)
 
   # If you use a custom AMI, you need to supply via user-data, the bootstrap script as EKS DOESNT merge its managed user-data then
   # you can add more than the minimum code you see in the template, e.g. install SSM agent, see https://github.com/aws/containers-roadmap/issues/593#issuecomment-577181345

@@ -20,6 +20,7 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | additional\_tags | Additional tags to apply to node group | map(string) | Only `var.tags` applied |
 | ami\_release\_version | AMI version of workers | string | Provider default behavior |
 | ami\_type | AMI Type. See Terraform or AWS docs | string | Provider default behavior |
+| ami\_id | ID of custom AMI. If you use a custom AMI, you need to supply bootstrap script via user-data or as AMI built-in. | string | Provider default behavior |
 | capacity\_type | Type of instance capacity to provision. Options are `ON_DEMAND` and `SPOT` | string | Provider default behavior |
 | create_launch_template | Create and use a default launch template | bool |  `false` |
 | desired\_capacity | Desired number of workers | number | `var.workers_group_defaults[asg_desired_capacity]` |
