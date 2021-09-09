@@ -1,6 +1,6 @@
 resource "aws_iam_role" "eks_fargate_pod" {
   count                = local.create_eks && var.create_fargate_pod_execution_role ? 1 : 0
-  name_prefix          = format("%s-fargate", var.cluster_name)
+  name_prefix          = format("%s-fargate", substr(var.cluster_name, 0, 24))
   assume_role_policy   = data.aws_iam_policy_document.eks_fargate_pod_assume_role[0].json
   permissions_boundary = var.permissions_boundary
   tags                 = var.tags
@@ -20,9 +20,13 @@ resource "aws_eks_fargate_profile" "this" {
   pod_execution_role_arn = local.pod_execution_role_arn
   subnet_ids             = lookup(each.value, "subnets", var.subnets)
   tags                   = each.value.tags
-  selector {
-    namespace = each.value.namespace
-    labels    = lookup(each.value, "labels", null)
+
+  dynamic "selector" {
+    for_each = each.value.selectors
+    content {
+      namespace = selector.value["namespace"]
+      labels    = lookup(selector.value, "labels", {})
+    }
   }
 
   depends_on = [var.eks_depends_on]

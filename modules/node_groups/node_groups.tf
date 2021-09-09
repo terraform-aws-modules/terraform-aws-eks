@@ -1,7 +1,8 @@
 resource "aws_eks_node_group" "workers" {
   for_each = local.node_groups_expanded
 
-  node_group_name = lookup(each.value, "name", join("-", [var.cluster_name, each.key, random_pet.node_groups[each.key].id]))
+  node_group_name_prefix = lookup(each.value, "name", null) == null ? local.node_groups_names[each.key] : null
+  node_group_name        = lookup(each.value, "name", null)
 
   cluster_name  = var.cluster_name
   node_role_arn = each.value["iam_role_arn"]
@@ -13,14 +14,15 @@ resource "aws_eks_node_group" "workers" {
     min_size     = each.value["min_capacity"]
   }
 
-  ami_type        = lookup(each.value, "ami_type", null)
-  disk_size       = lookup(each.value, "disk_size", null)
-  instance_types  = lookup(each.value, "instance_types", null)
-  release_version = lookup(each.value, "ami_release_version", null)
-  capacity_type   = lookup(each.value, "capacity_type", null)
+  ami_type             = lookup(each.value, "ami_type", null)
+  disk_size            = each.value["launch_template_id"] != null || each.value["create_launch_template"] ? null : lookup(each.value, "disk_size", null)
+  instance_types       = !each.value["set_instance_types_on_lt"] ? each.value["instance_types"] : null
+  release_version      = lookup(each.value, "ami_release_version", null)
+  capacity_type        = lookup(each.value, "capacity_type", null)
+  force_update_version = lookup(each.value, "force_update_version", null)
 
   dynamic "remote_access" {
-    for_each = each.value["key_name"] != "" ? [{
+    for_each = each.value["key_name"] != "" && each.value["launch_template_id"] == null && !each.value["create_launch_template"] ? [{
       ec2_ssh_key               = each.value["key_name"]
       source_security_group_ids = lookup(each.value, "source_security_group_ids", [])
     }] : []
@@ -41,6 +43,45 @@ resource "aws_eks_node_group" "workers" {
       id      = launch_template.value["id"]
       version = launch_template.value["version"]
     }
+  }
+
+  dynamic "launch_template" {
+    for_each = each.value["launch_template_id"] == null && each.value["create_launch_template"] ? [{
+      id = aws_launch_template.workers[each.key].id
+      version = each.value["launch_template_version"] == "$Latest" ? aws_launch_template.workers[each.key].latest_version : (
+        each.value["launch_template_version"] == "$Default" ? aws_launch_template.workers[each.key].default_version : each.value["launch_template_version"]
+      )
+    }] : []
+
+    content {
+      id      = launch_template.value["id"]
+      version = launch_template.value["version"]
+    }
+  }
+
+  dynamic "taint" {
+    for_each = each.value["taints"]
+
+    content {
+      key    = taint.value["key"]
+      value  = taint.value["value"]
+      effect = taint.value["effect"]
+    }
+  }
+
+  dynamic "update_config" {
+    for_each = try(each.value.update_config.max_unavailable_percentage > 0, each.value.update_config.max_unavailable > 0, false) ? [true] : []
+
+    content {
+      max_unavailable_percentage = try(each.value.update_config.max_unavailable_percentage, null)
+      max_unavailable            = try(each.value.update_config.max_unavailable, null)
+    }
+  }
+
+  timeouts {
+    create = lookup(each.value["timeouts"], "create", null)
+    update = lookup(each.value["timeouts"], "update", null)
+    delete = lookup(each.value["timeouts"], "delete", null)
   }
 
   version = lookup(each.value, "version", null)

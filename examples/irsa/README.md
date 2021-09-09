@@ -1,6 +1,6 @@
 # IAM Roles for Service Accounts
 
-This example shows how to create an IAM role to be used for a Kubernetes `ServiceAccount`. It will create a policy and role to be used by the [cluster-autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler) using the [public Helm chart](https://github.com/kubernetes/autoscaler/tree/master/charts/cluster-autoscaler-chart).
+This example shows how to create an IAM role to be used for a Kubernetes `ServiceAccount`. It will create a policy and role to be used by the [cluster-autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler) using the [public Helm chart](https://github.com/kubernetes/autoscaler/tree/master/charts/cluster-autoscaler).
 
 The AWS documentation for IRSA is here: https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
 
@@ -30,7 +30,7 @@ Install the chart using the provided values file:
 ```
 $ helm repo add autoscaler https://kubernetes.github.io/autoscaler
 $ helm repo update
-$ helm install cluster-autoscaler --namespace kube-system autoscaler/cluster-autoscaler-chart --values=cluster-autoscaler-chart-values.yaml
+$ helm install cluster-autoscaler --namespace kube-system autoscaler/cluster-autoscaler --values cluster-autoscaler-chart-values.yaml
 ```
 
 ## Verify

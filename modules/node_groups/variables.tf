@@ -19,8 +19,25 @@ variable "workers_group_defaults" {
   type        = any
 }
 
+variable "worker_security_group_id" {
+  description = "If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the EKS cluster."
+  type        = string
+  default     = ""
+}
+
+variable "worker_additional_security_group_ids" {
+  description = "A list of additional security group ids to attach to worker instances"
+  type        = list(string)
+  default     = []
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
+  type        = map(string)
+}
+
+variable "timeouts" {
+  description = "A map of timeouts for create/update/delete operations."
   type        = map(string)
 }
 
@@ -41,4 +58,10 @@ variable "ng_depends_on" {
   description = "List of references to other resources this submodule depends on"
   type        = any
   default     = null
+}
+
+variable "ebs_optimized_not_supported" {
+  description = "List of instance types that do not support EBS optimization"
+  type        = list(string)
+  default     = []
 }
