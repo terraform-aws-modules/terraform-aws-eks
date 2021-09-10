@@ -18,7 +18,8 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | additional\_tags | Additional tags to apply to node group | map(string) | Only `var.tags` applied |
 | ami\_release\_version | AMI version of workers | string | Provider default behavior |
 | ami\_type | AMI Type. See Terraform or AWS docs | string | Provider default behavior |
-| ami\_id | ID of custom AMI. If you use a custom AMI, you need to supply bootstrap script via user-data or as AMI built-in. | string | Provider default behavior |
+| ami\_id | ID of custom AMI. If you use a custom AMI, you need to set `ami_is_eks_optimized` | string | Provider default behavior |
+| ami\_is\_eks\_optimized | If the custom AMI is an EKS optimised image, ignored if `ami_id` is not set. If this is `true` then `bootstrap.sh` is called automatically (max pod logic needs to be manually set), if this is `false` you need to provide all the node configuration in `pre_userdata` | bool | `true` |
 | capacity\_type | Type of instance capacity to provision. Options are `ON_DEMAND` and `SPOT` | string | Provider default behavior |
 | create_launch_template | Create and use a default launch template | bool |  `false` |
 | desired\_capacity | Desired number of workers | number | `var.workers_group_defaults[asg_desired_capacity]` |
@@ -83,6 +84,7 @@ No modules.
 |------|------|
 | [aws_eks_node_group.workers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group) | resource |
 | [aws_launch_template.workers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
+| [aws_eks_cluster.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
 | [cloudinit_config.workers_userdata](https://registry.terraform.io/providers/hashicorp/cloudinit/latest/docs/data-sources/config) | data source |
 
 ## Inputs
