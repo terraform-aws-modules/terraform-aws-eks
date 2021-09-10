@@ -268,6 +268,7 @@ Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraf
 | <a name="input_permissions_boundary"></a> [permissions\_boundary](#input\_permissions\_boundary) | If provided, all IAM roles will be created with this permissions boundary attached. | `string` | `null` | no |
 | <a name="input_subnets"></a> [subnets](#input\_subnets) | A list of subnets to place the EKS cluster and workers within. | `list(string)` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources. Tags added to launch configuration or templates override these values for ASG Tags only. | `map(string)` | `{}` | no |
+| <a name="input_tag_iam_policy_and_profile"></a> [tag_iam_policy_and_profile](#input\_tag_iam_policy_and_profile) | Whether to apply the tags to the IAM Policy and Profile created | `bool` | `true` | no |
 | <a name="input_timeouts"></a> [timeouts](#input\_timeouts) | A map of timeouts for create/update/delete operations. | `map(string)` | `{}` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC where the cluster and workers will be deployed. | `string` | n/a | yes |
 | <a name="input_wait_for_cluster_timeout"></a> [wait\_for\_cluster\_timeout](#input\_wait\_for\_cluster\_timeout) | A timeout (in seconds) to wait for cluster to be available. | `number` | `300` | no |

@@ -479,7 +479,7 @@ resource "aws_iam_instance_profile" "workers" {
   )
 
   path = var.iam_path
-  tags = var.tags
+  tags = var.tag_iam_policy_and_profile ? var.tags : null
 
   lifecycle {
     create_before_destroy = true

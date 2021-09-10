@@ -418,3 +418,8 @@ variable "openid_connect_audiences" {
   default     = []
 }
 
+variable "tag_iam_policy_and_profile" {
+  description = "Whether to apply the provided tags to the IAM Policy and Profile created"
+  type        = bool
+  default     = true
+}
