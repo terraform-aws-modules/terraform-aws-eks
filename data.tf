@@ -18,7 +18,7 @@ data "aws_iam_policy_document" "workers_assume_role_policy" {
 }
 
 data "aws_ami" "eks_worker" {
-  count = local.worker_has_linux_ami ? 1 : 0
+  count = contains(local.worker_groups_platforms, "linux") ? 1 : 0
 
   filter {
     name   = "name"
@@ -31,7 +31,7 @@ data "aws_ami" "eks_worker" {
 }
 
 data "aws_ami" "eks_worker_windows" {
-  count = local.worker_has_windows_ami ? 1 : 0
+  count = contains(local.worker_groups_platforms, "windows") ? 1 : 0
 
   filter {
     name   = "name"
@@ -70,7 +70,7 @@ data "aws_iam_role" "custom_cluster_iam_role" {
 }
 
 data "aws_iam_instance_profile" "custom_worker_group_iam_instance_profile" {
-  count = var.manage_worker_iam_resources ? 0 : local.worker_group_count
+  count = var.manage_worker_iam_resources ? 0 : local.worker_group_launch_configuration_count
 
   name = lookup(
     var.worker_groups[count.index],
@@ -93,7 +93,7 @@ data "http" "wait_for_cluster" {
   count = var.create_eks && var.manage_aws_auth ? 1 : 0
 
   url            = format("%s/healthz", aws_eks_cluster.this[0].endpoint)
-  ca_certificate = base64decode(coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0])
+  ca_certificate = base64decode(local.cluster_auth_base64)
   timeout        = var.wait_for_cluster_timeout
 
   depends_on = [

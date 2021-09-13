@@ -1,13 +1,13 @@
 # Worker Groups using Launch Configurations
 
 resource "aws_autoscaling_group" "workers" {
-  count = var.create_eks ? local.worker_group_count : 0
+  count = var.create_eks ? local.worker_group_launch_configuration_count : 0
 
   name_prefix = join(
     "-",
     compact(
       [
-        coalescelist(aws_eks_cluster.this[*].name, [""])[0],
+        local.cluster_name,
         lookup(var.worker_groups[count.index], "name", count.index)
       ]
     )
@@ -132,16 +132,16 @@ resource "aws_autoscaling_group" "workers" {
       [
         {
           "key"                 = "Name"
-          "value"               = "${coalescelist(aws_eks_cluster.this[*].name, [""])[0]}-${lookup(var.worker_groups[count.index], "name", count.index)}-eks_asg"
+          "value"               = "${local.cluster_name}-${lookup(var.worker_groups[count.index], "name", count.index)}-eks_asg"
           "propagate_at_launch" = true
         },
         {
-          "key"                 = "kubernetes.io/cluster/${coalescelist(aws_eks_cluster.this[*].name, [""])[0]}"
+          "key"                 = "kubernetes.io/cluster/${local.cluster_name}"
           "value"               = "owned"
           "propagate_at_launch" = true
         },
         {
-          "key"                 = "k8s.io/cluster/${coalescelist(aws_eks_cluster.this[*].name, [""])[0]}"
+          "key"                 = "k8s.io/cluster/${local.cluster_name}"
           "value"               = "owned"
           "propagate_at_launch" = true
         },
@@ -202,8 +202,9 @@ resource "aws_autoscaling_group" "workers" {
 }
 
 resource "aws_launch_configuration" "workers" {
-  count       = var.create_eks ? local.worker_group_count : 0
-  name_prefix = "${coalescelist(aws_eks_cluster.this[*].name, [""])[0]}-${lookup(var.worker_groups[count.index], "name", count.index)}"
+  count = var.create_eks ? local.worker_group_launch_configuration_count : 0
+
+  name_prefix = "${local.cluster_name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
   associate_public_ip_address = lookup(
     var.worker_groups[count.index],
     "public_ip",
@@ -237,7 +238,7 @@ resource "aws_launch_configuration" "workers" {
     "key_name",
     local.workers_group_defaults["key_name"],
   )
-  user_data_base64 = base64encode(local.userdata_rendered[count.index])
+  user_data_base64 = base64encode(local.launch_configuration_userdata_rendered[count.index])
   ebs_optimized = lookup(
     var.worker_groups[count.index],
     "ebs_optimized",
@@ -470,7 +471,7 @@ resource "aws_security_group_rule" "cluster_primary_ingress_workers" {
 resource "aws_iam_role" "workers" {
   count = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
 
-  name_prefix           = var.workers_role_name != "" ? null : coalescelist(aws_eks_cluster.this[*].name, [""])[0]
+  name_prefix           = var.workers_role_name != "" ? null : local.cluster_name
   name                  = var.workers_role_name != "" ? var.workers_role_name : null
   assume_role_policy    = data.aws_iam_policy_document.workers_assume_role_policy.json
   permissions_boundary  = var.permissions_boundary
@@ -481,9 +482,9 @@ resource "aws_iam_role" "workers" {
 }
 
 resource "aws_iam_instance_profile" "workers" {
-  count = var.manage_worker_iam_resources && var.create_eks ? local.worker_group_count : 0
+  count = var.manage_worker_iam_resources && var.create_eks ? local.worker_group_launch_configuration_count : 0
 
-  name_prefix = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
+  name_prefix = local.cluster_name
   role = lookup(
     var.worker_groups[count.index],
     "iam_role_id",

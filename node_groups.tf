@@ -3,7 +3,7 @@ module "node_groups" {
 
   create_eks = var.create_eks
 
-  cluster_name                         = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
+  cluster_name                         = local.cluster_name
   default_iam_role_arn                 = coalescelist(aws_iam_role.workers[*].arn, [""])[0]
   ebs_optimized_not_supported          = local.ebs_optimized_not_supported
   workers_group_defaults               = local.workers_group_defaults

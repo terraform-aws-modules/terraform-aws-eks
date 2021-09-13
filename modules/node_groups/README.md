@@ -1,11 +1,9 @@
-# eks `node_groups` submodule
+# EKS `node_groups` submodule
 
 Helper submodule to create and manage resources related to `eks_node_groups`.
 
-## Assumptions
-* Designed for use by the parent module and not directly by end users
-
 ## Node Groups' IAM Role
+
 The role ARN specified in `var.default_iam_role_arn` will be used by default. In a simple configuration this will be the worker role created by the parent module.
 
 `iam_role_arn` must be specified in either `var.node_groups_defaults` or `var.node_groups` if the default parent IAM role is not being created for whatever reason, for example if `manage_worker_iam_resources` is set to false in the parent.

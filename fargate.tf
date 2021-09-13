@@ -4,7 +4,7 @@ module "fargate" {
   create_eks                        = var.create_eks
   create_fargate_pod_execution_role = var.create_fargate_pod_execution_role
 
-  cluster_name                    = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
+  cluster_name                    = local.cluster_name
   fargate_pod_execution_role_name = var.fargate_pod_execution_role_name
   permissions_boundary            = var.permissions_boundary
   iam_path                        = var.iam_path
