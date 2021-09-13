@@ -1,15 +1,18 @@
 module "fargate" {
-  source                            = "./modules/fargate"
-  cluster_name                      = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
+  source = "./modules/fargate"
+
   create_eks                        = var.create_eks
   create_fargate_pod_execution_role = var.create_fargate_pod_execution_role
-  fargate_pod_execution_role_name   = var.fargate_pod_execution_role_name
-  fargate_profiles                  = var.fargate_profiles
-  permissions_boundary              = var.permissions_boundary
-  iam_path                          = var.iam_path
-  iam_policy_arn_prefix             = local.policy_arn_prefix
-  subnets                           = coalescelist(var.fargate_subnets, var.subnets, [""])
-  tags                              = var.tags
+
+  cluster_name                    = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
+  fargate_pod_execution_role_name = var.fargate_pod_execution_role_name
+  permissions_boundary            = var.permissions_boundary
+  iam_path                        = var.iam_path
+  subnets                         = coalescelist(var.fargate_subnets, var.subnets, [""])
+
+  fargate_profiles = var.fargate_profiles
+
+  tags = var.tags
 
   # Hack to ensure ordering of resource creation.
   # This is a homemade `depends_on` https://discuss.hashicorp.com/t/tips-howto-implement-module-depends-on-emulation/2305/2

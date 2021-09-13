@@ -1,6 +1,7 @@
 variable "cluster_name" {
   description = "Name of the EKS cluster."
   type        = string
+  default     = ""
 }
 
 variable "create_eks" {
@@ -13,11 +14,6 @@ variable "iam_path" {
   description = "IAM roles will be created on this path."
   type        = string
   default     = "/"
-}
-
-variable "iam_policy_arn_prefix" {
-  description = "IAM policy prefix with the correct AWS partition."
-  type        = string
 }
 
 variable "create_fargate_pod_execution_role" {

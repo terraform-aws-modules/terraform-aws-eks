@@ -1,9 +1,5 @@
-terraform {
-  required_version = ">= 0.12.6"
-}
-
 provider "aws" {
-  region = var.region
+  region = "eu-west-1"
 }
 
 data "aws_eks_cluster" "cluster" {
@@ -16,7 +12,7 @@ data "aws_eks_cluster_auth" "cluster" {
 
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
   token                  = data.aws_eks_cluster_auth.cluster.token
   load_config_file       = false
 }

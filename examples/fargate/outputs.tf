@@ -18,11 +18,6 @@ output "config_map_aws_auth" {
   value       = module.eks.config_map_aws_auth
 }
 
-output "region" {
-  description = "AWS region."
-  value       = var.region
-}
-
 output "fargate_profile_arns" {
   description = "Outputs from node groups"
   value       = module.eks.fargate_profile_arns

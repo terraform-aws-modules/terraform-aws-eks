@@ -2,6 +2,7 @@
 
 resource "aws_autoscaling_group" "workers_launch_template" {
   count = var.create_eks ? local.worker_group_launch_template_count : 0
+
   name_prefix = join(
     "-",
     compact(
@@ -617,7 +618,8 @@ resource "aws_launch_template" "workers_launch_template" {
 }
 
 resource "aws_iam_instance_profile" "workers_launch_template" {
-  count       = var.manage_worker_iam_resources && var.create_eks ? local.worker_group_launch_template_count : 0
+  count = var.manage_worker_iam_resources && var.create_eks ? local.worker_group_launch_template_count : 0
+
   name_prefix = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
   role = lookup(
     var.worker_groups_launch_template[count.index],
@@ -625,6 +627,7 @@ resource "aws_iam_instance_profile" "workers_launch_template" {
     local.default_iam_role_id,
   )
   path = var.iam_path
+
   tags = var.tags
 
   lifecycle {

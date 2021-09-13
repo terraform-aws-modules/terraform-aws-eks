@@ -19,6 +19,7 @@ variable "cluster_log_retention_in_days" {
 variable "cluster_name" {
   description = "Name of the EKS cluster. Also used as a prefix in names of related resources."
   type        = string
+  default     = ""
 }
 
 variable "cluster_security_group_id" {
@@ -30,6 +31,7 @@ variable "cluster_security_group_id" {
 variable "cluster_version" {
   description = "Kubernetes version to use for the EKS cluster."
   type        = string
+  default     = null
 }
 
 variable "kubeconfig_output_path" {
@@ -52,6 +54,7 @@ variable "write_kubeconfig" {
 
 variable "manage_aws_auth" {
   description = "Whether to apply the aws-auth configmap file."
+  type        = bool
   default     = true
 }
 
@@ -96,6 +99,7 @@ variable "fargate_subnets" {
 variable "subnets" {
   description = "A list of subnets to place the EKS cluster and workers within."
   type        = list(string)
+  default     = []
 }
 
 variable "tags" {
@@ -119,6 +123,7 @@ variable "timeouts" {
 variable "vpc_id" {
   description = "VPC where the cluster and workers will be deployed."
   type        = string
+  default     = null
 }
 
 variable "worker_groups" {

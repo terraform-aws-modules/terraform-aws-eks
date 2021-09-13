@@ -1,7 +1,7 @@
 locals {
 
   cluster_security_group_id         = var.cluster_create_security_group ? join("", aws_security_group.cluster.*.id) : var.cluster_security_group_id
-  cluster_primary_security_group_id = var.cluster_version >= 1.14 ? element(concat(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, [""]), 0) : null
+  cluster_primary_security_group_id = try(var.cluster_version >= 1.14, false) ? element(concat(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, [""]), 0) : null
   cluster_iam_role_name             = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.name) : var.cluster_iam_role_name
   cluster_iam_role_arn              = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.arn) : join("", data.aws_iam_role.custom_cluster_iam_role.*.arn)
   worker_security_group_id          = var.worker_create_security_group ? join("", aws_security_group.workers.*.id) : var.worker_security_group_id
@@ -37,10 +37,10 @@ locals {
     )
   ) == "windows"]) > 0
 
-  worker_ami_name_filter = var.worker_ami_name_filter != "" ? var.worker_ami_name_filter : "amazon-eks-node-${var.cluster_version}-v*"
+  worker_ami_name_filter = var.worker_ami_name_filter != "" ? var.worker_ami_name_filter : "amazon-eks-node-${var.cluster_version != null ? var.cluster_version : ""}-v*"
   # Windows nodes are available from k8s 1.14. If cluster version is less than 1.14, fix ami filter to some constant to not fail on 'terraform plan'.
   worker_ami_name_filter_windows = (var.worker_ami_name_filter_windows != "" ?
-    var.worker_ami_name_filter_windows : "Windows_Server-2019-English-Core-EKS_Optimized-${tonumber(var.cluster_version) >= 1.14 ? var.cluster_version : 1.14}-*"
+    var.worker_ami_name_filter_windows : "Windows_Server-2019-English-Core-EKS_Optimized-${try((tonumber(var.cluster_version) >= 1.14 ? var.cluster_version : 1.14), 1.14)}-*"
   )
 
   ec2_principal  = "ec2.${data.aws_partition.current.dns_suffix}"
