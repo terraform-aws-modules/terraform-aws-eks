@@ -3,6 +3,8 @@ locals {
 
   pod_execution_role_arn  = coalescelist(aws_iam_role.eks_fargate_pod.*.arn, data.aws_iam_role.custom_fargate_iam_role.*.arn, [""])[0]
   pod_execution_role_name = coalescelist(aws_iam_role.eks_fargate_pod.*.name, data.aws_iam_role.custom_fargate_iam_role.*.name, [""])[0]
+
+  fargate_profiles = { for k, v in var.fargate_profiles : k => v if var.create_eks }
 }
 
 data "aws_partition" "current" {}
@@ -45,7 +47,7 @@ resource "aws_iam_role_policy_attachment" "eks_fargate_pod" {
 }
 
 resource "aws_eks_fargate_profile" "this" {
-  for_each = local.create_eks ? var.fargate_profiles : {}
+  for_each = local.fargate_profiles
 
   cluster_name           = var.cluster_name
   fargate_profile_name   = lookup(each.value, "name", format("%s-fargate-%s", var.cluster_name, replace(each.key, "_", "-")))

@@ -36,26 +36,26 @@ module "eks" {
     }
 
     #    # @todo: There is an open issue - https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1245
-    #    secondary = {
-    #      name = "secondary"
-    #      selectors = [
-    #        {
-    #          namespace = "default"
-    #           labels = {
-    #             Environment = "test"
-    #             GithubRepo  = "terraform-aws-eks"
-    #             GithubOrg   = "terraform-aws-modules"
-    #           }
-    #        }
-    #      ]
-    #
-    #      # Using specific subnets instead of the ones configured in EKS (`subnets` and `fargate_subnets`)
-    #      subnets = [local.vpc.private_subnets[1]]
-    #
-    #      tags = {
-    #        Owner = "secondary"
-    #      }
-    #    }
+    secondary = {
+      name = "secondary"
+      selectors = [
+        {
+          namespace = "default"
+          labels = {
+            Environment = "test"
+            GithubRepo  = "terraform-aws-eks"
+            GithubOrg   = "terraform-aws-modules"
+          }
+        }
+      ]
+
+      # Using specific subnets instead of the ones configured in EKS (`subnets` and `fargate_subnets`)
+      subnets = [local.vpc.private_subnets[1]]
+
+      tags = {
+        Owner = "secondary"
+      }
+    }
   }
 
   manage_aws_auth = false
@@ -96,7 +96,26 @@ module "fargate_profile_existing_cluster" {
       ]
 
       tags = {
-        Owner = "default"
+        Owner = "profile1"
+      }
+    }
+
+    profile2 = {
+      name = "profile2"
+      selectors = [
+        {
+          namespace = "default"
+          labels = {
+            Fargate = "profile2"
+          }
+        }
+      ]
+
+      # Using specific subnets instead of the ones configured in EKS (`subnets` and `fargate_subnets`)
+      subnets = [local.vpc.private_subnets[1]]
+
+      tags = {
+        Owner = "profile2"
       }
     }
   }
