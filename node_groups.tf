@@ -14,7 +14,6 @@ module "node_groups" {
   node_groups          = var.node_groups
 
   tags     = var.tags
-  timeouts = var.timeouts
 
   # Hack to ensure ordering of resource creation.
   # This is a homemade `depends_on` https://discuss.hashicorp.com/t/tips-howto-implement-module-depends-on-emulation/2305/2
