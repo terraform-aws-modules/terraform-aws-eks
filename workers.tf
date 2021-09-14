@@ -445,7 +445,7 @@ resource "aws_security_group_rule" "workers_ingress_cluster_https" {
 }
 
 resource "aws_security_group_rule" "workers_ingress_cluster_primary" {
-  count = var.worker_create_security_group && var.worker_create_cluster_primary_security_group_rules && try(var.cluster_version >= 1.14, false) && var.create_eks ? 1 : 0
+  count = var.worker_create_security_group && var.worker_create_cluster_primary_security_group_rules && var.create_eks ? 1 : 0
 
   description              = "Allow pods running on workers to receive communication from cluster primary security group (e.g. Fargate pods)."
   protocol                 = "all"
@@ -457,7 +457,7 @@ resource "aws_security_group_rule" "workers_ingress_cluster_primary" {
 }
 
 resource "aws_security_group_rule" "cluster_primary_ingress_workers" {
-  count = var.worker_create_security_group && var.worker_create_cluster_primary_security_group_rules && try(var.cluster_version >= 1.14, false) && var.create_eks ? 1 : 0
+  count = var.worker_create_security_group && var.worker_create_cluster_primary_security_group_rules && var.create_eks ? 1 : 0
 
   description              = "Allow pods running on workers to send communication to cluster primary security group (e.g. Fargate pods)."
   protocol                 = "all"

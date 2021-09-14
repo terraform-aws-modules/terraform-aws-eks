@@ -1,25 +1,25 @@
-variable "cluster_name" {
-  description = "Name of the EKS cluster."
-  type        = string
-  default     = ""
-}
-
 variable "create_eks" {
   description = "Controls if EKS resources should be created (it affects almost all resources)"
   type        = bool
   default     = true
 }
 
-variable "iam_path" {
-  description = "IAM roles will be created on this path."
-  type        = string
-  default     = "/"
-}
-
 variable "create_fargate_pod_execution_role" {
   description = "Controls if the the IAM Role that provides permissions for the EKS Fargate Profile should be created."
   type        = bool
   default     = true
+}
+
+variable "cluster_name" {
+  description = "Name of the EKS cluster."
+  type        = string
+  default     = ""
+}
+
+variable "iam_path" {
+  description = "IAM roles will be created on this path."
+  type        = string
+  default     = "/"
 }
 
 variable "fargate_pod_execution_role_name" {

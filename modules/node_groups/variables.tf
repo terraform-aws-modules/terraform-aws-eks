@@ -40,13 +40,6 @@ variable "tags" {
   default     = {}
 }
 
-# @todo: Verify is this is in use?
-variable "timeouts" {
-  description = "A map of timeouts for create/update/delete operations."
-  type        = map(string)
-  default     = {}
-}
-
 variable "node_groups_defaults" {
   description = "map of maps of node groups to create. See \"`node_groups` and `node_groups_defaults` keys\" section in README.md for more details"
   type        = any

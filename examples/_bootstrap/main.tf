@@ -7,7 +7,8 @@ locals {
   name     = "bootstrap-example"
   vpc_cidr = "10.0.0.0/16"
 
-  cluster_name = "test-eks-${random_string.suffix.result}"
+  cluster_name    = "test-eks-${random_string.suffix.result}"
+  cluster_version = "1.21"
 }
 
 data "aws_availability_zones" "available" {}
@@ -46,4 +47,41 @@ module "vpc" {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"             = "1"
   }
+}
+
+############################################################
+# Barebone EKS Cluster where submodules can add extra stuff
+############################################################
+
+module "barebone_eks" {
+  source = "../.."
+
+  cluster_name    = "barebone-${local.cluster_name}"
+  cluster_version = local.cluster_version
+
+  vpc_id  = module.vpc.vpc_id
+  subnets = module.vpc.private_subnets
+
+  tags = {
+    Environment = "test"
+    Barebone    = "yes_please"
+  }
+}
+
+#############
+# Kubernetes
+#############
+
+data "aws_eks_cluster" "cluster" {
+  name = module.barebone_eks.cluster_id
+}
+
+data "aws_eks_cluster_auth" "cluster" {
+  name = module.barebone_eks.cluster_id
+}
+
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.cluster.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.cluster.token
 }

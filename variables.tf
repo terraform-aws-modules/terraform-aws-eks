@@ -120,12 +120,6 @@ variable "cluster_tags" {
   default     = {}
 }
 
-variable "timeouts" {
-  description = "A map of timeouts for create/update/delete operations."
-  type        = map(string)
-  default     = {}
-}
-
 variable "vpc_id" {
   description = "VPC where the cluster and workers will be deployed."
   type        = string

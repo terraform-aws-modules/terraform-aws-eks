@@ -9,6 +9,11 @@ output "cluster_name" {
 }
 
 output "vpc" {
-  description = "Complete VPC module"
+  description = "Complete output of VPC module"
   value       = module.vpc
+}
+
+output "barebone_eks" {
+  description = "Complete output of Barebone EKS module"
+  value       = module.barebone_eks
 }

@@ -93,17 +93,8 @@ module "eks" {
         },
         {
           namespace = "default"
-          # Kubernetes labels for selection
-          # labels = {
-          #   Environment = "test"
-          #   GithubRepo  = "terraform-aws-eks"
-          #   GithubOrg   = "terraform-aws-modules"
-          # }
         }
       ]
-
-      # using specific subnets instead of all the ones configured in eks
-      # subnets = ["subnet-0ca3e3d1234a56c78"]
 
       tags = {
         Owner = "test"
@@ -119,6 +110,7 @@ module "eks" {
       groups   = ["system:masters"]
     },
   ]
+
   map_users = [
     {
       userarn  = "arn:aws:iam::66666666666:user/user1"
@@ -131,6 +123,7 @@ module "eks" {
       groups   = ["system:masters"]
     },
   ]
+
   map_accounts = [
     "777777777777",
     "888888888888",
@@ -181,7 +174,6 @@ provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
   token                  = data.aws_eks_cluster_auth.cluster.token
-  load_config_file       = false
 }
 
 ################################################################################
