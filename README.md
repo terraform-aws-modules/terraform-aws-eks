@@ -3,40 +3,26 @@
 [![Lint Status](https://github.com/terraform-aws-modules/terraform-aws-eks/workflows/Lint/badge.svg)](https://github.com/terraform-aws-modules/terraform-aws-eks/actions)
 [![LICENSE](https://img.shields.io/github/license/terraform-aws-modules/terraform-aws-eks)](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/LICENSE)
 
-A terraform module to create a managed Kubernetes cluster on AWS EKS. Available
-through the [Terraform registry](https://registry.terraform.io/modules/terraform-aws-modules/eks/aws).
-Inspired by and adapted from [this doc](https://www.terraform.io/docs/providers/aws/guides/eks-getting-started.html)
-and its [source code](https://github.com/terraform-providers/terraform-provider-aws/tree/master/examples/eks-getting-started).
-Read the [AWS docs on EKS to get connected to the k8s dashboard](https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html).
-
-## Assumptions
-
-* You want to create an EKS cluster and an autoscaling group of workers for the cluster.
-* You want these resources to exist within security groups that allow communication and coordination. These can be user provided or created within the module.
-* You've created a Virtual Private Cloud (VPC) and subnets where you intend to put the EKS resources. The VPC satisfies [EKS requirements](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html).
-
+Terraform module which creates Kubernetes cluster resources on AWS EKS.
 
 ## Features
 
-- Create EKS Cluster
-- Managed Node Groups ([official docs](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html))
-- Self-managed Nodes ([official docs](https://docs.aws.amazon.com/eks/latest/userguide/worker.html))
-- Fargate ([official docs](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html)) 
+- Create an EKS cluster
+- All node types are supported:
+  - [Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html)
+  - [Self-managed Nodes](https://docs.aws.amazon.com/eks/latest/userguide/worker.html)
+  - [Fargate](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html)
+- Support AWS EKS Optimized or Custom AMI
+- Create or manage security groups that allow communication and coordination
 
 
 ## Important note
 
-The `cluster_version` is the required variable. Kubernetes is evolving a lot, and each major version includes new features, fixes, or changes.
+Kubernetes is evolving a lot, and each minor version includes new features, fixes, or changes.
 
-**Always check [Kubernetes Release Notes](https://kubernetes.io/docs/setup/release/notes/) before updating the major version.**
+**Always check [Kubernetes Release Notes](https://kubernetes.io/docs/setup/release/notes/) before updating the major version, and [CHANGELOG.md](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/CHANGELOG.md) for all changes in this EKS module.**
 
-You also need to ensure your applications and add ons are updated, or workloads could fail after the upgrade is complete. For action, you may need to take before upgrading, see the steps in the [EKS documentation](https://docs.aws.amazon.com/eks/latest/userguide/update-cluster.html).
-
-An example of harming update was the removal of several commonly used, but deprecated  APIs, in Kubernetes 1.16. More information on the API removals, see the [Kubernetes blog post](https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/).
-
-By default, this module manages the `aws-auth` configmap for you (`manage_aws_auth=true`). To avoid the following [issue](https://github.com/aws/containers-roadmap/issues/654) where the EKS creation is `ACTIVE` but not ready. We implemented a "retry" logic with a fork of the http provider https://github.com/terraform-aws-modules/terraform-provider-http. This fork adds the support of a self-signed CA certificate. The original PR can be found at https://github.com/hashicorp/terraform-provider-http/pull/29.
-
-Setting `instance_refresh_enabled` to true will recreate your worker nodes without draining them first. It is recommended to install [aws-node-termination-handler](https://github.com/aws/aws-node-termination-handler) for proper node draining. Find the complete example here [instance_refresh](examples/instance_refresh).
+You also need to ensure that your applications and add ons are updated, or workloads could fail after the upgrade is complete. For action, you may need to take before upgrading, see the steps in the [EKS documentation](https://docs.aws.amazon.com/eks/latest/userguide/update-cluster.html).
 
 
 ## Usage example
@@ -73,23 +59,48 @@ module "eks" {
 }
 ```
 
+There is also a [complete example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/complete) which shows large set of features available in the module.
 
-## Other documentation
 
-* [Autoscaling](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/autoscaling.md): How to enable worker node autoscaling.
-* [Enable Docker Bridge Network](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/enable-docker-bridge-network.md): How to enable the docker bridge network when using the EKS-optimized AMI, which disables it by default.
-* [Spot instances](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/spot-instances.md): How to use spot instances with this module.
-* [IAM Permissions](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/iam-permissions.md): Minimum IAM permissions needed to setup EKS Cluster.
-* [FAQ](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md): Frequently Asked Questions
+## Submodules
+
+Root module calls these modules which can also be used separately to create independent resources:
+
+- [fargate](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/fargate) - creates Fargate profiles, see [examples/fargate](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/fargat) for detailed examples.
+<!--
+- [node_groups](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/node_groups) - creates Managed Node Group resources
+-->
+
+
+## Notes
+
+- By default, this module manages the `aws-auth` configmap for you (`manage_aws_auth=true`). To avoid the following [issue](https://github.com/aws/containers-roadmap/issues/654) where the EKS creation is `ACTIVE` but not ready. We implemented a "retry" logic with a [fork of the http provider](https://github.com/terraform-aws-modules/terraform-provider-http). This fork adds the support of a self-signed CA certificate. The original PR can be found [here](https://github.com/hashicorp/terraform-provider-http/pull/29).
+
+- Setting `instance_refresh_enabled = true` will recreate your worker nodes without draining them first. It is recommended to install [aws-node-termination-handler](https://github.com/aws/aws-node-termination-handler) for proper node draining. Find the complete example here [instance_refresh](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/instance_refresh).
+
+
+## Documentation
+
+### Official docs
+
+- [AWS Tutorial: Deploy the Kubernetes Dashboard (web UI)](https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html).
+
+### Module docs
+
+- [Autoscaling](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/autoscaling.md): How to enable worker node autoscaling.
+- [Enable Docker Bridge Network](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/enable-docker-bridge-network.md): How to enable the docker bridge network when using the EKS-optimized AMI, which disables it by default.
+- [Spot instances](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/spot-instances.md): How to use spot instances with this module.
+- [IAM Permissions](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/iam-permissions.md): Minimum IAM permissions needed to setup EKS Cluster.
+- [FAQ](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md): Frequently Asked Questions
 
 
 ## Examples
 
 There are detailed examples available for you to see how certain features of this module can be used in a straightforward way. Make sure to check them and run them before opening an issue. [Here](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/iam-permissions.md) you can find the list of the minimum IAM Permissions required to create EKS cluster.
 
-- [Complete](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/complete) - Create Lambda resources in various combinations with all supported features.
-- [Bottlerocket](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/bottlerocket) - Create EKS cluster with Bottlerocket AMIs ([official docs](https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami-bottlerocket.html)).
-- [Fargate](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/fargate) - Create EKS cluster with Fargate profiles ([official docs](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html)) and attach Fargate profiles to an existing EKS cluster.
+- [Complete](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/complete) - Create EKS Cluster with all available workers types in various combinations with many of supported features.
+- [Bottlerocket](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/bottlerocket) - Create EKS cluster using [Bottlerocket AMI](https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami-bottlerocket.html).
+- [Fargate](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/fargate) - Create EKS cluster with [Fargate profiles](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html) and attach Fargate profiles to an existing EKS cluster.
   
 
 ## Contributing
@@ -98,10 +109,6 @@ Report issues/questions/feature requests on in the [issues](https://github.com/t
 
 Full contributing [guidelines are covered here](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/.github/CONTRIBUTING.md).
 
-## Change log
-
-- The [changelog](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/CHANGELOG.md) captures all important release notes from v11.0.0
-- For older release notes, refer to [changelog.pre-v11.0.0.md](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/CHANGELOG.pre-v11.0.0.md)
 
 ## Authors
 
