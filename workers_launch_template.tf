@@ -290,6 +290,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
 
 resource "aws_launch_template" "workers_launch_template" {
   count = var.create_eks ? (local.worker_group_launch_template_count) : 0
+
   name_prefix = "${local.cluster_name}-${lookup(
     var.worker_groups_launch_template[count.index],
     "name",

@@ -33,8 +33,9 @@ module "vpc" {
   public_subnets  = [for k, v in data.aws_availability_zones.available.names : cidrsubnet(local.vpc_cidr, 8, k)]
   private_subnets = [for k, v in data.aws_availability_zones.available.names : cidrsubnet(local.vpc_cidr, 8, k + 10)]
 
-  enable_nat_gateway = false # true
-  single_nat_gateway = false # true
+  # NAT Gateway is disabled in the examples primarily to save costs and be able to recreate VPC faster.
+  enable_nat_gateway = false
+  single_nat_gateway = false
 
   enable_dns_hostnames = true
 

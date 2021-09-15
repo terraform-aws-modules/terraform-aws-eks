@@ -35,7 +35,6 @@ module "eks" {
       }
     }
 
-    #    # @todo: There is an open issue - https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1245
     secondary = {
       name = "secondary"
       selectors = [
