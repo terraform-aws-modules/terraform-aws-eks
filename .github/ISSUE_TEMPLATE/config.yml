@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: DNX One Documentation
+    url: https://docs.dnx.one
+    about: At DNX we help your business build better solutions by upgrading how delivery is done, leaving behind manual processes and embracing an automated, cloud-native way of working.
+  - name: About us
+    url: https://dnx.solutions/about-us/
+    about: Informations about DNX as a company.
