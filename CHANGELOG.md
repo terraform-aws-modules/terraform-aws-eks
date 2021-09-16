@@ -10,6 +10,12 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v17.19.0"></a>
+## [v17.19.0] - 2021-09-16
+REFACTORS:
+- Refactoring to match the rest of terraform-aws-modules ([#1583](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1583))
+
+
 <a name="v17.18.0"></a>
 ## [v17.18.0] - 2021-09-08
 FEATURES:
@@ -510,7 +516,8 @@ CI:
 - Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.18.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.19.0...HEAD
+[v17.19.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.18.0...v17.19.0
 [v17.18.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.17.0...v17.18.0
 [v17.17.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.16.0...v17.17.0
 [v17.16.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.15.0...v17.16.0

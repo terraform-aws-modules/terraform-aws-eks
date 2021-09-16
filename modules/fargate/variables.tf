@@ -1,29 +1,25 @@
-variable "cluster_name" {
-  description = "Name of the EKS cluster."
-  type        = string
-}
-
 variable "create_eks" {
   description = "Controls if EKS resources should be created (it affects almost all resources)"
   type        = bool
   default     = true
 }
 
-variable "iam_path" {
-  description = "IAM roles will be created on this path."
-  type        = string
-  default     = "/"
-}
-
-variable "iam_policy_arn_prefix" {
-  description = "IAM policy prefix with the correct AWS partition."
-  type        = string
-}
-
 variable "create_fargate_pod_execution_role" {
   description = "Controls if the the IAM Role that provides permissions for the EKS Fargate Profile should be created."
   type        = bool
   default     = true
+}
+
+variable "cluster_name" {
+  description = "Name of the EKS cluster."
+  type        = string
+  default     = ""
+}
+
+variable "iam_path" {
+  description = "IAM roles will be created on this path."
+  type        = string
+  default     = "/"
 }
 
 variable "fargate_pod_execution_role_name" {
@@ -54,12 +50,4 @@ variable "tags" {
   description = "A map of tags to add to all resources."
   type        = map(string)
   default     = {}
-}
-
-# Hack for a homemade `depends_on` https://discuss.hashicorp.com/t/tips-howto-implement-module-depends-on-emulation/2305/2
-# Will be removed in Terraform 0.13 with the support of module's `depends_on` https://github.com/hashicorp/terraform/issues/10462
-variable "eks_depends_on" {
-  description = "List of references to other resources this submodule depends on."
-  type        = any
-  default     = null
 }

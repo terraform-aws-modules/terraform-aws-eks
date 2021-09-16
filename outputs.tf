@@ -1,6 +1,6 @@
 output "cluster_id" {
   description = "The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready."
-  value       = element(concat(aws_eks_cluster.this.*.id, [""]), 0)
+  value       = local.cluster_id
 
   # So that calling plans wait for the cluster to be available before attempting to use it.
   # There is no need to duplicate this datasource
@@ -9,17 +9,17 @@ output "cluster_id" {
 
 output "cluster_arn" {
   description = "The Amazon Resource Name (ARN) of the cluster."
-  value       = element(concat(aws_eks_cluster.this.*.arn, [""]), 0)
+  value       = local.cluster_arn
 }
 
 output "cluster_certificate_authority_data" {
   description = "Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster."
-  value       = element(concat(aws_eks_cluster.this[*].certificate_authority[0].data, [""]), 0)
+  value       = local.cluster_auth_base64
 }
 
 output "cluster_endpoint" {
   description = "The endpoint for your EKS Kubernetes API."
-  value       = element(concat(aws_eks_cluster.this.*.endpoint, [""]), 0)
+  value       = local.cluster_endpoint
 }
 
 output "cluster_version" {
@@ -49,7 +49,7 @@ output "cluster_iam_role_arn" {
 
 output "cluster_oidc_issuer_url" {
   description = "The URL on the EKS cluster OIDC Issuer"
-  value       = flatten(concat(aws_eks_cluster.this[*].identity[*].oidc.0.issuer, [""]))[0]
+  value       = local.cluster_oidc_issuer_url
 }
 
 output "cluster_primary_security_group_id" {
@@ -109,7 +109,7 @@ output "workers_asg_names" {
 output "workers_user_data" {
   description = "User data of worker groups"
   value = concat(
-    local.userdata_rendered,
+    local.launch_configuration_userdata_rendered,
     local.launch_template_userdata_rendered,
   )
 }

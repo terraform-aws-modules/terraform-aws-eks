@@ -7,16 +7,19 @@ variable "create_eks" {
 variable "cluster_name" {
   description = "Name of parent cluster"
   type        = string
+  default     = ""
 }
 
 variable "default_iam_role_arn" {
   description = "ARN of the default IAM worker role to use if one is not specified in `var.node_groups` or `var.node_groups_defaults`"
   type        = string
+  default     = ""
 }
 
 variable "workers_group_defaults" {
   description = "Workers group defaults from parent"
   type        = any
+  default     = {}
 }
 
 variable "worker_security_group_id" {
@@ -34,16 +37,13 @@ variable "worker_additional_security_group_ids" {
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
-}
-
-variable "timeouts" {
-  description = "A map of timeouts for create/update/delete operations."
-  type        = map(string)
+  default     = {}
 }
 
 variable "node_groups_defaults" {
   description = "map of maps of node groups to create. See \"`node_groups` and `node_groups_defaults` keys\" section in README.md for more details"
   type        = any
+  default     = {}
 }
 
 variable "node_groups" {
