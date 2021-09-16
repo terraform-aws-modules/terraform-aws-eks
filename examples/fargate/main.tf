@@ -73,7 +73,7 @@ module "eks" {
 module "fargate_profile_existing_cluster" {
   source = "../../modules/fargate"
 
-  cluster_name = local.barebone_eks.cluster_id
+  cluster_name = module.barebone_eks.cluster_id
   subnets      = [local.vpc.private_subnets[0], local.vpc.private_subnets[1]]
 
   fargate_profiles = {
@@ -142,6 +142,46 @@ provider "kubernetes" {
   token                  = data.aws_eks_cluster_auth.cluster.token
 }
 
+############################################################
+# Barebone EKS Cluster where submodules can add extra stuff
+############################################################
+
+module "barebone_eks" {
+  source = "../.."
+
+  cluster_name    = "barebone-${local.cluster_name}"
+  cluster_version = "1.21"
+
+  vpc_id  = local.vpc.vpc_id
+  subnets = local.vpc.private_subnets
+
+  tags = {
+    Environment = "test"
+    Barebone    = "yes_please"
+  }
+}
+
+#############
+# Kubernetes
+#############
+
+data "aws_eks_cluster" "barebone" {
+  name = module.barebone_eks.cluster_id
+}
+
+data "aws_eks_cluster_auth" "barebone" {
+  name = module.barebone_eks.cluster_id
+}
+
+provider "kubernetes" {
+  alias = "barebone"
+
+  host                   = data.aws_eks_cluster.barebone.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.barebone.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.barebone.token
+}
+
+
 ################################################################################
 # Supporting resources (managed in "_bootstrap" directory)
 ################################################################################
@@ -158,5 +198,4 @@ locals {
   region       = data.terraform_remote_state.bootstrap.outputs.region
   cluster_name = data.terraform_remote_state.bootstrap.outputs.cluster_name
   vpc          = data.terraform_remote_state.bootstrap.outputs.vpc
-  barebone_eks = data.terraform_remote_state.bootstrap.outputs.barebone_eks
 }

@@ -12,8 +12,3 @@ output "vpc" {
   description = "Complete output of VPC module"
   value       = module.vpc
 }
-
-output "barebone_eks" {
-  description = "Complete output of Barebone EKS module"
-  value       = module.barebone_eks
-}
