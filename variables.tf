@@ -1,24 +1,25 @@
 variable "cluster_enabled_log_types" {
-  default     = []
   description = "A list of the desired control plane logging to enable. For more information, see Amazon EKS Control Plane Logging documentation (https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html)"
   type        = list(string)
+  default     = []
 }
 
 variable "cluster_log_kms_key_id" {
-  default     = ""
   description = "If a KMS Key ARN is set, this key will be used to encrypt the corresponding log group. Please be sure that the KMS Key has an appropriate key policy (https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html)"
   type        = string
+  default     = ""
 }
 
 variable "cluster_log_retention_in_days" {
-  default     = 90
   description = "Number of days to retain log events. Default retention - 90 days."
   type        = number
+  default     = 90
 }
 
 variable "cluster_name" {
   description = "Name of the EKS cluster. Also used as a prefix in names of related resources."
   type        = string
+  default     = ""
 }
 
 variable "cluster_security_group_id" {
@@ -30,6 +31,7 @@ variable "cluster_security_group_id" {
 variable "cluster_version" {
   description = "Kubernetes version to use for the EKS cluster."
   type        = string
+  default     = null
 }
 
 variable "kubeconfig_output_path" {
@@ -50,8 +52,15 @@ variable "write_kubeconfig" {
   default     = true
 }
 
+variable "default_platform" {
+  description = "Default platform name. Valid options are `linux` and `windows`."
+  type        = string
+  default     = "linux"
+}
+
 variable "manage_aws_auth" {
   description = "Whether to apply the aws-auth configmap file."
+  type        = bool
   default     = true
 }
 
@@ -87,9 +96,16 @@ variable "map_users" {
   default = []
 }
 
+variable "fargate_subnets" {
+  description = "A list of subnets to place fargate workers within (if different from subnets)."
+  type        = list(string)
+  default     = []
+}
+
 variable "subnets" {
   description = "A list of subnets to place the EKS cluster and workers within."
   type        = list(string)
+  default     = []
 }
 
 variable "tags" {
@@ -98,9 +114,16 @@ variable "tags" {
   default     = {}
 }
 
+variable "cluster_tags" {
+  description = "A map of tags to add to just the eks resource."
+  type        = map(string)
+  default     = {}
+}
+
 variable "vpc_id" {
   description = "VPC where the cluster and workers will be deployed."
   type        = string
+  default     = null
 }
 
 variable "worker_groups" {
@@ -393,3 +416,10 @@ variable "wait_for_cluster_timeout" {
   type        = number
   default     = 300
 }
+
+variable "openid_connect_audiences" {
+  description = "List of OpenID Connect audience client IDs to add to the IRSA provider."
+  type        = list(string)
+  default     = []
+}
+

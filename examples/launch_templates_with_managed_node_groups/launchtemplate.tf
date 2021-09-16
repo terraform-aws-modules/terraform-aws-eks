@@ -1,15 +1,15 @@
-data "template_file" "launch_template_userdata" {
-  template = file("${path.module}/templates/userdata.sh.tpl")
-
-  vars = {
-    cluster_name        = local.cluster_name
-    endpoint            = module.eks.cluster_endpoint
-    cluster_auth_base64 = module.eks.cluster_certificate_authority_data
-
-    bootstrap_extra_args = ""
-    kubelet_extra_args   = ""
-  }
-}
+#data "template_file" "launch_template_userdata" {
+#  template = file("${path.module}/templates/userdata.sh.tpl")
+#
+#  vars = {
+#    cluster_name        = local.cluster_name
+#    endpoint            = module.eks.cluster_endpoint
+#    cluster_auth_base64 = module.eks.cluster_certificate_authority_data
+#
+#    bootstrap_extra_args = ""
+#    kubelet_extra_args   = ""
+#  }
+#}
 
 # This is based on the LT that EKS would create if no custom one is specified (aws ec2 describe-launch-template-versions --launch-template-id xxx)
 # there are several more options one could set but you probably dont need to modify them
@@ -74,6 +74,15 @@ resource "aws_launch_template" "default" {
   # Supplying custom tags to EKS instances root volumes is another use-case for LaunchTemplates. (doesnt add tags to dynamically provisioned volumes via PVC tho)
   tag_specifications {
     resource_type = "volume"
+
+    tags = {
+      CustomTag = "EKS example"
+    }
+  }
+
+  # Supplying custom tags to EKS instances ENI's is another use-case for LaunchTemplates
+  tag_specifications {
+    resource_type = "network-interface"
 
     tags = {
       CustomTag = "EKS example"

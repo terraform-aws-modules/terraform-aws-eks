@@ -1,7 +1,3 @@
-variable "region" {
-  default = "us-west-2"
-}
-
 variable "map_accounts" {
   description = "Additional AWS account numbers to add to the aws-auth configmap."
   type        = list(string)
