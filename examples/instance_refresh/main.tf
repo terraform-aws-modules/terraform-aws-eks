@@ -1,7 +1,7 @@
 # Based on the official aws-node-termination-handler setup guide at https://github.com/aws/aws-node-termination-handler#infrastructure-setup
 
 provider "aws" {
-  region = var.region
+  region = local.region
 }
 
 data "aws_caller_identity" "current" {}
@@ -16,15 +16,14 @@ data "aws_eks_cluster_auth" "cluster" {
 
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
   token                  = data.aws_eks_cluster_auth.cluster.token
-  load_config_file       = false
 }
 
 provider "helm" {
   kubernetes {
     host                   = data.aws_eks_cluster.cluster.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
     token                  = data.aws_eks_cluster_auth.cluster.token
   }
 }
@@ -34,6 +33,7 @@ data "aws_availability_zones" "available" {
 
 locals {
   cluster_name = "test-refresh-${random_string.suffix.result}"
+  region       = "eu-west-1"
 }
 
 resource "random_string" "suffix" {
@@ -102,7 +102,7 @@ data "aws_iam_policy_document" "aws_node_termination_handler_events" {
       "sqs:SendMessage",
     ]
     resources = [
-      "arn:aws:sqs:${var.region}:${data.aws_caller_identity.current.account_id}:${local.cluster_name}",
+      "arn:aws:sqs:${local.region}:${data.aws_caller_identity.current.account_id}:${local.cluster_name}",
     ]
   }
 }
@@ -184,7 +184,7 @@ resource "helm_release" "aws_node_termination_handler" {
 
   set {
     name  = "awsRegion"
-    value = var.region
+    value = local.region
   }
   set {
     name  = "serviceAccount.name"
