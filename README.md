@@ -83,7 +83,7 @@ Root module calls these modules which can also be used separately to create inde
 
 ### Official docs
 
-- [AWS Tutorial: Deploy the Kubernetes Dashboard (web UI)](https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html).
+- [Amazon Elastic Kubernetes Service (Amazon EKS)](https://docs.aws.amazon.com/eks/latest/userguide/).
 
 ### Module docs
 
