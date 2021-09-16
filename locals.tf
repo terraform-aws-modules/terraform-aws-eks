@@ -1,53 +1,38 @@
 locals {
 
-  cluster_security_group_id         = var.cluster_create_security_group ? join("", aws_security_group.cluster.*.id) : var.cluster_security_group_id
-  cluster_primary_security_group_id = var.cluster_version >= 1.14 ? element(concat(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, [""]), 0) : null
-  cluster_iam_role_name             = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.name) : var.cluster_iam_role_name
-  cluster_iam_role_arn              = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.arn) : join("", data.aws_iam_role.custom_cluster_iam_role.*.arn)
-  worker_security_group_id          = var.worker_create_security_group ? join("", aws_security_group.workers.*.id) : var.worker_security_group_id
+  # EKS Cluster
+  cluster_id                        = coalescelist(aws_eks_cluster.this[*].id, [""])[0]
+  cluster_arn                       = coalescelist(aws_eks_cluster.this[*].arn, [""])[0]
+  cluster_name                      = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
+  cluster_endpoint                  = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
+  cluster_auth_base64               = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
+  cluster_oidc_issuer_url           = flatten(concat(aws_eks_cluster.this[*].identity[*].oidc[0].issuer, [""]))[0]
+  cluster_primary_security_group_id = coalescelist(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, [""])[0]
 
-  default_platform       = "linux"
+  cluster_security_group_id = var.cluster_create_security_group ? join("", aws_security_group.cluster.*.id) : var.cluster_security_group_id
+  cluster_iam_role_name     = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.name) : var.cluster_iam_role_name
+  cluster_iam_role_arn      = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.arn) : join("", data.aws_iam_role.custom_cluster_iam_role.*.arn)
+
+  # Worker groups
+  worker_security_group_id = var.worker_create_security_group ? join("", aws_security_group.workers.*.id) : var.worker_security_group_id
+
   default_iam_role_id    = concat(aws_iam_role.workers.*.id, [""])[0]
   default_ami_id_linux   = local.workers_group_defaults.ami_id != "" ? local.workers_group_defaults.ami_id : concat(data.aws_ami.eks_worker.*.id, [""])[0]
   default_ami_id_windows = local.workers_group_defaults.ami_id_windows != "" ? local.workers_group_defaults.ami_id_windows : concat(data.aws_ami.eks_worker_windows.*.id, [""])[0]
 
-  kubeconfig_name = var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name
+  worker_group_launch_configuration_count = length(var.worker_groups)
+  worker_group_launch_template_count      = length(var.worker_groups_launch_template)
 
-  worker_group_count                 = length(var.worker_groups)
-  worker_group_launch_template_count = length(var.worker_groups_launch_template)
+  worker_groups_platforms = [for x in concat(var.worker_groups, var.worker_groups_launch_template) : try(x.platform, var.workers_group_defaults["platform"], var.default_platform)]
 
-  worker_has_linux_ami = length([for x in concat(var.worker_groups, var.worker_groups_launch_template) : x if lookup(
-    x,
-    "platform",
-    # Fallback on default `platform` if it's not defined in current worker group
-    lookup(
-      merge({ platform = local.default_platform }, var.workers_group_defaults),
-      "platform",
-      null
-    )
-  ) == "linux"]) > 0
-  worker_has_windows_ami = length([for x in concat(var.worker_groups, var.worker_groups_launch_template) : x if lookup(
-    x,
-    "platform",
-    # Fallback on default `platform` if it's not defined in current worker group
-    lookup(
-      merge({ platform = local.default_platform }, var.workers_group_defaults),
-      "platform",
-      null
-    )
-  ) == "windows"]) > 0
+  worker_ami_name_filter         = coalesce(var.worker_ami_name_filter, "amazon-eks-node-${coalesce(var.cluster_version, "cluster_version")}-v*")
+  worker_ami_name_filter_windows = coalesce(var.worker_ami_name_filter_windows, "Windows_Server-2019-English-Core-EKS_Optimized-${coalesce(var.cluster_version, "cluster_version")}-*")
 
-  worker_ami_name_filter = var.worker_ami_name_filter != "" ? var.worker_ami_name_filter : "amazon-eks-node-${var.cluster_version}-v*"
-  # Windows nodes are available from k8s 1.14. If cluster version is less than 1.14, fix ami filter to some constant to not fail on 'terraform plan'.
-  worker_ami_name_filter_windows = (var.worker_ami_name_filter_windows != "" ?
-    var.worker_ami_name_filter_windows : "Windows_Server-2019-English-Core-EKS_Optimized-${tonumber(var.cluster_version) >= 1.14 ? var.cluster_version : 1.14}-*"
-  )
-
-  ec2_principal  = "ec2.${data.aws_partition.current.dns_suffix}"
-  sts_principal  = "sts.${data.aws_partition.current.dns_suffix}"
-  client_id_list = distinct(compact(concat([local.sts_principal], var.openid_connect_audiences)))
-
+  ec2_principal     = "ec2.${data.aws_partition.current.dns_suffix}"
+  sts_principal     = "sts.${data.aws_partition.current.dns_suffix}"
+  client_id_list    = distinct(compact(concat([local.sts_principal], var.openid_connect_audiences)))
   policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
+
   workers_group_defaults_defaults = {
     name                              = "count.index"               # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
     tags                              = []                          # A list of maps defining extra tags to be applied to the worker group autoscaling group and volumes.
@@ -92,7 +77,7 @@ locals {
     placement_group                   = null                        # The name of the placement group into which to launch the instances, if any.
     service_linked_role_arn           = ""                          # Arn of custom service linked role that Auto Scaling group will use. Useful when you have encrypted EBS
     termination_policies              = []                          # A list of policies to decide how the instances in the auto scale group should be terminated.
-    platform                          = local.default_platform      # Platform of workers. Either "linux" or "windows".
+    platform                          = var.default_platform        # Platform of workers. Either "linux" or "windows".
     additional_ebs_volumes            = []                          # A list of additional volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: block_device_name (required), volume_size, volume_type, iops, throughput, encrypted, kms_key_id (only on launch-template), delete_on_termination. Optional values are grabbed from root volume or from defaults
     additional_instance_store_volumes = []                          # A list of additional instance store (local disk) volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: block_device_name (required), virtual_name.
     warm_pool                         = null                        # If this block is configured, add a Warm Pool to the specified Auto Scaling group.
@@ -176,17 +161,17 @@ locals {
   ]
 
   kubeconfig = var.create_eks ? templatefile("${path.module}/templates/kubeconfig.tpl", {
-    kubeconfig_name                   = local.kubeconfig_name
-    endpoint                          = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
-    cluster_auth_base64               = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
+    kubeconfig_name                   = coalesce(var.kubeconfig_name, "eks_${var.cluster_name}")
+    endpoint                          = local.cluster_endpoint
+    cluster_auth_base64               = local.cluster_auth_base64
     aws_authenticator_command         = var.kubeconfig_aws_authenticator_command
-    aws_authenticator_command_args    = length(var.kubeconfig_aws_authenticator_command_args) > 0 ? var.kubeconfig_aws_authenticator_command_args : ["token", "-i", coalescelist(aws_eks_cluster.this[*].name, [""])[0]]
+    aws_authenticator_command_args    = coalescelist(var.kubeconfig_aws_authenticator_command_args, ["token", "-i", local.cluster_name])
     aws_authenticator_additional_args = var.kubeconfig_aws_authenticator_additional_args
     aws_authenticator_env_variables   = var.kubeconfig_aws_authenticator_env_variables
   }) : ""
 
-  userdata_rendered = [
-    for index in range(var.create_eks ? local.worker_group_count : 0) : templatefile(
+  launch_configuration_userdata_rendered = [
+    for index in range(var.create_eks ? local.worker_group_launch_configuration_count : 0) : templatefile(
       lookup(
         var.worker_groups[index],
         "userdata_template_file",
@@ -196,9 +181,9 @@ locals {
       ),
       merge({
         platform            = lookup(var.worker_groups[index], "platform", local.workers_group_defaults["platform"])
-        cluster_name        = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
-        endpoint            = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
-        cluster_auth_base64 = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
+        cluster_name        = local.cluster_name
+        endpoint            = local.cluster_endpoint
+        cluster_auth_base64 = local.cluster_auth_base64
         pre_userdata = lookup(
           var.worker_groups[index],
           "pre_userdata",
@@ -240,9 +225,9 @@ locals {
       ),
       merge({
         platform            = lookup(var.worker_groups_launch_template[index], "platform", local.workers_group_defaults["platform"])
-        cluster_name        = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
-        endpoint            = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
-        cluster_auth_base64 = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
+        cluster_name        = local.cluster_name
+        endpoint            = local.cluster_endpoint
+        cluster_auth_base64 = local.cluster_auth_base64
         pre_userdata = lookup(
           var.worker_groups_launch_template[index],
           "pre_userdata",
