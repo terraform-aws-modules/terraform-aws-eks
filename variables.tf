@@ -219,7 +219,7 @@ variable "kubeconfig_aws_authenticator_env_variables" {
 variable "kubeconfig_name" {
   description = "Override the default name used for items kubeconfig."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "cluster_create_timeout" {

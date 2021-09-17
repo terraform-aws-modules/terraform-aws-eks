@@ -1,3 +1,5 @@
+data "aws_region" "current" {}
+
 locals {
 
   # EKS Cluster
@@ -160,12 +162,21 @@ locals {
     "t2.xlarge"
   ]
 
+  default_kubeconfig_aws_auth_args = [
+    "--region",
+    data.aws_region.current.name,
+    "eks",
+    "get-token",
+    "--cluster-name",
+    var.cluster_name
+  ]
+
   kubeconfig = var.create_eks ? templatefile("${path.module}/templates/kubeconfig.tpl", {
     kubeconfig_name                   = coalesce(var.kubeconfig_name, "eks_${var.cluster_name}")
     endpoint                          = local.cluster_endpoint
     cluster_auth_base64               = local.cluster_auth_base64
     aws_authenticator_command         = var.kubeconfig_aws_authenticator_command
-    aws_authenticator_command_args    = coalescelist(var.kubeconfig_aws_authenticator_command_args, ["token", "-i", local.cluster_name])
+    aws_authenticator_command_args    = coalescelist(var.kubeconfig_aws_authenticator_command_args, local.default_kubeconfig_aws_auth_args)
     aws_authenticator_additional_args = var.kubeconfig_aws_authenticator_additional_args
     aws_authenticator_env_variables   = var.kubeconfig_aws_authenticator_env_variables
   }) : ""
