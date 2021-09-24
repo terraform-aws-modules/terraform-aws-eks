@@ -37,8 +37,6 @@ resource "aws_launch_template" "default" {
     }
   }
 
-  instance_type = var.instance_type
-
   monitoring {
     enabled = true
   }

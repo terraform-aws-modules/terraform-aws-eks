@@ -62,6 +62,8 @@ module "eks" {
       launch_template_id      = aws_launch_template.default.id
       launch_template_version = aws_launch_template.default.default_version
 
+      instance_types = var.instance_types
+
       additional_tags = {
         CustomTag = "EKS example"
       }
