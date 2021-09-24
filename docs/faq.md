@@ -97,8 +97,6 @@ You are using the cluster autoscaler:
 - Repeat until all old nodes are drained
 - Cluster autoscaler will terminate the old nodes after 10-60 minutes automatically
 
-Alternatively you can set the `asg_recreate_on_change = true` worker group option to get the ASG recreated after changes to the launch configuration or template. But be aware of the risks to cluster stability mentioned above.
-
 You can also use a 3rd party tool like Gruntwork's kubergrunt. See the [`eks deploy`](https://github.com/gruntwork-io/kubergrunt#deploy) subcommand.
 
 ## How do I create kubernetes resources when creating the cluster?

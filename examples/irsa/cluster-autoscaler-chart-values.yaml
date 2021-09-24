@@ -1,4 +1,4 @@
-awsRegion: us-west-2
+awsRegion: eu-west-1
 
 rbac:
   create: true

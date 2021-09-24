@@ -1,3 +1,8 @@
+output "region" {
+  description = "AWS region."
+  value       = local.region
+}
+
 output "cluster_endpoint" {
   description = "Endpoint for EKS control plane."
   value       = module.eks.cluster_endpoint
@@ -18,8 +23,7 @@ output "config_map_aws_auth" {
   value       = module.eks.config_map_aws_auth
 }
 
-output "region" {
-  description = "AWS region."
-  value       = var.region
+output "node_groups" {
+  description = "Outputs from node groups"
+  value       = module.eks.node_groups
 }
-

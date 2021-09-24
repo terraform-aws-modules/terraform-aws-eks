@@ -18,7 +18,7 @@ locals {
   ]
 
   auth_worker_roles = [
-    for index in range(0, var.create_eks ? local.worker_group_count : 0) : {
+    for index in range(0, var.create_eks ? local.worker_group_launch_configuration_count : 0) : {
       worker_role_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${element(
         coalescelist(
           aws_iam_instance_profile.workers.*.role,
@@ -61,8 +61,7 @@ locals {
 }
 
 resource "kubernetes_config_map" "aws_auth" {
-  count      = var.create_eks && var.manage_aws_auth ? 1 : 0
-  depends_on = [data.http.wait_for_cluster[0]]
+  count = var.create_eks && var.manage_aws_auth ? 1 : 0
 
   metadata {
     name      = "aws-auth"
@@ -88,4 +87,6 @@ resource "kubernetes_config_map" "aws_auth" {
     mapUsers    = yamlencode(var.map_users)
     mapAccounts = yamlencode(var.map_accounts)
   }
+
+  depends_on = [data.http.wait_for_cluster[0]]
 }
