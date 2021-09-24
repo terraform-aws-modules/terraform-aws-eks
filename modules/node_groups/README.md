@@ -46,6 +46,7 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | name | Name of the node group. If you don't really need this, we recommend you to use `name_prefix` instead. | string | Will use the autogenerate name prefix |
 | name_prefix | Name prefix of the node group | string | Auto generated |
 | pre_userdata | userdata to pre-append to the default userdata. Require `create_launch_template` to be `true`| string | "" |
+| bootstrap_extra_args | Extra arguments passed to the bootstrap.sh script from the EKS AMI. Require `create_launch_template` to be `true` and a custom ami | string | "" |
 | public_ip | Associate a public ip address with a worker. Require `create_launch_template` to be `true`| string | `false`
 | source\_security\_group\_ids | Source security groups for remote access to workers | list(string) | If key\_name is specified: THE REMOTE ACCESS WILL BE OPENED TO THE WORLD |
 | subnets | Subnets to contain workers | list(string) | `var.workers_group_defaults[subnets]` |

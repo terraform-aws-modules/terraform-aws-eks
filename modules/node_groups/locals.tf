@@ -22,6 +22,7 @@ locals {
       eni_delete                           = var.workers_group_defaults["eni_delete"]
       public_ip                            = var.workers_group_defaults["public_ip"]
       pre_userdata                         = var.workers_group_defaults["pre_userdata"]
+      bootstrap_extra_args                 = var.workers_group_defaults["bootstrap_extra_args"]
       additional_security_group_ids        = var.workers_group_defaults["additional_security_group_ids"]
       taints                               = []
       timeouts                             = var.workers_group_defaults["timeouts"]
