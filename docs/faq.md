@@ -12,7 +12,7 @@ Please open Issues or PRs if you think something is missing.
 
 Often caused by a networking or endpoint configuration issue.
 
-At least one of the cluster public or private endpoints must be enabled to access the cluster to work. If you require a public endpoint, setting up both (public and private) and restricting the public endpoint via setting `cluster_endpoint_public_access_cidrs` is recommended. More about communication with an endpoint is available under https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
+At least one of the cluster public or private endpoints must be enabled to access the cluster to work. If you require a public endpoint, setting up both (public and private) and restricting the public endpoint via setting `cluster_endpoint_public_access_cidrs` is recommended. More about communication with an endpoint is available [here](https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html).
 
 Nodes need to be able to contact the EKS cluster endpoint. By default, the module only creates a public endpoint. To access endpoint, the nodes need outgoing internet access:
 
