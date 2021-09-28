@@ -12,15 +12,20 @@ Please open Issues or PRs if you think something is missing.
 
 Often caused by a networking or endpoint configuration issue.
 
-At least one of the cluster public or private endpoints must be enabled in order for access to the cluster to work.
+At least one of the cluster public or private endpoints must be enabled to access the cluster to work. If you require a public endpoint, setting up both (public and private) and restricting the public endpoint via setting `cluster_endpoint_public_access_cidrs` is recommended. More about communication with an endpoint is available [here](https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html).
 
-Nodes need to be able to contact the EKS cluster endpoint. By default the module only creates a public endpoint. To access this endpoint the nodes need outgoing internet access:
-- Nodes in private subnets: via a NAT gateway or instance. This will need adding along with appropriate routing rules.
+Nodes need to be able to contact the EKS cluster endpoint. By default, the module only creates a public endpoint. To access endpoint, the nodes need outgoing internet access:
+
+- Nodes in private subnets: via a NAT gateway or instance. It will need adding along with appropriate routing rules.
 - Nodes in public subnets: assign public IPs to nodes. Set `public_ip = true` in the `worker_groups` list on this module.
+
+> Important:
+> If you apply only the public endpoint and setup `cluster_endpoint_public_access_cidrs` to restrict access, remember that EKS nodes also use the public endpoint, so you must allow access to the endpoint. If not, then your nodes will not be working correctly.
 
 Cluster private endpoint can also be enabled by setting `cluster_endpoint_private_access = true` on this module. Node calls to the endpoint stay within the VPC.
 
 When the private endpoint is enabled ensure that VPC DNS resolution and hostnames are also enabled:
+
 - If managing the VPC with Terraform: set `enable_dns_hostnames = true` and `enable_dns_support = true` on the `aws_vpc` resource. The [`terraform-aws-module/vpc/aws`](https://github.com/terraform-aws-modules/terraform-aws-vpc/) community module also has these variables.
 - Otherwise refer to the [AWS VPC docs](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-updating) and [AWS EKS Cluster Endpoint Access docs](https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html) for more information.
 
@@ -84,6 +89,7 @@ By default the ASG is not configured to be recreated when the launch configurati
 You need to use a process to drain and cycle the workers.
 
 You are not using the cluster autoscaler:
+
 - Add a new instance
 - Drain an old node `kubectl drain --force --ignore-daemonsets --delete-local-data ip-xxxxxxx.eu-west-1.compute.internal`
 - Wait for pods to be Running
@@ -91,6 +97,7 @@ You are not using the cluster autoscaler:
 - Repeat the drain and delete process until all old nodes are replaced
 
 You are using the cluster autoscaler:
+
 - Drain an old node `kubectl drain --force --ignore-daemonsets --delete-local-data ip-xxxxxxx.eu-west-1.compute.internal`
 - Wait for pods to be Running
 - Cluster autoscaler will create new nodes when required
@@ -102,6 +109,7 @@ You can also use a 3rd party tool like Gruntwork's kubergrunt. See the [`eks dep
 ## How do I create kubernetes resources when creating the cluster?
 
 You do not need to do anything extra since v12.1.0 of the module as long as the following conditions are met:
+
 - `manage_aws_auth = true` on the module (default)
 - the kubernetes provider is correctly configured like in the [Usage Example](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/README.md#usage-example). Primarily the module's `cluster_id` output is used as input to the `aws_eks_cluster*` data sources.
 
@@ -114,6 +122,7 @@ You are attempting to use a Terraform 0.12 module with Terraform 0.11.
 We highly recommend that you upgrade your EKS Terraform config to 0.12 to take advantage of new features in the module.
 
 Alternatively you can lock your module to a compatible version if you must stay with terraform 0.11:
+
 ```hcl
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
@@ -134,7 +143,7 @@ Amazon EKS clusters must contain one or more Linux worker nodes to run core syst
 
 1. Build AWS EKS cluster with the next workers configuration (default Linux):
 
-```
+```hcl
 worker_groups = [
     {
       name                          = "worker-group-linux"
@@ -146,10 +155,9 @@ worker_groups = [
 ```
 
 2. Apply commands from https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support (use tab with name `Windows`)
-
 3. Add one more worker group for Windows with required field `platform = "windows"` and update your cluster. Worker group example:
 
-```
+```hcl
 worker_groups = [
     {
       name                          = "worker-group-linux"
