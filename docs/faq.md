@@ -72,15 +72,17 @@ You've added new worker groups. Deleting worker groups from earlier in the list 
 
 The safest and easiest option is to set `asg_min_size` and `asg_max_size` to 0 on the worker groups to "remove".
 
-## Why does changing the worker group's desired count not do anything?
+## Why does changing the node or worker group's desired count not do anything?
 
-The module is configured to ignore this value. Unfortunately Terraform does not support variables within the `lifecycle` block.
+The module is configured to ignore this value. Unfortunately, Terraform does not support variables within the `lifecycle` block.
 
-The setting is ignored to allow the cluster autoscaler to work correctly and so that terraform apply does not accidentally remove running workers.
+The setting is ignored to allow the cluster autoscaler to work correctly so that `terraform apply` does not accidentally remove running workers.
 
 You can change the desired count via the CLI or console if you're not using the cluster autoscaler.
 
-If you are not using autoscaling and really want to control the number of nodes via terraform then set the `asg_min_size` and `asg_max_size` instead. AWS will remove a random instance when you scale down. You will have to weigh the risks here.
+If you are not using autoscaling and want to control the number of nodes via terraform, set the `min_capacity` and `max_capacity` for node groups or `asg_min_size` and `asg_max_size` for worker groups. Before changing those values, you must satisfy AWS `desired` capacity constraints (which must be between new min/max values).
+
+When you scale down AWS will remove a random instance, so you will have to weigh the risks here.
 
 ## Why are nodes not recreated when the `launch_configuration`/`launch_template` is recreated?
 
