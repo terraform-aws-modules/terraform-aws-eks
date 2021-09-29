@@ -1,5 +1,5 @@
 provider "aws" {
-  region = var.region
+  region = "eu-west-1"
 }
 
 data "aws_eks_cluster" "cluster" {
@@ -12,9 +12,8 @@ data "aws_eks_cluster_auth" "cluster" {
 
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
   token                  = data.aws_eks_cluster_auth.cluster.token
-  load_config_file       = false
 }
 
 data "aws_availability_zones" "available" {
@@ -62,6 +61,8 @@ module "eks" {
 
       launch_template_id      = aws_launch_template.default.id
       launch_template_version = aws_launch_template.default.default_version
+
+      instance_types = var.instance_types
 
       additional_tags = {
         CustomTag = "EKS example"
