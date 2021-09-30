@@ -135,7 +135,12 @@ resource "aws_iam_role" "cluster" {
   path                  = var.iam_path
   force_detach_policies = true
 
-  tags = var.tags
+  tags = merge(
+    var.tags,
+    {
+      "Name" = var.cluster_iam_role_name != "" ? null : "${var.cluster_name}-eks_worker_iam_role"
+    },
+  )
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
