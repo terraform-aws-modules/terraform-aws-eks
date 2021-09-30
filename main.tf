@@ -138,7 +138,7 @@ resource "aws_iam_role" "cluster" {
   tags = merge(
     var.tags,
     {
-      "Name" = var.cluster_iam_role_name != "" ? null : "${var.cluster_name}-eks_worker_iam_role"
+      "Name" = var.cluster_iam_role_name != "" ? null : "${var.cluster_name}-eks_cluster_iam_role"
     },
   )
 }
