@@ -63,5 +63,10 @@ resource "aws_eks_fargate_profile" "this" {
     }
   }
 
+  timeouts {
+    create = contains(keys(each.value), "timeouts") ? lookup(each.value["timeouts"], "create", null) : null
+    delete = contains(keys(each.value), "timeouts") ? lookup(each.value["timeouts"], "delete", null) : null
+  }
+
   tags = merge(var.tags, lookup(each.value, "tags", {}))
 }

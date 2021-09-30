@@ -114,6 +114,12 @@ module "eks" {
       tags = {
         Owner = "test"
       }
+
+      # Set custom timeout for create/delete operation on fargate profiles
+      timeouts = {
+        create = "20m"
+        delete = "20m"
+      }
     }
   }
 
