@@ -18,11 +18,6 @@ output "config_map_aws_auth" {
   value       = module.eks.config_map_aws_auth
 }
 
-output "region" {
-  description = "AWS region."
-  value       = var.region
-}
-
 output "sqs_queue_asg_notification_arn" {
   description = "SQS queue ASG notification ARN"
   value       = module.aws_node_termination_handler_sqs.sqs_queue_arn
