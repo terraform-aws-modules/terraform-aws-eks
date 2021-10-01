@@ -128,6 +128,7 @@ Following IAM permissions are the minimum permissions needed for your IAM user o
                 "iam:TagRole",
                 "iam:UntagRole",
                 "iam:TagPolicy",
+                "iam:TagInstanceProfile",
                 "iam:UpdateAssumeRolePolicy",
                 // Following permissions are needed if cluster_enabled_log_types is enabled
                 "logs:CreateLogGroup",
