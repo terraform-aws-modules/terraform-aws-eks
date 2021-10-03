@@ -22,7 +22,7 @@ locals {
       eni_delete                           = var.workers_group_defaults["eni_delete"]
       public_ip                            = var.workers_group_defaults["public_ip"]
       pre_userdata                         = var.workers_group_defaults["pre_userdata"]
-      additional_security_group_ids        = var.workers_group_defaults["additional_security_group_ids"]
+      additional_security_group_ids        = try(v.create_launch_template, false) ? var.workers_group_defaults["additional_security_group_ids"] : concat(var.workers_group_defaults["additional_security_group_ids"], var.worker_security_group_id)
       taints                               = []
       timeouts                             = var.workers_group_defaults["timeouts"]
       update_default_version               = true
