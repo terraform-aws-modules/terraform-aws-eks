@@ -65,3 +65,8 @@ variable "ebs_optimized_not_supported" {
   type        = list(string)
   default     = []
 }
+
+variable "additional_user_data" {
+  description = "List of additional user data to add to the cloudinit config"
+  type        = any
+}

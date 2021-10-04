@@ -16,6 +16,16 @@ data "cloudinit_config" "workers_userdata" {
       }
     )
   }
+
+  dynamic "part" {
+    for_each = var.additional_user_data
+    content {
+      content      = each.value["content"]
+      content_type = lookup(each.value, "content_type", null)
+      filename     = lookup(each.value, "filename", null)
+      merge_type   = lookup(each.value, "merge_type", null)
+    }
+  }
 }
 
 # This is based on the LT that EKS would create if no custom one is specified (aws ec2 describe-launch-template-versions --launch-template-id xxx)
