@@ -1,6 +1,6 @@
-# Fargate example
+# Managed groups example
 
-This is EKS example using Fargate.
+This is EKS example managed groups feature.
 
 ## Usage
 

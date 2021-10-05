@@ -1,20 +1,11 @@
-provider "aws" {
-  region = local.region
-}
-
-locals {
-  region      = "eu-west-1"
-  k8s_version = "1.21"
-}
-
 module "eks" {
-  source = "../.."
-
-  cluster_name    = "bottlerocket-${random_string.suffix.result}"
-  cluster_version = local.k8s_version
-
-  vpc_id  = data.aws_vpc.default.id
-  subnets = data.aws_subnet_ids.default.ids
+  source                          = "../.."
+  cluster_name                    = local.cluster_name
+  cluster_version                 = var.cluster_version
+  vpc_id                          = module.vpc.vpc_id
+  subnets                         = module.vpc.private_subnets
+  cluster_endpoint_private_access = true
+  cluster_endpoint_public_access  = true
 
   write_kubeconfig = false
   manage_aws_auth  = false
@@ -40,7 +31,7 @@ module "eks" {
       userdata_template_extra_args = {
         enable_admin_container   = false
         enable_control_container = true
-        aws_region               = local.region
+        aws_region               = var.region
       }
       # example of k8s/kubelet configuration via additional_userdata
       additional_userdata = <<EOT
@@ -49,6 +40,12 @@ ingress = "allowed"
 EOT
     }
   ]
+
+  tags = {
+    Example    = var.example_name
+    GithubRepo = "terraform-aws-eks"
+    GithubOrg  = "terraform-aws-modules"
+  }
 }
 
 # SSM policy for bottlerocket control container access
@@ -62,27 +59,14 @@ resource "aws_iam_role_policy_attachment" "ssm" {
 # Supporting Resources
 ################################################################################
 
-data "aws_vpc" "default" {
-  default = true
-}
-
-data "aws_subnet_ids" "default" {
-  vpc_id = data.aws_vpc.default.id
-}
-
 data "aws_ami" "bottlerocket_ami" {
   most_recent = true
   owners      = ["amazon"]
 
   filter {
     name   = "name"
-    values = ["bottlerocket-aws-k8s-${local.k8s_version}-x86_64-*"]
+    values = ["bottlerocket-aws-k8s-${var.cluster_version}-x86_64-*"]
   }
-}
-
-resource "random_string" "suffix" {
-  length  = 8
-  special = false
 }
 
 resource "tls_private_key" "nodes" {

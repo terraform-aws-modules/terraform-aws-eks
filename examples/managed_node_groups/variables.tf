@@ -1,3 +1,21 @@
+variable "region" {
+  type        = string
+  description = "AWS region where example will be created"
+  default     = "eu-west-1"
+}
+
+variable "example_name" {
+  type        = string
+  description = "Example name"
+  default     = "managed_node_groups"
+}
+
+variable "cluster_version" {
+  type        = string
+  description = "EKS version"
+  default     = "1.20"
+}
+
 variable "map_accounts" {
   description = "Additional AWS account numbers to add to the aws-auth configmap."
   type        = list(string)

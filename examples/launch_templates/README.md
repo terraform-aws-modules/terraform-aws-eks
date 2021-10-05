@@ -1,6 +1,6 @@
-# Fargate example
+# Launch template example
 
-This is EKS example using Fargate.
+This is EKS example using workers launch template feature.
 
 ## Usage
 

@@ -1,6 +1,6 @@
-# Fargate example
+# Instance refresh example
 
-This is EKS example using Fargate.
+This is EKS example using instance refresh feature for worker groups.
 
 ## Usage
 

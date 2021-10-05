@@ -1,6 +1,6 @@
-# Fargate example
+# Managed groups example
 
-This is EKS example using Fargate.
+This is EKS using secrets encryption feature.
 
 ## Usage
 

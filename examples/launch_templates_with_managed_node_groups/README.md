@@ -1,8 +1,6 @@
-# Various bootstrap resources required for  other EKS examples
+# Launch template with managed groups example
 
-Configuration in this directory creates some resources required in other EKS examples (such as VPC).
-
-The resources created here are free (no NAT gateways here) and they can reside in test AWS account.
+This is EKS example using workers launch template with managed groups feature.
 
 ## Usage
 

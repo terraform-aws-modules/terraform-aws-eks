@@ -1,6 +1,13 @@
+data "aws_caller_identity" "current" {}
+
+locals {
+  k8s_service_account_namespace = "kube-system"
+  k8s_service_account_name      = "cluster-autoscaler-aws-cluster-autoscaler-chart"
+}
+
 module "iam_assumable_role_admin" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version = "3.6.0"
+  version = "4.6.0"
 
   create_role                   = true
   role_name                     = "cluster-autoscaler"
