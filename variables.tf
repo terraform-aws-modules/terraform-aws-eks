@@ -77,7 +77,7 @@ variable "map_accounts" {
 }
 
 variable "map_roles" {
-  description = "Additional IAM roles to add to the aws-auth configmap. See examples/basic/variables.tf for example format."
+  description = "Additional IAM roles to add to the aws-auth configmap. See examples/secrets_encryption/variables.tf for example format."
   type = list(object({
     rolearn  = string
     username = string
