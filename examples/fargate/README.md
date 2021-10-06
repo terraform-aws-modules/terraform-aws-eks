@@ -37,6 +37,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_eks"></a> [eks](#module\_eks) | ../.. |  |
+| <a name="module_fargate_profile_existing_cluster"></a> [fargate\_profile\_existing\_cluster](#module\_fargate\_profile\_existing\_cluster) | ../../modules/fargate |  |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.7.0 |
 
 ## Resources

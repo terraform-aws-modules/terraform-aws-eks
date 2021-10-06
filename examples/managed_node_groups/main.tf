@@ -14,16 +14,9 @@ module "eks" {
 
   node_groups = {
     example = {
-      create_launch_template = true
-
       desired_capacity = 1
       max_capacity     = 10
       min_capacity     = 1
-
-      disk_size       = 50
-      disk_type       = "gp3"
-      disk_throughput = 150
-      disk_iops       = 3000
 
       instance_types = ["t3.large"]
       capacity_type  = "SPOT"
@@ -42,6 +35,24 @@ module "eks" {
           effect = "NO_SCHEDULE"
         }
       ]
+      update_config = {
+        max_unavailable_percentage = 50 # or set `max_unavailable`
+      }
+    }
+    example2 = {
+      desired_capacity = 1
+      max_capacity     = 10
+      min_capacity     = 1
+
+      instance_types = ["t3.medium"]
+      k8s_labels = {
+        Example    = "managed_node_groups"
+        GithubRepo = "terraform-aws-eks"
+        GithubOrg  = "terraform-aws-modules"
+      }
+      additional_tags = {
+        ExtraTag = "example2"
+      }
       update_config = {
         max_unavailable_percentage = 50 # or set `max_unavailable`
       }

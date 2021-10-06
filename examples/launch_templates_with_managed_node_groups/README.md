@@ -55,7 +55,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | EKS version | `string` | `"1.20"` | no |
-| <a name="input_example_name"></a> [example\_name](#input\_example\_name) | Example name | `string` | `"launch_templates_with_managed_node_groups"` | no |
+| <a name="input_example_name"></a> [example\_name](#input\_example\_name) | Example name | `string` | `"lt_with_managed_node_groups"` | no |
 | <a name="input_instance_types"></a> [instance\_types](#input\_instance\_types) | Instance types | `list(string)` | <pre>[<br>  "t3.small"<br>]</pre> | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS region where example will be created | `string` | `"eu-west-1"` | no |
 

@@ -7,7 +7,7 @@ variable "region" {
 variable "example_name" {
   type        = string
   description = "Example name"
-  default     = "launch_templates_with_managed_node_groups"
+  default     = "lt_with_managed_node_groups"
 }
 
 variable "cluster_version" {

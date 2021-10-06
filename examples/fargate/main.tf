@@ -9,6 +9,28 @@ module "eks" {
   subnets         = [module.vpc.private_subnets[0], module.vpc.public_subnets[1]]
   fargate_subnets = [module.vpc.private_subnets[2]]
 
+  # You require a node group to schedule coredns which is critical for running correctly internal DNS.
+  # If you want to use only fargate you must follow docs `(Optional) Update CoreDNS`
+  # available under https://docs.aws.amazon.com/eks/latest/userguide/fargate-getting-started.html
+  node_groups = {
+    example = {
+      desired_capacity = 1
+
+      instance_types = ["t3.large"]
+      k8s_labels = {
+        Example    = "managed_node_groups"
+        GithubRepo = "terraform-aws-eks"
+        GithubOrg  = "terraform-aws-modules"
+      }
+      additional_tags = {
+        ExtraTag = "example"
+      }
+      update_config = {
+        max_unavailable_percentage = 50 # or set `max_unavailable`
+      }
+    }
+  }
+
   fargate_profiles = {
     default = {
       name = "default"
@@ -55,6 +77,69 @@ module "eks" {
   }
 
   manage_aws_auth = false
+
+  tags = {
+    Example    = var.example_name
+    GithubRepo = "terraform-aws-eks"
+    GithubOrg  = "terraform-aws-modules"
+  }
+}
+
+
+##############################################
+# Calling submodule with existing EKS cluster
+##############################################
+
+module "fargate_profile_existing_cluster" {
+  source = "../../modules/fargate"
+
+  cluster_name = module.eks.cluster_id
+  subnets      = [module.vpc.private_subnets[0], module.vpc.private_subnets[2]]
+
+  fargate_profiles = {
+    profile1 = {
+      name = "profile1"
+      selectors = [
+        {
+          namespace = "kube-system"
+          labels = {
+            k8s-app = "kube-dns"
+          }
+        },
+        {
+          namespace = "profile"
+          labels = {
+            WorkerType = "fargate"
+          }
+        }
+      ]
+
+      tags = {
+        Owner     = "profile1"
+        submodule = "true"
+      }
+    }
+
+    profile2 = {
+      name = "profile2"
+      selectors = [
+        {
+          namespace = "default"
+          labels = {
+            Fargate = "profile2"
+          }
+        }
+      ]
+
+      # Using specific subnets instead of the ones configured in EKS (`subnets` and `fargate_subnets`)
+      subnets = [module.vpc.private_subnets[0]]
+
+      tags = {
+        Owner     = "profile2"
+        submodule = "true"
+      }
+    }
+  }
 
   tags = {
     Example    = var.example_name

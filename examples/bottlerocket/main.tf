@@ -8,7 +8,7 @@ module "eks" {
   cluster_endpoint_public_access  = true
 
   write_kubeconfig = false
-  manage_aws_auth  = false
+  manage_aws_auth  = true
 
   worker_groups_launch_template = [
     {
