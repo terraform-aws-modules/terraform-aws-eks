@@ -524,6 +524,11 @@ resource "aws_launch_template" "workers_launch_template" {
           "kms_key_id",
           local.workers_group_defaults["root_kms_key_id"],
         )
+        snapshot_id = lookup(
+          block_device_mappings.value,
+          "snapshot_id",
+          local.workers_group_defaults["snapshot_id"],
+        )
         delete_on_termination = lookup(block_device_mappings.value, "delete_on_termination", true)
       }
     }
