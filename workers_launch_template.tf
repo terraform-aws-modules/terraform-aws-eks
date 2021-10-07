@@ -314,6 +314,11 @@ resource "aws_launch_template" "workers_launch_template" {
       "eni_delete",
       local.workers_group_defaults["eni_delete"],
     )
+    interface_type = lookup(
+      var.worker_groups_launch_template[count.index],
+      "interface_type",
+      local.workers_group_defaults["interface_type"],
+    )
     security_groups = flatten([
       local.worker_security_group_id,
       var.worker_additional_security_group_ids,
