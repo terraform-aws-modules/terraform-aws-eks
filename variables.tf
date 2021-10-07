@@ -234,6 +234,12 @@ variable "cluster_delete_timeout" {
   default     = "15m"
 }
 
+variable "cluster_update_timeout" {
+  description = "Timeout value when updating the EKS cluster."
+  type        = string
+  default     = "60m"
+}
+
 variable "cluster_create_security_group" {
   description = "Whether to create a security group for the cluster or attach the cluster to `cluster_security_group_id`."
   type        = bool
