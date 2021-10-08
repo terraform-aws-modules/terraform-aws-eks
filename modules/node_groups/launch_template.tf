@@ -9,10 +9,15 @@ data "cloudinit_config" "workers_userdata" {
     content_type = "text/x-shellscript"
     content = templatefile("${path.module}/templates/userdata.sh.tpl",
       {
-        pre_userdata         = each.value["pre_userdata"]
         kubelet_extra_args   = each.value["kubelet_extra_args"]
+        pre_userdata         = each.value["pre_userdata"]
+        ami_id               = lookup(each.value, "ami_id", "")
+        ami_is_eks_optimized = each.value["ami_is_eks_optimized"]
         cluster_name         = var.cluster_name
-        run_bootstrap_script = lookup(each.value, "ami_id", null) != null
+        cluster_endpoint     = data.aws_eks_cluster.default.endpoint
+        cluster_ca           = data.aws_eks_cluster.default.certificate_authority[0].data
+        capacity_type        = lookup(each.value, "capacity_type", "ON_DEMAND")
+        append_labels        = length(lookup(each.value, "k8s_labels", {})) > 0 ? ",${join(",", [for k, v in lookup(each.value, "k8s_labels", {}) : "${k}=${v}"])}" : ""
       }
     )
   }
