@@ -3,8 +3,9 @@ terraform {
 
   required_providers {
     aws        = ">= 3.22.0"
+    local      = ">= 1.4"
     random     = ">= 2.1"
+    kubernetes = "~> 2.0"
     tls        = ">= 2.0"
-    kubernetes = ">= 2.0.0"
   }
 }

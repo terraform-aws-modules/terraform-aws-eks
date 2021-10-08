@@ -2,7 +2,7 @@
 #  template = file("${path.module}/templates/userdata.sh.tpl")
 #
 #  vars = {
-#    cluster_name        = local.cluster_name
+#    cluster_name        = local.name
 #    endpoint            = module.eks.cluster_endpoint
 #    cluster_auth_base64 = module.eks.cluster_certificate_authority_data
 #

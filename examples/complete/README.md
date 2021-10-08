@@ -1,6 +1,11 @@
-# Complete example
+# Complete AWS EKS Cluster
 
-This is EKS example using creating various EKS clusters with different setups of this module.
+Configuration in this directory creates EKS cluster with different features shown all-in-one cluster (e.g. Managed Node Groups, Worker Groups, Fargate, Spot instances, AWS Auth enabled).
+
+This example can be used to do smoke test.
+
+See configurations in other `examples` directories for more specific cases.
+
 ## Usage
 
 To run this example you need to execute:
@@ -20,8 +25,8 @@ Note that this example may create resources which cost money. Run `terraform des
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.22.0 |
-| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 2.0.0 |
-| <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.0.0 |
+| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | ~> 2.0 |
+| <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.4 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.1 |
 
 ## Providers
@@ -39,7 +44,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_disabled_fargate"></a> [disabled\_fargate](#module\_disabled\_fargate) | ../../modules/fargate |  |
 | <a name="module_disabled_node_groups"></a> [disabled\_node\_groups](#module\_disabled\_node\_groups) | ../../modules/node_groups |  |
 | <a name="module_eks"></a> [eks](#module\_eks) | ../.. |  |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.7.0 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.0 |
 
 ## Resources
 
@@ -58,7 +63,6 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | EKS version | `string` | `"1.20"` | no |
-| <a name="input_example_name"></a> [example\_name](#input\_example\_name) | Example name | `string` | `"complete"` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS region where example will be created | `string` | `"eu-west-1"` | no |
 
 ## Outputs

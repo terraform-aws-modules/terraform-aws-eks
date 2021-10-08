@@ -1,6 +1,10 @@
-# Bottlerocket example
+# AWS EKS cluster running Bottlerocket AMI
 
-This is EKS example using Bottlerocket workers in EKS.
+Configuration in this directory creates EKS cluster with workers group running [AWS Bottlerocket OS](https://github.com/bottlerocket-os/bottlerocket)
+
+This is a minimalistic example which shows what knobs to turn to make Bottlerocket work.
+
+See [the official documentation](https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami-bottlerocket.html) for more details.
 
 ## Usage
 
@@ -21,7 +25,8 @@ Note that this example may create resources which cost money. Run `terraform des
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.22.0 |
-| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 2.0.0 |
+| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | ~> 2.0 |
+| <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.4 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.1 |
 | <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 2.0 |
 
@@ -38,7 +43,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_eks"></a> [eks](#module\_eks) | ../.. |  |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.7.0 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.0 |
 
 ## Resources
 
@@ -58,7 +63,6 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | EKS version | `string` | `"1.20"` | no |
-| <a name="input_example_name"></a> [example\_name](#input\_example\_name) | Example name | `string` | `"bottlerocket"` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS region where example will be created | `string` | `"eu-west-1"` | no |
 
 ## Outputs

@@ -21,9 +21,9 @@ Note that this example may create resources which cost money. Run `terraform des
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.22.0 |
-| <a name="requirement_helm"></a> [helm](#requirement\_helm) | ~> 2.1.2 |
-| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 2.0.0 |
-| <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.0.0 |
+| <a name="requirement_helm"></a> [helm](#requirement\_helm) | ~> 2.0 |
+| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | ~> 2.0 |
+| <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.4 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.1 |
 
 ## Providers
@@ -31,7 +31,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.22.0 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | ~> 2.1.2 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | ~> 2.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 2.1 |
 
 ## Modules
@@ -41,7 +41,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_aws_node_termination_handler_role"></a> [aws\_node\_termination\_handler\_role](#module\_aws\_node\_termination\_handler\_role) | terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc | 4.1.0 |
 | <a name="module_aws_node_termination_handler_sqs"></a> [aws\_node\_termination\_handler\_sqs](#module\_aws\_node\_termination\_handler\_sqs) | terraform-aws-modules/sqs/aws | ~> 3.0.0 |
 | <a name="module_eks"></a> [eks](#module\_eks) | ../.. |  |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.7.0 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.0 |
 
 ## Resources
 
@@ -68,7 +68,6 @@ Note that this example may create resources which cost money. Run `terraform des
 |------|-------------|------|---------|:--------:|
 | <a name="input_aws_node_termination_handler_chart_version"></a> [aws\_node\_termination\_handler\_chart\_version](#input\_aws\_node\_termination\_handler\_chart\_version) | Version of the aws-node-termination-handler Helm chart to install. | `string` | `"0.15.0"` | no |
 | <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | EKS version | `string` | `"1.20"` | no |
-| <a name="input_example_name"></a> [example\_name](#input\_example\_name) | Example name | `string` | `"instance_refresh"` | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | Namespace for the aws-node-termination-handler. | `string` | `"kube-system"` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS region where example will be created | `string` | `"eu-west-1"` | no |
 | <a name="input_serviceaccount"></a> [serviceaccount](#input\_serviceaccount) | Serviceaccount for the aws-node-termination-handler. | `string` | `"aws-node-termination-handler"` | no |

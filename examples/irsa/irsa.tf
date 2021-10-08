@@ -40,7 +40,7 @@ resource "helm_release" "cluster-autoscaler" {
   }
   set {
     name  = "autoDiscovery.clusterName"
-    value = local.cluster_name
+    value = local.name
   }
   set {
     name  = "autoDiscovery.enabled"
@@ -54,7 +54,7 @@ resource "helm_release" "cluster-autoscaler" {
 
 module "iam_assumable_role_admin" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version = "4.6.0"
+  version = "~> 4.0"
 
   create_role                   = true
   role_name                     = "cluster-autoscaler"

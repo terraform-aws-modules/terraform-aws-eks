@@ -1,17 +1,11 @@
 variable "region" {
-  type        = string
   description = "AWS region where example will be created"
+  type        = string
   default     = "eu-west-1"
 }
 
-variable "example_name" {
-  type        = string
-  description = "Example name"
-  default     = "complete"
-}
-
 variable "cluster_version" {
-  type        = string
   description = "EKS version"
+  type        = string
   default     = "1.20"
 }
