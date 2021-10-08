@@ -314,6 +314,11 @@ resource "aws_launch_template" "workers_launch_template" {
       "eni_delete",
       local.workers_group_defaults["eni_delete"],
     )
+    interface_type = lookup(
+      var.worker_groups_launch_template[count.index],
+      "interface_type",
+      local.workers_group_defaults["interface_type"],
+    )
     security_groups = flatten([
       local.worker_security_group_id,
       var.worker_additional_security_group_ids,
@@ -528,6 +533,11 @@ resource "aws_launch_template" "workers_launch_template" {
           block_device_mappings.value,
           "kms_key_id",
           local.workers_group_defaults["root_kms_key_id"],
+        )
+        snapshot_id = lookup(
+          block_device_mappings.value,
+          "snapshot_id",
+          local.workers_group_defaults["snapshot_id"],
         )
         delete_on_termination = lookup(block_device_mappings.value, "delete_on_termination", true)
       }

@@ -78,10 +78,11 @@ locals {
     service_linked_role_arn           = ""                          # Arn of custom service linked role that Auto Scaling group will use. Useful when you have encrypted EBS
     termination_policies              = []                          # A list of policies to decide how the instances in the auto scale group should be terminated.
     platform                          = var.default_platform        # Platform of workers. Either "linux" or "windows".
-    additional_ebs_volumes            = []                          # A list of additional volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: block_device_name (required), volume_size, volume_type, iops, throughput, encrypted, kms_key_id (only on launch-template), delete_on_termination. Optional values are grabbed from root volume or from defaults
+    additional_ebs_volumes            = []                          # A list of additional volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: block_device_name (required), volume_size, volume_type, iops, throughput, encrypted, kms_key_id (only on launch-template), delete_on_termination, snapshot_id. Optional values are grabbed from root volume or from defaults
     additional_instance_store_volumes = []                          # A list of additional instance store (local disk) volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: block_device_name (required), virtual_name.
     warm_pool                         = null                        # If this block is configured, add a Warm Pool to the specified Auto Scaling group.
     timeouts                          = {}                          # A map of timeouts for create/update/delete operations
+    snapshot_id                       = null                        # A custom snapshot ID.
 
     # Settings for launch templates
     root_block_device_name               = concat(data.aws_ami.eks_worker.*.root_device_name, [""])[0]         # Root device name for Linux workers. If not provided, will assume default Linux AMI was used.
@@ -94,6 +95,7 @@ locals {
     launch_template_placement_group      = null                                                                # The name of the placement group into which to launch the instances, if any.
     root_encrypted                       = false                                                               # Whether the volume should be encrypted or not
     eni_delete                           = true                                                                # Delete the Elastic Network Interface (ENI) on termination (if set to false you will have to manually delete before destroying)
+    interface_type                       = null                                                                # The type of network interface. To create an Elastic Fabric Adapter (EFA), specify 'efa'.
     cpu_credits                          = "standard"                                                          # T2/T3 unlimited mode, can be 'standard' or 'unlimited'. Used 'standard' mode as default to avoid paying higher costs
     market_type                          = null
     metadata_http_endpoint               = "enabled"  # The state of the metadata service: enabled, disabled.

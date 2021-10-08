@@ -25,7 +25,9 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | disk\_encrypted | Whether the root disk will be encrypyted. Requires `create_launch_template` to be `true` and `disk_kms_key_id` to be set | bool | false |
 | disk\_kms\_key\_id | KMS Key used to encrypt the root disk. Requires both `create_launch_template` and `disk_encrypted` to be `true` | string | "" |
 | disk\_size | Workers' disk size | number | Provider default behavior |
-| disk\_type | Workers' disk type. Require `create_launch_template` to be `true`| number | `gp3` |
+| disk\_type | Workers' disk type. Require `create_launch_template` to be `true`| string | Provider default behavior |
+| disk\_throughput | Workers' disk throughput. Require `create_launch_template` to be `true` and `disk_type` to be `gp3`| number | Provider default behavior |
+| disk\_iops | Workers' disk IOPS. Require `create_launch_template` to be `true` and `disk_type` to be `gp3`| number | Provider default behavior |
 | ebs\_optimized | Enables/disables EBS optimization. Require `create_launch_template` to be `true` | bool | `true` if defined `instance\_types` are not present in `var.ebs\_optimized\_not\_supported` |
 | enable_monitoring | Enables/disables detailed monitoring. Require `create_launch_template` to be `true`| bool | `true` |
 | eni_delete | Delete the Elastic Network Interface (ENI) on termination (if set to false you will have to manually delete before destroying) | bool | `true` |
