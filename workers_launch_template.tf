@@ -438,6 +438,16 @@ resource "aws_launch_template" "workers_launch_template" {
     for_each = lookup(var.worker_groups_launch_template[count.index], "market_type", null) == null ? [] : tolist([lookup(var.worker_groups_launch_template[count.index], "market_type", null)])
     content {
       market_type = instance_market_options.value
+      dynamic "spot_options" {
+        for_each = lookup(var.worker_groups_launch_template[count.index], "spot_options", null) == null ? [] : tolist([lookup(var.worker_groups_launch_template[count.index], "spot_options", null)])
+        content {
+          block_duration_minutes         = spot_options.value.block_duration_minutes
+          instance_interruption_behavior = spot_options.value.instance_interruption_behavior
+          max_price                      = spot_options.value.max_price
+          spot_instance_type             = spot_options.value.spot_instance_type
+          valid_until                    = spot_options.value.valid_until
+        }
+      }
     }
   }
 

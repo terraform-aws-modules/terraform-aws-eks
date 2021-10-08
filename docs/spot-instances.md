@@ -83,6 +83,29 @@ Launch Template support is a recent addition to both AWS and this module. It mig
   ]
 ```
 
+Example launch template to use spot options:
+
+```hcl
+  worker_groups_launch_template = [
+    {
+      name                             = "spot-1"
+      instance_type                    = "t3.large"
+      market_type                      = "spot"
+      spot_options                     = {
+        block_duration_minutes         = "60"
+        instance_interruption_behavior = "terminate"
+        max_price                      = null
+        spot_instance_type             = "one-time"
+        valid_until                    = null
+      }
+      asg_min_size                     = 0
+      asg_max_size                     = 2
+      asg_desired_capacity             = 0
+      kubelet_extra_args               = "--node-labels=node.kubernetes.io/lifecycle=spot"
+    }
+  ]
+```
+
 ## Using Launch Templates With Both Spot and On Demand
 
 Example launch template to launch 2 on demand instances of type m5.large, and have the ability to scale up using spot instances and on demand instances. The `node.kubernetes.io/lifecycle` node label will be set to the value queried from the EC2 meta-data service: either "on-demand" or "spot".
