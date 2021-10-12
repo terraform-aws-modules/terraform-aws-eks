@@ -10,6 +10,28 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v17.21.0"></a>
+## [v17.21.0] - 2021-10-12
+FEATURES:
+- Fix custom AMI bootstrap ([#1580](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1580))
+- Enable throughput & iops configs for managed node_groups ([#1584](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1584))
+- Allow snapshot_id to be specified for additional_ebs_volumes ([#1431](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1431))
+- Allow interface_type to be specified in worker_groups_launch_template ([#1439](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1439))
+
+BUG FIXES:
+- Rebuild examples ([#1625](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1625))
+- Bug with data source in managed groups submodule ([#1633](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1633))
+- Fixed launch_templates_with_managed_node_group example ([#1599](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1599))
+
+DOCS:
+- Update iam-permissions.md ([#1613](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1613))
+- Updated iam-permissions.md ([#1612](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1612))
+- Updated faq about desired count of instances in node and worker groups ([#1604](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1604))
+- Update faq about endpoints ([#1603](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1603))
+- Fix broken URL in README ([#1602](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1602))
+- Remove `asg_recreate_on_change` in faq ([#1596](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1596))
+
+
 <a name="v17.20.0"></a>
 ## [v17.20.0] - 2021-09-17
 FEATURES:
@@ -522,7 +544,8 @@ CI:
 - Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.20.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.21.0...HEAD
+[v17.21.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.20.0...v17.21.0
 [v17.20.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.19.0...v17.20.0
 [v17.19.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.18.0...v17.19.0
 [v17.18.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.17.0...v17.18.0
