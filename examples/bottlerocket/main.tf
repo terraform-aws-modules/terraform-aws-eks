@@ -1,9 +1,11 @@
 provider "aws" {
-  region = var.region
+  region = local.region
 }
 
 locals {
-  name = "bottlerocket-${random_string.suffix.result}"
+  name            = "bottlerocket-${random_string.suffix.result}"
+  cluster_version = "1.20"
+  region          = "eu-west-1"
 }
 
 ################################################################################
@@ -70,7 +72,7 @@ module "eks" {
   source = "../.."
 
   cluster_name    = local.name
-  cluster_version = var.cluster_version
+  cluster_version = local.cluster_version
 
   vpc_id          = module.vpc.vpc_id
   subnets         = [module.vpc.private_subnets[0], module.vpc.public_subnets[1]]
@@ -139,7 +141,7 @@ data "aws_ami" "bottlerocket_ami" {
 
   filter {
     name   = "name"
-    values = ["bottlerocket-aws-k8s-${var.cluster_version}-x86_64-*"]
+    values = ["bottlerocket-aws-k8s-${local.cluster_version}-x86_64-*"]
   }
 }
 

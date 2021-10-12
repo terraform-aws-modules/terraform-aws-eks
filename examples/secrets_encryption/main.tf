@@ -1,9 +1,11 @@
 provider "aws" {
-  region = var.region
+  region = local.region
 }
 
 locals {
-  name = "secrets_encryption-${random_string.suffix.result}"
+  name            = "secrets_encryption-${random_string.suffix.result}"
+  cluster_version = "1.20"
+  region          = "eu-west-1"
 }
 
 ################################################################################
@@ -70,7 +72,7 @@ module "eks" {
   source = "../.."
 
   cluster_name    = local.name
-  cluster_version = var.cluster_version
+  cluster_version = local.cluster_version
 
   vpc_id  = module.vpc.vpc_id
   subnets = module.vpc.private_subnets
