@@ -1,3 +1,4 @@
+
 variable "region" {
   description = "AWS region where example will be created"
   type        = string

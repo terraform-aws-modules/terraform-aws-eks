@@ -51,6 +51,7 @@ module "vpc" {
 ################################################################################
 # EKS Module
 ################################################################################
+
 data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
 }
@@ -102,7 +103,7 @@ module "eks" {
       userdata_template_extra_args = {
         enable_admin_container   = false
         enable_control_container = true
-        aws_region               = var.region
+        aws_region               = data.aws_region.current.name
       }
       # example of k8s/kubelet configuration via additional_userdata
       additional_userdata = <<EOT
@@ -129,6 +130,8 @@ resource "aws_iam_role_policy_attachment" "ssm" {
 ################################################################################
 # Supporting Resources
 ################################################################################
+
+data "aws_region" "current" {}
 
 data "aws_ami" "bottlerocket_ami" {
   most_recent = true

@@ -51,6 +51,7 @@ module "vpc" {
 ################################################################################
 # EKS Module
 ################################################################################
+
 data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
 }
@@ -113,6 +114,8 @@ resource "aws_iam_policy" "aws_node_termination_handler" {
   policy = data.aws_iam_policy_document.aws_node_termination_handler.json
 }
 
+data "aws_region" "current" {}
+
 data "aws_iam_policy_document" "aws_node_termination_handler_events" {
   statement {
     effect = "Allow"
@@ -127,7 +130,7 @@ data "aws_iam_policy_document" "aws_node_termination_handler_events" {
       "sqs:SendMessage",
     ]
     resources = [
-      "arn:aws:sqs:${var.region}:${data.aws_caller_identity.current.account_id}:${local.name}",
+      "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${local.name}",
     ]
   }
 }
@@ -192,7 +195,7 @@ module "aws_node_termination_handler_role" {
   role_name_prefix              = local.name
   provider_url                  = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
   role_policy_arns              = [aws_iam_policy.aws_node_termination_handler.arn]
-  oidc_fully_qualified_subjects = ["system:serviceaccount:${var.namespace}:${var.serviceaccount}"]
+  oidc_fully_qualified_subjects = ["system:serviceaccount:kube-system:aws-node-termination-handler"]
 }
 
 resource "helm_release" "aws_node_termination_handler" {
@@ -201,19 +204,19 @@ resource "helm_release" "aws_node_termination_handler" {
   ]
 
   name             = "aws-node-termination-handler"
-  namespace        = var.namespace
+  namespace        = "kube-system"
   repository       = "https://aws.github.io/eks-charts"
   chart            = "aws-node-termination-handler"
-  version          = var.aws_node_termination_handler_chart_version
+  version          = "0.15.0"
   create_namespace = true
 
   set {
     name  = "awsRegion"
-    value = var.region
+    value = data.aws_region.current.name
   }
   set {
     name  = "serviceAccount.name"
-    value = var.serviceaccount
+    value = "aws-node-termination-handler"
   }
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"

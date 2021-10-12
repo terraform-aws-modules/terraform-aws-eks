@@ -1,6 +1,11 @@
 # Managed groups example
 
-This is EKS example managed groups feature.
+This is EKS example using managed groups feature in two different ways:
+
+- Using SPOT instances in node group
+- Using ON_DEMAND instance in node group
+
+See [the official documentation](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) for more details.
 
 ## Usage
 

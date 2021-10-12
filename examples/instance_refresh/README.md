@@ -1,6 +1,8 @@
 # Instance refresh example
 
-This is EKS example using instance refresh feature for worker groups.
+This is EKS example using [instance refresh](https://aws.amazon.com/blogs/compute/introducing-instance-refresh-for-ec2-auto-scaling/) feature for worker groups.
+
+See [the official documentation](https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-instance-refresh.html) for more details.
 
 ## Usage
 
@@ -61,16 +63,14 @@ Note that this example may create resources which cost money. Run `terraform des
 | [aws_eks_cluster_auth.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
 | [aws_iam_policy_document.aws_node_termination_handler](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.aws_node_termination_handler_events](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_aws_node_termination_handler_chart_version"></a> [aws\_node\_termination\_handler\_chart\_version](#input\_aws\_node\_termination\_handler\_chart\_version) | Version of the aws-node-termination-handler Helm chart to install. | `string` | `"0.15.0"` | no |
 | <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | EKS version | `string` | `"1.20"` | no |
-| <a name="input_namespace"></a> [namespace](#input\_namespace) | Namespace for the aws-node-termination-handler. | `string` | `"kube-system"` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS region where example will be created | `string` | `"eu-west-1"` | no |
-| <a name="input_serviceaccount"></a> [serviceaccount](#input\_serviceaccount) | Serviceaccount for the aws-node-termination-handler. | `string` | `"aws-node-termination-handler"` | no |
 
 ## Outputs
 

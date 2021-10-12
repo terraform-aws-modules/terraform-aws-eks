@@ -1,11 +1,8 @@
-# Launch template with managed groups example
+# Launch templates example
 
-This is EKS example using workers custom launch template with managed groups feature in two different ways:
+This is EKS example using workers launch template with worker groups feature.
 
-- Using a defined existing launch template created outside module
-- Using dlaunch template which will be created by module with user customization
-
-See [the official documentation](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) for more details.
+See [the official documentation](https://docs.aws.amazon.com/eks/latest/userguide/worker.html) for more details.
 
 ## Usage
 
@@ -48,8 +45,6 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Type |
 |------|------|
-| [aws_iam_service_linked_role.autoscaling](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_service_linked_role) | resource |
-| [aws_launch_template.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
 | [random_string.suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 | [aws_eks_cluster.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |

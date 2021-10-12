@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 locals {
-  name = "lt_with_mng-${random_string.suffix.result}"
+  name = "launch_template-${random_string.suffix.result}"
 }
 
 ################################################################################
@@ -67,67 +67,58 @@ provider "kubernetes" {
 }
 
 module "eks" {
-  source = "../.."
-
-  cluster_name    = local.name
-  cluster_version = var.cluster_version
-
-  vpc_id  = module.vpc.vpc_id
-  subnets = module.vpc.private_subnets
-
+  source                          = "../.."
+  cluster_name                    = local.name
+  cluster_version                 = var.cluster_version
+  vpc_id                          = module.vpc.vpc_id
+  subnets                         = module.vpc.private_subnets
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
-  node_groups = {
-    # use arleady defined launch template
-    example1 = {
-      name_prefix      = "example1"
-      desired_capacity = 1
-      max_capacity     = 15
-      min_capacity     = 1
-
-      launch_template_id      = aws_launch_template.default.id
-      launch_template_version = aws_launch_template.default.default_version
-
-      instance_types = ["t3.small"]
-
-      additional_tags = {
-        ExtraTag = "example1"
-      }
-    }
-    # create launch template
-    example2 = {
-      create_launch_template = true
-      desired_capacity       = 1
-      max_capacity           = 10
-      min_capacity           = 1
-
-      disk_size       = 50
-      disk_type       = "gp3"
-      disk_throughput = 150
-      disk_iops       = 3000
-
-      instance_types = ["t3.large"]
-      capacity_type  = "SPOT"
-      k8s_labels = {
-        GithubRepo = "terraform-aws-eks"
-        GithubOrg  = "terraform-aws-modules"
-      }
-      additional_tags = {
-        ExtraTag = "example2"
-      }
-      taints = [
+  worker_groups_launch_template = [
+    {
+      name                 = "worker-group-1"
+      instance_type        = "t3.small"
+      asg_desired_capacity = 2
+      public_ip            = true
+      tags = [{
+        key                 = "ExtraTag"
+        value               = "TagValue"
+        propagate_at_launch = true
+      }]
+    },
+    {
+      name                 = "worker-group-2"
+      instance_type        = "t3.medium"
+      asg_desired_capacity = 1
+      public_ip            = true
+      ebs_optimized        = true
+    },
+    {
+      name                          = "worker-group-3"
+      instance_type                 = "t2.large"
+      asg_desired_capacity          = 1
+      public_ip                     = true
+      elastic_inference_accelerator = "eia2.medium"
+    },
+    {
+      name                   = "worker-group-4"
+      instance_type          = "t3.small"
+      asg_desired_capacity   = 1
+      public_ip              = true
+      root_volume_size       = 150
+      root_volume_type       = "gp3"
+      root_volume_throughput = 300
+      additional_ebs_volumes = [
         {
-          key    = "dedicated"
-          value  = "gpuGroup"
-          effect = "NO_SCHEDULE"
-        }
+          block_device_name = "/dev/xvdb"
+          volume_size       = 100
+          volume_type       = "gp3"
+          throughput        = 150
+        },
       ]
-      update_config = {
-        max_unavailable_percentage = 50 # or set `max_unavailable`
-      }
-    }
-  }
+    },
+  ]
 
   tags = {
     Example    = local.name
