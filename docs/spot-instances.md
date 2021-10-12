@@ -4,7 +4,7 @@ Spot instances usually cost around 30-70% less than an on-demand instance. So us
 
 You need to install a daemonset to catch the 2 minute warning before termination. This will ensure the node is gracefully drained before termination. You can install the [k8s-spot-termination-handler](https://github.com/kube-aws/kube-spot-termination-notice-handler) for this. There's a [Helm chart](https://github.com/helm/charts/tree/master/stable/k8s-spot-termination-handler):
 
-```
+```shell
 helm install stable/k8s-spot-termination-handler --namespace kube-system
 ```
 

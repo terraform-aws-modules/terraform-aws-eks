@@ -2,64 +2,69 @@
 
 This example shows how to create an IAM role to be used for a Kubernetes `ServiceAccount`. It will create a policy and role to be used by the [cluster-autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler) using the [public Helm chart](https://github.com/kubernetes/autoscaler/tree/master/charts/cluster-autoscaler).
 
-The AWS documentation for IRSA is here: https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
+See [the official documentation](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html) for more details.
 
-## Setup
+## Usage
 
-Run Terraform:
+To run this example you need to execute:
 
-```
-terraform init
-terraform apply
-```
-
-Set kubectl context to the new cluster: `export KUBECONFIG=kubeconfig_test-eks-irsa`
-
-Check that there is a node that is `Ready`:
-
-```
-$ kubectl get nodes
-NAME                                       STATUS   ROLES    AGE     VERSION
-ip-10-0-2-190.us-west-2.compute.internal   Ready    <none>   6m39s   v1.14.8-eks-b8860f
+```bash
+$ terraform init
+$ terraform plan
+$ terraform apply
 ```
 
-Replace `<ACCOUNT ID>` with your AWS account ID in `cluster-autoscaler-chart-values.yaml`. There is output from terraform for this.
+Note that this example may create resources which cost money. Run `terraform destroy` when you don't need these resources.
 
-Install the chart using the provided values file:
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Requirements
 
-```
-$ helm repo add autoscaler https://kubernetes.github.io/autoscaler
-$ helm repo update
-$ helm install cluster-autoscaler --namespace kube-system autoscaler/cluster-autoscaler --values cluster-autoscaler-chart-values.yaml
-```
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.22.0 |
+| <a name="requirement_helm"></a> [helm](#requirement\_helm) | ~> 2.0 |
+| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | ~> 2.0 |
+| <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.4 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.1 |
 
-## Verify
+## Providers
 
-Ensure the cluster-autoscaler pod is running:
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.22.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | ~> 2.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 2.1 |
 
-```
-$ kubectl --namespace=kube-system get pods -l "app.kubernetes.io/name=aws-cluster-autoscaler-chart"
-NAME                                                              READY   STATUS    RESTARTS   AGE
-cluster-autoscaler-aws-cluster-autoscaler-chart-5545d4b97-9ztpm   1/1     Running   0          3m
-```
+## Modules
 
-Observe the `AWS_*` environment variables that were added to the pod automatically by EKS:
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_eks"></a> [eks](#module\_eks) | ../.. |  |
+| <a name="module_iam_assumable_role_admin"></a> [iam\_assumable\_role\_admin](#module\_iam\_assumable\_role\_admin) | terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc | ~> 4.0 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.0 |
 
-```
-kubectl --namespace=kube-system get pods -l "app.kubernetes.io/name=aws-cluster-autoscaler-chart" -o yaml | grep -A3 AWS_ROLE_ARN
+## Resources
 
-- name: AWS_ROLE_ARN
-  value: arn:aws:iam::xxxxxxxxx:role/cluster-autoscaler
-- name: AWS_WEB_IDENTITY_TOKEN_FILE
-  value: /var/run/secrets/eks.amazonaws.com/serviceaccount/token
-```
+| Name | Type |
+|------|------|
+| [aws_iam_policy.cluster_autoscaler](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
+| [helm_release.cluster-autoscaler](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
+| [random_string.suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
+| [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_eks_cluster.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
+| [aws_eks_cluster_auth.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
+| [aws_iam_policy_document.cluster_autoscaler](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
-Verify it is working by checking the logs, you should see that it has discovered the autoscaling group successfully:
+## Inputs
 
-```
-kubectl --namespace=kube-system logs -l "app.kubernetes.io/name=aws-cluster-autoscaler-chart"
+No inputs.
 
-I0128 14:59:00.901513       1 auto_scaling_groups.go:354] Regenerating instance to ASG map for ASGs: [test-eks-irsa-worker-group-12020012814125354700000000e]
-I0128 14:59:00.969875       1 auto_scaling_groups.go:138] Registering ASG test-eks-irsa-worker-group-12020012814125354700000000e
-I0128 14:59:00.969906       1 aws_manager.go:263] Refreshed ASG list, next refresh after 2020-01-28 15:00:00.969901767 +0000 UTC m=+61.310501783
-```
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_aws_account_id"></a> [aws\_account\_id](#output\_aws\_account\_id) | IAM AWS account id |
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

@@ -6,11 +6,14 @@ In this release, we now decided to remove random_pet resources in Managed Node G
 
 1. Run `terraform apply` with the module version v16.2.0
 2. Get your worker group names
+
 ```shell
 ~ terraform state show 'module.eks.module.node_groups.aws_eks_node_group.workers["example"]' | grep node_group_name
 node_group_name = "test-eks-mwIwsvui-example-sincere-squid"
 ```
+
 3. Upgrade your module and configure your node groups to use existing names
+
 ```hcl
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
@@ -30,6 +33,7 @@ module "eks" {
   # ...
 }
 ```
+
 4. Run `terraform plan`, you shoud see that only `random_pets` will be destroyed
 
 ```shell
@@ -55,6 +59,7 @@ Terraform will perform the following actions:
 
 Plan: 0 to add, 0 to change, 1 to destroy.
 ```
+
 5. If everything sounds good to you, run `terraform apply`
 
 After the first apply, we recommand you to create a new node group and let the module use the `node_group_name_prefix` (by removing the `name` argument) to generate names and avoid collision during node groups re-creation if needed, because the lifce cycle is `create_before_destroy = true`.

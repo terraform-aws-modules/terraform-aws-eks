@@ -1,3 +1,9 @@
+data "aws_eks_cluster" "default" {
+  count = var.create_eks ? 1 : 0
+
+  name = var.cluster_name
+}
+
 locals {
   # Merge defaults and per-group values to make code cleaner
   node_groups_expanded = { for k, v in var.node_groups : k => merge(
@@ -16,6 +22,8 @@ locals {
       kubelet_extra_args                   = var.workers_group_defaults["kubelet_extra_args"]
       disk_size                            = var.workers_group_defaults["root_volume_size"]
       disk_type                            = var.workers_group_defaults["root_volume_type"]
+      disk_iops                            = var.workers_group_defaults["root_iops"]
+      disk_throughput                      = var.workers_group_defaults["root_volume_throughput"]
       disk_encrypted                       = var.workers_group_defaults["root_encrypted"]
       disk_kms_key_id                      = var.workers_group_defaults["root_kms_key_id"]
       enable_monitoring                    = var.workers_group_defaults["enable_monitoring"]
@@ -30,6 +38,7 @@ locals {
       metadata_http_endpoint               = var.workers_group_defaults["metadata_http_endpoint"]
       metadata_http_tokens                 = var.workers_group_defaults["metadata_http_tokens"]
       metadata_http_put_response_hop_limit = var.workers_group_defaults["metadata_http_put_response_hop_limit"]
+      ami_is_eks_optimized                 = true
     },
     var.node_groups_defaults,
     v,
