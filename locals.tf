@@ -163,12 +163,12 @@ locals {
   ]
 
   default_kubeconfig_aws_auth_args = [
-    "--region",
-    data.aws_region.current.name,
     "eks",
     "get-token",
     "--cluster-name",
-    var.cluster_name
+    var.cluster_name,
+    "--region",
+    data.aws_region.current.name
   ]
 
   kubeconfig = var.create_eks ? templatefile("${path.module}/templates/kubeconfig.tpl", {

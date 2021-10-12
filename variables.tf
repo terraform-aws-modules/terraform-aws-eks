@@ -193,13 +193,13 @@ variable "workers_additional_policies" {
 }
 
 variable "kubeconfig_aws_authenticator_command" {
-  description = "Command to use to fetch AWS EKS credentials."
+  description = "Command to use to fetch AWS EKS credentials. Defaults to aws CLI (will use eks command)."
   type        = string
   default     = null
 }
 
 variable "kubeconfig_aws_authenticator_command_args" {
-  description = "Default arguments passed to the authenticator command. Defaults to [token -i $cluster_name]."
+  description = "Default arguments passed to the authenticator command. Defaults to [eks get-token ...]."
   type        = list(string)
   default     = []
 }
