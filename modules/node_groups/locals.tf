@@ -1,9 +1,3 @@
-data "aws_eks_cluster" "default" {
-  count = var.create_eks ? 1 : 0
-
-  name = var.cluster_name
-}
-
 locals {
   # Merge defaults and per-group values to make code cleaner
   node_groups_expanded = { for k, v in var.node_groups : k => merge(
