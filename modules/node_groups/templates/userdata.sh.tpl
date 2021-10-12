@@ -7,7 +7,7 @@ sed -i '/^KUBELET_EXTRA_ARGS=/a KUBELET_EXTRA_ARGS+=" ${kubelet_extra_args}"' /e
 
 # Set variables for custom AMI
 API_SERVER_URL=${cluster_endpoint}
-B64_CLUSTER_CA=${cluster_ca}
+B64_CLUSTER_CA=${cluster_auth_base64}
 KUBELET_EXTRA_ARGS='--node-labels=eks.amazonaws.com/nodegroup-image=${ami_id},eks.amazonaws.com/capacityType=${capacity_type}${append_labels} ${kubelet_extra_args}'
 %{endif ~}
 
