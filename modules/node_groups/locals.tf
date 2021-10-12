@@ -1,5 +1,5 @@
 data "aws_eks_cluster" "default" {
-  count = var.create_eks ? 1 : 0
+  count = var.create_eks ? 0 : 1
 
   name = var.cluster_name
 }
