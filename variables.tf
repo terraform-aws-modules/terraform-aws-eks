@@ -195,7 +195,7 @@ variable "workers_additional_policies" {
 variable "kubeconfig_aws_authenticator_command" {
   description = "Command to use to fetch AWS EKS credentials."
   type        = string
-  default     = "aws-iam-authenticator"
+  default     = null
 }
 
 variable "kubeconfig_aws_authenticator_command_args" {
