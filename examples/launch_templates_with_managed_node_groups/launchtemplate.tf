@@ -2,7 +2,7 @@
 #  template = file("${path.module}/templates/userdata.sh.tpl")
 #
 #  vars = {
-#    cluster_name        = local.cluster_name
+#    cluster_name        = local.name
 #    endpoint            = module.eks.cluster_endpoint
 #    cluster_auth_base64 = module.eks.cluster_certificate_authority_data
 #
@@ -17,6 +17,7 @@
 #
 # Trivia: AWS transparently creates a copy of your LaunchTemplate and actually uses that copy then for the node group. If you DONT use a custom AMI,
 # then the default user-data for bootstrapping a cluster is merged in the copy.
+
 resource "aws_launch_template" "default" {
   name_prefix            = "eks-example-"
   description            = "Default Launch-Template"
@@ -59,22 +60,21 @@ resource "aws_launch_template" "default" {
   #   data.template_file.launch_template_userdata.rendered,
   # )
 
-
   # Supplying custom tags to EKS instances is another use-case for LaunchTemplates
   tag_specifications {
     resource_type = "instance"
 
     tags = {
-      CustomTag = "EKS example"
+      CustomTag = "Instance custom tag"
     }
   }
 
-  # Supplying custom tags to EKS instances root volumes is another use-case for LaunchTemplates. (doesnt add tags to dynamically provisioned volumes via PVC tho)
+  # Supplying custom tags to EKS instances root volumes is another use-case for LaunchTemplates. (doesnt add tags to dynamically provisioned volumes via PVC)
   tag_specifications {
     resource_type = "volume"
 
     tags = {
-      CustomTag = "EKS example"
+      CustomTag = "Volume custom tag"
     }
   }
 
@@ -89,7 +89,7 @@ resource "aws_launch_template" "default" {
 
   # Tag the LT itself
   tags = {
-    CustomTag = "EKS example"
+    CustomTag = "Launch template custom tag"
   }
 
   lifecycle {

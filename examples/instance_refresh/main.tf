@@ -1,24 +1,18 @@
-# Based on the official aws-node-termination-handler setup guide at https://github.com/aws/aws-node-termination-handler#infrastructure-setup
-
 provider "aws" {
   region = local.region
 }
 
-data "aws_caller_identity" "current" {}
-
-data "aws_eks_cluster" "cluster" {
-  name = module.eks.cluster_id
+locals {
+  name            = "instance_refresh-${random_string.suffix.result}"
+  cluster_version = "1.20"
+  region          = "eu-west-1"
 }
 
-data "aws_eks_cluster_auth" "cluster" {
-  name = module.eks.cluster_id
-}
+################################################################################
+# EKS Module
+################################################################################
 
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.cluster.token
-}
+# Based on the official aws-node-termination-handler setup guide at https://github.com/aws/aws-node-termination-handler#infrastructure-setup
 
 provider "helm" {
   kubernetes {
@@ -28,29 +22,7 @@ provider "helm" {
   }
 }
 
-data "aws_availability_zones" "available" {
-}
-
-locals {
-  cluster_name = "test-refresh-${random_string.suffix.result}"
-  region       = "eu-west-1"
-}
-
-resource "random_string" "suffix" {
-  length  = 8
-  special = false
-}
-
-module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.0.0"
-
-  name                 = local.cluster_name
-  cidr                 = "10.0.0.0/16"
-  azs                  = data.aws_availability_zones.available.names
-  public_subnets       = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
-  enable_dns_hostnames = true
-}
+data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy_document" "aws_node_termination_handler" {
   statement {
@@ -84,9 +56,11 @@ data "aws_iam_policy_document" "aws_node_termination_handler" {
 }
 
 resource "aws_iam_policy" "aws_node_termination_handler" {
-  name   = "${local.cluster_name}-aws-node-termination-handler"
+  name   = "${local.name}-aws-node-termination-handler"
   policy = data.aws_iam_policy_document.aws_node_termination_handler.json
 }
+
+data "aws_region" "current" {}
 
 data "aws_iam_policy_document" "aws_node_termination_handler_events" {
   statement {
@@ -102,7 +76,7 @@ data "aws_iam_policy_document" "aws_node_termination_handler_events" {
       "sqs:SendMessage",
     ]
     resources = [
-      "arn:aws:sqs:${local.region}:${data.aws_caller_identity.current.account_id}:${local.cluster_name}",
+      "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${local.name}",
     ]
   }
 }
@@ -110,13 +84,13 @@ data "aws_iam_policy_document" "aws_node_termination_handler_events" {
 module "aws_node_termination_handler_sqs" {
   source                    = "terraform-aws-modules/sqs/aws"
   version                   = "~> 3.0.0"
-  name                      = local.cluster_name
+  name                      = local.name
   message_retention_seconds = 300
   policy                    = data.aws_iam_policy_document.aws_node_termination_handler_events.json
 }
 
 resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_asg" {
-  name        = "${local.cluster_name}-asg-termination"
+  name        = "${local.name}-asg-termination"
   description = "Node termination event rule"
   event_pattern = jsonencode(
     {
@@ -132,13 +106,13 @@ resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_asg" {
 }
 
 resource "aws_cloudwatch_event_target" "aws_node_termination_handler_asg" {
-  target_id = "${local.cluster_name}-asg-termination"
+  target_id = "${local.name}-asg-termination"
   rule      = aws_cloudwatch_event_rule.aws_node_termination_handler_asg.name
   arn       = module.aws_node_termination_handler_sqs.sqs_queue_arn
 }
 
 resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_spot" {
-  name        = "${local.cluster_name}-spot-termination"
+  name        = "${local.name}-spot-termination"
   description = "Node termination event rule"
   event_pattern = jsonencode(
     {
@@ -154,7 +128,7 @@ resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_spot" {
 }
 
 resource "aws_cloudwatch_event_target" "aws_node_termination_handler_spot" {
-  target_id = "${local.cluster_name}-spot-termination"
+  target_id = "${local.name}-spot-termination"
   rule      = aws_cloudwatch_event_rule.aws_node_termination_handler_spot.name
   arn       = module.aws_node_termination_handler_sqs.sqs_queue_arn
 }
@@ -163,11 +137,11 @@ module "aws_node_termination_handler_role" {
   source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
   version                       = "4.1.0"
   create_role                   = true
-  role_description              = "IRSA role for ANTH, cluster ${local.cluster_name}"
-  role_name_prefix              = local.cluster_name
+  role_description              = "IRSA role for ANTH, cluster ${local.name}"
+  role_name_prefix              = local.name
   provider_url                  = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
   role_policy_arns              = [aws_iam_policy.aws_node_termination_handler.arn]
-  oidc_fully_qualified_subjects = ["system:serviceaccount:${var.namespace}:${var.serviceaccount}"]
+  oidc_fully_qualified_subjects = ["system:serviceaccount:kube-system:aws-node-termination-handler"]
 }
 
 resource "helm_release" "aws_node_termination_handler" {
@@ -176,19 +150,19 @@ resource "helm_release" "aws_node_termination_handler" {
   ]
 
   name             = "aws-node-termination-handler"
-  namespace        = var.namespace
+  namespace        = "kube-system"
   repository       = "https://aws.github.io/eks-charts"
   chart            = "aws-node-termination-handler"
-  version          = var.aws_node_termination_handler_chart_version
+  version          = "0.15.0"
   create_namespace = true
 
   set {
     name  = "awsRegion"
-    value = local.region
+    value = data.aws_region.current.name
   }
   set {
     name  = "serviceAccount.name"
-    value = var.serviceaccount
+    value = "aws-node-termination-handler"
   }
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
@@ -226,12 +200,18 @@ resource "aws_autoscaling_lifecycle_hook" "aws_node_termination_handler" {
 }
 
 module "eks" {
-  source          = "../.."
-  cluster_name    = local.cluster_name
-  cluster_version = "1.20"
-  subnets         = module.vpc.public_subnets
-  vpc_id          = module.vpc.vpc_id
-  enable_irsa     = true
+  source = "../.."
+
+  cluster_name    = local.name
+  cluster_version = local.cluster_version
+
+  vpc_id  = module.vpc.vpc_id
+  subnets = module.vpc.private_subnets
+
+  cluster_endpoint_private_access = true
+  cluster_endpoint_public_access  = true
+
+  enable_irsa = true
   worker_groups_launch_template = [
     {
       name                                 = "refresh"
@@ -257,4 +237,70 @@ module "eks" {
       ]
     }
   ]
+
+  tags = {
+    Example    = local.name
+    GithubRepo = "terraform-aws-eks"
+    GithubOrg  = "terraform-aws-modules"
+  }
+}
+
+################################################################################
+# Kubernetes provider configuration
+################################################################################
+
+data "aws_eks_cluster" "cluster" {
+  name = module.eks.cluster_id
+}
+
+data "aws_eks_cluster_auth" "cluster" {
+  name = module.eks.cluster_id
+}
+
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.cluster.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.cluster.token
+}
+
+################################################################################
+# Supporting Resources
+################################################################################
+
+data "aws_availability_zones" "available" {
+}
+
+resource "random_string" "suffix" {
+  length  = 8
+  special = false
+}
+
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 3.0"
+
+  name                 = local.name
+  cidr                 = "10.0.0.0/16"
+  azs                  = data.aws_availability_zones.available.names
+  private_subnets      = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets       = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  enable_nat_gateway   = true
+  single_nat_gateway   = true
+  enable_dns_hostnames = true
+
+  public_subnet_tags = {
+    "kubernetes.io/cluster/${local.name}" = "shared"
+    "kubernetes.io/role/elb"              = "1"
+  }
+
+  private_subnet_tags = {
+    "kubernetes.io/cluster/${local.name}" = "shared"
+    "kubernetes.io/role/internal-elb"     = "1"
+  }
+
+  tags = {
+    Example    = local.name
+    GithubRepo = "terraform-aws-eks"
+    GithubOrg  = "terraform-aws-modules"
+  }
 }
