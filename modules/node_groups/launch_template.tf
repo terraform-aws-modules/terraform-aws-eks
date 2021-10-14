@@ -6,9 +6,9 @@ data "cloudinit_config" "workers_userdata" {
   boundary      = "//"
 
   part {
-    content_type = "text/x-shellscript"
-    content = templatefile("${path.module}/templates/userdata.sh.tpl",
-      {
+    content_type = lookup(each.value["user_data"], "mime_type", "text/x-shellscript")
+    content = templatefile(each.value["user_data"]["template_file"],
+      merge({
         cluster_name         = var.cluster_name
         cluster_endpoint     = var.cluster_endpoint
         cluster_auth_base64  = var.cluster_auth_base64
@@ -19,7 +19,7 @@ data "cloudinit_config" "workers_userdata" {
         pre_userdata         = each.value["pre_userdata"]
         capacity_type        = lookup(each.value, "capacity_type", "ON_DEMAND")
         append_labels        = length(lookup(each.value, "k8s_labels", {})) > 0 ? ",${join(",", [for k, v in lookup(each.value, "k8s_labels", {}) : "${k}=${v}"])}" : ""
-      }
+      }, lookup(each.value["user_data"], "template_extra_args", {}))
     )
   }
 }
