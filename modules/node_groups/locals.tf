@@ -53,4 +53,24 @@ locals {
       join("-", [var.cluster_name, k])
     )
   ) }
+
+  node_groups_userdata = { for k, v in local.node_groups_expanded : k => templatefile(
+      v["user_data"]["template_file"],
+      merge(
+        {
+          cluster_name         = var.cluster_name
+          cluster_endpoint     = var.cluster_endpoint
+          cluster_auth_base64  = var.cluster_auth_base64
+          ami_id               = lookup(v, "ami_id", "")
+          ami_is_eks_optimized = v["ami_is_eks_optimized"]
+          bootstrap_env        = v["bootstrap_env"]
+          kubelet_extra_args   = v["kubelet_extra_args"]
+          pre_userdata         = v["pre_userdata"]
+          capacity_type        = lookup(v, "capacity_type", "ON_DEMAND")
+          append_labels        = length(lookup(v, "k8s_labels", {})) > 0 ? ",${join(",", [for key, value in lookup(v, "k8s_labels", {}) : "${key}=${value}"])}" : ""
+        },
+        lookup(v["user_data"], "template_extra_args", {})
+      )
+    ) if v["create_launch_template"]
+  }
 }

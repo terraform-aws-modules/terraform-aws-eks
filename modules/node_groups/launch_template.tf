@@ -1,26 +1,16 @@
 data "cloudinit_config" "workers_userdata" {
-  for_each = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] }
+  for_each = {
+    for k, v in local.node_groups_expanded : k => v
+    if v["create_launch_template"] && contains(keys(v["user_data"]), "mime_type")
+  }
 
   gzip          = false
   base64_encode = true
   boundary      = "//"
 
   part {
-    content_type = lookup(each.value["user_data"], "mime_type", "text/x-shellscript")
-    content = templatefile(each.value["user_data"]["template_file"],
-      merge({
-        cluster_name         = var.cluster_name
-        cluster_endpoint     = var.cluster_endpoint
-        cluster_auth_base64  = var.cluster_auth_base64
-        ami_id               = lookup(each.value, "ami_id", "")
-        ami_is_eks_optimized = each.value["ami_is_eks_optimized"]
-        bootstrap_env        = each.value["bootstrap_env"]
-        kubelet_extra_args   = each.value["kubelet_extra_args"]
-        pre_userdata         = each.value["pre_userdata"]
-        capacity_type        = lookup(each.value, "capacity_type", "ON_DEMAND")
-        append_labels        = length(lookup(each.value, "k8s_labels", {})) > 0 ? ",${join(",", [for k, v in lookup(each.value, "k8s_labels", {}) : "${k}=${v}"])}" : ""
-      }, lookup(each.value["user_data"], "template_extra_args", {}))
-    )
+    content_type = each.value["user_data"]["mime_type"]
+    content      = local.node_groups_userdata[each.key]
   }
 }
 
@@ -81,7 +71,11 @@ resource "aws_launch_template" "workers" {
   #
   # (optionally you can use https://registry.terraform.io/providers/hashicorp/cloudinit/latest/docs/data-sources/cloudinit_config to render the script, example: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/997#issuecomment-705286151)
 
-  user_data = data.cloudinit_config.workers_userdata[each.key].rendered
+  user_data = (
+    contains(keys(data.cloudinit_config.workers_userdata), each.key)
+    ? data.cloudinit_config.workers_userdata[each.key].rendered
+    : base64encode(local.node_groups_userdata[each.key])
+  )
 
   key_name = lookup(each.value, "key_name", null)
 
