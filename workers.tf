@@ -147,7 +147,7 @@ resource "aws_autoscaling_group" "workers" {
         },
       ],
       [
-        for tag_key, tag_value in var.tags :
+        for tag_key, tag_value in length(var.wg_tags) > 0 ? var.wg_tags : var.tags :
         {
           "key"                 = tag_key,
           "value"               = tag_value,
