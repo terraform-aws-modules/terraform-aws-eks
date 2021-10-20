@@ -234,7 +234,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
         },
       ],
       [
-        for tag_key, tag_value in var.tags :
+        for tag_key, tag_value in length(var.wg_tags) > 0 ? var.wg_tags : var.tags :
         tomap({
           key                 = tag_key
           value               = tag_value
@@ -558,7 +558,7 @@ resource "aws_launch_template" "workers_launch_template" {
           count.index,
         )}-eks_asg"
       },
-      var.tags,
+      length(var.wg_tags) > 0 ? var.wg_tags : var.tags,
       {
         for tag in lookup(var.worker_groups_launch_template[count.index], "tags", local.workers_group_defaults["tags"]) :
         tag["key"] => tag["value"]
@@ -578,7 +578,7 @@ resource "aws_launch_template" "workers_launch_template" {
           count.index,
         )}-eks_asg"
       },
-      { for tag_key, tag_value in var.tags :
+      { for tag_key, tag_value in length(var.wg_tags) > 0 ? var.wg_tags : var.tags :
         tag_key => tag_value
         if tag_key != "Name" && !contains([for tag in lookup(var.worker_groups_launch_template[count.index], "tags", local.workers_group_defaults["tags"]) : tag["key"]], tag_key)
       }
@@ -596,7 +596,7 @@ resource "aws_launch_template" "workers_launch_template" {
           count.index,
         )}-eks_asg"
       },
-      var.tags,
+      length(var.wg_tags) > 0 ? var.wg_tags : var.tags,
       {
         for tag in lookup(var.worker_groups_launch_template[count.index], "tags", local.workers_group_defaults["tags"]) :
         tag["key"] => tag["value"]
