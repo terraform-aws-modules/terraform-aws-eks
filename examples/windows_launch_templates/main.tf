@@ -14,10 +14,8 @@ locals {
 
 module "eks" {
   source                          = "../.."
-  cluster_name                    = local.eks_name
+  cluster_name                    = local.name
   cluster_version                 = local.cluster_version
-  cluster_endpoint_private_access = true
-  cluster_endpoint_public_access  = false
   subnets                         = module.vpc.private_subnets
   vpc_id                          = module.vpc.vpc_id 
 
@@ -40,12 +38,7 @@ module "eks" {
           propagate_at_launch = true
         },
         {
-          key                 = "Environment"
-          value               = var.environment_name
-          propagate_at_launch = true
-        },
-        {
-          key                 = "k8s.io/cluster-autoscaler/${local.eks_name}"
+          key                 = "k8s.io/cluster-autoscaler/${local.name}"
           value               = "owned"
           propagate_at_launch = true
         },
