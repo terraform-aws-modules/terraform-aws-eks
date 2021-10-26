@@ -429,3 +429,34 @@ variable "openid_connect_audiences" {
   default     = []
 }
 
+## Custom Parsable added variables
+
+variable "eks_identity_provider_enabled" {
+  description = "Whether to enable an identity provider"
+  type        = bool
+  default     = false
+}
+
+variable "client_id" {
+  description = "Identity provider client id"
+  type        = string
+  default     = ""
+}
+
+variable "identity_provider_config_name" {
+  description = "Name of identity provider config"
+  type        = string
+  default     = ""
+}
+
+variable "issuer_url" {
+  description = "Identity provider issuer URL"
+  type        = string
+  default     = ""
+}
+
+variable "groups_claim" {
+  description = "Groups claim for identity provider"
+  type        = string
+  default     = ""
+}
