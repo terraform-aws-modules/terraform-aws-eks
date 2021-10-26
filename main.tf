@@ -60,6 +60,18 @@ resource "aws_eks_cluster" "this" {
   ]
 }
 
+resource "aws_eks_identity_provider_config" "this" {
+  count        = var.eks_identity_provider_enabled ? 1 : 0
+  cluster_name = aws_eks_cluster.this[0].name
+
+  oidc {
+    client_id                     = var.client_id
+    identity_provider_config_name = var.identity_provider_config_name
+    issuer_url                    = var.issuer_url
+    groups_claim                  = var.groups_claim
+  }
+}
+
 resource "aws_security_group" "cluster" {
   count = var.cluster_create_security_group && var.create_eks ? 1 : 0
 
