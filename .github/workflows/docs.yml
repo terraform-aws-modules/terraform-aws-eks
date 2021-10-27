@@ -1,0 +1,19 @@
+name: Generate terraform docs
+
+on: [pull_request]
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: Render terraform docs inside the README.md and push changes back to pushed branch
+      uses: DNXLabs/terraform-docs@v1.0.0
+      with:
+        tf_docs_working_dir: .
+        tf_docs_output_file: README.md
+        tf_docs_output_method: inject
+        tf_docs_git_push: 'true'
+        tf_docs_git_commit_message: 'terraform-docs: automated update action'
