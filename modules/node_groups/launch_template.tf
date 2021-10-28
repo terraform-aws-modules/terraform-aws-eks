@@ -14,8 +14,8 @@ data "cloudinit_config" "workers_userdata" {
         ami_id               = lookup(each.value, "ami_id", "")
         ami_is_eks_optimized = each.value["ami_is_eks_optimized"]
         cluster_name         = var.cluster_name
-        cluster_endpoint     = data.aws_eks_cluster.default[0].endpoint
-        cluster_ca           = data.aws_eks_cluster.default[0].certificate_authority[0].data
+        cluster_endpoint     = var.cluster_endpoint
+        cluster_auth_base64  = var.cluster_auth_base64
         capacity_type        = lookup(each.value, "capacity_type", "ON_DEMAND")
         append_labels        = length(lookup(each.value, "k8s_labels", {})) > 0 ? ",${join(",", [for k, v in lookup(each.value, "k8s_labels", {}) : "${k}=${v}"])}" : ""
       }

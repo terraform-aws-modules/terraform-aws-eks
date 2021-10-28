@@ -10,6 +10,12 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v17.22.0"></a>
+## [v17.22.0] - 2021-10-14
+BUG FIXES:
+- MNG cluster datasource errors ([#1639](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1639))
+
+
 <a name="v17.21.0"></a>
 ## [v17.21.0] - 2021-10-12
 FEATURES:
@@ -544,7 +550,8 @@ CI:
 - Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.21.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.22.0...HEAD
+[v17.22.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.21.0...v17.22.0
 [v17.21.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.20.0...v17.21.0
 [v17.20.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.19.0...v17.20.0
 [v17.19.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.18.0...v17.19.0
