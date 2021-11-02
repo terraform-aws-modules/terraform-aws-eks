@@ -10,6 +10,18 @@ variable "cluster_name" {
   default     = ""
 }
 
+variable "cluster_endpoint" {
+  description = "Endpoint of parent cluster"
+  type        = string
+  default     = ""
+}
+
+variable "cluster_auth_base64" {
+  description = "Base64 encoded CA of parent cluster"
+  type        = string
+  default     = ""
+}
+
 variable "default_iam_role_arn" {
   description = "ARN of the default IAM worker role to use if one is not specified in `var.node_groups` or `var.node_groups_defaults`"
   type        = string

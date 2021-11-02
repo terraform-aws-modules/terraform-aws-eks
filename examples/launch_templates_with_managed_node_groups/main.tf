@@ -1,6 +1,90 @@
 provider "aws" {
-  region = "eu-west-1"
+  region = local.region
 }
+
+locals {
+  name            = "lt_with_mng-${random_string.suffix.result}"
+  cluster_version = "1.20"
+  region          = "eu-west-1"
+}
+
+################################################################################
+# EKS Module
+################################################################################
+
+module "eks" {
+  source = "../.."
+
+  cluster_name    = local.name
+  cluster_version = local.cluster_version
+
+  vpc_id  = module.vpc.vpc_id
+  subnets = module.vpc.private_subnets
+
+  cluster_endpoint_private_access = true
+  cluster_endpoint_public_access  = true
+
+  node_groups = {
+    # use arleady defined launch template
+    example1 = {
+      name_prefix      = "example1"
+      desired_capacity = 1
+      max_capacity     = 15
+      min_capacity     = 1
+
+      launch_template_id      = aws_launch_template.default.id
+      launch_template_version = aws_launch_template.default.default_version
+
+      instance_types = ["t3.small"]
+
+      additional_tags = {
+        ExtraTag = "example1"
+      }
+    }
+    # create launch template
+    example2 = {
+      create_launch_template = true
+      desired_capacity       = 1
+      max_capacity           = 10
+      min_capacity           = 1
+
+      disk_size       = 50
+      disk_type       = "gp3"
+      disk_throughput = 150
+      disk_iops       = 3000
+
+      instance_types = ["t3.large"]
+      capacity_type  = "SPOT"
+      k8s_labels = {
+        GithubRepo = "terraform-aws-eks"
+        GithubOrg  = "terraform-aws-modules"
+      }
+      additional_tags = {
+        ExtraTag = "example2"
+      }
+      taints = [
+        {
+          key    = "dedicated"
+          value  = "gpuGroup"
+          effect = "NO_SCHEDULE"
+        }
+      ]
+      update_config = {
+        max_unavailable_percentage = 50 # or set `max_unavailable`
+      }
+    }
+  }
+
+  tags = {
+    Example    = local.name
+    GithubRepo = "terraform-aws-eks"
+    GithubOrg  = "terraform-aws-modules"
+  }
+}
+
+################################################################################
+# Kubernetes provider configuration
+################################################################################
 
 data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
@@ -16,11 +100,11 @@ provider "kubernetes" {
   token                  = data.aws_eks_cluster_auth.cluster.token
 }
 
-data "aws_availability_zones" "available" {
-}
+################################################################################
+# Supporting Resources
+################################################################################
 
-locals {
-  cluster_name = "test-eks-lt-${random_string.suffix.result}"
+data "aws_availability_zones" "available" {
 }
 
 resource "random_string" "suffix" {
@@ -30,43 +114,30 @@ resource "random_string" "suffix" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 2.47"
+  version = "~> 3.0"
 
-  name                 = "test-vpc"
-  cidr                 = "172.16.0.0/16"
+  name                 = local.name
+  cidr                 = "10.0.0.0/16"
   azs                  = data.aws_availability_zones.available.names
-  private_subnets      = ["172.16.1.0/24", "172.16.2.0/24", "172.16.3.0/24"]
-  public_subnets       = ["172.16.4.0/24", "172.16.5.0/24", "172.16.6.0/24"]
+  private_subnets      = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets       = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
   enable_nat_gateway   = true
   single_nat_gateway   = true
   enable_dns_hostnames = true
 
-  private_subnet_tags = {
-    "kubernetes.io/cluster/${local.cluster_name}" = "shared" # EKS adds this and TF would want to remove then later
+  public_subnet_tags = {
+    "kubernetes.io/cluster/${local.name}" = "shared"
+    "kubernetes.io/role/elb"              = "1"
   }
-}
 
-module "eks" {
-  source          = "../.."
-  cluster_name    = local.cluster_name
-  cluster_version = "1.20"
-  subnets         = module.vpc.private_subnets
-  vpc_id          = module.vpc.vpc_id
+  private_subnet_tags = {
+    "kubernetes.io/cluster/${local.name}" = "shared"
+    "kubernetes.io/role/internal-elb"     = "1"
+  }
 
-  node_groups = {
-    example = {
-      desired_capacity = 1
-      max_capacity     = 15
-      min_capacity     = 1
-
-      launch_template_id      = aws_launch_template.default.id
-      launch_template_version = aws_launch_template.default.default_version
-
-      instance_types = var.instance_types
-
-      additional_tags = {
-        CustomTag = "EKS example"
-      }
-    }
+  tags = {
+    Example    = local.name
+    GithubRepo = "terraform-aws-eks"
+    GithubOrg  = "terraform-aws-modules"
   }
 }
