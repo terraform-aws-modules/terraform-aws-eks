@@ -37,7 +37,8 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | instance\_types | Node group's instance type(s). Multiple types can be specified when `capacity_type="SPOT"`. | list | `[var.workers_group_defaults[instance_type]]` |
 | k8s\_labels | Kubernetes labels | map(string) | No labels applied |
 | key\_name | Key name for workers. Set to empty string to disable remote access | string | `var.workers_group_defaults[key_name]` |
-| kubelet_extra_args | This string is passed directly to kubelet if set. Useful for adding labels or taints. Require `create_launch_template` to be `true`| string | "" |
+| bootstrap_env | Provide environment variables to customise [bootstrap.sh](https://github.com/awslabs/amazon-eks-ami/blob/master/files/bootstrap.sh). Require `create_launch_template` to be `true` | map(string) | `{}` |
+| kubelet_extra_args | Extra arguments for kubelet, this is automatically merged with `labels`. Require `create_launch_template` to be `true` | string | "" |
 | launch_template_id | The id of a aws_launch_template to use | string | No LT used |
 | launch\_template_version | The version of the LT to use | string | none |
 | max\_capacity | Max number of workers | number | `var.workers_group_defaults[asg_max_size]` |
