@@ -1,7 +1,7 @@
 data "cloudinit_config" "workers_userdata" {
   for_each = {
     for k, v in local.node_groups_expanded : k => v
-    if v["create_launch_template"] && contains(keys(v["user_data"]), "mime_type")
+    if v["create_launch_template"] && length(v["user_data_mime_type"]) > 0
   }
 
   gzip          = false
@@ -9,7 +9,7 @@ data "cloudinit_config" "workers_userdata" {
   boundary      = "//"
 
   part {
-    content_type = each.value["user_data"]["mime_type"]
+    content_type = each.value["user_data_mime_type"]
     content      = local.node_groups_userdata[each.key]
   }
 }

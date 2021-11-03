@@ -42,14 +42,15 @@ module "eks" {
       public_ip = true
 
       # This section overrides default userdata template to pass bottlerocket
-      # specific user data and pass additional arguments for userdata template rendering
-      user_data = {
-        template_file = "${path.module}/userdata.toml"
-        template_extra_args = {
-          enable_admin_container   = false
-          enable_control_container = true
-          aws_region               = data.aws_region.current.name
-        }
+      # specific user data and pass additional arguments for userdata template rendering.
+      # It also instructs the module to not wrap the user data as cloudinit config, by
+      # indicating that the data has no MIME type.
+      user_data_mime_type     = ""
+      user_data_template_file = "${path.module}/userdata.toml"
+      user_data_template_extra_args = {
+        enable_admin_container   = false
+        enable_control_container = true
+        aws_region               = data.aws_region.current.name
       }
       # example of k8s/kubelet configuration via additional_userdata
       pre_userdata = <<EOT
