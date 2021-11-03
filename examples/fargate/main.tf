@@ -69,7 +69,6 @@ module "eks" {
         Owner = "default"
       }
 
-      # Set custom timeout for create/delete operation on fargate profiles
       timeouts = {
         create = "20m"
         delete = "20m"
@@ -161,7 +160,6 @@ module "fargate_profile_existing_cluster" {
         submodule = "true"
       }
 
-      # Set custom timeout for create/delete operation on fargate profiles
       timeouts = {
         delete = "20m"
       }
