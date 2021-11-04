@@ -55,6 +55,12 @@ module "eks" {
 
       instance_types = ["t3.large"]
       capacity_type  = "SPOT"
+
+      bootstrap_env = {
+        CONTAINER_RUNTIME = "containerd"
+        USE_MAX_PODS      = false
+      }
+      kubelet_extra_args = "--max-pods=110"
       k8s_labels = {
         GithubRepo = "terraform-aws-eks"
         GithubOrg  = "terraform-aws-modules"

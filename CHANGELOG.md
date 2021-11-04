@@ -10,6 +10,16 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 
 
+<a name="v17.23.0"></a>
+## [v17.23.0] - 2021-11-02
+FEATURES:
+- Added support for client.authentication.k8s.io/v1beta1 ([#1550](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1550))
+- Improve managed node group bootstrap revisited ([#1577](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1577))
+
+BUG FIXES:
+- Fixed variable reference for snapshot_id ([#1634](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1634))
+
+
 <a name="v17.22.0"></a>
 ## [v17.22.0] - 2021-10-14
 BUG FIXES:
@@ -550,7 +560,8 @@ CI:
 - Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
-[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.22.0...HEAD
+[Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.23.0...HEAD
+[v17.23.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.22.0...v17.23.0
 [v17.22.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.21.0...v17.22.0
 [v17.21.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.20.0...v17.21.0
 [v17.20.0]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.19.0...v17.20.0
