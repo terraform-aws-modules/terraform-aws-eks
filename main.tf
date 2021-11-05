@@ -53,9 +53,9 @@ resource "aws_eks_cluster" "this" {
   depends_on = [
     aws_security_group_rule.cluster_egress_internet,
     aws_security_group_rule.cluster_https_worker_ingress,
-    aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy,
-    aws_iam_role_policy_attachment.cluster_AmazonEKSServicePolicy,
-    aws_iam_role_policy_attachment.cluster_AmazonEKSVPCResourceControllerPolicy,
+    aws_iam_role_policy_attachment.cluster_amazon_eks_cluster_policy,
+    aws_iam_role_policy_attachment.cluster_amazon_eks_service_policy,
+    aws_iam_role_policy_attachment.cluster_amazon_eks_vpc_resource_controller_policy,
     aws_cloudwatch_log_group.this
   ]
 }
@@ -138,21 +138,21 @@ resource "aws_iam_role" "cluster" {
   tags = var.tags
 }
 
-resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
+resource "aws_iam_role_policy_attachment" "cluster_amazon_eks_cluster_policy" {
   count = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
 
   policy_arn = "${local.policy_arn_prefix}/AmazonEKSClusterPolicy"
   role       = local.cluster_iam_role_name
 }
 
-resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSServicePolicy" {
+resource "aws_iam_role_policy_attachment" "cluster_amazon_eks_service_policy" {
   count = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
 
   policy_arn = "${local.policy_arn_prefix}/AmazonEKSServicePolicy"
   role       = local.cluster_iam_role_name
 }
 
-resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSVPCResourceControllerPolicy" {
+resource "aws_iam_role_policy_attachment" "cluster_amazon_eks_vpc_resource_controller_policy" {
   count = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
 
   policy_arn = "${local.policy_arn_prefix}/AmazonEKSVPCResourceController"

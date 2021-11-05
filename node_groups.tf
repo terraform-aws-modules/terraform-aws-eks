@@ -20,8 +20,8 @@ module "node_groups" {
 
   depends_on = [
     aws_eks_cluster.this,
-    aws_iam_role_policy_attachment.workers_AmazonEKSWorkerNodePolicy,
-    aws_iam_role_policy_attachment.workers_AmazonEKS_CNI_Policy,
-    aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly
+    aws_iam_role_policy_attachment.workers_amazon_eks_worker_node_policy,
+    aws_iam_role_policy_attachment.workers_amazon_eks_cni_policy,
+    aws_iam_role_policy_attachment.workers_amazon_ec2_container_registry_read_only
   ]
 }

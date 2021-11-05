@@ -367,9 +367,9 @@ resource "aws_launch_configuration" "workers" {
     aws_security_group_rule.workers_ingress_cluster_https,
     aws_security_group_rule.workers_ingress_cluster_primary,
     aws_security_group_rule.cluster_primary_ingress_workers,
-    aws_iam_role_policy_attachment.workers_AmazonEKSWorkerNodePolicy,
-    aws_iam_role_policy_attachment.workers_AmazonEKS_CNI_Policy,
-    aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly,
+    aws_iam_role_policy_attachment.workers_amazon_eks_worker_node_policy,
+    aws_iam_role_policy_attachment.workers_amazon_eks_cni_policy,
+    aws_iam_role_policy_attachment.workers_amazon_ec2_container_registry_read_only,
     aws_iam_role_policy_attachment.workers_additional_policies
   ]
 }
@@ -504,21 +504,21 @@ resource "aws_iam_instance_profile" "workers" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {
+resource "aws_iam_role_policy_attachment" "workers_amazon_eks_worker_node_policy" {
   count = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
 
   policy_arn = "${local.policy_arn_prefix}/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.workers[0].name
 }
 
-resource "aws_iam_role_policy_attachment" "workers_AmazonEKS_CNI_Policy" {
+resource "aws_iam_role_policy_attachment" "workers_amazon_eks_cni_policy" {
   count = var.manage_worker_iam_resources && var.attach_worker_cni_policy && var.create_eks ? 1 : 0
 
   policy_arn = "${local.policy_arn_prefix}/AmazonEKS_CNI_Policy"
   role       = aws_iam_role.workers[0].name
 }
 
-resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryReadOnly" {
+resource "aws_iam_role_policy_attachment" "workers_amazon_ec2_container_registry_read_only" {
   count = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
 
   policy_arn = "${local.policy_arn_prefix}/AmazonEC2ContainerRegistryReadOnly"
