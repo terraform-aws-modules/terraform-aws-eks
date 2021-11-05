@@ -29,7 +29,7 @@ variable "cluster_security_group_id" {
 }
 
 variable "cluster_version" {
-  description = "Kubernetes version to use for the EKS cluster."
+  description = "Kubernetes minor version to use for the EKS cluster (for example 1.21)."
   type        = string
   default     = null
 }
