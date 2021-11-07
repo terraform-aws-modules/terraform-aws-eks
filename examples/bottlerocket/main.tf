@@ -28,8 +28,8 @@ module "eks" {
   write_kubeconfig = false
   manage_aws_auth  = true
 
-  worker_groups = [
-    {
+  worker_groups = {
+    one = {
       name                 = "bottlerocket-nodes"
       ami_id               = data.aws_ami.bottlerocket_ami.id
       instance_type        = "t3a.small"
@@ -52,12 +52,12 @@ module "eks" {
         aws_region               = data.aws_region.current.name
       }
       # example of k8s/kubelet configuration via additional_userdata
-      additional_userdata = <<EOT
-[settings.kubernetes.node-labels]
-ingress = "allowed"
-EOT
+      additional_userdata = <<-EOT
+      [settings.kubernetes.node-labels]
+      ingress = "allowed"
+      EOT
     }
-  ]
+  }
 
   tags = {
     Example    = local.name

@@ -32,14 +32,14 @@ module "eks" {
     }
   ]
 
-  worker_groups = [
-    {
+  worker_groups = {
+    one = {
       name                 = "worker-group-1"
       instance_type        = "t3.small"
       additional_userdata  = "echo foo bar"
       asg_desired_capacity = 2
     },
-  ]
+  }
 
   tags = {
     Example    = local.name

@@ -27,8 +27,8 @@ Notes:
 Only Launch Template is supported in this module; Launch Configuration support has been deprecated and removed:
 
 ```hcl
-  worker_groups = [
-    {
+  worker_groups = {
+    one ={
       name                    = "spot-1"
       override_instance_types = ["m5.large", "m5a.large", "m5d.large", "m5ad.large"]
       spot_instance_pools     = 4
@@ -37,7 +37,7 @@ Only Launch Template is supported in this module; Launch Configuration support h
       kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot"
       public_ip               = true
     },
-  ]
+  }
 ```
 
 ## Using Launch Templates With Both Spot and On Demand
@@ -47,21 +47,23 @@ Example launch template to launch 2 on demand instances of type m5.large, and ha
 `on_demand_percentage_above_base_capacity` is set to 25 so 1 in 4 new nodes, when auto-scaling, will be on-demand instances. If not set, all new nodes will be spot instances. The on-demand instances will be the primary instance type (first in the array if they are not weighted).
 
 ```hcl
-  worker_groups = [{
-    name                    = "mixed-demand-spot"
-    override_instance_types = ["m5.large", "m5a.large", "m4.large"]
-    root_encrypted          = true
-    root_volume_size        = 50
+  worker_groups = {
+    one = {
+      name                    = "mixed-demand-spot"
+      override_instance_types = ["m5.large", "m5a.large", "m4.large"]
+      root_encrypted          = true
+      root_volume_size        = 50
 
-    asg_min_size                             = 2
-    asg_desired_capacity                     = 2
-    on_demand_base_capacity                  = 3
-    on_demand_percentage_above_base_capacity = 25
-    asg_max_size                             = 20
-    spot_instance_pools                      = 3
+      asg_min_size                             = 2
+      asg_desired_capacity                     = 2
+      on_demand_base_capacity                  = 3
+      on_demand_percentage_above_base_capacity = 25
+      asg_max_size                             = 20
+      spot_instance_pools                      = 3
 
-    kubelet_extra_args = "--node-labels=node.kubernetes.io/lifecycle=`curl -s http://169.254.169.254/latest/meta-data/instance-life-cycle`"
-  }]
+      kubelet_extra_args = "--node-labels=node.kubernetes.io/lifecycle=`curl -s http://169.254.169.254/latest/meta-data/instance-life-cycle`"
+    }
+  }
 ```
 
 ## Important Notes

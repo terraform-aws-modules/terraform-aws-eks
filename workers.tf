@@ -1,10 +1,10 @@
 locals {
   # Abstracted to a local so that it can be shared with node group as well
   # Only valus that are common between ASG and Node Group are pulled out to this local map
-  group_default = {
-    min_size         = try(var.group_default.min_size, 1)
-    max_size         = try(var.group_default.max_size, 3)
-    desired_capacity = try(var.group_default.desired_capacity, 1)
+  group_default_settings = {
+    min_size         = try(var.group_default_settings.min_size, 1)
+    max_size         = try(var.group_default_settings.max_size, 3)
+    desired_capacity = try(var.group_default_settings.desired_capacity, 1)
   }
 }
 
@@ -46,8 +46,8 @@ module "node_groups" {
   worker_security_group_id             = local.worker_security_group_id
   worker_additional_security_group_ids = var.worker_additional_security_group_ids
 
-  node_groups_defaults = var.node_groups_defaults
-  node_groups          = var.node_groups
+  node_default_settings = var.group_default_settings
+  node_groups           = var.node_groups
 
   tags = var.tags
 
@@ -62,43 +62,44 @@ module "node_groups" {
 ################################################################################
 # Autoscaling Group
 ################################################################################
+
 resource "aws_autoscaling_group" "this" {
   for_each = var.create_eks ? var.worker_groups : {}
 
-  name_prefix = "${join("-", [local.cluster_name, lookup(each.value, "name", each.key)])}-"
+  name_prefix = "${join("-", [local.cluster_name, try(each.value.name, each.key)])}-"
 
   launch_template {
     name    = each.value.launch_template_key # required
-    version = try(each.value.launch_template_version, var.group_default.min_size, "$Latest")
+    version = try(each.value.launch_template_version, var.group_default_settings.min_size, "$Latest")
   }
 
-  availability_zones  = try(each.value.availability_zones, var.group_default.availability_zones, null)
-  vpc_zone_identifier = try(each.value.vpc_zone_identifier, var.group_default.vpc_zone_identifier, null)
+  availability_zones  = try(each.value.availability_zones, var.group_default_settings.availability_zones, null)
+  vpc_zone_identifier = try(each.value.vpc_zone_identifier, var.group_default_settings.vpc_zone_identifier, null)
 
-  min_size              = try(each.value.min_size, locals.wg_default.min_size)
-  max_size              = try(each.value.max_size, locals.wg_default.max_size)
-  desired_capacity      = try(each.value.desired_capacity, locals.wg_default.desired_capacity)
-  capacity_rebalance    = try(each.value.capacity_rebalance, var.group_default.capacity_rebalance, null)
-  default_cooldown      = try(each.value.default_cooldown, var.group_default.default_cooldown, null)
-  protect_from_scale_in = try(each.value.protect_from_scale_in, var.group_default.protect_from_scale_in, null)
+  min_size              = try(each.value.min_size, local.group_default_settings.min_size)
+  max_size              = try(each.value.max_size, local.group_default_settings.max_size)
+  desired_capacity      = try(each.value.desired_capacity, local.group_default_settings.desired_capacity)
+  capacity_rebalance    = try(each.value.capacity_rebalance, var.group_default_settings.capacity_rebalance, null)
+  default_cooldown      = try(each.value.default_cooldown, var.group_default_settings.default_cooldown, null)
+  protect_from_scale_in = try(each.value.protect_from_scale_in, var.group_default_settings.protect_from_scale_in, null)
 
-  load_balancers            = try(each.value.load_balancers, var.group_default.load_balancers, null)
-  target_group_arns         = try(each.value.target_group_arns, var.group_default.target_group_arns, null)
-  placement_group           = try(each.value.placement_group, var.group_default.placement_group, null)
-  health_check_type         = try(each.value.health_check_type, var.group_default.health_check_type, null)
-  health_check_grace_period = try(each.value.health_check_grace_period, var.group_default.health_check_grace_period, null)
+  load_balancers            = try(each.value.load_balancers, var.group_default_settings.load_balancers, null)
+  target_group_arns         = try(each.value.target_group_arns, var.group_default_settings.target_group_arns, null)
+  placement_group           = try(each.value.placement_group, var.group_default_settings.placement_group, null)
+  health_check_type         = try(each.value.health_check_type, var.group_default_settings.health_check_type, null)
+  health_check_grace_period = try(each.value.health_check_grace_period, var.group_default_settings.health_check_grace_period, null)
 
-  force_delete          = try(each.value.force_delete, var.group_default.force_delete, false)
-  termination_policies  = try(each.value.termination_policies, var.group_default.termination_policies, null)
-  suspended_processes   = try(each.value.suspended_processes, var.group_default.suspended_processes, "AZRebalance")
-  max_instance_lifetime = try(each.value.max_instance_lifetime, var.group_default.max_instance_lifetime, null)
+  force_delete          = try(each.value.force_delete, var.group_default_settings.force_delete, false)
+  termination_policies  = try(each.value.termination_policies, var.group_default_settings.termination_policies, null)
+  suspended_processes   = try(each.value.suspended_processes, var.group_default_settings.suspended_processes, "AZRebalance")
+  max_instance_lifetime = try(each.value.max_instance_lifetime, var.group_default_settings.max_instance_lifetime, null)
 
-  enabled_metrics         = try(each.value.enabled_metrics, var.group_default.enabled_metrics, null)
-  metrics_granularity     = try(each.value.metrics_granularity, var.group_default.metrics_granularity, null)
-  service_linked_role_arn = try(each.value.service_linked_role_arn, var.group_default.service_linked_role_arn, null)
+  enabled_metrics         = try(each.value.enabled_metrics, var.group_default_settings.enabled_metrics, null)
+  metrics_granularity     = try(each.value.metrics_granularity, var.group_default_settings.metrics_granularity, null)
+  service_linked_role_arn = try(each.value.service_linked_role_arn, var.group_default_settings.service_linked_role_arn, null)
 
   dynamic "initial_lifecycle_hook" {
-    for_each = try(each.value.initial_lifecycle_hook, var.group_default.initial_lifecycle_hook, {})
+    for_each = try(each.value.initial_lifecycle_hook, var.group_default_settings.initial_lifecycle_hook, {})
     iterator = hook
 
     content {
@@ -113,7 +114,7 @@ resource "aws_autoscaling_group" "this" {
   }
 
   dynamic "instance_refresh" {
-    for_each = try(each.value.instance_refresh, var.group_default.instance_refresh, {})
+    for_each = try(each.value.instance_refresh, var.group_default_settings.instance_refresh, {})
     iterator = refresh
 
     content {
@@ -131,13 +132,13 @@ resource "aws_autoscaling_group" "this" {
   }
 
   dynamic "mixed_instances_policy" {
-    for_each = try(each.value.mixed_instances_policy, var.group_default.mixed_instances_policy, {})
+    for_each = try(each.value.mixed_instances_policy, var.group_default_settings.mixed_instances_policy, {})
     iterator = mixed
 
     content {
       dynamic "instances_distribution" {
         for_each = try(mixed.value.instances_distribution, {})
-        iterater = distro
+        iterator = distro
 
         content {
           on_demand_allocation_strategy            = lookup(distro.value, "on_demand_allocation_strategy", null)
@@ -174,7 +175,7 @@ resource "aws_autoscaling_group" "this" {
   }
 
   dynamic "warm_pool" {
-    for_each = try(each.value.warm_pool, var.group_default.warm_pool, {})
+    for_each = try(each.value.warm_pool, var.group_default_settings.warm_pool, {})
 
     content {
       pool_state                  = lookup(warm_pool.value, "pool_state", null)
@@ -223,28 +224,27 @@ resource "aws_autoscaling_group" "this" {
 
 resource "aws_launch_template" "this" {
   for_each = var.create_eks ? var.launch_templates : {}
-  iterater = template
 
-  name_prefix = "${local.cluster_name}-${lookup(template.value, "name", each.key)}"
-  description = lookup(template.value, "description", null)
+  name_prefix = "${local.cluster_name}-${try(each.value.name, each.key)}"
+  description = try(each.value.description, var.group_default_settings.description, null)
 
-  ebs_optimized = lookup(template.value, "ebs_optimized", null)
-  image_id      = lookup(template.value, "image_id", null)
-  instance_type = lookup(template.value, "instance_type", "m6i.large")
-  key_name      = lookup(template.value, "key_name", null)
-  user_data     = lookup(template.value, "user_data", null)
+  ebs_optimized = try(each.value.ebs_optimized, var.group_default_settings.ebs_optimized, null)
+  image_id      = try(each.value.image_id, var.group_default_settings.image_id, null)
+  instance_type = try(each.value.instance_type, var.group_default_settings.instance_type, "m6i.large")
+  key_name      = try(each.value.key_name, var.group_default_settings.key_name, null)
+  user_data     = try(each.value.user_data, var.group_default_settings.user_data, null)
 
-  vpc_security_group_ids = lookup(template.value, "vpc_security_group_ids", null)
+  vpc_security_group_ids = try(each.value.vpc_security_group_ids, var.group_default_settings.vpc_security_group_ids, null)
 
-  default_version                      = lookup(template.value, "default_version", null)
-  update_default_version               = lookup(template.value, "update_default_version", null)
-  disable_api_termination              = lookup(template.value, "disable_api_termination", null)
-  instance_initiated_shutdown_behavior = lookup(template.value, "instance_initiated_shutdown_behavior", null)
-  kernel_id                            = lookup(template.value, "kernel_id", null)
-  ram_disk_id                          = lookup(template.value, "ram_disk_id", null)
+  default_version                      = try(each.value.default_version, var.group_default_settings.default_version, null)
+  update_default_version               = try(each.value.update_default_version, var.group_default_settings.update_default_version, null)
+  disable_api_termination              = try(each.value.disable_api_termination, var.group_default_settings.disable_api_termination, null)
+  instance_initiated_shutdown_behavior = try(each.value.instance_initiated_shutdown_behavior, var.group_default_settings.instance_initiated_shutdown_behavior, null)
+  kernel_id                            = try(each.value.kernel_id, var.group_default_settings.kernel_id, null)
+  ram_disk_id                          = try(each.value.ram_disk_id, var.group_default_settings.ram_disk_id, null)
 
   dynamic "block_device_mappings" {
-    for_each = lookup(each.value, "block_device_mappings", null) != null ? each.value.block_device_mappings : []
+    for_each = try(each.value.block_device_mappings, var.group_default_settings.block_device_mappings, [])
     content {
       device_name  = block_device_mappings.value.device_name
       no_device    = lookup(block_device_mappings.value, "no_device", null)
@@ -267,7 +267,7 @@ resource "aws_launch_template" "this" {
   }
 
   dynamic "capacity_reservation_specification" {
-    for_each = lookup(each.value, "capacity_reservation_specification", null) != null ? [each.value.capacity_reservation_specification] : []
+    for_each = try(each.value.capacity_reservation_specification, var.group_default_settings.capacity_reservation_specification, [])
     content {
       capacity_reservation_preference = lookup(capacity_reservation_specification.value, "capacity_reservation_preference", null)
 
@@ -281,7 +281,7 @@ resource "aws_launch_template" "this" {
   }
 
   dynamic "cpu_options" {
-    for_each = lookup(each.value, "cpu_options", null) != null ? [each.value.cpu_options] : []
+    for_each = try(each.value.cpu_options, var.group_default_settings.cpu_options, [])
     content {
       core_count       = cpu_options.value.core_count
       threads_per_core = cpu_options.value.threads_per_core
@@ -289,35 +289,35 @@ resource "aws_launch_template" "this" {
   }
 
   dynamic "credit_specification" {
-    for_each = lookup(each.value, "credit_specification", null) != null ? [each.value.credit_specification] : []
+    for_each = try(each.value.credit_specification, var.group_default_settings.credit_specification, [])
     content {
       cpu_credits = credit_specification.value.cpu_credits
     }
   }
 
   dynamic "elastic_gpu_specifications" {
-    for_each = lookup(each.value, "elastic_gpu_specifications", null) != null ? [each.value.elastic_gpu_specifications] : []
+    for_each = try(each.value.elastic_gpu_specifications, var.group_default_settings.elastic_gpu_specifications, [])
     content {
       type = elastic_gpu_specifications.value.type
     }
   }
 
   dynamic "elastic_inference_accelerator" {
-    for_each = lookup(each.value, "elastic_inference_accelerator", null) != null ? [each.value.elastic_inference_accelerator] : []
+    for_each = try(each.value.elastic_inference_accelerator, var.group_default_settings.elastic_inference_accelerator, [])
     content {
       type = elastic_inference_accelerator.value.type
     }
   }
 
   dynamic "enclave_options" {
-    for_each = lookup(each.value, "enclave_options", null) != null ? [each.value.enclave_options] : []
+    for_each = try(each.value.enclave_options, var.group_default_settings.enclave_options, [])
     content {
       enabled = enclave_options.value.enabled
     }
   }
 
   dynamic "hibernation_options" {
-    for_each = lookup(each.value, "hibernation_options", null) != null ? [each.value.hibernation_options] : []
+    for_each = try(each.value.hibernation_options, var.group_default_settings.hibernation_options, [])
     content {
       configured = hibernation_options.value.configured
     }
@@ -329,22 +329,21 @@ resource "aws_launch_template" "this" {
   #     data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.name,
   #   )[count.index]
   # }
-
+  # TODO - oy
   dynamic "iam_instance_profile" {
-    for_each = lookup(each.value, "iam_instance_profile", null) != null ? [1] : []
+    for_each = try([each.value.iam_instance_profile_name], [])
     content {
-      name = iam_instance_profile.value.name
-      arn  = iam_instance_profile.value.arn
+      name = each.value
     }
   }
 
   dynamic "instance_market_options" {
-    for_each = lookup(each.value, "instance_market_options", null) != null ? [each.value.instance_market_options] : []
+    for_each = try(each.value.instance_market_options, var.group_default_settings.instance_market_options, [])
     content {
       market_type = instance_market_options.value.market_type
 
       dynamic "spot_options" {
-        for_each = lookup(instance_market_options.value, "spot_options", null) != null ? [instance_market_options.value.spot_options] : []
+        for_each = try([instance_market_options.value.spot_options], [])
         content {
           block_duration_minutes         = spot_options.value.block_duration_minutes
           instance_interruption_behavior = lookup(spot_options.value, "instance_interruption_behavior", null)
@@ -357,14 +356,14 @@ resource "aws_launch_template" "this" {
   }
 
   dynamic "license_specification" {
-    for_each = lookup(each.value, "license_specifications", null) != null ? [each.value.license_specifications] : []
+    for_each = try(each.value.license_specifications, var.group_default_settings.license_specifications, [])
     content {
       license_configuration_arn = license_specifications.value.license_configuration_arn
     }
   }
 
   dynamic "metadata_options" {
-    for_each = lookup(each.value, "metadata_options", null) != null ? [each.value.metadata_options] : []
+    for_each = try([each.value.metadata_options], [var.group_default_settings.metadata_options], [])
     content {
       http_endpoint               = lookup(metadata_options.value, "http_endpoint", null)
       http_tokens                 = lookup(metadata_options.value, "http_tokens", null)
@@ -373,14 +372,14 @@ resource "aws_launch_template" "this" {
   }
 
   dynamic "monitoring" {
-    for_each = lookup(each.value, "enable_monitoring", null) != null ? [1] : []
+    for_each = try(each.value.enable_monitoring, var.group_default_settings.enable_monitoring, [])
     content {
-      enabled = each.value.enable_monitoring
+      enabled = each.value
     }
   }
 
   dynamic "network_interfaces" {
-    for_each = lookup(each.value, "network_interfaces", null) != null ? each.value.network_interfaces : []
+    for_each = try(each.value.network_interfaces, var.group_default_settings.network_interfaces, [])
     iterator = interface
     content {
       associate_carrier_ip_address = lookup(interface.value, "associate_carrier_ip_address", null)
@@ -400,7 +399,7 @@ resource "aws_launch_template" "this" {
   }
 
   dynamic "placement" {
-    for_each = lookup(each.value, "placement", null) != null ? [each.value.placement] : []
+    for_each = try(each.value.placement, var.group_default_settings.placement, [])
     content {
       affinity          = lookup(placement.value, "affinity", null)
       availability_zone = lookup(placement.value, "availability_zone", null)
@@ -414,9 +413,8 @@ resource "aws_launch_template" "this" {
 
   tag_specifications {
     resource_type = "volume"
-
     tags = merge(
-      { "Name" = "${local.cluster_name}-${lookup(each.value, "name", each.key)}-eks_asg" },
+      { "Name" = "${local.cluster_name}-${try(each.value.name, each.key)}-eks_asg" },
       var.tags,
       { for tag in lookup(each.value, "tags", {}) : tag["key"] => tag["value"] if tag["key"] != "Name" && tag["propagate_at_launch"] }
     )
@@ -424,9 +422,8 @@ resource "aws_launch_template" "this" {
 
   tag_specifications {
     resource_type = "instance"
-
     tags = merge(
-      { "Name" = "${local.cluster_name}-${lookup(each.value, "name", each.key)}-eks_asg" },
+      { "Name" = "${local.cluster_name}-${try(each.value.name, each.key)}-eks_asg" },
       { for tag_key, tag_value in var.tags :
         tag_key => tag_value
         if tag_key != "Name" && !contains([for tag in lookup(each.value, "tags", {}) : tag["key"]], tag_key)
@@ -436,9 +433,8 @@ resource "aws_launch_template" "this" {
 
   tag_specifications {
     resource_type = "network-interface"
-
     tags = merge(
-      { "Name" = "${local.cluster_name}-${lookup(each.value, "name", each.key)}-eks_asg" },
+      { "Name" = "${local.cluster_name}-${try(each.value.name, each.key)}-eks_asg" },
       var.tags,
       { for tag in lookup(each.value, "tags", {}) : tag["key"] => tag["value"] if tag["key"] != "Name" && tag["propagate_at_launch"] }
     )
@@ -460,26 +456,63 @@ resource "aws_launch_template" "this" {
     aws_iam_role_policy_attachment.workers_additional_policies
   ]
 
-  dynamic "tag_specifications" {
-    for_each = lookup(each.value, "tag_specifications", null) != null ? each.value.tag_specifications : []
-    content {
-      resource_type = tag_specifications.value.resource_type
-      tags          = tag_specifications.value.tags
-    }
-  }
-
   lifecycle {
     create_before_destroy = true
   }
 
+  tags = merge(var.tags, lookup(each.value, "tags", {}))
+}
+
+################################################################################
+# IAM Role & Instance Profile
+################################################################################
+
+resource "aws_iam_role" "workers" {
+  count = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
+
+  name_prefix           = var.workers_role_name != "" ? null : local.cluster_name
+  name                  = var.workers_role_name != "" ? var.workers_role_name : null
+  assume_role_policy    = data.aws_iam_policy_document.workers_assume_role_policy.json
+  permissions_boundary  = var.permissions_boundary
+  path                  = var.iam_path
+  force_detach_policies = true
+
   tags = var.tags
 }
 
+resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {
+  count = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
+
+  policy_arn = "${local.policy_arn_prefix}/AmazonEKSWorkerNodePolicy"
+  role       = aws_iam_role.workers[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "workers_AmazonEKS_CNI_Policy" {
+  count = var.manage_worker_iam_resources && var.attach_worker_cni_policy && var.create_eks ? 1 : 0
+
+  policy_arn = "${local.policy_arn_prefix}/AmazonEKS_CNI_Policy"
+  role       = aws_iam_role.workers[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryReadOnly" {
+  count = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
+
+  policy_arn = "${local.policy_arn_prefix}/AmazonEC2ContainerRegistryReadOnly"
+  role       = aws_iam_role.workers[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "workers_additional_policies" {
+  for_each = var.manage_worker_iam_resources && var.create_eks ? toset(var.workers_additional_policies) : []
+
+  role       = aws_iam_role.workers[0].name
+  policy_arn = each.value
+}
+
 resource "aws_iam_instance_profile" "workers" {
-  count = var.manage_worker_iam_resources && var.create_eks ? var.iam_instance_profiles : {}
+  for_each = var.manage_worker_iam_resources && var.create_eks ? var.iam_instance_profiles : {}
 
   name_prefix = local.cluster_name
-  role        = lookup(var.worker_groups[count.index], "iam_role_id", local.default_iam_role_id)
+  role        = aws_iam_role.workers[0].id
   path        = var.iam_path
 
   lifecycle {
@@ -488,6 +521,10 @@ resource "aws_iam_instance_profile" "workers" {
 
   tags = var.tags
 }
+
+################################################################################
+# Security Group
+################################################################################
 
 resource "aws_security_group" "workers" {
   count = var.worker_create_security_group && var.create_eks ? 1 : 0
@@ -586,45 +623,4 @@ resource "aws_security_group_rule" "cluster_primary_ingress_workers" {
   from_port                = 0
   to_port                  = 65535
   type                     = "ingress"
-}
-
-resource "aws_iam_role" "workers" {
-  count = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
-
-  name_prefix           = var.workers_role_name != "" ? null : local.cluster_name
-  name                  = var.workers_role_name != "" ? var.workers_role_name : null
-  assume_role_policy    = data.aws_iam_policy_document.workers_assume_role_policy.json
-  permissions_boundary  = var.permissions_boundary
-  path                  = var.iam_path
-  force_detach_policies = true
-
-  tags = var.tags
-}
-
-resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {
-  count = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
-
-  policy_arn = "${local.policy_arn_prefix}/AmazonEKSWorkerNodePolicy"
-  role       = aws_iam_role.workers[0].name
-}
-
-resource "aws_iam_role_policy_attachment" "workers_AmazonEKS_CNI_Policy" {
-  count = var.manage_worker_iam_resources && var.attach_worker_cni_policy && var.create_eks ? 1 : 0
-
-  policy_arn = "${local.policy_arn_prefix}/AmazonEKS_CNI_Policy"
-  role       = aws_iam_role.workers[0].name
-}
-
-resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryReadOnly" {
-  count = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
-
-  policy_arn = "${local.policy_arn_prefix}/AmazonEC2ContainerRegistryReadOnly"
-  role       = aws_iam_role.workers[0].name
-}
-
-resource "aws_iam_role_policy_attachment" "workers_additional_policies" {
-  count = var.manage_worker_iam_resources && var.create_eks ? length(var.workers_additional_policies) : 0
-
-  role       = aws_iam_role.workers[0].name
-  policy_arn = var.workers_additional_policies[count.index]
 }

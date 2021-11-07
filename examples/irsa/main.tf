@@ -26,8 +26,8 @@ module "eks" {
 
   enable_irsa = true
 
-  worker_groups = [
-    {
+  worker_groups = {
+    one = {
       name                 = "worker-group-1"
       instance_type        = "t3.medium"
       asg_desired_capacity = 1
@@ -45,7 +45,8 @@ module "eks" {
         }
       ]
     }
-  ]
+  }
+
   tags = {
     Example    = local.name
     GithubRepo = "terraform-aws-eks"

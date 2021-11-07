@@ -4,12 +4,12 @@ The latest versions of the AWS EKS-optimized AMI disable the docker bridge netwo
 
 ```hcl
 locals {
-  worker_groups = [
-    {
+  worker_groups = {
+    one = {
       # Other parameters omitted for brevity
       bootstrap_extra_args = "--enable-docker-bridge true"
     }
-  ]
+  }
 }
 ```
 

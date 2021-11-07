@@ -146,34 +146,34 @@ Amazon EKS clusters must contain one or more Linux worker nodes to run core syst
 1. Build AWS EKS cluster with the next workers configuration (default Linux):
 
 ```hcl
-worker_groups = [
-    {
+  worker_groups = {
+    one = {
       name                          = "worker-group-linux"
       instance_type                 = "m5.large"
       platform                      = "linux"
       asg_desired_capacity          = 2
     },
-  ]
+  }
 ```
 
 2. Apply commands from https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support (use tab with name `Windows`)
 3. Add one more worker group for Windows with required field `platform = "windows"` and update your cluster. Worker group example:
 
 ```hcl
-worker_groups = [
-    {
+  worker_groups = {
+    linux = {
       name                          = "worker-group-linux"
       instance_type                 = "m5.large"
       platform                      = "linux"
       asg_desired_capacity          = 2
     },
-    {
+    windows = {
       name                          = "worker-group-windows"
       instance_type                 = "m5.large"
       platform                      = "windows"
       asg_desired_capacity          = 1
     },
-  ]
+  }
 ```
 
 4. With `kubectl get nodes` you can see cluster with mixed (Linux/Windows) nodes support.
@@ -217,12 +217,12 @@ module "eks" {
     subnets = ["subnet-xyz123", "subnet-xyz456", "subnet-xyz789"]
   }
 
-  worker_groups = [
-    {
+  worker_groups = {
+    one = {
       instance_type = "m4.large"
       asg_max_size  = 5
     },
-    {
+    two = {
       name                 = "worker-group-2"
       subnets              = ["subnet-qwer123"]
       instance_type        = "t3.medium"
@@ -230,6 +230,6 @@ module "eks" {
       public_ip            = true
       ebs_optimized        = true
     }
-  ]
+  }
 }
 ```

@@ -21,8 +21,8 @@ module "eks" {
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
-  worker_groups = [
-    {
+  worker_groups = {
+    one = {
       name                 = "worker-group-1"
       instance_type        = "t3.small"
       asg_desired_capacity = 2
@@ -32,22 +32,22 @@ module "eks" {
         value               = "TagValue"
         propagate_at_launch = true
       }]
-    },
-    {
+    }
+    two = {
       name                 = "worker-group-2"
       instance_type        = "t3.medium"
       asg_desired_capacity = 1
       public_ip            = true
       ebs_optimized        = true
-    },
-    {
+    }
+    three = {
       name                          = "worker-group-3"
       instance_type                 = "t2.large"
       asg_desired_capacity          = 1
       public_ip                     = true
       elastic_inference_accelerator = "eia2.medium"
-    },
-    {
+    }
+    four = {
       name                   = "worker-group-4"
       instance_type          = "t3.small"
       asg_desired_capacity   = 1
@@ -64,7 +64,7 @@ module "eks" {
         },
       ]
     },
-  ]
+  }
 
   tags = {
     Example    = local.name

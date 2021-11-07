@@ -1,13 +1,13 @@
 locals {
 
   # EKS Cluster
-  cluster_id                        = coalescelist(aws_eks_cluster.this[*].id, [""])[0]
-  cluster_arn                       = coalescelist(aws_eks_cluster.this[*].arn, [""])[0]
-  cluster_name                      = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
-  cluster_endpoint                  = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
-  cluster_auth_base64               = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
+  cluster_id                        = try(aws_eks_cluster.this[0].id, "")
+  cluster_arn                       = try(aws_eks_cluster.this[0].arn, "")
+  cluster_name                      = try(aws_eks_cluster.this[0].name, "")
+  cluster_endpoint                  = try(aws_eks_cluster.this[0].endpoint, "")
+  cluster_auth_base64               = try(aws_eks_cluster.this[0].certificate_authority[0].data, "")
   cluster_oidc_issuer_url           = flatten(concat(aws_eks_cluster.this[*].identity[*].oidc[0].issuer, [""]))[0]
-  cluster_primary_security_group_id = coalescelist(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, [""])[0]
+  cluster_primary_security_group_id = try(aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id, "")
 
   cluster_security_group_id = var.cluster_create_security_group ? join("", aws_security_group.cluster.*.id) : var.cluster_security_group_id
   cluster_iam_role_name     = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.name) : var.cluster_iam_role_name
@@ -15,9 +15,7 @@ locals {
 
   # Worker groups
   worker_security_group_id = var.worker_create_security_group ? join("", aws_security_group.workers.*.id) : var.worker_security_group_id
-
-  default_iam_role_id     = concat(aws_iam_role.workers.*.id, [""])[0]
-  worker_groups_platforms = [for x in var.worker_groups : try(x.platform, var.default_platform)]
+  worker_groups_platforms  = [for x in var.worker_groups : try(x.platform, var.default_platform)]
 
   worker_ami_name_filter         = coalesce(var.worker_ami_name_filter, "amazon-eks-node-${coalesce(var.cluster_version, "cluster_version")}-v*")
   worker_ami_name_filter_windows = coalesce(var.worker_ami_name_filter_windows, "Windows_Server-2019-English-Core-EKS_Optimized-${coalesce(var.cluster_version, "cluster_version")}-*")
@@ -39,25 +37,24 @@ locals {
   }) : ""
 
   launch_template_userdata_rendered = [
-    for index in range(var.create_eks ? local.worker_group_count : 0) : templatefile(
-      lookup(
-        var.worker_groups[index],
-        "userdata_template_file",
-        lookup(var.worker_groups[index], "platform", var.platform_default) == "windows"
+    for key, group in(var.create_eks ? var.worker_groups : {}) : templatefile(
+      try(
+        group.userdata_template_file,
+        lookup(group, "platform", var.default_platform) == "windows"
         ? "${path.module}/templates/userdata_windows.tpl"
         : "${path.module}/templates/userdata.sh.tpl"
       ),
       merge({
-        platform             = lookup(var.worker_groups[index], "platform", var.platform_default)
+        platform             = lookup(group, "platform", var.default_platform)
         cluster_name         = local.cluster_name
         endpoint             = local.cluster_endpoint
         cluster_auth_base64  = local.cluster_auth_base64
-        pre_userdata         = lookup(var.worker_groups[index], "pre_userdata", "")
-        additional_userdata  = lookup(var.worker_groups[index], "additional_userdata", "")
-        bootstrap_extra_args = lookup(var.worker_groups[index], "bootstrap_extra_args", "")
-        kubelet_extra_args   = lookup(var.worker_groups[index], "kubelet_extra_args", "")
+        pre_userdata         = lookup(group, "pre_userdata", "")
+        additional_userdata  = lookup(group, "additional_userdata", "")
+        bootstrap_extra_args = lookup(group, "bootstrap_extra_args", "")
+        kubelet_extra_args   = lookup(group, "kubelet_extra_args", "")
         },
-        lookup(var.worker_groups[index], "userdata_template_extra_args", "")
+        lookup(group, "userdata_template_extra_args", "")
       )
     )
   ]

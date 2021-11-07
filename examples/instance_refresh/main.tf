@@ -212,8 +212,8 @@ module "eks" {
   cluster_endpoint_public_access  = true
 
   enable_irsa = true
-  worker_groups = [
-    {
+  worker_groups = {
+    one = {
       name                                 = "refresh"
       asg_max_size                         = 2
       asg_desired_capacity                 = 2
@@ -236,7 +236,7 @@ module "eks" {
         }
       ]
     }
-  ]
+  }
 
   tags = {
     Example    = local.name

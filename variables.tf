@@ -96,6 +96,18 @@ variable "map_users" {
   default = []
 }
 
+variable "launch_templates" {
+  description = "Map of launch template definitions to create"
+  type        = map(any)
+  default     = {}
+}
+
+variable "iam_instance_profiles" {
+  description = "Map of instance profile definitions to create"
+  type        = map(any)
+  default     = {}
+}
+
 variable "fargate_subnets" {
   description = "A list of subnets to place fargate workers within (if different from subnets)."
   type        = list(string)
@@ -129,6 +141,12 @@ variable "vpc_id" {
 variable "worker_groups" {
   description = "A map of maps defining worker group configurations to be defined using AWS Launch Template"
   type        = map(any)
+  default     = {}
+}
+
+variable "group_default_settings" {
+  description = "Override default values for autoscaling group, node group settings"
+  type        = any
   default     = {}
 }
 

@@ -28,6 +28,12 @@ variable "default_iam_role_arn" {
   default     = ""
 }
 
+variable "node_default_settings" {
+  description = "Node group defaults from parent"
+  type        = any
+  default     = {}
+}
+
 variable "worker_security_group_id" {
   description = "If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the EKS cluster."
   type        = string
