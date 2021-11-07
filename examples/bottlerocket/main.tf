@@ -28,7 +28,7 @@ module "eks" {
   write_kubeconfig = false
   manage_aws_auth  = true
 
-  worker_groups_launch_template = [
+  worker_groups = [
     {
       name                 = "bottlerocket-nodes"
       ami_id               = data.aws_ami.bottlerocket_ami.id

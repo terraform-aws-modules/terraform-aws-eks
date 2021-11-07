@@ -22,55 +22,12 @@ Notes:
 - There is an AWS blog article about this [here](https://aws.amazon.com/blogs/compute/run-your-kubernetes-workloads-on-amazon-ec2-spot-instances-with-amazon-eks/).
 - Consider using [k8s-spot-rescheduler](https://github.com/pusher/k8s-spot-rescheduler) to move pods from on-demand to spot instances.
 
-## Using Launch Configuration
-
-Example worker group configuration that uses an ASG with launch configuration for each worker group:
-
-```hcl
-  worker_groups = [
-    {
-      name                = "on-demand-1"
-      instance_type       = "m4.xlarge"
-      asg_max_size        = 1
-      kubelet_extra_args  = "--node-labels=node.kubernetes.io/lifecycle=normal"
-      suspended_processes = ["AZRebalance"]
-    },
-    {
-      name                = "spot-1"
-      spot_price          = "0.199"
-      instance_type       = "c4.xlarge"
-      asg_max_size        = 20
-      kubelet_extra_args  = "--node-labels=node.kubernetes.io/lifecycle=spot"
-      suspended_processes = ["AZRebalance"]
-    },
-    {
-      name                = "spot-2"
-      spot_price          = "0.20"
-      instance_type       = "m4.xlarge"
-      asg_max_size        = 20
-      kubelet_extra_args  = "--node-labels=node.kubernetes.io/lifecycle=spot"
-      suspended_processes = ["AZRebalance"]
-    }
-  ]
-```
-
 ## Using Launch Templates
 
-Launch Template support is a recent addition to both AWS and this module. It might not be as tried and tested but it's more suitable for spot instances as it allowed multiple instance types in the same worker group:
+Only Launch Template is supported in this module; Launch Configuration support has been deprecated and removed:
 
 ```hcl
   worker_groups = [
-    {
-      name                = "on-demand-1"
-      instance_type       = "m4.xlarge"
-      asg_max_size        = 10
-      kubelet_extra_args  = "--node-labels=spot=false"
-      suspended_processes = ["AZRebalance"]
-    }
-  ]
-
-
-  worker_groups_launch_template = [
     {
       name                    = "spot-1"
       override_instance_types = ["m5.large", "m5a.large", "m5d.large", "m5ad.large"]
@@ -90,7 +47,7 @@ Example launch template to launch 2 on demand instances of type m5.large, and ha
 `on_demand_percentage_above_base_capacity` is set to 25 so 1 in 4 new nodes, when auto-scaling, will be on-demand instances. If not set, all new nodes will be spot instances. The on-demand instances will be the primary instance type (first in the array if they are not weighted).
 
 ```hcl
-  worker_groups_launch_template = [{
+  worker_groups = [{
     name                    = "mixed-demand-spot"
     override_instance_types = ["m5.large", "m5a.large", "m4.large"]
     root_encrypted          = true

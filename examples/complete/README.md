@@ -40,10 +40,10 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_disabled_eks"></a> [disabled\_eks](#module\_disabled\_eks) | ../.. |  |
-| <a name="module_disabled_fargate"></a> [disabled\_fargate](#module\_disabled\_fargate) | ../../modules/fargate |  |
-| <a name="module_disabled_node_groups"></a> [disabled\_node\_groups](#module\_disabled\_node\_groups) | ../../modules/node_groups |  |
-| <a name="module_eks"></a> [eks](#module\_eks) | ../.. |  |
+| <a name="module_disabled_eks"></a> [disabled\_eks](#module\_disabled\_eks) | ../.. | n/a |
+| <a name="module_disabled_fargate"></a> [disabled\_fargate](#module\_disabled\_fargate) | ../../modules/fargate | n/a |
+| <a name="module_disabled_node_groups"></a> [disabled\_node\_groups](#module\_disabled\_node\_groups) | ../../modules/node_groups | n/a |
+| <a name="module_eks"></a> [eks](#module\_eks) | ../.. | n/a |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.0 |
 
 ## Resources

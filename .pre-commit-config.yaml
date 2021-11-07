@@ -5,6 +5,8 @@ repos:
       - id: terraform_fmt
       - id: terraform_validate
       - id: terraform_docs
+        args:
+          - '--args=--lockfile=false'
       - id: terraform_tflint
         args:
           - '--args=--only=terraform_deprecated_interpolation'

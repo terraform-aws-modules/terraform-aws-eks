@@ -1,24 +1,6 @@
 locals {
-  auth_launch_template_worker_roles = [
-    for index in range(0, var.create_eks ? local.worker_group_launch_template_count : 0) : {
-      worker_role_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${element(
-        coalescelist(
-          aws_iam_instance_profile.workers_launch_template.*.role,
-          data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_name,
-          [""]
-        ),
-        index
-      )}"
-      platform = lookup(
-        var.worker_groups_launch_template[index],
-        "platform",
-        local.workers_group_defaults["platform"]
-      )
-    }
-  ]
-
   auth_worker_roles = [
-    for index in range(0, var.create_eks ? local.worker_group_launch_configuration_count : 0) : {
+    for index in range(0, var.create_eks ? local.worker_group_count : 0) : {
       worker_role_arn = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/${element(
         coalescelist(
           aws_iam_instance_profile.workers.*.role,
@@ -38,7 +20,6 @@ locals {
   # Convert to format needed by aws-auth ConfigMap
   configmap_roles = [
     for role in concat(
-      local.auth_launch_template_worker_roles,
       local.auth_worker_roles,
       module.node_groups.aws_auth_roles,
       module.fargate.aws_auth_roles,

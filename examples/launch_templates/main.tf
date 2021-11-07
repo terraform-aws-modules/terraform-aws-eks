@@ -21,7 +21,7 @@ module "eks" {
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
-  worker_groups_launch_template = [
+  worker_groups = [
     {
       name                 = "worker-group-1"
       instance_type        = "t3.small"

@@ -92,26 +92,17 @@ output "oidc_provider_arn" {
 
 output "workers_asg_arns" {
   description = "IDs of the autoscaling groups containing workers."
-  value = concat(
-    aws_autoscaling_group.workers.*.arn,
-    aws_autoscaling_group.workers_launch_template.*.arn,
-  )
+  value       = aws_autoscaling_group.workers.*.arn
 }
 
 output "workers_asg_names" {
   description = "Names of the autoscaling groups containing workers."
-  value = concat(
-    aws_autoscaling_group.workers.*.id,
-    aws_autoscaling_group.workers_launch_template.*.id,
-  )
+  value       = aws_autoscaling_group.workers.*.id
 }
 
 output "workers_user_data" {
   description = "User data of worker groups"
-  value = concat(
-    local.launch_configuration_userdata_rendered,
-    local.launch_template_userdata_rendered,
-  )
+  value       = local.launch_template_userdata_rendered
 }
 
 output "workers_default_ami_id" {
@@ -146,18 +137,12 @@ output "worker_security_group_id" {
 
 output "worker_iam_instance_profile_arns" {
   description = "default IAM instance profile ARN for EKS worker groups"
-  value = concat(
-    aws_iam_instance_profile.workers.*.arn,
-    aws_iam_instance_profile.workers_launch_template.*.arn
-  )
+  value       = aws_iam_instance_profile.workers.*.arn
 }
 
 output "worker_iam_instance_profile_names" {
   description = "default IAM instance profile name for EKS worker groups"
-  value = concat(
-    aws_iam_instance_profile.workers.*.name,
-    aws_iam_instance_profile.workers_launch_template.*.name
-  )
+  value       = aws_iam_instance_profile.workers.*.name
 }
 
 output "worker_iam_role_name" {
@@ -165,7 +150,6 @@ output "worker_iam_role_name" {
   value = coalescelist(
     aws_iam_role.workers.*.name,
     data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_name,
-    data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_name,
     [""]
   )[0]
 }
@@ -175,7 +159,6 @@ output "worker_iam_role_arn" {
   value = coalescelist(
     aws_iam_role.workers.*.arn,
     data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_arn,
-    data.aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile.*.role_arn,
     [""]
   )[0]
 }

@@ -20,10 +20,9 @@ locals {
   default_ami_id_linux   = local.workers_group_defaults.ami_id != "" ? local.workers_group_defaults.ami_id : concat(data.aws_ami.eks_worker.*.id, [""])[0]
   default_ami_id_windows = local.workers_group_defaults.ami_id_windows != "" ? local.workers_group_defaults.ami_id_windows : concat(data.aws_ami.eks_worker_windows.*.id, [""])[0]
 
-  worker_group_launch_configuration_count = length(var.worker_groups)
-  worker_group_launch_template_count      = length(var.worker_groups_launch_template)
+  worker_group_count = length(var.worker_groups)
 
-  worker_groups_platforms = [for x in concat(var.worker_groups, var.worker_groups_launch_template) : try(x.platform, var.workers_group_defaults["platform"], var.default_platform)]
+  worker_groups_platforms = [for x in var.worker_groups : try(x.platform, var.workers_group_defaults["platform"], var.default_platform)]
 
   worker_ami_name_filter         = coalesce(var.worker_ami_name_filter, "amazon-eks-node-${coalesce(var.cluster_version, "cluster_version")}-v*")
   worker_ami_name_filter_windows = coalesce(var.worker_ami_name_filter_windows, "Windows_Server-2019-English-Core-EKS_Optimized-${coalesce(var.cluster_version, "cluster_version")}-*")
@@ -173,8 +172,8 @@ locals {
     aws_authenticator_env_variables         = var.kubeconfig_aws_authenticator_env_variables
   }) : ""
 
-  launch_configuration_userdata_rendered = [
-    for index in range(var.create_eks ? local.worker_group_launch_configuration_count : 0) : templatefile(
+  launch_template_userdata_rendered = [
+    for index in range(var.create_eks ? local.worker_group_count : 0) : templatefile(
       lookup(
         var.worker_groups[index],
         "userdata_template_file",
@@ -210,50 +209,6 @@ locals {
         },
         lookup(
           var.worker_groups[index],
-          "userdata_template_extra_args",
-          local.workers_group_defaults["userdata_template_extra_args"]
-        )
-      )
-    )
-  ]
-
-  launch_template_userdata_rendered = [
-    for index in range(var.create_eks ? local.worker_group_launch_template_count : 0) : templatefile(
-      lookup(
-        var.worker_groups_launch_template[index],
-        "userdata_template_file",
-        lookup(var.worker_groups_launch_template[index], "platform", local.workers_group_defaults["platform"]) == "windows"
-        ? "${path.module}/templates/userdata_windows.tpl"
-        : "${path.module}/templates/userdata.sh.tpl"
-      ),
-      merge({
-        platform            = lookup(var.worker_groups_launch_template[index], "platform", local.workers_group_defaults["platform"])
-        cluster_name        = local.cluster_name
-        endpoint            = local.cluster_endpoint
-        cluster_auth_base64 = local.cluster_auth_base64
-        pre_userdata = lookup(
-          var.worker_groups_launch_template[index],
-          "pre_userdata",
-          local.workers_group_defaults["pre_userdata"],
-        )
-        additional_userdata = lookup(
-          var.worker_groups_launch_template[index],
-          "additional_userdata",
-          local.workers_group_defaults["additional_userdata"],
-        )
-        bootstrap_extra_args = lookup(
-          var.worker_groups_launch_template[index],
-          "bootstrap_extra_args",
-          local.workers_group_defaults["bootstrap_extra_args"],
-        )
-        kubelet_extra_args = lookup(
-          var.worker_groups_launch_template[index],
-          "kubelet_extra_args",
-          local.workers_group_defaults["kubelet_extra_args"],
-        )
-        },
-        lookup(
-          var.worker_groups_launch_template[index],
           "userdata_template_extra_args",
           local.workers_group_defaults["userdata_template_extra_args"]
         )

@@ -29,26 +29,8 @@ module "eks" {
 
   worker_additional_security_group_ids = [aws_security_group.all_worker_mgmt.id]
 
-  # Worker groups (using Launch Configurations)
+  # Worker groups
   worker_groups = [
-    {
-      name                          = "worker-group-1"
-      instance_type                 = "t3.small"
-      additional_userdata           = "echo foo bar"
-      asg_desired_capacity          = 2
-      additional_security_group_ids = [aws_security_group.worker_group_mgmt_one.id]
-    },
-    {
-      name                          = "worker-group-2"
-      instance_type                 = "t3.medium"
-      additional_userdata           = "echo foo bar"
-      additional_security_group_ids = [aws_security_group.worker_group_mgmt_two.id]
-      asg_desired_capacity          = 1
-    },
-  ]
-
-  # Worker groups (using Launch Templates)
-  worker_groups_launch_template = [
     {
       name                    = "spot-1"
       override_instance_types = ["m5.large", "m5a.large", "m5d.large", "m5ad.large"]

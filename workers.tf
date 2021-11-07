@@ -1,7 +1,5 @@
-# Worker Groups using Launch Configurations
-
 resource "aws_autoscaling_group" "workers" {
-  count = var.create_eks ? local.worker_group_launch_configuration_count : 0
+  count = var.create_eks ? local.worker_group_count : 0
 
   name_prefix = join(
     "-",
@@ -47,7 +45,6 @@ resource "aws_autoscaling_group" "workers" {
     "service_linked_role_arn",
     local.workers_group_defaults["service_linked_role_arn"],
   )
-  launch_configuration = aws_launch_configuration.workers.*.id[count.index]
   vpc_zone_identifier = lookup(
     var.worker_groups[count.index],
     "subnets",
@@ -104,6 +101,95 @@ resource "aws_autoscaling_group" "workers" {
     local.workers_group_defaults["capacity_rebalance"]
   )
 
+  dynamic "mixed_instances_policy" {
+    iterator = item
+    for_each = (lookup(var.worker_groups[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups[count.index], "on_demand_allocation_strategy", local.workers_group_defaults["on_demand_allocation_strategy"]) != null) ? [var.worker_groups[count.index]] : []
+
+    content {
+      instances_distribution {
+        on_demand_allocation_strategy = lookup(
+          item.value,
+          "on_demand_allocation_strategy",
+          "prioritized",
+        )
+        on_demand_base_capacity = lookup(
+          item.value,
+          "on_demand_base_capacity",
+          local.workers_group_defaults["on_demand_base_capacity"],
+        )
+        on_demand_percentage_above_base_capacity = lookup(
+          item.value,
+          "on_demand_percentage_above_base_capacity",
+          local.workers_group_defaults["on_demand_percentage_above_base_capacity"],
+        )
+        spot_allocation_strategy = lookup(
+          item.value,
+          "spot_allocation_strategy",
+          local.workers_group_defaults["spot_allocation_strategy"],
+        )
+        spot_instance_pools = lookup(
+          item.value,
+          "spot_instance_pools",
+          local.workers_group_defaults["spot_instance_pools"],
+        )
+        spot_max_price = lookup(
+          item.value,
+          "spot_max_price",
+          local.workers_group_defaults["spot_max_price"],
+        )
+      }
+
+      launch_template {
+        launch_template_specification {
+          launch_template_id = aws_launch_template.workers_launch_template.*.id[count.index]
+          version = lookup(
+            var.worker_groups[count.index],
+            "launch_template_version",
+            lookup(
+              var.worker_groups[count.index],
+              "launch_template_version",
+              local.workers_group_defaults["launch_template_version"]
+            ) == "$Latest"
+            ? aws_launch_template.workers_launch_template.*.latest_version[count.index]
+            : aws_launch_template.workers_launch_template.*.default_version[count.index]
+          )
+        }
+
+        dynamic "override" {
+          for_each = lookup(
+            var.worker_groups[count.index],
+            "override_instance_types",
+            local.workers_group_defaults["override_instance_types"]
+          )
+
+          content {
+            instance_type = override.value
+          }
+        }
+      }
+    }
+  }
+
+  dynamic "launch_template" {
+    iterator = item
+    for_each = (lookup(var.worker_groups[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups[count.index], "on_demand_allocation_strategy", local.workers_group_defaults["on_demand_allocation_strategy"]) != null) ? [] : [var.worker_groups[count.index]]
+
+    content {
+      id = aws_launch_template.workers_launch_template.*.id[count.index]
+      version = lookup(
+        var.worker_groups[count.index],
+        "launch_template_version",
+        lookup(
+          var.worker_groups[count.index],
+          "launch_template_version",
+          local.workers_group_defaults["launch_template_version"]
+        ) == "$Latest"
+        ? aws_launch_template.workers_launch_template.*.latest_version[count.index]
+        : aws_launch_template.workers_launch_template.*.default_version[count.index]
+      )
+    }
+  }
+
   dynamic "initial_lifecycle_hook" {
     for_each = var.worker_create_initial_lifecycle_hooks ? lookup(var.worker_groups[count.index], "asg_initial_lifecycle_hooks", local.workers_group_defaults["asg_initial_lifecycle_hooks"]) : []
     content {
@@ -131,8 +217,12 @@ resource "aws_autoscaling_group" "workers" {
     for_each = concat(
       [
         {
-          "key"                 = "Name"
-          "value"               = "${local.cluster_name}-${lookup(var.worker_groups[count.index], "name", count.index)}-eks_asg"
+          "key" = "Name"
+          "value" = "${local.cluster_name}-${lookup(
+            var.worker_groups[count.index],
+            "name",
+            count.index,
+          )}-eks_asg"
           "propagate_at_launch" = true
         },
         {
@@ -140,19 +230,14 @@ resource "aws_autoscaling_group" "workers" {
           "value"               = "owned"
           "propagate_at_launch" = true
         },
-        {
-          "key"                 = "k8s.io/cluster/${local.cluster_name}"
-          "value"               = "owned"
-          "propagate_at_launch" = true
-        },
       ],
       [
         for tag_key, tag_value in var.tags :
-        {
-          "key"                 = tag_key,
-          "value"               = tag_value,
-          "propagate_at_launch" = "true"
-        }
+        tomap({
+          key                 = tag_key
+          value               = tag_value
+          propagate_at_launch = "true"
+        })
         if tag_key != "Name" && !contains([for tag in lookup(var.worker_groups[count.index], "tags", local.workers_group_defaults["tags"]) : tag["key"]], tag_key)
       ],
       lookup(
@@ -168,7 +253,7 @@ resource "aws_autoscaling_group" "workers" {
     }
   }
 
-  # logic duplicated in workers_launch_template.tf
+  # logic duplicated in workers.tf
   dynamic "instance_refresh" {
     for_each = lookup(var.worker_groups[count.index],
       "instance_refresh_enabled",
@@ -201,28 +286,63 @@ resource "aws_autoscaling_group" "workers" {
   }
 }
 
-resource "aws_launch_configuration" "workers" {
-  count = var.create_eks ? local.worker_group_launch_configuration_count : 0
+resource "aws_launch_template" "workers_launch_template" {
+  count = var.create_eks ? (local.worker_group_count) : 0
 
-  name_prefix = "${local.cluster_name}-${lookup(var.worker_groups[count.index], "name", count.index)}"
-  associate_public_ip_address = lookup(
+  name_prefix = "${local.cluster_name}-${lookup(
     var.worker_groups[count.index],
-    "public_ip",
-    local.workers_group_defaults["public_ip"],
+    "name",
+    count.index,
+  )}"
+
+  update_default_version = lookup(
+    var.worker_groups[count.index],
+    "update_default_version",
+    local.workers_group_defaults["update_default_version"],
   )
-  security_groups = flatten([
-    local.worker_security_group_id,
-    var.worker_additional_security_group_ids,
-    lookup(
+
+  network_interfaces {
+    associate_public_ip_address = lookup(
       var.worker_groups[count.index],
-      "additional_security_group_ids",
-      local.workers_group_defaults["additional_security_group_ids"]
+      "public_ip",
+      local.workers_group_defaults["public_ip"],
     )
-  ])
-  iam_instance_profile = coalescelist(
-    aws_iam_instance_profile.workers.*.id,
-    data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.name,
-  )[count.index]
+    delete_on_termination = lookup(
+      var.worker_groups[count.index],
+      "eni_delete",
+      local.workers_group_defaults["eni_delete"],
+    )
+    interface_type = lookup(
+      var.worker_groups[count.index],
+      "interface_type",
+      local.workers_group_defaults["interface_type"],
+    )
+    security_groups = flatten([
+      local.worker_security_group_id,
+      var.worker_additional_security_group_ids,
+      lookup(
+        var.worker_groups[count.index],
+        "additional_security_group_ids",
+        local.workers_group_defaults["additional_security_group_ids"],
+      ),
+    ])
+  }
+
+  iam_instance_profile {
+    name = coalescelist(
+      aws_iam_instance_profile.workers.*.name,
+      data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.name,
+    )[count.index]
+  }
+
+  enclave_options {
+    enabled = lookup(
+      var.worker_groups[count.index],
+      "enclave_support",
+      local.workers_group_defaults["enclave_support"],
+    )
+  }
+
   image_id = lookup(
     var.worker_groups[count.index],
     "ami_id",
@@ -233,12 +353,27 @@ resource "aws_launch_configuration" "workers" {
     "instance_type",
     local.workers_group_defaults["instance_type"],
   )
+
+  dynamic "elastic_inference_accelerator" {
+    for_each = lookup(
+      var.worker_groups[count.index],
+      "elastic_inference_accelerator",
+      local.workers_group_defaults["elastic_inference_accelerator"]
+    ) != null ? [lookup(var.worker_groups[count.index], "elastic_inference_accelerator", local.workers_group_defaults["elastic_inference_accelerator"])] : []
+    content {
+      type = elastic_inference_accelerator.value
+    }
+  }
+
   key_name = lookup(
     var.worker_groups[count.index],
     "key_name",
     local.workers_group_defaults["key_name"],
   )
-  user_data_base64 = base64encode(local.launch_configuration_userdata_rendered[count.index])
+  user_data = base64encode(
+    local.launch_template_userdata_rendered[count.index],
+  )
+
   ebs_optimized = lookup(
     var.worker_groups[count.index],
     "ebs_optimized",
@@ -247,24 +382,9 @@ resource "aws_launch_configuration" "workers" {
       lookup(
         var.worker_groups[count.index],
         "instance_type",
-        local.workers_group_defaults["instance_type"]
+        local.workers_group_defaults["instance_type"],
       )
     )
-  )
-  enable_monitoring = lookup(
-    var.worker_groups[count.index],
-    "enable_monitoring",
-    local.workers_group_defaults["enable_monitoring"],
-  )
-  spot_price = lookup(
-    var.worker_groups[count.index],
-    "spot_price",
-    local.workers_group_defaults["spot_price"],
-  )
-  placement_tenancy = lookup(
-    var.worker_groups[count.index],
-    "placement_tenancy",
-    local.workers_group_defaults["placement_tenancy"],
   )
 
   metadata_options {
@@ -285,73 +405,205 @@ resource "aws_launch_configuration" "workers" {
     )
   }
 
-  root_block_device {
-    encrypted = lookup(
+  dynamic "credit_specification" {
+    for_each = lookup(
       var.worker_groups[count.index],
-      "root_encrypted",
-      local.workers_group_defaults["root_encrypted"],
-    )
-    volume_size = lookup(
-      var.worker_groups[count.index],
-      "root_volume_size",
-      local.workers_group_defaults["root_volume_size"],
-    )
-    volume_type = lookup(
-      var.worker_groups[count.index],
-      "root_volume_type",
-      local.workers_group_defaults["root_volume_type"],
-    )
-    iops = lookup(
-      var.worker_groups[count.index],
-      "root_iops",
-      local.workers_group_defaults["root_iops"],
-    )
-    throughput = lookup(
-      var.worker_groups[count.index],
-      "root_volume_throughput",
-      local.workers_group_defaults["root_volume_throughput"],
-    )
-    delete_on_termination = true
+      "cpu_credits",
+      local.workers_group_defaults["cpu_credits"]
+    ) != null ? [lookup(var.worker_groups[count.index], "cpu_credits", local.workers_group_defaults["cpu_credits"])] : []
+    content {
+      cpu_credits = credit_specification.value
+    }
   }
 
-  dynamic "ebs_block_device" {
-    for_each = lookup(var.worker_groups[count.index], "additional_ebs_volumes", local.workers_group_defaults["additional_ebs_volumes"])
+  monitoring {
+    enabled = lookup(
+      var.worker_groups[count.index],
+      "enable_monitoring",
+      local.workers_group_defaults["enable_monitoring"],
+    )
+  }
+
+  dynamic "placement" {
+    for_each = lookup(var.worker_groups[count.index], "launch_template_placement_group", local.workers_group_defaults["launch_template_placement_group"]) != null ? [lookup(var.worker_groups[count.index], "launch_template_placement_group", local.workers_group_defaults["launch_template_placement_group"])] : []
 
     content {
-      device_name = ebs_block_device.value.block_device_name
+      tenancy = lookup(
+        var.worker_groups[count.index],
+        "launch_template_placement_tenancy",
+        local.workers_group_defaults["launch_template_placement_tenancy"],
+      )
+      group_name = placement.value
+    }
+  }
+
+  dynamic "instance_market_options" {
+    for_each = lookup(var.worker_groups[count.index], "market_type", null) == null ? [] : tolist([lookup(var.worker_groups[count.index], "market_type", null)])
+    content {
+      market_type = instance_market_options.value
+    }
+  }
+
+  block_device_mappings {
+    device_name = lookup(
+      var.worker_groups[count.index],
+      "root_block_device_name",
+      lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"]) == "windows" ? local.workers_group_defaults["root_block_device_name_windows"] : local.workers_group_defaults["root_block_device_name"],
+    )
+
+    ebs {
       volume_size = lookup(
-        ebs_block_device.value,
-        "volume_size",
+        var.worker_groups[count.index],
+        "root_volume_size",
         local.workers_group_defaults["root_volume_size"],
       )
       volume_type = lookup(
-        ebs_block_device.value,
-        "volume_type",
+        var.worker_groups[count.index],
+        "root_volume_type",
         local.workers_group_defaults["root_volume_type"],
       )
       iops = lookup(
-        ebs_block_device.value,
-        "iops",
+        var.worker_groups[count.index],
+        "root_iops",
         local.workers_group_defaults["root_iops"],
       )
       throughput = lookup(
-        ebs_block_device.value,
-        "throughput",
+        var.worker_groups[count.index],
+        "root_volume_throughput",
         local.workers_group_defaults["root_volume_throughput"],
       )
       encrypted = lookup(
-        ebs_block_device.value,
-        "encrypted",
+        var.worker_groups[count.index],
+        "root_encrypted",
         local.workers_group_defaults["root_encrypted"],
       )
-      snapshot_id = lookup(
-        ebs_block_device.value,
-        "snapshot_id",
-        local.workers_group_defaults["snapshot_id"],
+      kms_key_id = lookup(
+        var.worker_groups[count.index],
+        "root_kms_key_id",
+        local.workers_group_defaults["root_kms_key_id"],
       )
-      delete_on_termination = lookup(ebs_block_device.value, "delete_on_termination", true)
+      delete_on_termination = true
     }
   }
+
+  dynamic "block_device_mappings" {
+    for_each = lookup(var.worker_groups[count.index], "additional_ebs_volumes", local.workers_group_defaults["additional_ebs_volumes"])
+    content {
+      device_name = block_device_mappings.value.block_device_name
+
+      ebs {
+        volume_size = lookup(
+          block_device_mappings.value,
+          "volume_size",
+          local.workers_group_defaults["root_volume_size"],
+        )
+        volume_type = lookup(
+          block_device_mappings.value,
+          "volume_type",
+          local.workers_group_defaults["root_volume_type"],
+        )
+        iops = lookup(
+          block_device_mappings.value,
+          "iops",
+          local.workers_group_defaults["root_iops"],
+        )
+        throughput = lookup(
+          block_device_mappings.value,
+          "throughput",
+          local.workers_group_defaults["root_volume_throughput"],
+        )
+        encrypted = lookup(
+          block_device_mappings.value,
+          "encrypted",
+          local.workers_group_defaults["root_encrypted"],
+        )
+        kms_key_id = lookup(
+          block_device_mappings.value,
+          "kms_key_id",
+          local.workers_group_defaults["root_kms_key_id"],
+        )
+        snapshot_id = lookup(
+          block_device_mappings.value,
+          "snapshot_id",
+          local.workers_group_defaults["snapshot_id"],
+        )
+        delete_on_termination = lookup(block_device_mappings.value, "delete_on_termination", true)
+      }
+    }
+
+  }
+
+  dynamic "block_device_mappings" {
+    for_each = lookup(var.worker_groups[count.index], "additional_instance_store_volumes", local.workers_group_defaults["additional_instance_store_volumes"])
+    content {
+      device_name = block_device_mappings.value.block_device_name
+      virtual_name = lookup(
+        block_device_mappings.value,
+        "virtual_name",
+        local.workers_group_defaults["instance_store_virtual_name"],
+      )
+    }
+  }
+
+  tag_specifications {
+    resource_type = "volume"
+
+    tags = merge(
+      {
+        "Name" = "${local.cluster_name}-${lookup(
+          var.worker_groups[count.index],
+          "name",
+          count.index,
+        )}-eks_asg"
+      },
+      var.tags,
+      {
+        for tag in lookup(var.worker_groups[count.index], "tags", local.workers_group_defaults["tags"]) :
+        tag["key"] => tag["value"]
+        if tag["key"] != "Name" && tag["propagate_at_launch"]
+      }
+    )
+  }
+
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = merge(
+      {
+        "Name" = "${local.cluster_name}-${lookup(
+          var.worker_groups[count.index],
+          "name",
+          count.index,
+        )}-eks_asg"
+      },
+      { for tag_key, tag_value in var.tags :
+        tag_key => tag_value
+        if tag_key != "Name" && !contains([for tag in lookup(var.worker_groups[count.index], "tags", local.workers_group_defaults["tags"]) : tag["key"]], tag_key)
+      }
+    )
+  }
+
+  tag_specifications {
+    resource_type = "network-interface"
+
+    tags = merge(
+      {
+        "Name" = "${local.cluster_name}-${lookup(
+          var.worker_groups[count.index],
+          "name",
+          count.index,
+        )}-eks_asg"
+      },
+      var.tags,
+      {
+        for tag in lookup(var.worker_groups[count.index], "tags", local.workers_group_defaults["tags"]) :
+        tag["key"] => tag["value"]
+        if tag["key"] != "Name" && tag["propagate_at_launch"]
+      }
+    )
+  }
+
+  tags = var.tags
 
   lifecycle {
     create_before_destroy = true
@@ -372,6 +624,24 @@ resource "aws_launch_configuration" "workers" {
     aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly,
     aws_iam_role_policy_attachment.workers_additional_policies
   ]
+}
+
+resource "aws_iam_instance_profile" "workers" {
+  count = var.manage_worker_iam_resources && var.create_eks ? local.worker_group_count : 0
+
+  name_prefix = local.cluster_name
+  role = lookup(
+    var.worker_groups[count.index],
+    "iam_role_id",
+    local.default_iam_role_id,
+  )
+  path = var.iam_path
+
+  tags = var.tags
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_security_group" "workers" {
@@ -484,24 +754,6 @@ resource "aws_iam_role" "workers" {
   force_detach_policies = true
 
   tags = var.tags
-}
-
-resource "aws_iam_instance_profile" "workers" {
-  count = var.manage_worker_iam_resources && var.create_eks ? local.worker_group_launch_configuration_count : 0
-
-  name_prefix = local.cluster_name
-  role = lookup(
-    var.worker_groups[count.index],
-    "iam_role_id",
-    local.default_iam_role_id,
-  )
-  path = var.iam_path
-
-  tags = var.tags
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {

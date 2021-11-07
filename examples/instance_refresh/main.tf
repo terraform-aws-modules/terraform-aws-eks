@@ -212,7 +212,7 @@ module "eks" {
   cluster_endpoint_public_access  = true
 
   enable_irsa = true
-  worker_groups_launch_template = [
+  worker_groups = [
     {
       name                                 = "refresh"
       asg_max_size                         = 2
