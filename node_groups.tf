@@ -8,8 +8,6 @@ module "node_groups" {
   cluster_auth_base64 = local.cluster_auth_base64
 
   default_iam_role_arn                 = coalescelist(aws_iam_role.workers[*].arn, [""])[0]
-  ebs_optimized_not_supported          = local.ebs_optimized_not_supported
-  workers_group_defaults               = local.workers_group_defaults
   worker_security_group_id             = local.worker_security_group_id
   worker_additional_security_group_ids = var.worker_additional_security_group_ids
 

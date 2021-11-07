@@ -105,15 +105,15 @@ output "workers_user_data" {
   value       = local.launch_template_userdata_rendered
 }
 
-output "workers_default_ami_id" {
-  description = "ID of the default worker group AMI"
-  value       = local.default_ami_id_linux
-}
+# output "workers_default_ami_id" {
+#   description = "ID of the default worker group AMI"
+#   value       = local.default_ami_id_linux
+# }
 
-output "workers_default_ami_id_windows" {
-  description = "ID of the default Windows worker group AMI"
-  value       = local.default_ami_id_windows
-}
+# output "workers_default_ami_id_windows" {
+#   description = "ID of the default Windows worker group AMI"
+#   value       = local.default_ami_id_windows
+# }
 
 output "workers_launch_template_ids" {
   description = "IDs of the worker launch templates."

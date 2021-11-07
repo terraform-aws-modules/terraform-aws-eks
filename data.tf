@@ -75,7 +75,7 @@ data "aws_iam_instance_profile" "custom_worker_group_iam_instance_profile" {
   name = lookup(
     var.worker_groups[count.index],
     "iam_instance_profile_name",
-    local.workers_group_defaults["iam_instance_profile_name"],
+    null # TODO need default
   )
 }
 

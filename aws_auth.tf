@@ -9,11 +9,7 @@ locals {
         ),
         index,
       )}"
-      platform = lookup(
-        var.worker_groups[index],
-        "platform",
-        local.workers_group_defaults["platform"]
-      )
+      platform = lookup(var.worker_groups[index], "platform", var.default_platform)
     }
   ]
 

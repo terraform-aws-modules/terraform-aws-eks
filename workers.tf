@@ -1,40 +1,49 @@
+locals {
+  # Abstracted to a local so that it can be shared with node group as well
+  # Only valus that are common between ASG and Node Group are pulled out to this local map
+  group_default = {
+    min_size         = try(var.group_default.min_size, 1)
+    max_size         = try(var.group_default.max_size, 3)
+    desired_capacity = try(var.group_default.desired_capacity, 1)
+  }
+}
 resource "aws_autoscaling_group" "this" {
   for_each = var.create_eks ? var.worker_groups : {}
 
   name_prefix = "${join("-", [local.cluster_name, lookup(each.value, "name", each.key)])}-"
 
   launch_template {
-    name    = each.value.launch_template_key
-    version = lookup(each.value, "version", "$Latest")
+    name    = each.value.launch_template_key # required
+    version = try(each.value.launch_template_version, var.group_default.min_size, "$Latest")
   }
 
-  availability_zones  = lookup(each.value, "availability_zones", null)
-  vpc_zone_identifier = lookup(each.value, "vpc_zone_identifier", null)
+  availability_zones  = try(each.value.availability_zones, var.group_default.availability_zones, null)
+  vpc_zone_identifier = try(each.value.vpc_zone_identifier, var.group_default.vpc_zone_identifier, null)
 
-  max_size              = each.value.max_size
-  min_size              = each.value.min_size
-  desired_capacity      = lookup(each.value, "desired_capacity", null)
-  capacity_rebalance    = lookup(each.value, "capacity_rebalance", null)
-  default_cooldown      = lookup(each.value, "default_cooldown", null)
-  protect_from_scale_in = lookup(each.value, "protect_from_scale_in", null)
+  min_size              = try(each.value.min_size, locals.wg_default.min_size)
+  max_size              = try(each.value.max_size, locals.wg_default.max_size)
+  desired_capacity      = try(each.value.desired_capacity, locals.wg_default.desired_capacity)
+  capacity_rebalance    = try(each.value.capacity_rebalance, var.group_default.capacity_rebalance, null)
+  default_cooldown      = try(each.value.default_cooldown, var.group_default.default_cooldown, null)
+  protect_from_scale_in = try(each.value.protect_from_scale_in, var.group_default.protect_from_scale_in, null)
 
-  load_balancers            = lookup(each.value, "load_balancers", null)
-  target_group_arns         = lookup(each.value, "target_group_arns", null)
-  placement_group           = lookup(each.value, "placement_group", null)
-  health_check_type         = lookup(each.value, "health_check_type", null)
-  health_check_grace_period = lookup(each.value, "health_check_grace_period", null)
+  load_balancers            = try(each.value.load_balancers, var.group_default.load_balancers, null)
+  target_group_arns         = try(each.value.target_group_arns, var.group_default.target_group_arns, null)
+  placement_group           = try(each.value.placement_group, var.group_default.placement_group, null)
+  health_check_type         = try(each.value.health_check_type, var.group_default.health_check_type, null)
+  health_check_grace_period = try(each.value.health_check_grace_period, var.group_default.health_check_grace_period, null)
 
-  force_delete          = lookup(each.value, "force_delete", null)
-  termination_policies  = lookup(each.value, "termination_policies", null)
-  suspended_processes   = lookup(each.value, "suspended_processes", null)
-  max_instance_lifetime = lookup(each.value, "max_instance_lifetime", null)
+  force_delete          = try(each.value.force_delete, var.group_default.force_delete, false)
+  termination_policies  = try(each.value.termination_policies, var.group_default.termination_policies, null)
+  suspended_processes   = try(each.value.suspended_processes, var.group_default.suspended_processes, "AZRebalance")
+  max_instance_lifetime = try(each.value.max_instance_lifetime, var.group_default.max_instance_lifetime, null)
 
-  enabled_metrics         = lookup(each.value, "enabled_metrics", null)
-  metrics_granularity     = lookup(each.value, "metrics_granularity", null)
-  service_linked_role_arn = lookup(each.value, "service_linked_role_arn", null)
+  enabled_metrics         = try(each.value.enabled_metrics, var.group_default.enabled_metrics, null)
+  metrics_granularity     = try(each.value.metrics_granularity, var.group_default.metrics_granularity, null)
+  service_linked_role_arn = try(each.value.service_linked_role_arn, var.group_default.service_linked_role_arn, null)
 
   dynamic "initial_lifecycle_hook" {
-    for_each = lookup(each.value, "initial_lifecycle_hook", null) != null ? each.value.initial_lifecycle_hook : []
+    for_each = try(each.value.initial_lifecycle_hook, var.group_default.initial_lifecycle_hook, {})
     iterator = hook
 
     content {
@@ -49,7 +58,7 @@ resource "aws_autoscaling_group" "this" {
   }
 
   dynamic "instance_refresh" {
-    for_each = lookup(each.value, "instance_refresh", null) != null ? each.value.instance_refresh : []
+    for_each = try(each.value.instance_refresh, var.group_default.instance_refresh, {})
     iterator = refresh
 
     content {
@@ -57,7 +66,7 @@ resource "aws_autoscaling_group" "this" {
       triggers = lookup(refresh.value, "triggers", null)
 
       dynamic "preferences" {
-        for_each = lookup(refresh.value, "preferences", null) != null ? [refresh.value.preferences] : []
+        for_each = try(refresh.value.preferences, [])
         content {
           instance_warmup        = lookup(preferences.value, "instance_warmup", null)
           min_healthy_percentage = lookup(preferences.value, "min_healthy_percentage", null)
@@ -67,12 +76,12 @@ resource "aws_autoscaling_group" "this" {
   }
 
   dynamic "mixed_instances_policy" {
-    for_each = lookup(each.value, "mixed_instances_policy", null) != null ? each.value.mixed_instances_policy : []
+    for_each = try(each.value.mixed_instances_policy, var.group_default.mixed_instances_policy, {})
     iterator = mixed
 
     content {
       dynamic "instances_distribution" {
-        for_each = lookup(mixed.value, "instances_distribution", null) != null ? [mixed.value.instances_distribution] : []
+        for_each = try(mixed.value.instances_distribution, {})
         iterater = distro
 
         content {
@@ -92,13 +101,13 @@ resource "aws_autoscaling_group" "this" {
         }
 
         dynamic "override" {
-          for_each = lookup(mixed.value, "override", null) != null ? mixed.value.override : []
+          for_each = try(mixed.value.override, {})
           content {
             instance_type     = lookup(override.value, "instance_type", null)
             weighted_capacity = lookup(override.value, "weighted_capacity", null)
 
             dynamic "launch_template_specification" {
-              for_each = lookup(override.value, "launch_template_specification", null) != null ? override.value.launch_template_specification : []
+              for_each = try(override.value.launch_template_specification, {})
               content {
                 launch_template_id = lookup(launch_template_specification.value, "launch_template_id", null)
               }
@@ -110,7 +119,7 @@ resource "aws_autoscaling_group" "this" {
   }
 
   dynamic "warm_pool" {
-    for_each = lookup(each.value, "warm_pool", null) != null ? each.value.warm_pool : []
+    for_each = try(each.value.warm_pool, var.group_default.warm_pool, {})
 
     content {
       pool_state                  = lookup(warm_pool.value, "pool_state", null)
@@ -166,7 +175,7 @@ resource "aws_launch_template" "this" {
 
   ebs_optimized = lookup(template.value, "ebs_optimized", null)
   image_id      = lookup(template.value, "image_id", null)
-  instance_type = lookup(template.value, "instance_type", null)
+  instance_type = lookup(template.value, "instance_type", "m6i.large")
   key_name      = lookup(template.value, "key_name", null)
   user_data     = lookup(template.value, "user_data", null)
 
