@@ -92,12 +92,12 @@ output "oidc_provider_arn" {
 
 output "workers_asg_arns" {
   description = "IDs of the autoscaling groups containing workers."
-  value       = aws_autoscaling_group.workers.*.arn
+  value       = aws_autoscaling_group.this.*.arn
 }
 
 output "workers_asg_names" {
   description = "Names of the autoscaling groups containing workers."
-  value       = aws_autoscaling_group.workers.*.id
+  value       = aws_autoscaling_group.this.*.id
 }
 
 output "workers_user_data" {
@@ -117,17 +117,17 @@ output "workers_default_ami_id_windows" {
 
 output "workers_launch_template_ids" {
   description = "IDs of the worker launch templates."
-  value       = aws_launch_template.workers_launch_template.*.id
+  value       = aws_launch_template.this.*.id
 }
 
 output "workers_launch_template_arns" {
   description = "ARNs of the worker launch templates."
-  value       = aws_launch_template.workers_launch_template.*.arn
+  value       = aws_launch_template.this.*.arn
 }
 
 output "workers_launch_template_latest_versions" {
   description = "Latest versions of the worker launch templates."
-  value       = aws_launch_template.workers_launch_template.*.latest_version
+  value       = aws_launch_template.this.*.latest_version
 }
 
 output "worker_security_group_id" {

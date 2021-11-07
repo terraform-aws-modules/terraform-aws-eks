@@ -1,210 +1,116 @@
-resource "aws_autoscaling_group" "workers" {
-  count = var.create_eks ? local.worker_group_count : 0
+resource "aws_autoscaling_group" "this" {
+  for_each = var.create_eks ? var.worker_groups : {}
 
-  name_prefix = join(
-    "-",
-    compact(
-      [
-        local.cluster_name,
-        lookup(var.worker_groups[count.index], "name", count.index)
-      ]
-    )
-  )
-  desired_capacity = lookup(
-    var.worker_groups[count.index],
-    "asg_desired_capacity",
-    local.workers_group_defaults["asg_desired_capacity"],
-  )
-  max_size = lookup(
-    var.worker_groups[count.index],
-    "asg_max_size",
-    local.workers_group_defaults["asg_max_size"],
-  )
-  min_size = lookup(
-    var.worker_groups[count.index],
-    "asg_min_size",
-    local.workers_group_defaults["asg_min_size"],
-  )
-  force_delete = lookup(
-    var.worker_groups[count.index],
-    "asg_force_delete",
-    local.workers_group_defaults["asg_force_delete"],
-  )
-  target_group_arns = lookup(
-    var.worker_groups[count.index],
-    "target_group_arns",
-    local.workers_group_defaults["target_group_arns"]
-  )
-  load_balancers = lookup(
-    var.worker_groups[count.index],
-    "load_balancers",
-    local.workers_group_defaults["load_balancers"]
-  )
-  service_linked_role_arn = lookup(
-    var.worker_groups[count.index],
-    "service_linked_role_arn",
-    local.workers_group_defaults["service_linked_role_arn"],
-  )
-  vpc_zone_identifier = lookup(
-    var.worker_groups[count.index],
-    "subnets",
-    local.workers_group_defaults["subnets"]
-  )
-  protect_from_scale_in = lookup(
-    var.worker_groups[count.index],
-    "protect_from_scale_in",
-    local.workers_group_defaults["protect_from_scale_in"],
-  )
-  suspended_processes = lookup(
-    var.worker_groups[count.index],
-    "suspended_processes",
-    local.workers_group_defaults["suspended_processes"]
-  )
-  enabled_metrics = lookup(
-    var.worker_groups[count.index],
-    "enabled_metrics",
-    local.workers_group_defaults["enabled_metrics"]
-  )
-  placement_group = lookup(
-    var.worker_groups[count.index],
-    "placement_group",
-    local.workers_group_defaults["placement_group"],
-  )
-  termination_policies = lookup(
-    var.worker_groups[count.index],
-    "termination_policies",
-    local.workers_group_defaults["termination_policies"]
-  )
-  max_instance_lifetime = lookup(
-    var.worker_groups[count.index],
-    "max_instance_lifetime",
-    local.workers_group_defaults["max_instance_lifetime"],
-  )
-  default_cooldown = lookup(
-    var.worker_groups[count.index],
-    "default_cooldown",
-    local.workers_group_defaults["default_cooldown"]
-  )
-  health_check_type = lookup(
-    var.worker_groups[count.index],
-    "health_check_type",
-    local.workers_group_defaults["health_check_type"]
-  )
-  health_check_grace_period = lookup(
-    var.worker_groups[count.index],
-    "health_check_grace_period",
-    local.workers_group_defaults["health_check_grace_period"]
-  )
-  capacity_rebalance = lookup(
-    var.worker_groups[count.index],
-    "capacity_rebalance",
-    local.workers_group_defaults["capacity_rebalance"]
-  )
+  name_prefix = "${join("-", [local.cluster_name, lookup(each.value, "name", each.key)])}-"
 
-  dynamic "mixed_instances_policy" {
-    iterator = item
-    for_each = (lookup(var.worker_groups[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups[count.index], "on_demand_allocation_strategy", local.workers_group_defaults["on_demand_allocation_strategy"]) != null) ? [var.worker_groups[count.index]] : []
+  launch_template {
+    name    = each.value.launch_template_key
+    version = lookup(each.value, "version", "$Latest")
+  }
+
+  availability_zones  = lookup(each.value, "availability_zones", null)
+  vpc_zone_identifier = lookup(each.value, "vpc_zone_identifier", null)
+
+  max_size              = each.value.max_size
+  min_size              = each.value.min_size
+  desired_capacity      = lookup(each.value, "desired_capacity", null)
+  capacity_rebalance    = lookup(each.value, "capacity_rebalance", null)
+  default_cooldown      = lookup(each.value, "default_cooldown", null)
+  protect_from_scale_in = lookup(each.value, "protect_from_scale_in", null)
+
+  load_balancers            = lookup(each.value, "load_balancers", null)
+  target_group_arns         = lookup(each.value, "target_group_arns", null)
+  placement_group           = lookup(each.value, "placement_group", null)
+  health_check_type         = lookup(each.value, "health_check_type", null)
+  health_check_grace_period = lookup(each.value, "health_check_grace_period", null)
+
+  force_delete          = lookup(each.value, "force_delete", null)
+  termination_policies  = lookup(each.value, "termination_policies", null)
+  suspended_processes   = lookup(each.value, "suspended_processes", null)
+  max_instance_lifetime = lookup(each.value, "max_instance_lifetime", null)
+
+  enabled_metrics         = lookup(each.value, "enabled_metrics", null)
+  metrics_granularity     = lookup(each.value, "metrics_granularity", null)
+  service_linked_role_arn = lookup(each.value, "service_linked_role_arn", null)
+
+  dynamic "initial_lifecycle_hook" {
+    for_each = lookup(each.value, "initial_lifecycle_hook", null) != null ? each.value.initial_lifecycle_hook : []
+    iterator = hook
 
     content {
-      instances_distribution {
-        on_demand_allocation_strategy = lookup(
-          item.value,
-          "on_demand_allocation_strategy",
-          "prioritized",
-        )
-        on_demand_base_capacity = lookup(
-          item.value,
-          "on_demand_base_capacity",
-          local.workers_group_defaults["on_demand_base_capacity"],
-        )
-        on_demand_percentage_above_base_capacity = lookup(
-          item.value,
-          "on_demand_percentage_above_base_capacity",
-          local.workers_group_defaults["on_demand_percentage_above_base_capacity"],
-        )
-        spot_allocation_strategy = lookup(
-          item.value,
-          "spot_allocation_strategy",
-          local.workers_group_defaults["spot_allocation_strategy"],
-        )
-        spot_instance_pools = lookup(
-          item.value,
-          "spot_instance_pools",
-          local.workers_group_defaults["spot_instance_pools"],
-        )
-        spot_max_price = lookup(
-          item.value,
-          "spot_max_price",
-          local.workers_group_defaults["spot_max_price"],
-        )
+      name                    = hook.value.name
+      default_result          = lookup(hook.value, "default_result", null)
+      heartbeat_timeout       = lookup(hook.value, "heartbeat_timeout", null)
+      lifecycle_transition    = hook.value.lifecycle_transition
+      notification_metadata   = lookup(hook.value, "notification_metadata", null)
+      notification_target_arn = lookup(hook.value, "notification_target_arn", null)
+      role_arn                = lookup(hook.value, "role_arn", null)
+    }
+  }
+
+  dynamic "instance_refresh" {
+    for_each = lookup(each.value, "instance_refresh", null) != null ? each.value.instance_refresh : []
+    iterator = refresh
+
+    content {
+      strategy = refresh.value.strategy
+      triggers = lookup(refresh.value, "triggers", null)
+
+      dynamic "preferences" {
+        for_each = lookup(refresh.value, "preferences", null) != null ? [refresh.value.preferences] : []
+        content {
+          instance_warmup        = lookup(preferences.value, "instance_warmup", null)
+          min_healthy_percentage = lookup(preferences.value, "min_healthy_percentage", null)
+        }
+      }
+    }
+  }
+
+  dynamic "mixed_instances_policy" {
+    for_each = lookup(each.value, "mixed_instances_policy", null) != null ? each.value.mixed_instances_policy : []
+    iterator = mixed
+
+    content {
+      dynamic "instances_distribution" {
+        for_each = lookup(mixed.value, "instances_distribution", null) != null ? [mixed.value.instances_distribution] : []
+        iterater = distro
+
+        content {
+          on_demand_allocation_strategy            = lookup(distro.value, "on_demand_allocation_strategy", null)
+          on_demand_base_capacity                  = lookup(distro.value, "on_demand_base_capacity", null)
+          on_demand_percentage_above_base_capacity = lookup(distro.value, "on_demand_percentage_above_base_capacity", null)
+          spot_allocation_strategy                 = lookup(distro.value, "spot_allocation_strategy", null)
+          spot_instance_pools                      = lookup(distro.value, "spot_instance_pools", null)
+          spot_max_price                           = lookup(distro.value, "spot_max_price", null)
+        }
       }
 
       launch_template {
         launch_template_specification {
-          launch_template_id = aws_launch_template.workers_launch_template.*.id[count.index]
-          version = lookup(
-            var.worker_groups[count.index],
-            "launch_template_version",
-            lookup(
-              var.worker_groups[count.index],
-              "launch_template_version",
-              local.workers_group_defaults["launch_template_version"]
-            ) == "$Latest"
-            ? aws_launch_template.workers_launch_template.*.latest_version[count.index]
-            : aws_launch_template.workers_launch_template.*.default_version[count.index]
-          )
+          launch_template_name = local.launch_template
+          version              = local.launch_template_version
         }
 
         dynamic "override" {
-          for_each = lookup(
-            var.worker_groups[count.index],
-            "override_instance_types",
-            local.workers_group_defaults["override_instance_types"]
-          )
-
+          for_each = lookup(mixed.value, "override", null) != null ? mixed.value.override : []
           content {
-            instance_type = override.value
+            instance_type     = lookup(override.value, "instance_type", null)
+            weighted_capacity = lookup(override.value, "weighted_capacity", null)
+
+            dynamic "launch_template_specification" {
+              for_each = lookup(override.value, "launch_template_specification", null) != null ? override.value.launch_template_specification : []
+              content {
+                launch_template_id = lookup(launch_template_specification.value, "launch_template_id", null)
+              }
+            }
           }
         }
       }
     }
   }
 
-  dynamic "launch_template" {
-    iterator = item
-    for_each = (lookup(var.worker_groups[count.index], "override_instance_types", null) != null) || (lookup(var.worker_groups[count.index], "on_demand_allocation_strategy", local.workers_group_defaults["on_demand_allocation_strategy"]) != null) ? [] : [var.worker_groups[count.index]]
-
-    content {
-      id = aws_launch_template.workers_launch_template.*.id[count.index]
-      version = lookup(
-        var.worker_groups[count.index],
-        "launch_template_version",
-        lookup(
-          var.worker_groups[count.index],
-          "launch_template_version",
-          local.workers_group_defaults["launch_template_version"]
-        ) == "$Latest"
-        ? aws_launch_template.workers_launch_template.*.latest_version[count.index]
-        : aws_launch_template.workers_launch_template.*.default_version[count.index]
-      )
-    }
-  }
-
-  dynamic "initial_lifecycle_hook" {
-    for_each = var.worker_create_initial_lifecycle_hooks ? lookup(var.worker_groups[count.index], "asg_initial_lifecycle_hooks", local.workers_group_defaults["asg_initial_lifecycle_hooks"]) : []
-    content {
-      name                    = initial_lifecycle_hook.value["name"]
-      lifecycle_transition    = initial_lifecycle_hook.value["lifecycle_transition"]
-      notification_metadata   = lookup(initial_lifecycle_hook.value, "notification_metadata", null)
-      heartbeat_timeout       = lookup(initial_lifecycle_hook.value, "heartbeat_timeout", null)
-      notification_target_arn = lookup(initial_lifecycle_hook.value, "notification_target_arn", null)
-      role_arn                = lookup(initial_lifecycle_hook.value, "role_arn", null)
-      default_result          = lookup(initial_lifecycle_hook.value, "default_result", null)
-    }
-  }
-
   dynamic "warm_pool" {
-    for_each = lookup(var.worker_groups[count.index], "warm_pool", null) != null ? [lookup(var.worker_groups[count.index], "warm_pool")] : []
+    for_each = lookup(each.value, "warm_pool", null) != null ? each.value.warm_pool : []
 
     content {
       pool_state                  = lookup(warm_pool.value, "pool_state", null)
@@ -217,12 +123,8 @@ resource "aws_autoscaling_group" "workers" {
     for_each = concat(
       [
         {
-          "key" = "Name"
-          "value" = "${local.cluster_name}-${lookup(
-            var.worker_groups[count.index],
-            "name",
-            count.index,
-          )}-eks_asg"
+          "key"                 = "Name"
+          "value"               = "${join("-", [local.cluster_name, lookup(each.value, "name", each.key)])}-eks-asg"
           "propagate_at_launch" = true
         },
         {
@@ -236,47 +138,16 @@ resource "aws_autoscaling_group" "workers" {
         tomap({
           key                 = tag_key
           value               = tag_value
-          propagate_at_launch = "true"
+          propagate_at_launch = true
         })
-        if tag_key != "Name" && !contains([for tag in lookup(var.worker_groups[count.index], "tags", local.workers_group_defaults["tags"]) : tag["key"]], tag_key)
+        if tag_key != "Name" && !contains([for tag in lookup(each.value, "tags", []) : tag["key"]], tag_key)
       ],
-      lookup(
-        var.worker_groups[count.index],
-        "tags",
-        local.workers_group_defaults["tags"]
-      )
+      lookup(each.value, "tags", {})
     )
     content {
       key                 = tag.value.key
       value               = tag.value.value
       propagate_at_launch = tag.value.propagate_at_launch
-    }
-  }
-
-  # logic duplicated in workers.tf
-  dynamic "instance_refresh" {
-    for_each = lookup(var.worker_groups[count.index],
-      "instance_refresh_enabled",
-    local.workers_group_defaults["instance_refresh_enabled"]) ? [1] : []
-    content {
-      strategy = lookup(
-        var.worker_groups[count.index], "instance_refresh_strategy",
-        local.workers_group_defaults["instance_refresh_strategy"]
-      )
-      preferences {
-        instance_warmup = lookup(
-          var.worker_groups[count.index], "instance_refresh_instance_warmup",
-          local.workers_group_defaults["instance_refresh_instance_warmup"]
-        )
-        min_healthy_percentage = lookup(
-          var.worker_groups[count.index], "instance_refresh_min_healthy_percentage",
-          local.workers_group_defaults["instance_refresh_min_healthy_percentage"]
-        )
-      }
-      triggers = lookup(
-        var.worker_groups[count.index], "instance_refresh_triggers",
-        local.workers_group_defaults["instance_refresh_triggers"]
-      )
     }
   }
 
@@ -286,262 +157,194 @@ resource "aws_autoscaling_group" "workers" {
   }
 }
 
-resource "aws_launch_template" "workers_launch_template" {
-  count = var.create_eks ? (local.worker_group_count) : 0
+resource "aws_launch_template" "this" {
+  for_each = var.create_eks ? var.launch_templates : {}
+  iterater = template
 
-  name_prefix = "${local.cluster_name}-${lookup(
-    var.worker_groups[count.index],
-    "name",
-    count.index,
-  )}"
+  name_prefix = "${local.cluster_name}-${lookup(template.value, "name", each.key)}"
+  description = lookup(template.value, "description", null)
 
-  update_default_version = lookup(
-    var.worker_groups[count.index],
-    "update_default_version",
-    local.workers_group_defaults["update_default_version"],
-  )
+  ebs_optimized = lookup(template.value, "ebs_optimized", null)
+  image_id      = lookup(template.value, "image_id", null)
+  instance_type = lookup(template.value, "instance_type", null)
+  key_name      = lookup(template.value, "key_name", null)
+  user_data     = lookup(template.value, "user_data", null)
 
-  network_interfaces {
-    associate_public_ip_address = lookup(
-      var.worker_groups[count.index],
-      "public_ip",
-      local.workers_group_defaults["public_ip"],
-    )
-    delete_on_termination = lookup(
-      var.worker_groups[count.index],
-      "eni_delete",
-      local.workers_group_defaults["eni_delete"],
-    )
-    interface_type = lookup(
-      var.worker_groups[count.index],
-      "interface_type",
-      local.workers_group_defaults["interface_type"],
-    )
-    security_groups = flatten([
-      local.worker_security_group_id,
-      var.worker_additional_security_group_ids,
-      lookup(
-        var.worker_groups[count.index],
-        "additional_security_group_ids",
-        local.workers_group_defaults["additional_security_group_ids"],
-      ),
-    ])
-  }
+  vpc_security_group_ids = lookup(template.value, "vpc_security_group_ids", null)
 
-  iam_instance_profile {
-    name = coalescelist(
-      aws_iam_instance_profile.workers.*.name,
-      data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.name,
-    )[count.index]
-  }
+  default_version                      = lookup(template.value, "default_version", null)
+  update_default_version               = lookup(template.value, "update_default_version", null)
+  disable_api_termination              = lookup(template.value, "disable_api_termination", null)
+  instance_initiated_shutdown_behavior = lookup(template.value, "instance_initiated_shutdown_behavior", null)
+  kernel_id                            = lookup(template.value, "kernel_id", null)
+  ram_disk_id                          = lookup(template.value, "ram_disk_id", null)
 
-  enclave_options {
-    enabled = lookup(
-      var.worker_groups[count.index],
-      "enclave_support",
-      local.workers_group_defaults["enclave_support"],
-    )
-  }
-
-  image_id = lookup(
-    var.worker_groups[count.index],
-    "ami_id",
-    lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"]) == "windows" ? local.default_ami_id_windows : local.default_ami_id_linux,
-  )
-  instance_type = lookup(
-    var.worker_groups[count.index],
-    "instance_type",
-    local.workers_group_defaults["instance_type"],
-  )
-
-  dynamic "elastic_inference_accelerator" {
-    for_each = lookup(
-      var.worker_groups[count.index],
-      "elastic_inference_accelerator",
-      local.workers_group_defaults["elastic_inference_accelerator"]
-    ) != null ? [lookup(var.worker_groups[count.index], "elastic_inference_accelerator", local.workers_group_defaults["elastic_inference_accelerator"])] : []
+  dynamic "block_device_mappings" {
+    for_each = lookup(each.value, "block_device_mappings", null) != null ? each.value.block_device_mappings : []
     content {
-      type = elastic_inference_accelerator.value
+      device_name  = block_device_mappings.value.device_name
+      no_device    = lookup(block_device_mappings.value, "no_device", null)
+      virtual_name = lookup(block_device_mappings.value, "virtual_name", null)
+
+      dynamic "ebs" {
+        for_each = flatten([lookup(block_device_mappings.value, "ebs", [])])
+        content {
+          delete_on_termination = lookup(ebs.value, "delete_on_termination", null)
+          encrypted             = lookup(ebs.value, "encrypted", null)
+          kms_key_id            = lookup(ebs.value, "kms_key_id", null)
+          iops                  = lookup(ebs.value, "iops", null)
+          throughput            = lookup(ebs.value, "throughput", null)
+          snapshot_id           = lookup(ebs.value, "snapshot_id", null)
+          volume_size           = lookup(ebs.value, "volume_size", null)
+          volume_type           = lookup(ebs.value, "volume_type", null)
+        }
+      }
     }
   }
 
-  key_name = lookup(
-    var.worker_groups[count.index],
-    "key_name",
-    local.workers_group_defaults["key_name"],
-  )
-  user_data = base64encode(
-    local.launch_template_userdata_rendered[count.index],
-  )
+  dynamic "capacity_reservation_specification" {
+    for_each = lookup(each.value, "capacity_reservation_specification", null) != null ? [each.value.capacity_reservation_specification] : []
+    content {
+      capacity_reservation_preference = lookup(capacity_reservation_specification.value, "capacity_reservation_preference", null)
 
-  ebs_optimized = lookup(
-    var.worker_groups[count.index],
-    "ebs_optimized",
-    !contains(
-      local.ebs_optimized_not_supported,
-      lookup(
-        var.worker_groups[count.index],
-        "instance_type",
-        local.workers_group_defaults["instance_type"],
-      )
-    )
-  )
+      dynamic "capacity_reservation_target" {
+        for_each = lookup(capacity_reservation_specification.value, "capacity_reservation_target", [])
+        content {
+          capacity_reservation_id = lookup(capacity_reservation_target.value, "capacity_reservation_id", null)
+        }
+      }
+    }
+  }
 
-  metadata_options {
-    http_endpoint = lookup(
-      var.worker_groups[count.index],
-      "metadata_http_endpoint",
-      local.workers_group_defaults["metadata_http_endpoint"],
-    )
-    http_tokens = lookup(
-      var.worker_groups[count.index],
-      "metadata_http_tokens",
-      local.workers_group_defaults["metadata_http_tokens"],
-    )
-    http_put_response_hop_limit = lookup(
-      var.worker_groups[count.index],
-      "metadata_http_put_response_hop_limit",
-      local.workers_group_defaults["metadata_http_put_response_hop_limit"],
-    )
+  dynamic "cpu_options" {
+    for_each = lookup(each.value, "cpu_options", null) != null ? [each.value.cpu_options] : []
+    content {
+      core_count       = cpu_options.value.core_count
+      threads_per_core = cpu_options.value.threads_per_core
+    }
   }
 
   dynamic "credit_specification" {
-    for_each = lookup(
-      var.worker_groups[count.index],
-      "cpu_credits",
-      local.workers_group_defaults["cpu_credits"]
-    ) != null ? [lookup(var.worker_groups[count.index], "cpu_credits", local.workers_group_defaults["cpu_credits"])] : []
+    for_each = lookup(each.value, "credit_specification", null) != null ? [each.value.credit_specification] : []
     content {
-      cpu_credits = credit_specification.value
+      cpu_credits = credit_specification.value.cpu_credits
     }
   }
 
-  monitoring {
-    enabled = lookup(
-      var.worker_groups[count.index],
-      "enable_monitoring",
-      local.workers_group_defaults["enable_monitoring"],
-    )
+  dynamic "elastic_gpu_specifications" {
+    for_each = lookup(each.value, "elastic_gpu_specifications", null) != null ? [each.value.elastic_gpu_specifications] : []
+    content {
+      type = elastic_gpu_specifications.value.type
+    }
   }
 
-  dynamic "placement" {
-    for_each = lookup(var.worker_groups[count.index], "launch_template_placement_group", local.workers_group_defaults["launch_template_placement_group"]) != null ? [lookup(var.worker_groups[count.index], "launch_template_placement_group", local.workers_group_defaults["launch_template_placement_group"])] : []
-
+  dynamic "elastic_inference_accelerator" {
+    for_each = lookup(each.value, "elastic_inference_accelerator", null) != null ? [each.value.elastic_inference_accelerator] : []
     content {
-      tenancy = lookup(
-        var.worker_groups[count.index],
-        "launch_template_placement_tenancy",
-        local.workers_group_defaults["launch_template_placement_tenancy"],
-      )
-      group_name = placement.value
+      type = elastic_inference_accelerator.value.type
+    }
+  }
+
+  dynamic "enclave_options" {
+    for_each = lookup(each.value, "enclave_options", null) != null ? [each.value.enclave_options] : []
+    content {
+      enabled = enclave_options.value.enabled
+    }
+  }
+
+  dynamic "hibernation_options" {
+    for_each = lookup(each.value, "hibernation_options", null) != null ? [each.value.hibernation_options] : []
+    content {
+      configured = hibernation_options.value.configured
+    }
+  }
+
+  # iam_instance_profile {
+  #   name = coalescelist(
+  #     aws_iam_instance_profile.workers.*.name,
+  #     data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.name,
+  #   )[count.index]
+  # }
+
+  dynamic "iam_instance_profile" {
+    for_each = lookup(each.value, "iam_instance_profile", null) != null ? [1] : []
+    content {
+      name = iam_instance_profile.value.name
+      arn  = iam_instance_profile.value.arn
     }
   }
 
   dynamic "instance_market_options" {
-    for_each = lookup(var.worker_groups[count.index], "market_type", null) == null ? [] : tolist([lookup(var.worker_groups[count.index], "market_type", null)])
+    for_each = lookup(each.value, "instance_market_options", null) != null ? [each.value.instance_market_options] : []
     content {
-      market_type = instance_market_options.value
-    }
-  }
+      market_type = instance_market_options.value.market_type
 
-  block_device_mappings {
-    device_name = lookup(
-      var.worker_groups[count.index],
-      "root_block_device_name",
-      lookup(var.worker_groups[count.index], "platform", local.workers_group_defaults["platform"]) == "windows" ? local.workers_group_defaults["root_block_device_name_windows"] : local.workers_group_defaults["root_block_device_name"],
-    )
-
-    ebs {
-      volume_size = lookup(
-        var.worker_groups[count.index],
-        "root_volume_size",
-        local.workers_group_defaults["root_volume_size"],
-      )
-      volume_type = lookup(
-        var.worker_groups[count.index],
-        "root_volume_type",
-        local.workers_group_defaults["root_volume_type"],
-      )
-      iops = lookup(
-        var.worker_groups[count.index],
-        "root_iops",
-        local.workers_group_defaults["root_iops"],
-      )
-      throughput = lookup(
-        var.worker_groups[count.index],
-        "root_volume_throughput",
-        local.workers_group_defaults["root_volume_throughput"],
-      )
-      encrypted = lookup(
-        var.worker_groups[count.index],
-        "root_encrypted",
-        local.workers_group_defaults["root_encrypted"],
-      )
-      kms_key_id = lookup(
-        var.worker_groups[count.index],
-        "root_kms_key_id",
-        local.workers_group_defaults["root_kms_key_id"],
-      )
-      delete_on_termination = true
-    }
-  }
-
-  dynamic "block_device_mappings" {
-    for_each = lookup(var.worker_groups[count.index], "additional_ebs_volumes", local.workers_group_defaults["additional_ebs_volumes"])
-    content {
-      device_name = block_device_mappings.value.block_device_name
-
-      ebs {
-        volume_size = lookup(
-          block_device_mappings.value,
-          "volume_size",
-          local.workers_group_defaults["root_volume_size"],
-        )
-        volume_type = lookup(
-          block_device_mappings.value,
-          "volume_type",
-          local.workers_group_defaults["root_volume_type"],
-        )
-        iops = lookup(
-          block_device_mappings.value,
-          "iops",
-          local.workers_group_defaults["root_iops"],
-        )
-        throughput = lookup(
-          block_device_mappings.value,
-          "throughput",
-          local.workers_group_defaults["root_volume_throughput"],
-        )
-        encrypted = lookup(
-          block_device_mappings.value,
-          "encrypted",
-          local.workers_group_defaults["root_encrypted"],
-        )
-        kms_key_id = lookup(
-          block_device_mappings.value,
-          "kms_key_id",
-          local.workers_group_defaults["root_kms_key_id"],
-        )
-        snapshot_id = lookup(
-          block_device_mappings.value,
-          "snapshot_id",
-          local.workers_group_defaults["snapshot_id"],
-        )
-        delete_on_termination = lookup(block_device_mappings.value, "delete_on_termination", true)
+      dynamic "spot_options" {
+        for_each = lookup(instance_market_options.value, "spot_options", null) != null ? [instance_market_options.value.spot_options] : []
+        content {
+          block_duration_minutes         = spot_options.value.block_duration_minutes
+          instance_interruption_behavior = lookup(spot_options.value, "instance_interruption_behavior", null)
+          max_price                      = lookup(spot_options.value, "max_price", null)
+          spot_instance_type             = lookup(spot_options.value, "spot_instance_type", null)
+          valid_until                    = lookup(spot_options.value, "valid_until", null)
+        }
       }
     }
-
   }
 
-  dynamic "block_device_mappings" {
-    for_each = lookup(var.worker_groups[count.index], "additional_instance_store_volumes", local.workers_group_defaults["additional_instance_store_volumes"])
+  dynamic "license_specification" {
+    for_each = lookup(each.value, "license_specifications", null) != null ? [each.value.license_specifications] : []
     content {
-      device_name = block_device_mappings.value.block_device_name
-      virtual_name = lookup(
-        block_device_mappings.value,
-        "virtual_name",
-        local.workers_group_defaults["instance_store_virtual_name"],
-      )
+      license_configuration_arn = license_specifications.value.license_configuration_arn
+    }
+  }
+
+  dynamic "metadata_options" {
+    for_each = lookup(each.value, "metadata_options", null) != null ? [each.value.metadata_options] : []
+    content {
+      http_endpoint               = lookup(metadata_options.value, "http_endpoint", null)
+      http_tokens                 = lookup(metadata_options.value, "http_tokens", null)
+      http_put_response_hop_limit = lookup(metadata_options.value, "http_put_response_hop_limit", null)
+    }
+  }
+
+  dynamic "monitoring" {
+    for_each = lookup(each.value, "enable_monitoring", null) != null ? [1] : []
+    content {
+      enabled = each.value.enable_monitoring
+    }
+  }
+
+  dynamic "network_interfaces" {
+    for_each = lookup(each.value, "network_interfaces", null) != null ? each.value.network_interfaces : []
+    iterator = interface
+    content {
+      associate_carrier_ip_address = lookup(interface.value, "associate_carrier_ip_address", null)
+      associate_public_ip_address  = lookup(interface.value, "associate_public_ip_address", null)
+      delete_on_termination        = lookup(interface.value, "delete_on_termination", null)
+      description                  = lookup(interface.value, "description", null)
+      device_index                 = lookup(interface.value, "device_index", null)
+      ipv4_addresses               = lookup(interface.value, "ipv4_addresses", null) != null ? interface.value.ipv4_addresses : []
+      ipv4_address_count           = lookup(interface.value, "ipv4_address_count", null)
+      ipv6_addresses               = lookup(interface.value, "ipv6_addresses", null) != null ? interface.value.ipv6_addresses : []
+      ipv6_address_count           = lookup(interface.value, "ipv6_address_count", null)
+      network_interface_id         = lookup(interface.value, "network_interface_id", null)
+      private_ip_address           = lookup(interface.value, "private_ip_address", null)
+      security_groups              = lookup(interface.value, "security_groups", null) != null ? interface.value.security_groups : []
+      subnet_id                    = lookup(interface.value, "subnet_id", null)
+    }
+  }
+
+  dynamic "placement" {
+    for_each = lookup(each.value, "placement", null) != null ? [each.value.placement] : []
+    content {
+      affinity          = lookup(placement.value, "affinity", null)
+      availability_zone = lookup(placement.value, "availability_zone", null)
+      group_name        = lookup(placement.value, "group_name", null)
+      host_id           = lookup(placement.value, "host_id", null)
+      spread_domain     = lookup(placement.value, "spread_domain", null)
+      tenancy           = lookup(placement.value, "tenancy", null)
+      partition_number  = lookup(placement.value, "partition_number", null)
     }
   }
 
@@ -549,19 +352,9 @@ resource "aws_launch_template" "workers_launch_template" {
     resource_type = "volume"
 
     tags = merge(
-      {
-        "Name" = "${local.cluster_name}-${lookup(
-          var.worker_groups[count.index],
-          "name",
-          count.index,
-        )}-eks_asg"
-      },
+      { "Name" = "${local.cluster_name}-${lookup(each.value, "name", each.key)}-eks_asg" },
       var.tags,
-      {
-        for tag in lookup(var.worker_groups[count.index], "tags", local.workers_group_defaults["tags"]) :
-        tag["key"] => tag["value"]
-        if tag["key"] != "Name" && tag["propagate_at_launch"]
-      }
+      { for tag in lookup(each.value, "tags", {}) : tag["key"] => tag["value"] if tag["key"] != "Name" && tag["propagate_at_launch"] }
     )
   }
 
@@ -569,16 +362,10 @@ resource "aws_launch_template" "workers_launch_template" {
     resource_type = "instance"
 
     tags = merge(
-      {
-        "Name" = "${local.cluster_name}-${lookup(
-          var.worker_groups[count.index],
-          "name",
-          count.index,
-        )}-eks_asg"
-      },
+      { "Name" = "${local.cluster_name}-${lookup(each.value, "name", each.key)}-eks_asg" },
       { for tag_key, tag_value in var.tags :
         tag_key => tag_value
-        if tag_key != "Name" && !contains([for tag in lookup(var.worker_groups[count.index], "tags", local.workers_group_defaults["tags"]) : tag["key"]], tag_key)
+        if tag_key != "Name" && !contains([for tag in lookup(each.value, "tags", {}) : tag["key"]], tag_key)
       }
     )
   }
@@ -587,26 +374,10 @@ resource "aws_launch_template" "workers_launch_template" {
     resource_type = "network-interface"
 
     tags = merge(
-      {
-        "Name" = "${local.cluster_name}-${lookup(
-          var.worker_groups[count.index],
-          "name",
-          count.index,
-        )}-eks_asg"
-      },
+      { "Name" = "${local.cluster_name}-${lookup(each.value, "name", each.key)}-eks_asg" },
       var.tags,
-      {
-        for tag in lookup(var.worker_groups[count.index], "tags", local.workers_group_defaults["tags"]) :
-        tag["key"] => tag["value"]
-        if tag["key"] != "Name" && tag["propagate_at_launch"]
-      }
+      { for tag in lookup(each.value, "tags", {}) : tag["key"] => tag["value"] if tag["key"] != "Name" && tag["propagate_at_launch"] }
     )
-  }
-
-  tags = var.tags
-
-  lifecycle {
-    create_before_destroy = true
   }
 
   # Prevent premature access of security group roles and policies by pods that
@@ -624,24 +395,34 @@ resource "aws_launch_template" "workers_launch_template" {
     aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly,
     aws_iam_role_policy_attachment.workers_additional_policies
   ]
-}
 
-resource "aws_iam_instance_profile" "workers" {
-  count = var.manage_worker_iam_resources && var.create_eks ? local.worker_group_count : 0
-
-  name_prefix = local.cluster_name
-  role = lookup(
-    var.worker_groups[count.index],
-    "iam_role_id",
-    local.default_iam_role_id,
-  )
-  path = var.iam_path
-
-  tags = var.tags
+  dynamic "tag_specifications" {
+    for_each = lookup(each.value, "tag_specifications", null) != null ? each.value.tag_specifications : []
+    content {
+      resource_type = tag_specifications.value.resource_type
+      tags          = tag_specifications.value.tags
+    }
+  }
 
   lifecycle {
     create_before_destroy = true
   }
+
+  tags = var.tags
+}
+
+resource "aws_iam_instance_profile" "workers" {
+  count = var.manage_worker_iam_resources && var.create_eks ? var.iam_instance_profiles : {}
+
+  name_prefix = local.cluster_name
+  role        = lookup(var.worker_groups[count.index], "iam_role_id", local.default_iam_role_id)
+  path        = var.iam_path
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = var.tags
 }
 
 resource "aws_security_group" "workers" {

@@ -20,8 +20,6 @@ locals {
   default_ami_id_linux   = local.workers_group_defaults.ami_id != "" ? local.workers_group_defaults.ami_id : concat(data.aws_ami.eks_worker.*.id, [""])[0]
   default_ami_id_windows = local.workers_group_defaults.ami_id_windows != "" ? local.workers_group_defaults.ami_id_windows : concat(data.aws_ami.eks_worker_windows.*.id, [""])[0]
 
-  worker_group_count = length(var.worker_groups)
-
   worker_groups_platforms = [for x in var.worker_groups : try(x.platform, var.workers_group_defaults["platform"], var.default_platform)]
 
   worker_ami_name_filter         = coalesce(var.worker_ami_name_filter, "amazon-eks-node-${coalesce(var.cluster_version, "cluster_version")}-v*")
