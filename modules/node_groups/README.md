@@ -37,7 +37,8 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | instance\_types | Node group's instance type(s). Multiple types can be specified when `capacity_type="SPOT"`. | list | `[var.workers_group_defaults[instance_type]]` |
 | k8s\_labels | Kubernetes labels | map(string) | No labels applied |
 | key\_name | Key name for workers. Set to empty string to disable remote access | string | `var.workers_group_defaults[key_name]` |
-| kubelet_extra_args | This string is passed directly to kubelet if set. Useful for adding labels or taints. Require `create_launch_template` to be `true`| string | "" |
+| bootstrap_env | Provide environment variables to customise [bootstrap.sh](https://github.com/awslabs/amazon-eks-ami/blob/master/files/bootstrap.sh). Require `create_launch_template` to be `true` | map(string) | `{}` |
+| kubelet_extra_args | Extra arguments for kubelet, this is automatically merged with `labels`. Require `create_launch_template` to be `true` | string | "" |
 | launch_template_id | The id of a aws_launch_template to use | string | No LT used |
 | launch\_template_version | The version of the LT to use | string | none |
 | max\_capacity | Max number of workers | number | `var.workers_group_defaults[asg_max_size]` |
@@ -84,18 +85,18 @@ No modules.
 |------|------|
 | [aws_eks_node_group.workers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group) | resource |
 | [aws_launch_template.workers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
-| [aws_eks_cluster.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
 | [cloudinit_config.workers_userdata](https://registry.terraform.io/providers/hashicorp/cloudinit/latest/docs/data-sources/config) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_cluster_auth_base64"></a> [cluster\_auth\_base64](#input\_cluster\_auth\_base64) | Base64 encoded CA of parent cluster | `string` | `""` | no |
+| <a name="input_cluster_endpoint"></a> [cluster\_endpoint](#input\_cluster\_endpoint) | Endpoint of parent cluster | `string` | `""` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of parent cluster | `string` | `""` | no |
 | <a name="input_create_eks"></a> [create\_eks](#input\_create\_eks) | Controls if EKS resources should be created (it affects almost all resources) | `bool` | `true` | no |
 | <a name="input_default_iam_role_arn"></a> [default\_iam\_role\_arn](#input\_default\_iam\_role\_arn) | ARN of the default IAM worker role to use if one is not specified in `var.node_groups` or `var.node_groups_defaults` | `string` | `""` | no |
 | <a name="input_ebs_optimized_not_supported"></a> [ebs\_optimized\_not\_supported](#input\_ebs\_optimized\_not\_supported) | List of instance types that do not support EBS optimization | `list(string)` | `[]` | no |
-| <a name="input_ng_depends_on"></a> [ng\_depends\_on](#input\_ng\_depends\_on) | List of references to other resources this submodule depends on | `any` | `null` | no |
 | <a name="input_node_groups"></a> [node\_groups](#input\_node\_groups) | Map of maps of `eks_node_groups` to create. See "`node_groups` and `node_groups_defaults` keys" section in README.md for more details | `any` | `{}` | no |
 | <a name="input_node_groups_defaults"></a> [node\_groups\_defaults](#input\_node\_groups\_defaults) | map of maps of node groups to create. See "`node_groups` and `node_groups_defaults` keys" section in README.md for more details | `any` | `{}` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map(string)` | `{}` | no |

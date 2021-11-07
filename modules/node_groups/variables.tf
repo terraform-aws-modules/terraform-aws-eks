@@ -10,6 +10,18 @@ variable "cluster_name" {
   default     = ""
 }
 
+variable "cluster_endpoint" {
+  description = "Endpoint of parent cluster"
+  type        = string
+  default     = ""
+}
+
+variable "cluster_auth_base64" {
+  description = "Base64 encoded CA of parent cluster"
+  type        = string
+  default     = ""
+}
+
 variable "default_iam_role_arn" {
   description = "ARN of the default IAM worker role to use if one is not specified in `var.node_groups` or `var.node_groups_defaults`"
   type        = string
@@ -50,14 +62,6 @@ variable "node_groups" {
   description = "Map of maps of `eks_node_groups` to create. See \"`node_groups` and `node_groups_defaults` keys\" section in README.md for more details"
   type        = any
   default     = {}
-}
-
-# Hack for a homemade `depends_on` https://discuss.hashicorp.com/t/tips-howto-implement-module-depends-on-emulation/2305/2
-# Will be removed in Terraform 0.13 with the support of module's `depends_on` https://github.com/hashicorp/terraform/issues/10462
-variable "ng_depends_on" {
-  description = "List of references to other resources this submodule depends on"
-  type        = any
-  default     = null
 }
 
 variable "ebs_optimized_not_supported" {

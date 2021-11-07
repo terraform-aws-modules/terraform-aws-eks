@@ -1,6 +1,56 @@
 provider "aws" {
-  region = "eu-west-1"
+  region = local.region
 }
+
+locals {
+  name            = "secrets_encryption-${random_string.suffix.result}"
+  cluster_version = "1.20"
+  region          = "eu-west-1"
+}
+
+################################################################################
+# EKS Module
+################################################################################
+
+module "eks" {
+  source = "../.."
+
+  cluster_name    = local.name
+  cluster_version = local.cluster_version
+
+  vpc_id  = module.vpc.vpc_id
+  subnets = module.vpc.private_subnets
+
+  cluster_endpoint_private_access = true
+  cluster_endpoint_public_access  = true
+
+
+  cluster_encryption_config = [
+    {
+      provider_key_arn = aws_kms_key.eks.arn
+      resources        = ["secrets"]
+    }
+  ]
+
+  worker_groups = [
+    {
+      name                 = "worker-group-1"
+      instance_type        = "t3.small"
+      additional_userdata  = "echo foo bar"
+      asg_desired_capacity = 2
+    },
+  ]
+
+  tags = {
+    Example    = local.name
+    GithubRepo = "terraform-aws-eks"
+    GithubOrg  = "terraform-aws-modules"
+  }
+}
+
+################################################################################
+# Kubernetes provider configuration
+################################################################################
 
 data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
@@ -16,11 +66,28 @@ provider "kubernetes" {
   token                  = data.aws_eks_cluster_auth.cluster.token
 }
 
-data "aws_availability_zones" "available" {
+################################################################################
+# KMS for encrypting secrets
+################################################################################
+
+resource "aws_kms_key" "eks" {
+  description             = "EKS Secret Encryption Key"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+
+  tags = {
+    Example    = local.name
+    GithubRepo = "terraform-aws-eks"
+    GithubOrg  = "terraform-aws-modules"
+  }
 }
 
-locals {
-  cluster_name = "test-eks-${random_string.suffix.result}"
+
+################################################################################
+# Supporting Resources
+################################################################################
+
+data "aws_availability_zones" "available" {
 }
 
 resource "random_string" "suffix" {
@@ -28,15 +95,11 @@ resource "random_string" "suffix" {
   special = false
 }
 
-resource "aws_kms_key" "eks" {
-  description = "EKS Secret Encryption Key"
-}
-
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 2.47"
+  version = "~> 3.0"
 
-  name                 = "test-vpc"
+  name                 = local.name
   cidr                 = "10.0.0.0/16"
   azs                  = data.aws_availability_zones.available.names
   private_subnets      = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
@@ -46,47 +109,18 @@ module "vpc" {
   enable_dns_hostnames = true
 
   public_subnet_tags = {
-    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
-    "kubernetes.io/role/elb"                      = "1"
+    "kubernetes.io/cluster/${local.name}" = "shared"
+    "kubernetes.io/role/elb"              = "1"
   }
 
   private_subnet_tags = {
-    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
-    "kubernetes.io/role/internal-elb"             = "1"
+    "kubernetes.io/cluster/${local.name}" = "shared"
+    "kubernetes.io/role/internal-elb"     = "1"
   }
-}
-
-module "eks" {
-  source          = "../.."
-  cluster_name    = local.cluster_name
-  cluster_version = "1.20"
-  subnets         = module.vpc.private_subnets
-
-  cluster_encryption_config = [
-    {
-      provider_key_arn = aws_kms_key.eks.arn
-      resources        = ["secrets"]
-    }
-  ]
 
   tags = {
-    Environment = "test"
-    GithubRepo  = "terraform-aws-eks"
-    GithubOrg   = "terraform-aws-modules"
+    Example    = local.name
+    GithubRepo = "terraform-aws-eks"
+    GithubOrg  = "terraform-aws-modules"
   }
-
-  vpc_id = module.vpc.vpc_id
-
-  worker_groups = [
-    {
-      name                 = "worker-group-1"
-      instance_type        = "t3.small"
-      additional_userdata  = "echo foo bar"
-      asg_desired_capacity = 2
-    },
-  ]
-
-  map_roles    = var.map_roles
-  map_users    = var.map_users
-  map_accounts = var.map_accounts
 }

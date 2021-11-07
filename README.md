@@ -15,7 +15,6 @@ Terraform module which creates Kubernetes cluster resources on AWS EKS.
 - Support AWS EKS Optimized or Custom AMI
 - Create or manage security groups that allow communication and coordination
 
-
 ## Important note
 
 Kubernetes is evolving a lot, and each minor version includes new features, fixes, or changes.
@@ -23,7 +22,6 @@ Kubernetes is evolving a lot, and each minor version includes new features, fixe
 **Always check [Kubernetes Release Notes](https://kubernetes.io/docs/setup/release/notes/) before updating the major version, and [CHANGELOG.md](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/CHANGELOG.md) for all changes in this EKS module.**
 
 You also need to ensure that your applications and add ons are updated, or workloads could fail after the upgrade is complete. For action, you may need to take before upgrading, see the steps in the [EKS documentation](https://docs.aws.amazon.com/eks/latest/userguide/update-cluster.html).
-
 
 ## Usage example
 
@@ -61,7 +59,6 @@ module "eks" {
 
 There is also a [complete example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/complete) which shows large set of features available in the module.
 
-
 ## Submodules
 
 Root module calls these modules which can also be used separately to create independent resources:
@@ -71,13 +68,11 @@ Root module calls these modules which can also be used separately to create inde
 - [node_groups](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/node_groups) - creates Managed Node Group resources
 -->
 
-
 ## Notes
 
 - By default, this module manages the `aws-auth` configmap for you (`manage_aws_auth=true`). To avoid the following [issue](https://github.com/aws/containers-roadmap/issues/654) where the EKS creation is `ACTIVE` but not ready. We implemented a "retry" logic with a [fork of the http provider](https://github.com/terraform-aws-modules/terraform-provider-http). This fork adds the support of a self-signed CA certificate. The original PR can be found [here](https://github.com/hashicorp/terraform-provider-http/pull/29).
 
 - Setting `instance_refresh_enabled = true` will recreate your worker nodes without draining them first. It is recommended to install [aws-node-termination-handler](https://github.com/aws/aws-node-termination-handler) for proper node draining. Find the complete example here [instance_refresh](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/instance_refresh).
-
 
 ## Documentation
 
@@ -93,7 +88,6 @@ Root module calls these modules which can also be used separately to create inde
 - [IAM Permissions](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/iam-permissions.md): Minimum IAM permissions needed to setup EKS Cluster.
 - [FAQ](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md): Frequently Asked Questions
 
-
 ## Examples
 
 There are detailed examples available for you to see how certain features of this module can be used in a straightforward way. Make sure to check them and run them before opening an issue. [Here](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/iam-permissions.md) you can find the list of the minimum IAM Permissions required to create EKS cluster.
@@ -102,13 +96,11 @@ There are detailed examples available for you to see how certain features of thi
 - [Bottlerocket](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/bottlerocket) - Create EKS cluster using [Bottlerocket AMI](https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami-bottlerocket.html).
 - [Fargate](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/fargate) - Create EKS cluster with [Fargate profiles](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html) and attach Fargate profiles to an existing EKS cluster.
   
-
 ## Contributing
 
 Report issues/questions/feature requests on in the [issues](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/new) section.
 
 Full contributing [guidelines are covered here](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/.github/CONTRIBUTING.md).
-
 
 ## Authors
 
@@ -157,12 +149,14 @@ Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraf
 | [aws_iam_instance_profile.workers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile) | resource |
 | [aws_iam_instance_profile.workers_launch_template](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile) | resource |
 | [aws_iam_openid_connect_provider.oidc_provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_openid_connect_provider) | resource |
+| [aws_iam_policy.cluster_deny_log_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_policy.cluster_elb_sl_role_creation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_role.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.workers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.cluster_AmazonEKSServicePolicy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.cluster_AmazonEKSVPCResourceControllerPolicy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.cluster_deny_log_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.cluster_elb_sl_role_creation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.workers_AmazonEKSWorkerNodePolicy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
@@ -191,6 +185,7 @@ Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraf
 | [aws_iam_instance_profile.custom_worker_group_iam_instance_profile](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_instance_profile) | data source |
 | [aws_iam_instance_profile.custom_worker_group_launch_template_iam_instance_profile](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_instance_profile) | data source |
 | [aws_iam_policy_document.cluster_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.cluster_deny_log_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.cluster_elb_sl_role_creation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.workers_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_role.custom_cluster_iam_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_role) | data source |
@@ -223,7 +218,7 @@ Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraf
 | <a name="input_cluster_service_ipv4_cidr"></a> [cluster\_service\_ipv4\_cidr](#input\_cluster\_service\_ipv4\_cidr) | service ipv4 cidr for the kubernetes cluster | `string` | `null` | no |
 | <a name="input_cluster_tags"></a> [cluster\_tags](#input\_cluster\_tags) | A map of tags to add to just the eks resource. | `map(string)` | `{}` | no |
 | <a name="input_cluster_update_timeout"></a> [cluster\_update\_timeout](#input\_cluster\_update\_timeout) | Timeout value when updating the EKS cluster. | `string` | `"60m"` | no |
-| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | Kubernetes version to use for the EKS cluster. | `string` | `null` | no |
+| <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | Kubernetes minor version to use for the EKS cluster (for example 1.21). | `string` | `null` | no |
 | <a name="input_create_eks"></a> [create\_eks](#input\_create\_eks) | Controls if EKS resources should be created (it affects almost all resources) | `bool` | `true` | no |
 | <a name="input_create_fargate_pod_execution_role"></a> [create\_fargate\_pod\_execution\_role](#input\_create\_fargate\_pod\_execution\_role) | Controls if the EKS Fargate pod execution IAM role should be created. | `bool` | `true` | no |
 | <a name="input_default_platform"></a> [default\_platform](#input\_default\_platform) | Default platform name. Valid options are `linux` and `windows`. | `string` | `"linux"` | no |
@@ -233,6 +228,7 @@ Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraf
 | <a name="input_fargate_profiles"></a> [fargate\_profiles](#input\_fargate\_profiles) | Fargate profiles to create. See `fargate_profile` keys section in fargate submodule's README.md for more details | `any` | `{}` | no |
 | <a name="input_fargate_subnets"></a> [fargate\_subnets](#input\_fargate\_subnets) | A list of subnets to place fargate workers within (if different from subnets). | `list(string)` | `[]` | no |
 | <a name="input_iam_path"></a> [iam\_path](#input\_iam\_path) | If provided, all IAM roles will be created on this path. | `string` | `"/"` | no |
+| <a name="input_kubeconfig_api_version"></a> [kubeconfig\_api\_version](#input\_kubeconfig\_api\_version) | KubeConfig API version. Defaults to client.authentication.k8s.io/v1alpha1 | `string` | `"client.authentication.k8s.io/v1alpha1"` | no |
 | <a name="input_kubeconfig_aws_authenticator_additional_args"></a> [kubeconfig\_aws\_authenticator\_additional\_args](#input\_kubeconfig\_aws\_authenticator\_additional\_args) | Any additional arguments to pass to the authenticator such as the role to assume. e.g. ["-r", "MyEksRole"]. | `list(string)` | `[]` | no |
 | <a name="input_kubeconfig_aws_authenticator_command"></a> [kubeconfig\_aws\_authenticator\_command](#input\_kubeconfig\_aws\_authenticator\_command) | Command to use to fetch AWS EKS credentials. | `string` | `"aws-iam-authenticator"` | no |
 | <a name="input_kubeconfig_aws_authenticator_command_args"></a> [kubeconfig\_aws\_authenticator\_command\_args](#input\_kubeconfig\_aws\_authenticator\_command\_args) | Default arguments passed to the authenticator command. Defaults to [token -i $cluster\_name]. | `list(string)` | `[]` | no |
@@ -243,9 +239,9 @@ Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraf
 | <a name="input_manage_aws_auth"></a> [manage\_aws\_auth](#input\_manage\_aws\_auth) | Whether to apply the aws-auth configmap file. | `bool` | `true` | no |
 | <a name="input_manage_cluster_iam_resources"></a> [manage\_cluster\_iam\_resources](#input\_manage\_cluster\_iam\_resources) | Whether to let the module manage cluster IAM resources. If set to false, cluster\_iam\_role\_name must be specified. | `bool` | `true` | no |
 | <a name="input_manage_worker_iam_resources"></a> [manage\_worker\_iam\_resources](#input\_manage\_worker\_iam\_resources) | Whether to let the module manage worker IAM resources. If set to false, iam\_instance\_profile\_name must be specified for workers. | `bool` | `true` | no |
-| <a name="input_map_accounts"></a> [map\_accounts](#input\_map\_accounts) | Additional AWS account numbers to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | `list(string)` | `[]` | no |
-| <a name="input_map_roles"></a> [map\_roles](#input\_map\_roles) | Additional IAM roles to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | <pre>list(object({<br>    rolearn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
-| <a name="input_map_users"></a> [map\_users](#input\_map\_users) | Additional IAM users to add to the aws-auth configmap. See examples/basic/variables.tf for example format. | <pre>list(object({<br>    userarn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
+| <a name="input_map_accounts"></a> [map\_accounts](#input\_map\_accounts) | Additional AWS account numbers to add to the aws-auth configmap. | `list(string)` | `[]` | no |
+| <a name="input_map_roles"></a> [map\_roles](#input\_map\_roles) | Additional IAM roles to add to the aws-auth configmap. | <pre>list(object({<br>    rolearn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
+| <a name="input_map_users"></a> [map\_users](#input\_map\_users) | Additional IAM users to add to the aws-auth configmap. | <pre>list(object({<br>    userarn  = string<br>    username = string<br>    groups   = list(string)<br>  }))</pre> | `[]` | no |
 | <a name="input_node_groups"></a> [node\_groups](#input\_node\_groups) | Map of map of node groups to create. See `node_groups` module's documentation for more details | `any` | `{}` | no |
 | <a name="input_node_groups_defaults"></a> [node\_groups\_defaults](#input\_node\_groups\_defaults) | Map of values to be applied to all node groups. See `node_groups` module's documentation for more details | `any` | `{}` | no |
 | <a name="input_openid_connect_audiences"></a> [openid\_connect\_audiences](#input\_openid\_connect\_audiences) | List of OpenID Connect audience client IDs to add to the IRSA provider. | `list(string)` | `[]` | no |

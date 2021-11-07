@@ -345,7 +345,7 @@ resource "aws_launch_configuration" "workers" {
         local.workers_group_defaults["root_encrypted"],
       )
       snapshot_id = lookup(
-        block_device_mappings.value,
+        ebs_block_device.value,
         "snapshot_id",
         local.workers_group_defaults["snapshot_id"],
       )

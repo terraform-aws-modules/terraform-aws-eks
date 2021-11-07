@@ -1,7 +1,3 @@
-data "aws_eks_cluster" "default" {
-  name = var.cluster_name
-}
-
 locals {
   # Merge defaults and per-group values to make code cleaner
   node_groups_expanded = { for k, v in var.node_groups : k => merge(
@@ -17,6 +13,7 @@ locals {
       min_capacity                         = var.workers_group_defaults["asg_min_size"]
       subnets                              = var.workers_group_defaults["subnets"]
       create_launch_template               = false
+      bootstrap_env                        = {}
       kubelet_extra_args                   = var.workers_group_defaults["kubelet_extra_args"]
       disk_size                            = var.workers_group_defaults["root_volume_size"]
       disk_type                            = var.workers_group_defaults["root_volume_type"]
