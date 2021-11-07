@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this
 project adheres to [Semantic Versioning](http://semver.org/).
 
+For changes prior to v11.0.0, see [CHANGELOG.pre-v11.0.0.md](.github/CHANGELOG.pre-v11.0.0.md)
+
 <a name="unreleased"></a>
 ## [Unreleased]
 

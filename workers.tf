@@ -7,6 +7,61 @@ locals {
     desired_capacity = try(var.group_default.desired_capacity, 1)
   }
 }
+
+################################################################################
+# Fargate
+################################################################################
+
+module "fargate" {
+  source = "./modules/fargate"
+
+  create_eks                        = var.create_eks
+  create_fargate_pod_execution_role = var.create_fargate_pod_execution_role
+
+  cluster_name                    = local.cluster_name
+  fargate_pod_execution_role_name = var.fargate_pod_execution_role_name
+  permissions_boundary            = var.permissions_boundary
+  iam_path                        = var.iam_path
+  subnets                         = coalescelist(var.fargate_subnets, var.subnets, [""])
+
+  fargate_profiles = var.fargate_profiles
+
+  tags = var.tags
+}
+
+################################################################################
+# Node Groups
+################################################################################
+
+module "node_groups" {
+  source = "./modules/node_groups"
+
+  create_eks = var.create_eks
+
+  cluster_name        = local.cluster_name
+  cluster_endpoint    = local.cluster_endpoint
+  cluster_auth_base64 = local.cluster_auth_base64
+
+  default_iam_role_arn                 = coalescelist(aws_iam_role.workers[*].arn, [""])[0]
+  worker_security_group_id             = local.worker_security_group_id
+  worker_additional_security_group_ids = var.worker_additional_security_group_ids
+
+  node_groups_defaults = var.node_groups_defaults
+  node_groups          = var.node_groups
+
+  tags = var.tags
+
+  depends_on = [
+    aws_eks_cluster.this,
+    aws_iam_role_policy_attachment.workers_AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.workers_AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly
+  ]
+}
+
+################################################################################
+# Autoscaling Group
+################################################################################
 resource "aws_autoscaling_group" "this" {
   for_each = var.create_eks ? var.worker_groups : {}
 

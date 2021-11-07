@@ -1,13 +1,6 @@
-resource "aws_cloudwatch_log_group" "this" {
-  count = length(var.cluster_enabled_log_types) > 0 && var.create_eks ? 1 : 0
-
-  name              = "/aws/eks/${var.cluster_name}/cluster"
-  retention_in_days = var.cluster_log_retention_in_days
-  kms_key_id        = var.cluster_log_kms_key_id
-
-  tags = var.tags
-}
-
+################################################################################
+# Cluster
+################################################################################
 resource "aws_eks_cluster" "this" {
   count = var.create_eks ? 1 : 0
 
@@ -59,6 +52,20 @@ resource "aws_eks_cluster" "this" {
     aws_cloudwatch_log_group.this
   ]
 }
+
+resource "aws_cloudwatch_log_group" "this" {
+  count = length(var.cluster_enabled_log_types) > 0 && var.create_eks ? 1 : 0
+
+  name              = "/aws/eks/${var.cluster_name}/cluster"
+  retention_in_days = var.cluster_log_retention_in_days
+  kms_key_id        = var.cluster_log_kms_key_id
+
+  tags = var.tags
+}
+
+################################################################################
+# Security Group
+################################################################################
 
 resource "aws_security_group" "cluster" {
   count = var.cluster_create_security_group && var.create_eks ? 1 : 0
@@ -124,6 +131,51 @@ resource "aws_security_group_rule" "cluster_private_access_sg_source" {
 
   security_group_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
 }
+
+################################################################################
+# Kubeconfig
+################################################################################
+
+resource "local_file" "kubeconfig" {
+  count = var.write_kubeconfig && var.create_eks ? 1 : 0
+
+  content              = local.kubeconfig
+  filename             = substr(var.kubeconfig_output_path, -1, 1) == "/" ? "${var.kubeconfig_output_path}kubeconfig_${var.cluster_name}" : var.kubeconfig_output_path
+  file_permission      = var.kubeconfig_file_permission
+  directory_permission = "0755"
+}
+
+################################################################################
+# IRSA
+################################################################################
+
+# Enable IAM Roles for EKS Service-Accounts (IRSA).
+# The Root CA Thumbprint for an OpenID Connect Identity Provider is currently
+# Being passed as a default value which is the same for all regions and
+# Is valid until (Jun 28 17:39:16 2034 GMT).
+# https://crt.sh/?q=9E99A48A9960B14926BB7F3B02E22DA2B0AB7280
+# https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html
+# https://github.com/terraform-providers/terraform-provider-aws/issues/10104
+
+# TODO - update to use TLS data source and drop hacks
+resource "aws_iam_openid_connect_provider" "oidc_provider" {
+  count = var.enable_irsa && var.create_eks ? 1 : 0
+
+  client_id_list  = local.client_id_list
+  thumbprint_list = [var.eks_oidc_root_ca_thumbprint]
+  url             = local.cluster_oidc_issuer_url
+
+  tags = merge(
+    {
+      Name = "${var.cluster_name}-eks-irsa"
+    },
+    var.tags
+  )
+}
+
+################################################################################
+# IAM Roles & Policies
+################################################################################
 
 resource "aws_iam_role" "cluster" {
   count = var.manage_cluster_iam_resources && var.create_eks ? 1 : 0
