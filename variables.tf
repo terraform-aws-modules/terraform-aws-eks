@@ -364,3 +364,9 @@ variable "asg_recreate_on_change" {
   type        = bool
   default     = false  
 }
+variable "force_update_version" {
+  description = "force node group to update"
+  type        = bool
+  default     = false
+
+}

@@ -34,3 +34,9 @@ variable "node_groups" {
   type        = any
   default     = {}
 }
+variable "force_update_version" {
+  description = "force node group to update"
+  type        = bool
+  default     = false
+
+}

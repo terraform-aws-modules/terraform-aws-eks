@@ -25,4 +25,5 @@ module "node_groups" {
   tags                   = var.tags
   node_groups_defaults   = local.nodes_groups_defaults
   node_groups            = var.node_groups
+  force_update_version   = var.force_update_version
 }
