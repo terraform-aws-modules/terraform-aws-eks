@@ -104,33 +104,6 @@ module "eks" {
     }
   }
 
-  # AWS Auth (kubernetes_config_map)
-  map_roles = [
-    {
-      rolearn  = "arn:aws:iam::66666666666:role/role1"
-      username = "role1"
-      groups   = ["system:masters"]
-    },
-  ]
-
-  map_users = [
-    {
-      userarn  = "arn:aws:iam::66666666666:user/user1"
-      username = "user1"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::66666666666:user/user2"
-      username = "user2"
-      groups   = ["system:masters"]
-    },
-  ]
-
-  map_accounts = [
-    "777777777777",
-    "888888888888",
-  ]
-
   tags = {
     Example    = local.name
     GithubRepo = "terraform-aws-eks"
@@ -152,12 +125,6 @@ module "disabled_fargate" {
   source = "../../modules/fargate"
 
   create_fargate_pod_execution_role = false
-}
-
-module "disabled_node_groups" {
-  source = "../../modules/node_groups"
-
-  create = false
 }
 
 ################################################################################

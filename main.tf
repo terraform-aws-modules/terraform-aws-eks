@@ -1,6 +1,7 @@
 ################################################################################
 # Cluster
 ################################################################################
+
 resource "aws_eks_cluster" "this" {
   count = var.create ? 1 : 0
 
@@ -46,9 +47,7 @@ resource "aws_eks_cluster" "this" {
   depends_on = [
     aws_security_group_rule.cluster_egress_internet,
     aws_security_group_rule.cluster_https_worker_ingress,
-    aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy,
-    aws_iam_role_policy_attachment.cluster_AmazonEKSServicePolicy,
-    aws_iam_role_policy_attachment.cluster_AmazonEKSVPCResourceControllerPolicy,
+    aws_iam_role_policy_attachment.cluster_additional,
     aws_cloudwatch_log_group.this
   ]
 }
@@ -139,26 +138,13 @@ resource "aws_security_group_rule" "cluster_private_access_sg_source" {
 }
 
 ################################################################################
-# Kubeconfig
-################################################################################
-
-resource "local_file" "kubeconfig" {
-  count = var.create && var.write_kubeconfig ? 1 : 0
-
-  content              = local.kubeconfig
-  filename             = substr(var.kubeconfig_output_path, -1, 1) == "/" ? "${var.kubeconfig_output_path}kubeconfig_${var.cluster_name}" : var.kubeconfig_output_path
-  file_permission      = var.kubeconfig_file_permission
-  directory_permission = "0755"
-}
-
-################################################################################
 # IRSA
 ################################################################################
 
 data "tls_certificate" "this" {
   count = var.create && var.enable_irsa ? 1 : 0
 
-  url = aws_eks_cluster.this.identity[0].oidc[0].issuer
+  url = aws_eks_cluster.this[0].identity[0].oidc[0].issuer
 }
 
 resource "aws_iam_openid_connect_provider" "oidc_provider" {
@@ -166,7 +152,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 
   client_id_list  = distinct(compact(concat([local.sts_principal], var.openid_connect_audiences)))
   thumbprint_list = [data.tls_certificate.this[0].certificates[0].sha1_fingerprint]
-  url             = aws_eks_cluster.this.identity[0].oidc[0].issuer
+  url             = aws_eks_cluster.this[0].identity[0].oidc[0].issuer
 
   tags = merge(
     {
@@ -251,7 +237,7 @@ resource "aws_iam_policy" "cluster_additional" {
   description = "Additional permissions for EKS cluster"
   policy      = data.aws_iam_policy_document.cluster_additional[0].json
 
-  tags = merge(var.tags, var.cluster_role_iam_tags)
+  tags = merge(var.tags, var.cluster_iam_role_tags)
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_additional" {

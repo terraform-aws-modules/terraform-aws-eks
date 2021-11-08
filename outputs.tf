@@ -1,10 +1,6 @@
 output "cluster_id" {
   description = "The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready."
   value       = local.cluster_id
-
-  # So that calling plans wait for the cluster to be available before attempting to use it.
-  # There is no need to duplicate this datasource
-  depends_on = [data.http.wait_for_cluster]
 }
 
 output "cluster_arn" {
@@ -32,24 +28,19 @@ output "cluster_security_group_id" {
   value       = local.cluster_security_group_id
 }
 
-output "config_map_aws_auth" {
-  description = "A kubernetes configuration to authenticate to this EKS cluster."
-  value       = kubernetes_config_map.aws_auth.*
-}
-
 output "cluster_iam_role_name" {
   description = "IAM role name of the EKS cluster."
-  value       = local.cluster_iam_role_name
+  value       = try(aws_iam_role.cluster[0].name, "")
 }
 
 output "cluster_iam_role_arn" {
   description = "IAM role ARN of the EKS cluster."
-  value       = local.cluster_iam_role_arn
+  value       = try(aws_iam_role.cluster[0].arn, "")
 }
 
 output "cluster_oidc_issuer_url" {
   description = "The URL on the EKS cluster OIDC Issuer"
-  value       = local.cluster_oidc_issuer_url
+  value       = try(aws_eks_cluster.this[0].identity[0].oidc[0].issuer, "")
 }
 
 output "cluster_primary_security_group_id" {
@@ -65,24 +56,6 @@ output "cloudwatch_log_group_name" {
 output "cloudwatch_log_group_arn" {
   description = "Arn of cloudwatch log group created"
   value       = element(concat(aws_cloudwatch_log_group.this[*].arn, [""]), 0)
-}
-
-output "kubeconfig" {
-  description = "kubectl config file contents for this EKS cluster. Will block on cluster creation until the cluster is really ready."
-  value       = local.kubeconfig
-
-  # So that calling plans wait for the cluster to be available before attempting to use it.
-  # There is no need to duplicate this datasource
-  depends_on = [data.http.wait_for_cluster]
-}
-
-output "kubeconfig_filename" {
-  description = "The filename of the generated kubectl config. Will block on cluster creation until the cluster is really ready."
-  value       = concat(local_file.kubeconfig.*.filename, [""])[0]
-
-  # So that calling plans wait for the cluster to be available before attempting to use it.
-  # There is no need to duplicate this datasource
-  depends_on = [data.http.wait_for_cluster]
 }
 
 output "oidc_provider_arn" {
@@ -147,20 +120,12 @@ output "worker_iam_instance_profile_names" {
 
 output "worker_iam_role_name" {
   description = "default IAM role name for EKS worker groups"
-  value = coalescelist(
-    aws_iam_role.workers.*.name,
-    data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_name,
-    [""]
-  )[0]
+  value       = try(aws_iam_role.workers[0].name, "")
 }
 
 output "worker_iam_role_arn" {
   description = "default IAM role ARN for EKS worker groups"
-  value = coalescelist(
-    aws_iam_role.workers.*.arn,
-    data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.role_arn,
-    [""]
-  )[0]
+  value       = try(aws_iam_role.workers[0].arn, "")
 }
 
 output "fargate_profile_ids" {
@@ -181,11 +146,6 @@ output "fargate_iam_role_name" {
 output "fargate_iam_role_arn" {
   description = "IAM role ARN for EKS Fargate pods"
   value       = module.fargate.iam_role_arn
-}
-
-output "node_groups" {
-  description = "Outputs from EKS node groups. Map of maps, keyed by var.node_groups keys"
-  value       = module.node_groups.node_groups
 }
 
 output "security_group_rule_cluster_https_worker_ingress" {

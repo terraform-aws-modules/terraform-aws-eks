@@ -97,15 +97,12 @@ module "eks" {
     }
   }
 
-  manage_aws_auth = false
-
   tags = {
     Example    = local.name
     GithubRepo = "terraform-aws-eks"
     GithubOrg  = "terraform-aws-modules"
   }
 }
-
 
 ##############################################
 # Calling submodule with existing EKS cluster

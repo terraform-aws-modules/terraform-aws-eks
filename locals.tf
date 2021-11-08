@@ -26,7 +26,7 @@ locals {
     cluster_auth_base64                     = local.cluster_auth_base64
     aws_authenticator_kubeconfig_apiversion = var.kubeconfig_api_version
     aws_authenticator_command               = var.kubeconfig_aws_authenticator_command
-    aws_authenticator_command_args          = coalescelist(var.kubeconfig_aws_authenticator_command_args, ["token", "-i", local.cluster_name])
+    aws_authenticator_command_args          = coalescelist(var.kubeconfig_aws_authenticator_command_args, ["token", "-i", var.cluster_name])
     aws_authenticator_additional_args       = var.kubeconfig_aws_authenticator_additional_args
     aws_authenticator_env_variables         = var.kubeconfig_aws_authenticator_env_variables
   }) : ""
@@ -41,7 +41,7 @@ locals {
       ),
       merge({
         platform             = lookup(group, "platform", var.default_platform)
-        cluster_name         = local.cluster_name
+        cluster_name         = var.cluster_name
         endpoint             = local.cluster_endpoint
         cluster_auth_base64  = local.cluster_auth_base64
         pre_userdata         = lookup(group, "pre_userdata", "")

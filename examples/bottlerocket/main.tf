@@ -25,9 +25,6 @@ module "eks" {
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
-  write_kubeconfig = false
-  manage_aws_auth  = true
-
   worker_groups = {
     one = {
       name                 = "bottlerocket-nodes"

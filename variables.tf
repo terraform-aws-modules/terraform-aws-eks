@@ -143,28 +143,6 @@ variable "cluster_security_group_tags" {
 }
 
 ################################################################################
-# Kubeconfig
-################################################################################
-
-variable "write_kubeconfig" {
-  description = "Whether to write a Kubectl config file containing the cluster configuration. Saved to `kubeconfig_output_path`"
-  type        = bool
-  default     = true
-}
-
-variable "kubeconfig_output_path" {
-  description = "Where to save the Kubectl config file (if `write_kubeconfig = true`). Assumed to be a directory if the value ends with a forward slash `/`"
-  type        = string
-  default     = "./"
-}
-
-variable "kubeconfig_file_permission" {
-  description = "File permission of the Kubectl config file containing cluster configuration saved to `kubeconfig_output_path.`"
-  type        = string
-  default     = "0600"
-}
-
-################################################################################
 # IRSA
 ################################################################################
 
@@ -227,7 +205,7 @@ variable "cluster_iam_role_tags" {
 variable "create_fargate" {
   description = "Determines whether Fargate resources are created"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "create_fargate_pod_execution_role" {
@@ -282,56 +260,10 @@ variable "fargate_tags" {
 
 
 
-
-
-
-
-### ^ADDED^
-
-
-
 variable "default_platform" {
   description = "Default platform name. Valid options are `linux` and `windows`"
   type        = string
   default     = "linux"
-}
-
-variable "manage_aws_auth" {
-  description = "Whether to apply the aws-auth configmap file"
-  type        = bool
-  default     = true
-}
-
-variable "aws_auth_additional_labels" {
-  description = "Additional kubernetes labels applied on aws-auth ConfigMap"
-  default     = {}
-  type        = map(string)
-}
-
-variable "map_accounts" {
-  description = "Additional AWS account numbers to add to the aws-auth configmap"
-  type        = list(string)
-  default     = []
-}
-
-variable "map_roles" {
-  description = "Additional IAM roles to add to the aws-auth configmap"
-  type = list(object({
-    rolearn  = string
-    username = string
-    groups   = list(string)
-  }))
-  default = []
-}
-
-variable "map_users" {
-  description = "Additional IAM users to add to the aws-auth configmap"
-  type = list(object({
-    userarn  = string
-    username = string
-    groups   = list(string)
-  }))
-  default = []
 }
 
 variable "launch_templates" {
@@ -339,17 +271,6 @@ variable "launch_templates" {
   type        = map(any)
   default     = {}
 }
-
-variable "iam_instance_profiles" {
-  description = "Map of instance profile definitions to create"
-  type        = map(any)
-  default     = {}
-}
-
-
-
-
-
 
 variable "worker_groups" {
   description = "A map of maps defining worker group configurations to be defined using AWS Launch Template"
@@ -393,11 +314,11 @@ variable "worker_ami_owner_id_windows" {
   default     = "amazon"
 }
 
-variable "worker_additional_security_group_ids" {
-  description = "A list of additional security group ids to attach to worker instances"
-  type        = list(string)
-  default     = []
-}
+# variable "worker_additional_security_group_ids" {
+#   description = "A list of additional security group ids to attach to worker instances"
+#   type        = list(string)
+#   default     = []
+# }
 
 variable "worker_sg_ingress_from_port" {
   description = "Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443)"
@@ -454,12 +375,6 @@ variable "worker_create_security_group" {
   default     = true
 }
 
-variable "worker_create_initial_lifecycle_hooks" {
-  description = "Whether to create initial lifecycle hooks provided in worker groups"
-  type        = bool
-  default     = false
-}
-
 variable "worker_create_cluster_primary_security_group_rules" {
   description = "Whether to create security group rules to allow communication between pods on workers and pods using the primary cluster security group"
   type        = bool
@@ -498,13 +413,6 @@ variable "cluster_endpoint_private_access_sg" {
 
 
 
-variable "manage_cluster_iam_resources" {
-  description = "Whether to let the module manage cluster IAM resources. If set to false, `cluster_iam_role_arn` must be specified"
-  type        = bool
-  default     = true
-}
-
-
 variable "manage_worker_iam_resources" {
   description = "Whether to let the module manage worker IAM resources. If set to false, iam_instance_profile_name must be specified for workers"
   type        = bool
@@ -535,9 +443,6 @@ variable "node_groups" {
   default     = {}
 }
 
-
-
-
 variable "cluster_egress_cidrs" {
   description = "List of CIDR blocks that are permitted for cluster egress traffic"
   type        = list(string)
@@ -549,11 +454,3 @@ variable "workers_egress_cidrs" {
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
-
-variable "wait_for_cluster_timeout" {
-  description = "A timeout (in seconds) to wait for cluster to be available"
-  type        = number
-  default     = 300
-}
-
-

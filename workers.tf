@@ -1,13 +1,3 @@
-locals {
-  # Abstracted to a local so that it can be shared with node group as well
-  # Only valus that are common between ASG and Node Group are pulled out to this local map
-  group_default_settings = {
-    min_size         = try(var.group_default_settings.min_size, 1)
-    max_size         = try(var.group_default_settings.max_size, 3)
-    desired_capacity = try(var.group_default_settings.desired_capacity, 1)
-  }
-}
-
 ################################################################################
 # Fargate
 ################################################################################
@@ -17,7 +7,7 @@ module "fargate" {
 
   create                            = var.create_fargate
   create_fargate_pod_execution_role = var.create_fargate_pod_execution_role
-  fargate_pod_execution_role_name   = var.fargate_pod_execution_role_name
+  fargate_pod_execution_role_arn    = var.fargate_pod_execution_role_arn
 
   cluster_name = aws_eks_cluster.this[0].name
   subnet_ids   = coalescelist(var.fargate_subnet_ids, var.subnet_ids, [""])
@@ -31,195 +21,16 @@ module "fargate" {
 }
 
 ################################################################################
-# Node Groups
+# Fargate
 ################################################################################
 
-module "node_groups" {
-  source = "./modules/node_groups"
-
-  create = var.create
-
-  cluster_name        = aws_eks_cluster.this[0].name
-  cluster_endpoint    = local.cluster_endpoint
-  cluster_auth_base64 = local.cluster_auth_base64
-
-  default_iam_role_arn                 = coalescelist(aws_iam_role.workers[*].arn, [""])[0]
-  worker_security_group_id             = local.worker_security_group_id
-  worker_additional_security_group_ids = var.worker_additional_security_group_ids
-
-  node_default_settings = var.group_default_settings
-  node_groups           = var.node_groups
-
-  tags = var.tags
-
-  depends_on = [
-    aws_eks_cluster.this,
-    aws_iam_role_policy_attachment.workers_AmazonEKSWorkerNodePolicy,
-    aws_iam_role_policy_attachment.workers_AmazonEKS_CNI_Policy,
-    aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly
-  ]
-}
-
-################################################################################
-# Autoscaling Group
-################################################################################
-
-resource "aws_autoscaling_group" "this" {
-  for_each = var.create ? var.worker_groups : {}
-
-  name_prefix = "${join("-", [aws_eks_cluster.this[0].name, try(each.value.name, each.key)])}-"
-
-  launch_template {
-    name    = each.value.launch_template_key # required
-    version = try(each.value.launch_template_version, var.group_default_settings.min_size, "$Latest")
-  }
-
-  availability_zones  = try(each.value.availability_zones, var.group_default_settings.availability_zones, null)
-  vpc_zone_identifier = try(each.value.vpc_zone_identifier, var.group_default_settings.vpc_zone_identifier, null)
-
-  min_size              = try(each.value.min_size, local.group_default_settings.min_size)
-  max_size              = try(each.value.max_size, local.group_default_settings.max_size)
-  desired_capacity      = try(each.value.desired_capacity, local.group_default_settings.desired_capacity)
-  capacity_rebalance    = try(each.value.capacity_rebalance, var.group_default_settings.capacity_rebalance, null)
-  default_cooldown      = try(each.value.default_cooldown, var.group_default_settings.default_cooldown, null)
-  protect_from_scale_in = try(each.value.protect_from_scale_in, var.group_default_settings.protect_from_scale_in, null)
-
-  load_balancers            = try(each.value.load_balancers, var.group_default_settings.load_balancers, null)
-  target_group_arns         = try(each.value.target_group_arns, var.group_default_settings.target_group_arns, null)
-  placement_group           = try(each.value.placement_group, var.group_default_settings.placement_group, null)
-  health_check_type         = try(each.value.health_check_type, var.group_default_settings.health_check_type, null)
-  health_check_grace_period = try(each.value.health_check_grace_period, var.group_default_settings.health_check_grace_period, null)
-
-  force_delete          = try(each.value.force_delete, var.group_default_settings.force_delete, false)
-  termination_policies  = try(each.value.termination_policies, var.group_default_settings.termination_policies, null)
-  suspended_processes   = try(each.value.suspended_processes, var.group_default_settings.suspended_processes, "AZRebalance")
-  max_instance_lifetime = try(each.value.max_instance_lifetime, var.group_default_settings.max_instance_lifetime, null)
-
-  enabled_metrics         = try(each.value.enabled_metrics, var.group_default_settings.enabled_metrics, null)
-  metrics_granularity     = try(each.value.metrics_granularity, var.group_default_settings.metrics_granularity, null)
-  service_linked_role_arn = try(each.value.service_linked_role_arn, var.group_default_settings.service_linked_role_arn, null)
-
-  dynamic "initial_lifecycle_hook" {
-    for_each = try(each.value.initial_lifecycle_hook, var.group_default_settings.initial_lifecycle_hook, {})
-    iterator = hook
-
-    content {
-      name                    = hook.value.name
-      default_result          = lookup(hook.value, "default_result", null)
-      heartbeat_timeout       = lookup(hook.value, "heartbeat_timeout", null)
-      lifecycle_transition    = hook.value.lifecycle_transition
-      notification_metadata   = lookup(hook.value, "notification_metadata", null)
-      notification_target_arn = lookup(hook.value, "notification_target_arn", null)
-      role_arn                = lookup(hook.value, "role_arn", null)
-    }
-  }
-
-  dynamic "instance_refresh" {
-    for_each = try(each.value.instance_refresh, var.group_default_settings.instance_refresh, {})
-    iterator = refresh
-
-    content {
-      strategy = refresh.value.strategy
-      triggers = lookup(refresh.value, "triggers", null)
-
-      dynamic "preferences" {
-        for_each = try(refresh.value.preferences, [])
-        content {
-          instance_warmup        = lookup(preferences.value, "instance_warmup", null)
-          min_healthy_percentage = lookup(preferences.value, "min_healthy_percentage", null)
-        }
-      }
-    }
-  }
-
-  dynamic "mixed_instances_policy" {
-    for_each = try(each.value.mixed_instances_policy, var.group_default_settings.mixed_instances_policy, {})
-    iterator = mixed
-
-    content {
-      dynamic "instances_distribution" {
-        for_each = try(mixed.value.instances_distribution, {})
-        iterator = distro
-
-        content {
-          on_demand_allocation_strategy            = lookup(distro.value, "on_demand_allocation_strategy", null)
-          on_demand_base_capacity                  = lookup(distro.value, "on_demand_base_capacity", null)
-          on_demand_percentage_above_base_capacity = lookup(distro.value, "on_demand_percentage_above_base_capacity", null)
-          spot_allocation_strategy                 = lookup(distro.value, "spot_allocation_strategy", null)
-          spot_instance_pools                      = lookup(distro.value, "spot_instance_pools", null)
-          spot_max_price                           = lookup(distro.value, "spot_max_price", null)
-        }
-      }
-
-      launch_template {
-        launch_template_specification {
-          launch_template_name = local.launch_template
-          version              = local.launch_template_version
-        }
-
-        dynamic "override" {
-          for_each = try(mixed.value.override, {})
-          content {
-            instance_type     = lookup(override.value, "instance_type", null)
-            weighted_capacity = lookup(override.value, "weighted_capacity", null)
-
-            dynamic "launch_template_specification" {
-              for_each = try(override.value.launch_template_specification, {})
-              content {
-                launch_template_id = lookup(launch_template_specification.value, "launch_template_id", null)
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  dynamic "warm_pool" {
-    for_each = try(each.value.warm_pool, var.group_default_settings.warm_pool, {})
-
-    content {
-      pool_state                  = lookup(warm_pool.value, "pool_state", null)
-      min_size                    = lookup(warm_pool.value, "min_size", null)
-      max_group_prepared_capacity = lookup(warm_pool.value, "max_group_prepared_capacity", null)
-    }
-  }
-
-  dynamic "tag" {
-    for_each = concat(
-      [
-        {
-          "key"                 = "Name"
-          "value"               = "${join("-", [aws_eks_cluster.this[0].name, lookup(each.value, "name", each.key)])}-eks-asg"
-          "propagate_at_launch" = true
-        },
-        {
-          "key"                 = "kubernetes.io/cluster/${aws_eks_cluster.this[0].name}"
-          "value"               = "owned"
-          "propagate_at_launch" = true
-        },
-      ],
-      [
-        for tag_key, tag_value in var.tags :
-        tomap({
-          key                 = tag_key
-          value               = tag_value
-          propagate_at_launch = true
-        })
-        if tag_key != "Name" && !contains([for tag in lookup(each.value, "tags", []) : tag["key"]], tag_key)
-      ],
-      lookup(each.value, "tags", {})
-    )
-    content {
-      key                 = tag.value.key
-      value               = tag.value.value
-      propagate_at_launch = tag.value.propagate_at_launch
-    }
-  }
-
-  lifecycle {
-    create_before_destroy = true
-    ignore_changes        = [desired_capacity]
+locals {
+  # Abstracted to a local so that it can be shared with node group as well
+  # Only valus that are common between ASG and Node Group are pulled out to this local map
+  group_default_settings = {
+    min_size         = try(var.group_default_settings.min_size, 1)
+    max_size         = try(var.group_default_settings.max_size, 3)
+    desired_capacity = try(var.group_default_settings.desired_capacity, 1)
   }
 }
 
@@ -451,9 +262,6 @@ resource "aws_launch_template" "this" {
     aws_security_group_rule.workers_ingress_cluster_https,
     aws_security_group_rule.workers_ingress_cluster_primary,
     aws_security_group_rule.cluster_primary_ingress_workers,
-    aws_iam_role_policy_attachment.workers_AmazonEKSWorkerNodePolicy,
-    aws_iam_role_policy_attachment.workers_AmazonEKS_CNI_Policy,
-    aws_iam_role_policy_attachment.workers_AmazonEC2ContainerRegistryReadOnly,
     aws_iam_role_policy_attachment.workers_additional_policies
   ]
 
@@ -462,6 +270,263 @@ resource "aws_launch_template" "this" {
   }
 
   tags = merge(var.tags, lookup(each.value, "tags", {}))
+}
+
+################################################################################
+# Node Groups
+################################################################################
+
+
+# resource "aws_eks_node_group" "workers" {
+#   for_each = var.create : var.node_groups : {}
+
+#   node_group_name_prefix = lookup(each.value, "name", null) == null ? local.node_groups_names[each.key] : null
+#   node_group_name        = lookup(each.value, "name_prefix", null)
+
+#   cluster_name  = var.cluster_name
+#   node_role_arn = try(each.value.iam_role_arn, var.default_iam_role_arn)
+#   subnet_ids    = each.value["subnet_ids"]
+
+#   scaling_config {
+#     desired_size = each.value["desired_capacity"]
+#     max_size     = each.value["max_capacity"]
+#     min_size     = each.value["min_capacity"]
+#   }
+
+#   ami_type             = lookup(each.value, "ami_type", null)
+#   disk_size            = lookup(each.value, "disk_size", null)
+#   instance_types       = lookup(each.value, "instance_types", null)
+#   release_version      = lookup(each.value, "ami_release_version", null)
+#   capacity_type        = lookup(each.value, "capacity_type", null)
+#   force_update_version = lookup(each.value, "force_update_version", null)
+
+#   dynamic "remote_access" {
+#     for_each = each.value["key_name"] != "" && each.value["launch_template_id"] == null && !each.value["create_launch_template"] ? [{
+#       ec2_ssh_key               = each.value["key_name"]
+#       source_security_group_ids = lookup(each.value, "source_security_group_ids", [])
+#     }] : []
+
+#     content {
+#       ec2_ssh_key               = remote_access.value["ec2_ssh_key"]
+#       source_security_group_ids = remote_access.value["source_security_group_ids"]
+#     }
+#   }
+
+#   dynamic "launch_template" {
+#     for_each = [try(each.value.launch_template, {})]
+
+#     content {
+#       id      = lookup(launch_template.value, "id", null)
+#       name    = lookup(launch_template.value, "name", null)
+#       version = launch_template.value.version
+#     }
+#   }
+
+#   dynamic "taint" {
+#     for_each = each.value["taints"]
+
+#     content {
+#       key    = taint.value["key"]
+#       value  = taint.value["value"]
+#       effect = taint.value["effect"]
+#     }
+#   }
+
+#   dynamic "update_config" {
+#     for_each = try(each.value.update_config.max_unavailable_percentage > 0, each.value.update_config.max_unavailable > 0, false) ? [true] : []
+
+#     content {
+#       max_unavailable_percentage = try(each.value.update_config.max_unavailable_percentage, null)
+#       max_unavailable            = try(each.value.update_config.max_unavailable, null)
+#     }
+#   }
+
+#   timeouts {
+#     create = lookup(each.value["timeouts"], "create", null)
+#     update = lookup(each.value["timeouts"], "update", null)
+#     delete = lookup(each.value["timeouts"], "delete", null)
+#   }
+
+#   version = lookup(each.value, "version", null)
+
+#   labels = merge(
+#     lookup(var.node_groups_defaults, "k8s_labels", {}),
+#     lookup(each.value, "k8s_labels", {})
+#   )
+
+#   tags = merge(
+#     var.tags,
+#     lookup(var.node_groups_defaults, "additional_tags", {}),
+#     lookup(each.value, "additional_tags", {}),
+#   )
+
+#   lifecycle {
+#     create_before_destroy = true
+#     ignore_changes        = [scaling_config[0].desired_size]
+#   }
+# }
+
+################################################################################
+# Autoscaling Group
+################################################################################
+
+resource "aws_autoscaling_group" "this" {
+  for_each = var.create ? var.worker_groups : {}
+
+  name_prefix = "${join("-", [aws_eks_cluster.this[0].name, try(each.value.name, each.key)])}-"
+
+  launch_template {
+    name    = each.value.launch_template_key # required
+    version = try(each.value.launch_template_version, var.group_default_settings.launch_template_version, "$Latest")
+  }
+
+  availability_zones  = try(each.value.availability_zones, var.group_default_settings.availability_zones, null)
+  vpc_zone_identifier = try(each.value.vpc_zone_identifier, var.group_default_settings.vpc_zone_identifier, null)
+
+  min_size              = try(each.value.min_size, local.group_default_settings.min_size)
+  max_size              = try(each.value.max_size, local.group_default_settings.max_size)
+  desired_capacity      = try(each.value.desired_capacity, local.group_default_settings.desired_capacity)
+  capacity_rebalance    = try(each.value.capacity_rebalance, var.group_default_settings.capacity_rebalance, null)
+  default_cooldown      = try(each.value.default_cooldown, var.group_default_settings.default_cooldown, null)
+  protect_from_scale_in = try(each.value.protect_from_scale_in, var.group_default_settings.protect_from_scale_in, null)
+
+  load_balancers            = try(each.value.load_balancers, var.group_default_settings.load_balancers, null)
+  target_group_arns         = try(each.value.target_group_arns, var.group_default_settings.target_group_arns, null)
+  placement_group           = try(each.value.placement_group, var.group_default_settings.placement_group, null)
+  health_check_type         = try(each.value.health_check_type, var.group_default_settings.health_check_type, null)
+  health_check_grace_period = try(each.value.health_check_grace_period, var.group_default_settings.health_check_grace_period, null)
+
+  force_delete          = try(each.value.force_delete, var.group_default_settings.force_delete, false)
+  termination_policies  = try(each.value.termination_policies, var.group_default_settings.termination_policies, null)
+  suspended_processes   = try(each.value.suspended_processes, var.group_default_settings.suspended_processes, "AZRebalance")
+  max_instance_lifetime = try(each.value.max_instance_lifetime, var.group_default_settings.max_instance_lifetime, null)
+
+  enabled_metrics         = try(each.value.enabled_metrics, var.group_default_settings.enabled_metrics, null)
+  metrics_granularity     = try(each.value.metrics_granularity, var.group_default_settings.metrics_granularity, null)
+  service_linked_role_arn = try(each.value.service_linked_role_arn, var.group_default_settings.service_linked_role_arn, null)
+
+  dynamic "initial_lifecycle_hook" {
+    for_each = try(each.value.initial_lifecycle_hook, var.group_default_settings.initial_lifecycle_hook, {})
+    iterator = hook
+
+    content {
+      name                    = hook.value.name
+      default_result          = lookup(hook.value, "default_result", null)
+      heartbeat_timeout       = lookup(hook.value, "heartbeat_timeout", null)
+      lifecycle_transition    = hook.value.lifecycle_transition
+      notification_metadata   = lookup(hook.value, "notification_metadata", null)
+      notification_target_arn = lookup(hook.value, "notification_target_arn", null)
+      role_arn                = lookup(hook.value, "role_arn", null)
+    }
+  }
+
+  dynamic "instance_refresh" {
+    for_each = try(each.value.instance_refresh, var.group_default_settings.instance_refresh, {})
+    iterator = refresh
+
+    content {
+      strategy = refresh.value.strategy
+      triggers = lookup(refresh.value, "triggers", null)
+
+      dynamic "preferences" {
+        for_each = try(refresh.value.preferences, [])
+        content {
+          instance_warmup        = lookup(preferences.value, "instance_warmup", null)
+          min_healthy_percentage = lookup(preferences.value, "min_healthy_percentage", null)
+        }
+      }
+    }
+  }
+
+  dynamic "mixed_instances_policy" {
+    for_each = try(each.value.mixed_instances_policy, var.group_default_settings.mixed_instances_policy, {})
+    iterator = mixed
+
+    content {
+      dynamic "instances_distribution" {
+        for_each = try(mixed.value.instances_distribution, {})
+        iterator = distro
+
+        content {
+          on_demand_allocation_strategy            = lookup(distro.value, "on_demand_allocation_strategy", null)
+          on_demand_base_capacity                  = lookup(distro.value, "on_demand_base_capacity", null)
+          on_demand_percentage_above_base_capacity = lookup(distro.value, "on_demand_percentage_above_base_capacity", null)
+          spot_allocation_strategy                 = lookup(distro.value, "spot_allocation_strategy", null)
+          spot_instance_pools                      = lookup(distro.value, "spot_instance_pools", null)
+          spot_max_price                           = lookup(distro.value, "spot_max_price", null)
+        }
+      }
+
+      launch_template {
+        launch_template_specification {
+          launch_template_name = local.launch_template
+          version              = local.launch_template_version
+        }
+
+        dynamic "override" {
+          for_each = try(mixed.value.override, {})
+          content {
+            instance_type     = lookup(override.value, "instance_type", null)
+            weighted_capacity = lookup(override.value, "weighted_capacity", null)
+
+            dynamic "launch_template_specification" {
+              for_each = try(override.value.launch_template_specification, {})
+              content {
+                launch_template_id = lookup(launch_template_specification.value, "launch_template_id", null)
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  dynamic "warm_pool" {
+    for_each = try(each.value.warm_pool, var.group_default_settings.warm_pool, {})
+
+    content {
+      pool_state                  = lookup(warm_pool.value, "pool_state", null)
+      min_size                    = lookup(warm_pool.value, "min_size", null)
+      max_group_prepared_capacity = lookup(warm_pool.value, "max_group_prepared_capacity", null)
+    }
+  }
+
+  dynamic "tag" {
+    for_each = concat(
+      [
+        {
+          "key"                 = "Name"
+          "value"               = "${join("-", [aws_eks_cluster.this[0].name, lookup(each.value, "name", each.key)])}-eks-asg"
+          "propagate_at_launch" = true
+        },
+        {
+          "key"                 = "kubernetes.io/cluster/${aws_eks_cluster.this[0].name}"
+          "value"               = "owned"
+          "propagate_at_launch" = true
+        },
+      ],
+      [
+        for tag_key, tag_value in var.tags :
+        tomap({
+          key                 = tag_key
+          value               = tag_value
+          propagate_at_launch = true
+        })
+        if tag_key != "Name" && !contains([for tag in lookup(each.value, "tags", []) : tag["key"]], tag_key)
+      ],
+      lookup(each.value, "tags", {})
+    )
+    content {
+      key                 = tag.value.key
+      value               = tag.value.value
+      propagate_at_launch = tag.value.propagate_at_launch
+    }
+  }
+
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes        = [desired_capacity]
+  }
 }
 
 ################################################################################
@@ -527,8 +592,12 @@ resource "aws_iam_role_policy_attachment" "workers_additional_policies" {
 # Security Group
 ################################################################################
 
+locals {
+  create_worker_sg = var.create && var.worker_create_security_group
+}
+
 resource "aws_security_group" "workers" {
-  count = var.worker_create_security_group && var.create ? 1 : 0
+  count = local.create_worker_sg ? 1 : 0
 
   name_prefix = var.cluster_name
   description = "Security group for all nodes in the cluster."
@@ -543,7 +612,7 @@ resource "aws_security_group" "workers" {
 }
 
 resource "aws_security_group_rule" "workers_egress_internet" {
-  count = var.worker_create_security_group && var.create ? 1 : 0
+  count = local.create_worker_sg ? 1 : 0
 
   description       = "Allow nodes all egress to the Internet."
   protocol          = "-1"
@@ -555,7 +624,7 @@ resource "aws_security_group_rule" "workers_egress_internet" {
 }
 
 resource "aws_security_group_rule" "workers_ingress_self" {
-  count = var.worker_create_security_group && var.create ? 1 : 0
+  count = local.create_worker_sg ? 1 : 0
 
   description              = "Allow node to communicate with each other."
   protocol                 = "-1"
@@ -567,7 +636,7 @@ resource "aws_security_group_rule" "workers_ingress_self" {
 }
 
 resource "aws_security_group_rule" "workers_ingress_cluster" {
-  count = var.worker_create_security_group && var.create ? 1 : 0
+  count = local.create_worker_sg ? 1 : 0
 
   description              = "Allow workers pods to receive communication from the cluster control plane."
   protocol                 = "tcp"
@@ -579,7 +648,7 @@ resource "aws_security_group_rule" "workers_ingress_cluster" {
 }
 
 resource "aws_security_group_rule" "workers_ingress_cluster_kubelet" {
-  count = var.worker_create_security_group && var.create ? var.worker_sg_ingress_from_port > 10250 ? 1 : 0 : 0
+  count = local.create_worker_sg ? var.worker_sg_ingress_from_port > 10250 ? 1 : 0 : 0
 
   description              = "Allow workers Kubelets to receive communication from the cluster control plane."
   protocol                 = "tcp"
@@ -591,7 +660,7 @@ resource "aws_security_group_rule" "workers_ingress_cluster_kubelet" {
 }
 
 resource "aws_security_group_rule" "workers_ingress_cluster_https" {
-  count = var.worker_create_security_group && var.create ? 1 : 0
+  count = local.create_worker_sg ? 1 : 0
 
   description              = "Allow pods running extension API servers on port 443 to receive communication from cluster control plane."
   protocol                 = "tcp"
@@ -603,23 +672,23 @@ resource "aws_security_group_rule" "workers_ingress_cluster_https" {
 }
 
 resource "aws_security_group_rule" "workers_ingress_cluster_primary" {
-  count = var.worker_create_security_group && var.worker_create_cluster_primary_security_group_rules && var.create ? 1 : 0
+  count = local.create_worker_sg && var.worker_create_cluster_primary_security_group_rules ? 1 : 0
 
   description              = "Allow pods running on workers to receive communication from cluster primary security group (e.g. Fargate pods)."
   protocol                 = "all"
   security_group_id        = local.worker_security_group_id
-  source_security_group_id = local.cluster_primary_security_group_id
+  source_security_group_id = try(aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id, "")
   from_port                = 0
   to_port                  = 65535
   type                     = "ingress"
 }
 
 resource "aws_security_group_rule" "cluster_primary_ingress_workers" {
-  count = var.worker_create_security_group && var.worker_create_cluster_primary_security_group_rules && var.create ? 1 : 0
+  count = local.create_worker_sg && var.worker_create_cluster_primary_security_group_rules ? 1 : 0
 
   description              = "Allow pods running on workers to send communication to cluster primary security group (e.g. Fargate pods)."
   protocol                 = "all"
-  security_group_id        = local.cluster_primary_security_group_id
+  security_group_id        = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
   source_security_group_id = local.worker_security_group_id
   from_port                = 0
   to_port                  = 65535

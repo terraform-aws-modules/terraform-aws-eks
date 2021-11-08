@@ -47,17 +47,3 @@ data "aws_ami" "eks_worker_windows" {
 
   owners = [var.worker_ami_owner_id_windows]
 }
-
-data "http" "wait_for_cluster" {
-  count = var.create && var.manage_aws_auth ? 1 : 0
-
-  url            = format("%s/healthz", aws_eks_cluster.this[0].endpoint)
-  ca_certificate = base64decode(local.cluster_auth_base64)
-  timeout        = var.wait_for_cluster_timeout
-
-  depends_on = [
-    aws_eks_cluster.this,
-    aws_security_group_rule.cluster_private_access_sg_source,
-    aws_security_group_rule.cluster_private_access_cidrs_source,
-  ]
-}
