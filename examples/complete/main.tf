@@ -145,7 +145,7 @@ module "eks" {
 module "disabled_eks" {
   source = "../.."
 
-  create_eks = false
+  create = false
 }
 
 module "disabled_fargate" {
@@ -157,7 +157,7 @@ module "disabled_fargate" {
 module "disabled_node_groups" {
   source = "../../modules/node_groups"
 
-  create_eks = false
+  create = false
 }
 
 ################################################################################

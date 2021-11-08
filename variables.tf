@@ -1,3 +1,27 @@
+variable "tags" {
+  description = "A map of tags to add to all resources. Tags added to launch configuration or templates override these values for ASG Tags only"
+  type        = map(string)
+  default     = {}
+}
+
+variable "create" {
+  description = "Controls if EKS resources should be created (it affects almost all resources)"
+  type        = bool
+  default     = true
+}
+
+################################################################################
+# Cluster
+################################################################################
+
+variable "cluster_name" {
+  description = "Name of the EKS cluster and default name (prefix) used throughout the resources created"
+  type        = string
+  default     = ""
+}
+
+### ^ADDED^
+
 variable "cluster_enabled_log_types" {
   description = "A list of the desired control plane logging to enable. For more information, see Amazon EKS Control Plane Logging documentation (https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html)"
   type        = list(string)
@@ -16,11 +40,7 @@ variable "cluster_log_retention_in_days" {
   default     = 90
 }
 
-variable "cluster_name" {
-  description = "Name of the EKS cluster. Also used as a prefix in names of related resources."
-  type        = string
-  default     = ""
-}
+
 
 variable "cluster_security_group_id" {
   description = "If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the workers"
@@ -120,11 +140,7 @@ variable "subnets" {
   default     = []
 }
 
-variable "tags" {
-  description = "A map of tags to add to all resources. Tags added to launch configuration or templates override these values for ASG Tags only."
-  type        = map(string)
-  default     = {}
-}
+
 
 variable "cluster_tags" {
   description = "A map of tags to add to just the eks resource."
@@ -210,7 +226,7 @@ variable "kubeconfig_aws_authenticator_command" {
 }
 
 variable "kubeconfig_aws_authenticator_command_args" {
-  description = "Default arguments passed to the authenticator command. Defaults to [token -i $cluster_name]."
+  description = "Default arguments passed to the authenticator command. Defaults to [token -i ${cluster_name}]."
   type        = list(string)
   default     = []
 }
@@ -324,15 +340,33 @@ variable "cluster_endpoint_public_access_cidrs" {
 }
 
 variable "manage_cluster_iam_resources" {
-  description = "Whether to let the module manage cluster IAM resources. If set to false, cluster_iam_role_name must be specified."
+  description = "Whether to let the module manage cluster IAM resources. If set to false, `cluster_iam_role_arn` must be specified."
   type        = bool
   default     = true
 }
 
-variable "cluster_iam_role_name" {
-  description = "IAM role name for the cluster. If manage_cluster_iam_resources is set to false, set this to reuse an existing IAM role. If manage_cluster_iam_resources is set to true, set this to force the created role name."
+variable "create_cluster_iam_role" {
+  description = "Determines whether a cluster IAM role is created or to use an existing IAM role"
+  type        = bool
+  default     = true
+}
+
+variable "cluster_iam_role_arn" {
+  description = "Existing IAM role ARN for the cluster. Required if `create_cluster_iam_role` is set to `false`"
   type        = string
-  default     = ""
+  default     = null
+}
+
+variable "cluster_iam_role_name" {
+  description = "Name to use on cluster role created"
+  type        = string
+  default     = null
+}
+
+variable "cluster_iam_role_use_name_prefix" {
+  description = "Determines whether cluster IAM role name (`cluster_iam_role_name`) is used as a prefix"
+  type        = string
+  default     = true
 }
 
 variable "manage_worker_iam_resources" {
@@ -349,12 +383,6 @@ variable "workers_role_name" {
 
 variable "attach_worker_cni_policy" {
   description = "Whether to attach the Amazon managed `AmazonEKS_CNI_Policy` IAM policy to the default worker IAM role. WARNING: If set `false` the permissions must be assigned to the `aws-node` DaemonSet pods via another method or nodes will not be able to join the cluster."
-  type        = bool
-  default     = true
-}
-
-variable "create_eks" {
-  description = "Controls if EKS resources should be created (it affects almost all resources)"
   type        = bool
   default     = true
 }

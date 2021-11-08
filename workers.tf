@@ -15,7 +15,7 @@ locals {
 module "fargate" {
   source = "./modules/fargate"
 
-  create_eks                        = var.create_eks
+  create                            = var.create
   create_fargate_pod_execution_role = var.create_fargate_pod_execution_role
 
   cluster_name                    = local.cluster_name
@@ -36,7 +36,7 @@ module "fargate" {
 module "node_groups" {
   source = "./modules/node_groups"
 
-  create_eks = var.create_eks
+  create = var.create
 
   cluster_name        = local.cluster_name
   cluster_endpoint    = local.cluster_endpoint
@@ -64,7 +64,7 @@ module "node_groups" {
 ################################################################################
 
 resource "aws_autoscaling_group" "this" {
-  for_each = var.create_eks ? var.worker_groups : {}
+  for_each = var.create ? var.worker_groups : {}
 
   name_prefix = "${join("-", [local.cluster_name, try(each.value.name, each.key)])}-"
 
@@ -223,7 +223,7 @@ resource "aws_autoscaling_group" "this" {
 }
 
 resource "aws_launch_template" "this" {
-  for_each = var.create_eks ? var.launch_templates : {}
+  for_each = var.create ? var.launch_templates : {}
 
   name_prefix = "${local.cluster_name}-${try(each.value.name, each.key)}"
   description = try(each.value.description, var.group_default_settings.description, null)
@@ -468,7 +468,7 @@ resource "aws_launch_template" "this" {
 ################################################################################
 
 resource "aws_iam_role" "workers" {
-  count = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
+  count = var.manage_worker_iam_resources && var.create ? 1 : 0
 
   name_prefix           = var.workers_role_name != "" ? null : local.cluster_name
   name                  = var.workers_role_name != "" ? var.workers_role_name : null
@@ -480,36 +480,8 @@ resource "aws_iam_role" "workers" {
   tags = var.tags
 }
 
-resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {
-  count = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
-
-  policy_arn = "${local.policy_arn_prefix}/AmazonEKSWorkerNodePolicy"
-  role       = aws_iam_role.workers[0].name
-}
-
-resource "aws_iam_role_policy_attachment" "workers_AmazonEKS_CNI_Policy" {
-  count = var.manage_worker_iam_resources && var.attach_worker_cni_policy && var.create_eks ? 1 : 0
-
-  policy_arn = "${local.policy_arn_prefix}/AmazonEKS_CNI_Policy"
-  role       = aws_iam_role.workers[0].name
-}
-
-resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryReadOnly" {
-  count = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
-
-  policy_arn = "${local.policy_arn_prefix}/AmazonEC2ContainerRegistryReadOnly"
-  role       = aws_iam_role.workers[0].name
-}
-
-resource "aws_iam_role_policy_attachment" "workers_additional_policies" {
-  for_each = var.manage_worker_iam_resources && var.create_eks ? toset(var.workers_additional_policies) : []
-
-  role       = aws_iam_role.workers[0].name
-  policy_arn = each.value
-}
-
 resource "aws_iam_instance_profile" "workers" {
-  for_each = var.manage_worker_iam_resources && var.create_eks ? var.iam_instance_profiles : {}
+  count = var.create && var.manage_worker_iam_resources ? 1 : 0
 
   name_prefix = local.cluster_name
   role        = aws_iam_role.workers[0].id
@@ -522,12 +494,40 @@ resource "aws_iam_instance_profile" "workers" {
   tags = var.tags
 }
 
+resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {
+  count = var.create && var.manage_worker_iam_resources ? 1 : 0
+
+  policy_arn = "${local.policy_arn_prefix}/AmazonEKSWorkerNodePolicy"
+  role       = aws_iam_role.workers[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "workers_AmazonEKS_CNI_Policy" {
+  count = var.create && var.manage_worker_iam_resources && var.attach_worker_cni_policy ? 1 : 0
+
+  policy_arn = "${local.policy_arn_prefix}/AmazonEKS_CNI_Policy"
+  role       = aws_iam_role.workers[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryReadOnly" {
+  count = var.create && var.manage_worker_iam_resources ? 1 : 0
+
+  policy_arn = "${local.policy_arn_prefix}/AmazonEC2ContainerRegistryReadOnly"
+  role       = aws_iam_role.workers[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "workers_additional_policies" {
+  for_each = var.create && var.manage_worker_iam_resources ? toset(var.workers_additional_policies) : []
+
+  role       = aws_iam_role.workers[0].name
+  policy_arn = each.value
+}
+
 ################################################################################
 # Security Group
 ################################################################################
 
 resource "aws_security_group" "workers" {
-  count = var.worker_create_security_group && var.create_eks ? 1 : 0
+  count = var.worker_create_security_group && var.create ? 1 : 0
 
   name_prefix = var.cluster_name
   description = "Security group for all nodes in the cluster."
@@ -542,7 +542,7 @@ resource "aws_security_group" "workers" {
 }
 
 resource "aws_security_group_rule" "workers_egress_internet" {
-  count = var.worker_create_security_group && var.create_eks ? 1 : 0
+  count = var.worker_create_security_group && var.create ? 1 : 0
 
   description       = "Allow nodes all egress to the Internet."
   protocol          = "-1"
@@ -554,7 +554,7 @@ resource "aws_security_group_rule" "workers_egress_internet" {
 }
 
 resource "aws_security_group_rule" "workers_ingress_self" {
-  count = var.worker_create_security_group && var.create_eks ? 1 : 0
+  count = var.worker_create_security_group && var.create ? 1 : 0
 
   description              = "Allow node to communicate with each other."
   protocol                 = "-1"
@@ -566,7 +566,7 @@ resource "aws_security_group_rule" "workers_ingress_self" {
 }
 
 resource "aws_security_group_rule" "workers_ingress_cluster" {
-  count = var.worker_create_security_group && var.create_eks ? 1 : 0
+  count = var.worker_create_security_group && var.create ? 1 : 0
 
   description              = "Allow workers pods to receive communication from the cluster control plane."
   protocol                 = "tcp"
@@ -578,7 +578,7 @@ resource "aws_security_group_rule" "workers_ingress_cluster" {
 }
 
 resource "aws_security_group_rule" "workers_ingress_cluster_kubelet" {
-  count = var.worker_create_security_group && var.create_eks ? var.worker_sg_ingress_from_port > 10250 ? 1 : 0 : 0
+  count = var.worker_create_security_group && var.create ? var.worker_sg_ingress_from_port > 10250 ? 1 : 0 : 0
 
   description              = "Allow workers Kubelets to receive communication from the cluster control plane."
   protocol                 = "tcp"
@@ -590,7 +590,7 @@ resource "aws_security_group_rule" "workers_ingress_cluster_kubelet" {
 }
 
 resource "aws_security_group_rule" "workers_ingress_cluster_https" {
-  count = var.worker_create_security_group && var.create_eks ? 1 : 0
+  count = var.worker_create_security_group && var.create ? 1 : 0
 
   description              = "Allow pods running extension API servers on port 443 to receive communication from cluster control plane."
   protocol                 = "tcp"
@@ -602,7 +602,7 @@ resource "aws_security_group_rule" "workers_ingress_cluster_https" {
 }
 
 resource "aws_security_group_rule" "workers_ingress_cluster_primary" {
-  count = var.worker_create_security_group && var.worker_create_cluster_primary_security_group_rules && var.create_eks ? 1 : 0
+  count = var.worker_create_security_group && var.worker_create_cluster_primary_security_group_rules && var.create ? 1 : 0
 
   description              = "Allow pods running on workers to receive communication from cluster primary security group (e.g. Fargate pods)."
   protocol                 = "all"
@@ -614,7 +614,7 @@ resource "aws_security_group_rule" "workers_ingress_cluster_primary" {
 }
 
 resource "aws_security_group_rule" "cluster_primary_ingress_workers" {
-  count = var.worker_create_security_group && var.worker_create_cluster_primary_security_group_rules && var.create_eks ? 1 : 0
+  count = var.worker_create_security_group && var.worker_create_cluster_primary_security_group_rules && var.create ? 1 : 0
 
   description              = "Allow pods running on workers to send communication to cluster primary security group (e.g. Fargate pods)."
   protocol                 = "all"

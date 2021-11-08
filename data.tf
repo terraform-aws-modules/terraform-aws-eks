@@ -63,24 +63,14 @@ data "aws_iam_policy_document" "cluster_assume_role_policy" {
   }
 }
 
-data "aws_iam_role" "custom_cluster_iam_role" {
-  count = var.manage_cluster_iam_resources ? 0 : 1
+# data "aws_iam_role" "custom_cluster_iam_role" {
+#   count = var.manage_cluster_iam_resources ? 0 : 1
 
-  name = var.cluster_iam_role_name
-}
-
-data "aws_iam_instance_profile" "custom_worker_group_iam_instance_profile" {
-  count = var.manage_worker_iam_resources ? 0 : var.worker_groups
-
-  name = lookup(
-    var.worker_groups[count.index],
-    "iam_instance_profile_name",
-    null # TODO need default
-  )
-}
+#   name = var.cluster_iam_role_name
+# }
 
 data "http" "wait_for_cluster" {
-  count = var.create_eks && var.manage_aws_auth ? 1 : 0
+  count = var.create && var.manage_aws_auth ? 1 : 0
 
   url            = format("%s/healthz", aws_eks_cluster.this[0].endpoint)
   ca_certificate = base64decode(local.cluster_auth_base64)

@@ -10,8 +10,6 @@ locals {
   cluster_primary_security_group_id = try(aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id, "")
 
   cluster_security_group_id = var.cluster_create_security_group ? join("", aws_security_group.cluster.*.id) : var.cluster_security_group_id
-  cluster_iam_role_name     = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.name) : var.cluster_iam_role_name
-  cluster_iam_role_arn      = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.arn) : join("", data.aws_iam_role.custom_cluster_iam_role.*.arn)
 
   # Worker groups
   worker_security_group_id = var.worker_create_security_group ? join("", aws_security_group.workers.*.id) : var.worker_security_group_id
@@ -25,7 +23,7 @@ locals {
   client_id_list    = distinct(compact(concat([local.sts_principal], var.openid_connect_audiences)))
   policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
 
-  kubeconfig = var.create_eks ? templatefile("${path.module}/templates/kubeconfig.tpl", {
+  kubeconfig = var.create ? templatefile("${path.module}/templates/kubeconfig.tpl", {
     kubeconfig_name                         = coalesce(var.kubeconfig_name, "eks_${var.cluster_name}")
     endpoint                                = local.cluster_endpoint
     cluster_auth_base64                     = local.cluster_auth_base64
@@ -37,7 +35,7 @@ locals {
   }) : ""
 
   launch_template_userdata_rendered = [
-    for key, group in(var.create_eks ? var.worker_groups : {}) : templatefile(
+    for key, group in(var.create ? var.worker_groups : {}) : templatefile(
       try(
         group.userdata_template_file,
         lookup(group, "platform", var.default_platform) == "windows"

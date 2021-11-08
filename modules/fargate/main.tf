@@ -1,16 +1,16 @@
 locals {
-  create_eks = var.create_eks && length(var.fargate_profiles) > 0
+  create = var.create && length(var.fargate_profiles) > 0
 
   pod_execution_role_arn  = coalescelist(aws_iam_role.eks_fargate_pod.*.arn, data.aws_iam_role.custom_fargate_iam_role.*.arn, [""])[0]
   pod_execution_role_name = coalescelist(aws_iam_role.eks_fargate_pod.*.name, data.aws_iam_role.custom_fargate_iam_role.*.name, [""])[0]
 
-  fargate_profiles = { for k, v in var.fargate_profiles : k => v if var.create_eks }
+  fargate_profiles = { for k, v in var.fargate_profiles : k => v if var.create }
 }
 
 data "aws_partition" "current" {}
 
 data "aws_iam_policy_document" "eks_fargate_pod_assume_role" {
-  count = local.create_eks && var.create_fargate_pod_execution_role ? 1 : 0
+  count = local.create && var.create_fargate_pod_execution_role ? 1 : 0
 
   statement {
     effect  = "Allow"
@@ -24,13 +24,13 @@ data "aws_iam_policy_document" "eks_fargate_pod_assume_role" {
 }
 
 data "aws_iam_role" "custom_fargate_iam_role" {
-  count = local.create_eks && !var.create_fargate_pod_execution_role ? 1 : 0
+  count = local.create && !var.create_fargate_pod_execution_role ? 1 : 0
 
   name = var.fargate_pod_execution_role_name
 }
 
 resource "aws_iam_role" "eks_fargate_pod" {
-  count = local.create_eks && var.create_fargate_pod_execution_role ? 1 : 0
+  count = local.create && var.create_fargate_pod_execution_role ? 1 : 0
 
   name_prefix          = format("%s-fargate", substr(var.cluster_name, 0, 24))
   assume_role_policy   = data.aws_iam_policy_document.eks_fargate_pod_assume_role[0].json
@@ -40,7 +40,7 @@ resource "aws_iam_role" "eks_fargate_pod" {
 }
 
 resource "aws_iam_role_policy_attachment" "eks_fargate_pod" {
-  count = local.create_eks && var.create_fargate_pod_execution_role ? 1 : 0
+  count = local.create && var.create_fargate_pod_execution_role ? 1 : 0
 
   policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
   role       = aws_iam_role.eks_fargate_pod[0].name

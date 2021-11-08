@@ -37,7 +37,7 @@ locals {
     },
     var.node_groups_defaults,
     v,
-  ) if var.create_eks }
+  ) if var.create }
 
   node_groups_names = { for k, v in local.node_groups_expanded : k => lookup(
     v,
