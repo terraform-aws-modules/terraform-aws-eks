@@ -48,27 +48,6 @@ data "aws_ami" "eks_worker_windows" {
   owners = [var.worker_ami_owner_id_windows]
 }
 
-data "aws_iam_policy_document" "cluster_assume_role_policy" {
-  statement {
-    sid = "EKSClusterAssumeRole"
-
-    actions = [
-      "sts:AssumeRole",
-    ]
-
-    principals {
-      type        = "Service"
-      identifiers = ["eks.amazonaws.com"]
-    }
-  }
-}
-
-# data "aws_iam_role" "custom_cluster_iam_role" {
-#   count = var.manage_cluster_iam_resources ? 0 : 1
-
-#   name = var.cluster_iam_role_name
-# }
-
 data "http" "wait_for_cluster" {
   count = var.create && var.manage_aws_auth ? 1 : 0
 

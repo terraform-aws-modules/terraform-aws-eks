@@ -11,7 +11,7 @@ locals {
       set_instance_types_on_lt             = false
       max_capacity                         = var.node_default_settings["asg_max_size"]
       min_capacity                         = var.node_default_settings["asg_min_size"]
-      subnets                              = var.node_default_settings["subnets"]
+      subnet_ids                           = var.node_default_settings["subnet_ids"]
       create_launch_template               = false
       bootstrap_env                        = {}
       kubelet_extra_args                   = var.node_default_settings["kubelet_extra_args"]

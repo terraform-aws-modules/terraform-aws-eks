@@ -5,13 +5,13 @@ resource "aws_eks_cluster" "this" {
   count = var.create ? 1 : 0
 
   name                      = var.cluster_name
-  enabled_cluster_log_types = var.cluster_enabled_log_types
   role_arn                  = try(aws_iam_role.cluster[0].arn, var.cluster_iam_role_arn)
   version                   = var.cluster_version
+  enabled_cluster_log_types = var.cluster_enabled_log_types
 
   vpc_config {
     security_group_ids      = compact([local.cluster_security_group_id])
-    subnet_ids              = var.subnets
+    subnet_ids              = var.subnet_ids
     endpoint_private_access = var.cluster_endpoint_private_access
     endpoint_public_access  = var.cluster_endpoint_public_access
     public_access_cidrs     = var.cluster_endpoint_public_access_cidrs
@@ -38,9 +38,9 @@ resource "aws_eks_cluster" "this" {
   )
 
   timeouts {
-    create = var.cluster_create_timeout
-    delete = var.cluster_delete_timeout
-    update = var.cluster_update_timeout
+    create = lookup(var.cluster_timeouts, "create", null)
+    delete = lookup(var.cluster_timeouts, "update", null)
+    update = lookup(var.cluster_timeouts, "delete", null)
   }
 
   depends_on = [
@@ -54,7 +54,7 @@ resource "aws_eks_cluster" "this" {
 }
 
 resource "aws_cloudwatch_log_group" "this" {
-  count = length(var.cluster_enabled_log_types) > 0 && var.create ? 1 : 0
+  count = var.create && length(var.cluster_enabled_log_types) > 0 ? 1 : 0
 
   name              = "/aws/eks/${var.cluster_name}/cluster"
   retention_in_days = var.cluster_log_retention_in_days
@@ -64,28 +64,34 @@ resource "aws_cloudwatch_log_group" "this" {
 }
 
 ################################################################################
-# Security Group
+# Cluster Security Group
 ################################################################################
 
-resource "aws_security_group" "cluster" {
-  count = var.cluster_create_security_group && var.create ? 1 : 0
+locals {
+  cluster_security_group_name = try(var.cluster_security_group_name, var.cluster_name)
+}
 
-  name_prefix = var.cluster_name
-  description = "EKS cluster security group."
+resource "aws_security_group" "cluster" {
+  count = var.create && var.create_cluster_security_group ? 1 : 0
+
+  name        = var.cluster_security_group_use_name_prefix ? null : local.cluster_security_group_name
+  name_prefix = var.cluster_security_group_use_name_prefix ? "${local.cluster_security_group_name}-" : null
+  description = "EKS cluster security group"
   vpc_id      = var.vpc_id
 
   tags = merge(
     var.tags,
     {
-      "Name" = "${var.cluster_name}-eks_cluster_sg"
+      "Name" = local.cluster_security_group_name
     },
+    var.cluster_security_group_tags
   )
 }
 
 resource "aws_security_group_rule" "cluster_egress_internet" {
-  count = var.cluster_create_security_group && var.create ? 1 : 0
+  count = var.create && var.create_cluster_security_group ? 1 : 0
 
-  description       = "Allow cluster egress access to the Internet."
+  description       = "Allow cluster egress access to the Internet"
   protocol          = "-1"
   security_group_id = local.cluster_security_group_id
   cidr_blocks       = var.cluster_egress_cidrs
@@ -95,9 +101,9 @@ resource "aws_security_group_rule" "cluster_egress_internet" {
 }
 
 resource "aws_security_group_rule" "cluster_https_worker_ingress" {
-  count = var.cluster_create_security_group && var.create && var.worker_create_security_group ? 1 : 0
+  count = var.create && var.create_cluster_security_group && var.worker_create_security_group ? 1 : 0
 
-  description              = "Allow pods to communicate with the EKS cluster API."
+  description              = "Allow pods to communicate with the EKS cluster API"
   protocol                 = "tcp"
   security_group_id        = local.cluster_security_group_id
   source_security_group_id = local.worker_security_group_id
@@ -109,7 +115,7 @@ resource "aws_security_group_rule" "cluster_https_worker_ingress" {
 resource "aws_security_group_rule" "cluster_private_access_cidrs_source" {
   for_each = var.create && var.cluster_create_endpoint_private_access_sg_rule && var.cluster_endpoint_private_access && var.cluster_endpoint_private_access_cidrs != null ? toset(var.cluster_endpoint_private_access_cidrs) : []
 
-  description = "Allow private K8S API ingress from custom CIDR source."
+  description = "Allow private K8S API ingress from custom CIDR source"
   type        = "ingress"
   from_port   = 443
   to_port     = 443
@@ -122,7 +128,7 @@ resource "aws_security_group_rule" "cluster_private_access_cidrs_source" {
 resource "aws_security_group_rule" "cluster_private_access_sg_source" {
   count = var.create && var.cluster_create_endpoint_private_access_sg_rule && var.cluster_endpoint_private_access && var.cluster_endpoint_private_access_sg != null ? length(var.cluster_endpoint_private_access_sg) : 0
 
-  description              = "Allow private K8S API ingress from custom Security Groups source."
+  description              = "Allow private K8S API ingress from custom Security Groups source"
   type                     = "ingress"
   from_port                = 443
   to_port                  = 443
@@ -137,7 +143,7 @@ resource "aws_security_group_rule" "cluster_private_access_sg_source" {
 ################################################################################
 
 resource "local_file" "kubeconfig" {
-  count = var.write_kubeconfig && var.create ? 1 : 0
+  count = var.create && var.write_kubeconfig ? 1 : 0
 
   content              = local.kubeconfig
   filename             = substr(var.kubeconfig_output_path, -1, 1) == "/" ? "${var.kubeconfig_output_path}kubeconfig_${var.cluster_name}" : var.kubeconfig_output_path
@@ -149,21 +155,18 @@ resource "local_file" "kubeconfig" {
 # IRSA
 ################################################################################
 
-# Enable IAM Roles for EKS Service-Accounts (IRSA).
-# The Root CA Thumbprint for an OpenID Connect Identity Provider is currently
-# Being passed as a default value which is the same for all regions and
-# Is valid until (Jun 28 17:39:16 2034 GMT).
-# https://crt.sh/?q=9E99A48A9960B14926BB7F3B02E22DA2B0AB7280
-# https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html
-# https://github.com/terraform-providers/terraform-provider-aws/issues/10104
+data "tls_certificate" "this" {
+  count = var.create && var.enable_irsa ? 1 : 0
 
-# TODO - update to use TLS data source and drop hacks
+  url = aws_eks_cluster.this.identity[0].oidc[0].issuer
+}
+
 resource "aws_iam_openid_connect_provider" "oidc_provider" {
-  count = var.enable_irsa && var.create ? 1 : 0
+  count = var.create && var.enable_irsa ? 1 : 0
 
-  client_id_list  = local.client_id_list
-  thumbprint_list = [var.eks_oidc_root_ca_thumbprint]
-  url             = local.cluster_oidc_issuer_url
+  client_id_list  = distinct(compact(concat([local.sts_principal], var.openid_connect_audiences)))
+  thumbprint_list = [data.tls_certificate.this[0].certificates[0].sha1_fingerprint]
+  url             = aws_eks_cluster.this.identity[0].oidc[0].issuer
 
   tags = merge(
     {
@@ -174,7 +177,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 }
 
 ################################################################################
-# Cluster IAM Role, Permissions, & Policies
+# Cluster IAM Role
 ################################################################################
 
 locals {
@@ -182,41 +185,40 @@ locals {
 }
 
 resource "aws_iam_role" "cluster" {
-  count = var.create_cluster_iam_role && var.create ? 1 : 0
+  count = var.create && var.create_cluster_iam_role ? 1 : 0
 
-  name                  = var.cluster_iam_role_use_name_prefix ? null : local.cluster_iam_role_name
-  name_prefix           = var.cluster_iam_role_use_name_prefix ? "${local.cluster_iam_role_name}-" : null
-  assume_role_policy    = data.aws_iam_policy_document.cluster_assume_role_policy.json
-  permissions_boundary  = var.cluster_iam_role_permissions_boundary
-  path                  = var.cluster_iam_role_path
+  name        = var.cluster_iam_role_use_name_prefix ? null : local.cluster_iam_role_name
+  name_prefix = var.cluster_iam_role_use_name_prefix ? "${local.cluster_iam_role_name}-" : null
+  path        = var.cluster_iam_role_path
+
+  assume_role_policy   = data.aws_iam_policy_document.cluster_assume_role_policy[0].json
+  permissions_boundary = var.cluster_iam_role_permissions_boundary
+  managed_policy_arns = [
+    "${local.policy_arn_prefix}/AmazonEKSClusterPolicy",
+    "${local.policy_arn_prefix}/AmazonEKSServicePolicy",
+    "${local.policy_arn_prefix}/AmazonEKSVPCResourceController",
+  ]
   force_detach_policies = true
 
-  tags = merge(var.tags, var.cluster_role_iam_tags)
+  tags = merge(var.tags, var.cluster_iam_role_tags)
 }
 
-resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
-  count = var.create_cluster_iam_role && var.create ? 1 : 0
+data "aws_iam_policy_document" "cluster_assume_role_policy" {
+  count = var.create && var.create_cluster_iam_role ? 1 : 0
 
-  role       = aws_iam_role.cluster.name
-  policy_arn = "${local.policy_arn_prefix}/AmazonEKSClusterPolicy"
-}
+  statement {
+    sid     = "EKSClusterAssumeRole"
+    actions = ["sts:AssumeRole"]
 
-resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSServicePolicy" {
-  count = var.create_cluster_iam_role && var.create ? 1 : 0
-
-  role       = aws_iam_role.cluster.name
-  policy_arn = "${local.policy_arn_prefix}/AmazonEKSServicePolicy"
-}
-
-resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSVPCResourceControllerPolicy" {
-  count = var.create_cluster_iam_role && var.create ? 1 : 0
-
-  role       = aws_iam_role.cluster.name
-  policy_arn = "${local.policy_arn_prefix}/AmazonEKSVPCResourceController"
+    principals {
+      type        = "Service"
+      identifiers = ["eks.amazonaws.com"]
+    }
+  }
 }
 
 data "aws_iam_policy_document" "cluster_additional" {
-  count = var.create_cluster_iam_role && var.create ? 1 : 0
+  count = var.create && var.create_cluster_iam_role ? 1 : 0
 
   # Permissions required to create AWSServiceRoleForElasticLoadBalancing service-linked role by EKS during ELB provisioning
   statement {
@@ -242,7 +244,7 @@ data "aws_iam_policy_document" "cluster_additional" {
 }
 
 resource "aws_iam_policy" "cluster_additional" {
-  count = var.create_cluster_iam_role && var.create ? 1 : 0
+  count = var.create && var.create_cluster_iam_role ? 1 : 0
 
   name        = var.cluster_iam_role_use_name_prefix ? null : local.cluster_iam_role_name
   name_prefix = var.cluster_iam_role_use_name_prefix ? "${local.cluster_iam_role_name}-" : null
@@ -253,8 +255,8 @@ resource "aws_iam_policy" "cluster_additional" {
 }
 
 resource "aws_iam_role_policy_attachment" "cluster_additional" {
-  count = var.create_cluster_iam_role && var.create ? 1 : 0
+  count = var.create && var.create_cluster_iam_role ? 1 : 0
 
-  role       = aws_iam_role.cluster.name
+  role       = aws_iam_role.cluster[0].name
   policy_arn = aws_iam_policy.cluster_additional[0].arn
 }

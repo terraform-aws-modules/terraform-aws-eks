@@ -18,9 +18,9 @@ module "eks" {
   cluster_name    = local.name
   cluster_version = local.cluster_version
 
-  vpc_id          = module.vpc.vpc_id
-  subnets         = [module.vpc.private_subnets[0], module.vpc.public_subnets[1]]
-  fargate_subnets = [module.vpc.private_subnets[2]]
+  vpc_id             = module.vpc.vpc_id
+  subnet_ids         = [module.vpc.private_subnets[0], module.vpc.public_subnets[1]]
+  fargate_subnet_ids = [module.vpc.private_subnets[2]]
 
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
@@ -89,7 +89,7 @@ module "eks" {
       ]
 
       # Using specific subnets instead of the ones configured in EKS (`subnets` and `fargate_subnets`)
-      subnets = [module.vpc.private_subnets[1]]
+      subnet_ids = [module.vpc.private_subnets[1]]
 
       tags = {
         Owner = "secondary"
@@ -115,7 +115,7 @@ module "fargate_profile_existing_cluster" {
   source = "../../modules/fargate"
 
   cluster_name = module.eks.cluster_id
-  subnets      = [module.vpc.private_subnets[0], module.vpc.private_subnets[2]]
+  subnets_ids  = [module.vpc.private_subnets[0], module.vpc.private_subnets[2]]
 
   fargate_profiles = {
     profile1 = {
@@ -153,7 +153,7 @@ module "fargate_profile_existing_cluster" {
       ]
 
       # Using specific subnets instead of the ones configured in EKS (`subnets` and `fargate_subnets`)
-      subnets = [module.vpc.private_subnets[0]]
+      subnet_ids = [module.vpc.private_subnets[0]]
 
       tags = {
         Owner     = "profile2"

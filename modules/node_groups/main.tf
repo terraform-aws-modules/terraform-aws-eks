@@ -6,7 +6,7 @@ resource "aws_eks_node_group" "workers" {
 
   cluster_name  = var.cluster_name
   node_role_arn = each.value["iam_role_arn"]
-  subnet_ids    = each.value["subnets"]
+  subnet_ids    = each.value["subnet_ids"]
 
   scaling_config {
     desired_size = each.value["desired_capacity"]

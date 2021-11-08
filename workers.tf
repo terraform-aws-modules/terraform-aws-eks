@@ -22,7 +22,7 @@ module "fargate" {
   fargate_pod_execution_role_name = var.fargate_pod_execution_role_name
   permissions_boundary            = var.permissions_boundary
   iam_path                        = var.iam_path
-  subnets                         = coalescelist(var.fargate_subnets, var.subnets, [""])
+  subnet_ids                      = coalescelist(var.fargate_subnet_ids, var.subnet_ids, [""])
 
   fargate_profiles = var.fargate_profiles
 

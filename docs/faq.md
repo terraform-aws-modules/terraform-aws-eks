@@ -211,10 +211,10 @@ module "eks" {
   cluster_version = "1.21"
   cluster_name    = "my-cluster"
   vpc_id          = "vpc-1234556abcdef"
-  subnets         = ["subnet-abcde123", "subnet-abcde456", "subnet-abcde789"]
+  subnet_ids      = ["subnet-abcde123", "subnet-abcde456", "subnet-abcde789"]
 
   workers_group_defaults = {
-    subnets = ["subnet-xyz123", "subnet-xyz456", "subnet-xyz789"]
+    subnet_ids = ["subnet-xyz123", "subnet-xyz456", "subnet-xyz789"]
   }
 
   worker_groups = {
@@ -224,7 +224,7 @@ module "eks" {
     },
     two = {
       name                 = "worker-group-2"
-      subnets              = ["subnet-qwer123"]
+      subnet_ids           = ["subnet-qwer123"]
       instance_type        = "t3.medium"
       asg_desired_capacity = 1
       public_ip            = true

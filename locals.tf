@@ -6,10 +6,9 @@ locals {
   cluster_name                      = try(aws_eks_cluster.this[0].name, "")
   cluster_endpoint                  = try(aws_eks_cluster.this[0].endpoint, "")
   cluster_auth_base64               = try(aws_eks_cluster.this[0].certificate_authority[0].data, "")
-  cluster_oidc_issuer_url           = flatten(concat(aws_eks_cluster.this[*].identity[*].oidc[0].issuer, [""]))[0]
   cluster_primary_security_group_id = try(aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id, "")
 
-  cluster_security_group_id = var.cluster_create_security_group ? join("", aws_security_group.cluster.*.id) : var.cluster_security_group_id
+  cluster_security_group_id = var.create_cluster_security_group ? join("", aws_security_group.cluster.*.id) : var.cluster_security_group_id
 
   # Worker groups
   worker_security_group_id = var.worker_create_security_group ? join("", aws_security_group.workers.*.id) : var.worker_security_group_id
@@ -20,7 +19,6 @@ locals {
 
   ec2_principal     = "ec2.${data.aws_partition.current.dns_suffix}"
   sts_principal     = "sts.${data.aws_partition.current.dns_suffix}"
-  client_id_list    = distinct(compact(concat([local.sts_principal], var.openid_connect_audiences)))
   policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
 
   kubeconfig = var.create ? templatefile("${path.module}/templates/kubeconfig.tpl", {

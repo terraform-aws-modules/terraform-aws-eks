@@ -20,11 +20,13 @@ If you find a bug, please open an issue with supporting configuration to reprodu
 
 1. Removed variables:
 
-   - TODO
+   - `var.cluster_create_timeout`, `var.cluster_update_timeout`, and `var.cluster_delete_timeout` have been replaced with `var.cluster_timeouts`
 
 2. Renamed variables:
 
-   - TODO
+   - `create_eks` -> `create`
+   - `subnets` -> `subnet_ids`
+   - `cluster_create_security_group` -> `create_cluster_security_group`
 
 3. Added variables:
 
