@@ -15,18 +15,19 @@ locals {
 module "fargate" {
   source = "./modules/fargate"
 
-  create                            = var.create
+  create                            = var.create_fargate
   create_fargate_pod_execution_role = var.create_fargate_pod_execution_role
+  fargate_pod_execution_role_name   = var.fargate_pod_execution_role_name
 
-  cluster_name                    = local.cluster_name
-  fargate_pod_execution_role_name = var.fargate_pod_execution_role_name
-  permissions_boundary            = var.permissions_boundary
-  iam_path                        = var.iam_path
-  subnet_ids                      = coalescelist(var.fargate_subnet_ids, var.subnet_ids, [""])
+  cluster_name = aws_eks_cluster.this[0].name
+  subnet_ids   = coalescelist(var.fargate_subnet_ids, var.subnet_ids, [""])
+
+  iam_path             = var.fargate_iam_role_path
+  permissions_boundary = var.fargate_iam_role_permissions_boundary
 
   fargate_profiles = var.fargate_profiles
 
-  tags = var.tags
+  tags = merge(var.tags, var.fargate_tags)
 }
 
 ################################################################################
@@ -38,7 +39,7 @@ module "node_groups" {
 
   create = var.create
 
-  cluster_name        = local.cluster_name
+  cluster_name        = aws_eks_cluster.this[0].name
   cluster_endpoint    = local.cluster_endpoint
   cluster_auth_base64 = local.cluster_auth_base64
 
@@ -66,7 +67,7 @@ module "node_groups" {
 resource "aws_autoscaling_group" "this" {
   for_each = var.create ? var.worker_groups : {}
 
-  name_prefix = "${join("-", [local.cluster_name, try(each.value.name, each.key)])}-"
+  name_prefix = "${join("-", [aws_eks_cluster.this[0].name, try(each.value.name, each.key)])}-"
 
   launch_template {
     name    = each.value.launch_template_key # required
@@ -189,11 +190,11 @@ resource "aws_autoscaling_group" "this" {
       [
         {
           "key"                 = "Name"
-          "value"               = "${join("-", [local.cluster_name, lookup(each.value, "name", each.key)])}-eks-asg"
+          "value"               = "${join("-", [aws_eks_cluster.this[0].name, lookup(each.value, "name", each.key)])}-eks-asg"
           "propagate_at_launch" = true
         },
         {
-          "key"                 = "kubernetes.io/cluster/${local.cluster_name}"
+          "key"                 = "kubernetes.io/cluster/${aws_eks_cluster.this[0].name}"
           "value"               = "owned"
           "propagate_at_launch" = true
         },
@@ -225,7 +226,7 @@ resource "aws_autoscaling_group" "this" {
 resource "aws_launch_template" "this" {
   for_each = var.create ? var.launch_templates : {}
 
-  name_prefix = "${local.cluster_name}-${try(each.value.name, each.key)}"
+  name_prefix = "${aws_eks_cluster.this[0].name}-${try(each.value.name, each.key)}"
   description = try(each.value.description, var.group_default_settings.description, null)
 
   ebs_optimized = try(each.value.ebs_optimized, var.group_default_settings.ebs_optimized, null)
@@ -414,7 +415,7 @@ resource "aws_launch_template" "this" {
   tag_specifications {
     resource_type = "volume"
     tags = merge(
-      { "Name" = "${local.cluster_name}-${try(each.value.name, each.key)}-eks_asg" },
+      { "Name" = "${aws_eks_cluster.this[0].name}-${try(each.value.name, each.key)}-eks_asg" },
       var.tags,
       { for tag in lookup(each.value, "tags", {}) : tag["key"] => tag["value"] if tag["key"] != "Name" && tag["propagate_at_launch"] }
     )
@@ -423,7 +424,7 @@ resource "aws_launch_template" "this" {
   tag_specifications {
     resource_type = "instance"
     tags = merge(
-      { "Name" = "${local.cluster_name}-${try(each.value.name, each.key)}-eks_asg" },
+      { "Name" = "${aws_eks_cluster.this[0].name}-${try(each.value.name, each.key)}-eks_asg" },
       { for tag_key, tag_value in var.tags :
         tag_key => tag_value
         if tag_key != "Name" && !contains([for tag in lookup(each.value, "tags", {}) : tag["key"]], tag_key)
@@ -434,7 +435,7 @@ resource "aws_launch_template" "this" {
   tag_specifications {
     resource_type = "network-interface"
     tags = merge(
-      { "Name" = "${local.cluster_name}-${try(each.value.name, each.key)}-eks_asg" },
+      { "Name" = "${aws_eks_cluster.this[0].name}-${try(each.value.name, each.key)}-eks_asg" },
       var.tags,
       { for tag in lookup(each.value, "tags", {}) : tag["key"] => tag["value"] if tag["key"] != "Name" && tag["propagate_at_launch"] }
     )
@@ -470,7 +471,7 @@ resource "aws_launch_template" "this" {
 resource "aws_iam_role" "workers" {
   count = var.manage_worker_iam_resources && var.create ? 1 : 0
 
-  name_prefix           = var.workers_role_name != "" ? null : local.cluster_name
+  name_prefix           = var.workers_role_name != "" ? null : aws_eks_cluster.this[0].name
   name                  = var.workers_role_name != "" ? var.workers_role_name : null
   assume_role_policy    = data.aws_iam_policy_document.workers_assume_role_policy.json
   permissions_boundary  = var.permissions_boundary
@@ -483,7 +484,7 @@ resource "aws_iam_role" "workers" {
 resource "aws_iam_instance_profile" "workers" {
   count = var.create && var.manage_worker_iam_resources ? 1 : 0
 
-  name_prefix = local.cluster_name
+  name_prefix = aws_eks_cluster.this[0].name
   role        = aws_iam_role.workers[0].id
   path        = var.iam_path
 

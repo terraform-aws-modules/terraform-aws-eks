@@ -1,16 +1,7 @@
-locals {
-  create = var.create && length(var.fargate_profiles) > 0
-
-  pod_execution_role_arn  = coalescelist(aws_iam_role.eks_fargate_pod.*.arn, data.aws_iam_role.custom_fargate_iam_role.*.arn, [""])[0]
-  pod_execution_role_name = coalescelist(aws_iam_role.eks_fargate_pod.*.name, data.aws_iam_role.custom_fargate_iam_role.*.name, [""])[0]
-
-  fargate_profiles = { for k, v in var.fargate_profiles : k => v if var.create }
-}
-
 data "aws_partition" "current" {}
 
 data "aws_iam_policy_document" "eks_fargate_pod_assume_role" {
-  count = local.create && var.create_fargate_pod_execution_role ? 1 : 0
+  count = var.create && var.create_fargate_pod_execution_role ? 1 : 0
 
   statement {
     effect  = "Allow"
@@ -23,35 +14,28 @@ data "aws_iam_policy_document" "eks_fargate_pod_assume_role" {
   }
 }
 
-data "aws_iam_role" "custom_fargate_iam_role" {
-  count = local.create && !var.create_fargate_pod_execution_role ? 1 : 0
-
-  name = var.fargate_pod_execution_role_name
-}
-
 resource "aws_iam_role" "eks_fargate_pod" {
-  count = local.create && var.create_fargate_pod_execution_role ? 1 : 0
+  count = var.create && var.create_fargate_pod_execution_role ? 1 : 0
 
-  name_prefix          = format("%s-fargate", substr(var.cluster_name, 0, 24))
+  name_prefix = format("%s-fargate", substr(var.cluster_name, 0, 24))
+  path        = var.iam_path
+
   assume_role_policy   = data.aws_iam_policy_document.eks_fargate_pod_assume_role[0].json
   permissions_boundary = var.permissions_boundary
-  tags                 = var.tags
-  path                 = var.iam_path
-}
+  managed_policy_arns = [
+    "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy",
+  ]
+  force_detach_policies = true
 
-resource "aws_iam_role_policy_attachment" "eks_fargate_pod" {
-  count = local.create && var.create_fargate_pod_execution_role ? 1 : 0
-
-  policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
-  role       = aws_iam_role.eks_fargate_pod[0].name
+  tags = var.tags
 }
 
 resource "aws_eks_fargate_profile" "this" {
-  for_each = local.fargate_profiles
+  for_each = var.create ? var.fargate_profiles : {}
 
   cluster_name           = var.cluster_name
   fargate_profile_name   = lookup(each.value, "name", format("%s-fargate-%s", var.cluster_name, replace(each.key, "_", "-")))
-  pod_execution_role_arn = local.pod_execution_role_arn
+  pod_execution_role_arn = var.create_fargate_pod_execution_role ? aws_iam_role.eks_fargate_pod[0].arn : var.fargate_pod_execution_role_arn
   subnet_ids             = lookup(each.value, "subnet_ids", var.subnet_ids)
 
   dynamic "selector" {

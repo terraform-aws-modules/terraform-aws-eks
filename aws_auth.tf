@@ -18,7 +18,7 @@ locals {
     for role in concat(
       aws_iam_instance_profile.workers.*.role,
       module.node_groups.aws_auth_roles,
-      module.fargate.aws_auth_roles,
+      [{ worker_role_arn = module.fargate.iam_role_arn, platform = "fargate" }],
     ) :
     {
       # Work around https://github.com/kubernetes-sigs/aws-iam-authenticator/issues/153

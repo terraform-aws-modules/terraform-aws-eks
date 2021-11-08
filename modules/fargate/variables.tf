@@ -1,29 +1,29 @@
 variable "create" {
-  description = "Controls if EKS resources should be created (it affects almost all resources)"
+  description = "Controls if Fargate resources should be created (it affects all resources)"
   type        = bool
   default     = true
 }
 
 variable "create_fargate_pod_execution_role" {
-  description = "Controls if the the IAM Role that provides permissions for the EKS Fargate Profile should be created."
+  description = "Controls if the the IAM Role that provides permissions for the EKS Fargate Profile should be created"
   type        = bool
   default     = true
 }
 
 variable "cluster_name" {
-  description = "Name of the EKS cluster."
+  description = "Name of the EKS cluster"
   type        = string
   default     = ""
 }
 
 variable "iam_path" {
-  description = "IAM roles will be created on this path."
+  description = "Path to the role"
   type        = string
-  default     = "/"
+  default     = null
 }
 
-variable "fargate_pod_execution_role_name" {
-  description = "The IAM Role that provides permissions for the EKS Fargate Profile."
+variable "permissions_boundary" {
+  description = "ARN of the policy that is used to set the permissions boundary for the role"
   type        = string
   default     = null
 }
@@ -34,20 +34,20 @@ variable "fargate_profiles" {
   default     = {}
 }
 
-variable "permissions_boundary" {
-  description = "If provided, all IAM roles will be created with this permissions boundary attached."
+variable "fargate_pod_execution_role_arn" {
+  description = "Existing Amazon Resource Name (ARN) of the IAM Role that provides permissions for the EKS Fargate Profile. Required if `create_fargate_pod_execution_role` is `false`"
   type        = string
   default     = null
 }
 
 variable "subnet_ids" {
-  description = "A list of subnet IDs for the EKS Fargate profiles."
+  description = "A list of subnet IDs for the EKS Fargate profiles"
   type        = list(string)
   default     = []
 }
 
 variable "tags" {
-  description = "A map of tags to add to all resources."
+  description = "A map of tags to add to all resources"
   type        = map(string)
   default     = {}
 }

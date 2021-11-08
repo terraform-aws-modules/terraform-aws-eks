@@ -27,7 +27,7 @@ variable "cluster_iam_role_arn" {
 }
 
 variable "cluster_version" {
-  description = "Kubernetes minor version to use for the EKS cluster (for example 1.21)."
+  description = "Kubernetes minor version to use for the EKS cluster (for example 1.21)"
   type        = string
   default     = null
 }
@@ -52,19 +52,19 @@ variable "subnet_ids" {
 }
 
 variable "cluster_endpoint_private_access" {
-  description = "Indicates whether or not the Amazon EKS private API server endpoint is enabled."
+  description = "Indicates whether or not the Amazon EKS private API server endpoint is enabled"
   type        = bool
   default     = false
 }
 
 variable "cluster_endpoint_public_access" {
-  description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled. When it's set to `false` ensure to have a proper private access with `cluster_endpoint_private_access = true`."
+  description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled. When it's set to `false` ensure to have a proper private access with `cluster_endpoint_private_access = true`"
   type        = bool
   default     = true
 }
 
 variable "cluster_endpoint_public_access_cidrs" {
-  description = "List of CIDR blocks which can access the Amazon EKS public API server endpoint."
+  description = "List of CIDR blocks which can access the Amazon EKS public API server endpoint"
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
@@ -113,7 +113,7 @@ variable "cluster_log_kms_key_id" {
 ################################################################################
 
 variable "create_cluster_security_group" {
-  description = "Whether to create a security group for the cluster or attach the cluster to `cluster_security_group_id`."
+  description = "Whether to create a security group for the cluster or attach the cluster to `cluster_security_group_id`"
   type        = bool
   default     = true
 }
@@ -147,13 +147,13 @@ variable "cluster_security_group_tags" {
 ################################################################################
 
 variable "write_kubeconfig" {
-  description = "Whether to write a Kubectl config file containing the cluster configuration. Saved to `kubeconfig_output_path`."
+  description = "Whether to write a Kubectl config file containing the cluster configuration. Saved to `kubeconfig_output_path`"
   type        = bool
   default     = true
 }
 
 variable "kubeconfig_output_path" {
-  description = "Where to save the Kubectl config file (if `write_kubeconfig = true`). Assumed to be a directory if the value ends with a forward slash `/`."
+  description = "Where to save the Kubectl config file (if `write_kubeconfig = true`). Assumed to be a directory if the value ends with a forward slash `/`"
   type        = string
   default     = "./"
 }
@@ -175,7 +175,7 @@ variable "enable_irsa" {
 }
 
 variable "openid_connect_audiences" {
-  description = "List of OpenID Connect audience client IDs to add to the IRSA provider."
+  description = "List of OpenID Connect audience client IDs to add to the IRSA provider"
   type        = list(string)
   default     = []
 }
@@ -220,7 +220,61 @@ variable "cluster_iam_role_tags" {
   default     = {}
 }
 
+################################################################################
+# Fargate
+################################################################################
 
+variable "create_fargate" {
+  description = "Determines whether Fargate resources are created"
+  type        = bool
+  default     = true
+}
+
+variable "create_fargate_pod_execution_role" {
+  description = "Controls if the EKS Fargate pod execution IAM role should be created"
+  type        = bool
+  default     = true
+}
+
+variable "fargate_pod_execution_role_arn" {
+  description = "Existing Amazon Resource Name (ARN) of the IAM Role that provides permissions for the EKS Fargate Profile. Required if `create_fargate_pod_execution_role` is `false`"
+  type        = string
+  default     = null
+}
+
+variable "fargate_subnet_ids" {
+  description = "A list of subnet IDs to place Fargate workers within (if different from `subnet_ids`)"
+  type        = list(string)
+  default     = []
+}
+
+variable "fargate_iam_role_path" {
+  description = "Fargate IAM role path"
+  type        = string
+  default     = null
+}
+
+variable "fargate_iam_role_permissions_boundary" {
+  description = "ARN of the policy that is used to set the permissions boundary for the Fargate role"
+  type        = string
+  default     = null
+}
+
+variable "fargate_profiles" {
+  description = "Fargate profiles to create. See `fargate_profile` keys section in Fargate submodule's README.md for more details"
+  type        = any
+  default     = {}
+}
+
+variable "fargate_tags" {
+  description = "A map of additional tags to add to the Fargate resources created"
+  type        = map(string)
+  default     = {}
+}
+
+################################################################################
+# Node Groups
+################################################################################
 
 
 
@@ -237,13 +291,13 @@ variable "cluster_iam_role_tags" {
 
 
 variable "default_platform" {
-  description = "Default platform name. Valid options are `linux` and `windows`."
+  description = "Default platform name. Valid options are `linux` and `windows`"
   type        = string
   default     = "linux"
 }
 
 variable "manage_aws_auth" {
-  description = "Whether to apply the aws-auth configmap file."
+  description = "Whether to apply the aws-auth configmap file"
   type        = bool
   default     = true
 }
@@ -255,13 +309,13 @@ variable "aws_auth_additional_labels" {
 }
 
 variable "map_accounts" {
-  description = "Additional AWS account numbers to add to the aws-auth configmap."
+  description = "Additional AWS account numbers to add to the aws-auth configmap"
   type        = list(string)
   default     = []
 }
 
 variable "map_roles" {
-  description = "Additional IAM roles to add to the aws-auth configmap."
+  description = "Additional IAM roles to add to the aws-auth configmap"
   type = list(object({
     rolearn  = string
     username = string
@@ -271,7 +325,7 @@ variable "map_roles" {
 }
 
 variable "map_users" {
-  description = "Additional IAM users to add to the aws-auth configmap."
+  description = "Additional IAM users to add to the aws-auth configmap"
   type = list(object({
     userarn  = string
     username = string
@@ -292,11 +346,7 @@ variable "iam_instance_profiles" {
   default     = {}
 }
 
-variable "fargate_subnet_ids" {
-  description = "A list of subnet IDs to place fargate workers within (if different from `subnet_ids`)"
-  type        = list(string)
-  default     = []
-}
+
 
 
 
@@ -314,31 +364,31 @@ variable "group_default_settings" {
 }
 
 variable "worker_security_group_id" {
-  description = "If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the EKS cluster."
+  description = "If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the EKS cluster"
   type        = string
   default     = ""
 }
 
 variable "worker_ami_name_filter" {
-  description = "Name filter for AWS EKS worker AMI. If not provided, the latest official AMI for the specified 'cluster_version' is used."
+  description = "Name filter for AWS EKS worker AMI. If not provided, the latest official AMI for the specified 'cluster_version' is used"
   type        = string
   default     = ""
 }
 
 variable "worker_ami_name_filter_windows" {
-  description = "Name filter for AWS EKS Windows worker AMI. If not provided, the latest official AMI for the specified 'cluster_version' is used."
+  description = "Name filter for AWS EKS Windows worker AMI. If not provided, the latest official AMI for the specified 'cluster_version' is used"
   type        = string
   default     = ""
 }
 
 variable "worker_ami_owner_id" {
-  description = "The ID of the owner for the AMI to use for the AWS EKS workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft')."
+  description = "The ID of the owner for the AMI to use for the AWS EKS workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft')"
   type        = string
   default     = "amazon"
 }
 
 variable "worker_ami_owner_id_windows" {
-  description = "The ID of the owner for the AMI to use for the AWS EKS Windows workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft')."
+  description = "The ID of the owner for the AMI to use for the AWS EKS Windows workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft')"
   type        = string
   default     = "amazon"
 }
@@ -350,7 +400,7 @@ variable "worker_additional_security_group_ids" {
 }
 
 variable "worker_sg_ingress_from_port" {
-  description = "Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443)."
+  description = "Minimum port number from which pods will accept communication. Must be changed to a lower value if some pods in your cluster will expose a port lower than 1025 (e.g. 22, 80, or 443)"
   type        = number
   default     = 1025
 }
@@ -367,31 +417,31 @@ variable "kubeconfig_api_version" {
 
 }
 variable "kubeconfig_aws_authenticator_command" {
-  description = "Command to use to fetch AWS EKS credentials."
+  description = "Command to use to fetch AWS EKS credentials"
   type        = string
   default     = "aws-iam-authenticator"
 }
 
 variable "kubeconfig_aws_authenticator_command_args" {
-  description = "Default arguments passed to the authenticator command. Defaults to [token -i $cluster_name]."
+  description = "Default arguments passed to the authenticator command. Defaults to [token -i $cluster_name]"
   type        = list(string)
   default     = []
 }
 
 variable "kubeconfig_aws_authenticator_additional_args" {
-  description = "Any additional arguments to pass to the authenticator such as the role to assume. e.g. [\"-r\", \"MyEksRole\"]."
+  description = "Any additional arguments to pass to the authenticator such as the role to assume. e.g. [\"-r\", \"MyEksRole\"]"
   type        = list(string)
   default     = []
 }
 
 variable "kubeconfig_aws_authenticator_env_variables" {
-  description = "Environment variables that should be used when executing the authenticator. e.g. { AWS_PROFILE = \"eks\"}."
+  description = "Environment variables that should be used when executing the authenticator. e.g. { AWS_PROFILE = \"eks\"}"
   type        = map(string)
   default     = {}
 }
 
 variable "kubeconfig_name" {
-  description = "Override the default name used for items kubeconfig."
+  description = "Override the default name used for items kubeconfig"
   type        = string
   default     = ""
 }
@@ -399,49 +449,49 @@ variable "kubeconfig_name" {
 
 
 variable "worker_create_security_group" {
-  description = "Whether to create a security group for the workers or attach the workers to `worker_security_group_id`."
+  description = "Whether to create a security group for the workers or attach the workers to `worker_security_group_id`"
   type        = bool
   default     = true
 }
 
 variable "worker_create_initial_lifecycle_hooks" {
-  description = "Whether to create initial lifecycle hooks provided in worker groups."
+  description = "Whether to create initial lifecycle hooks provided in worker groups"
   type        = bool
   default     = false
 }
 
 variable "worker_create_cluster_primary_security_group_rules" {
-  description = "Whether to create security group rules to allow communication between pods on workers and pods using the primary cluster security group."
+  description = "Whether to create security group rules to allow communication between pods on workers and pods using the primary cluster security group"
   type        = bool
   default     = false
 }
 
 variable "permissions_boundary" {
-  description = "If provided, all IAM roles will be created with this permissions boundary attached."
+  description = "If provided, all IAM roles will be created with this permissions boundary attached"
   type        = string
   default     = null
 }
 
 variable "iam_path" {
-  description = "If provided, all IAM roles will be created on this path."
+  description = "If provided, all IAM roles will be created on this path"
   type        = string
   default     = "/"
 }
 
 variable "cluster_create_endpoint_private_access_sg_rule" {
-  description = "Whether to create security group rules for the access to the Amazon EKS private API server endpoint. When is `true`, `cluster_endpoint_private_access_cidrs` must be setted."
+  description = "Whether to create security group rules for the access to the Amazon EKS private API server endpoint. When is `true`, `cluster_endpoint_private_access_cidrs` must be setted"
   type        = bool
   default     = false
 }
 
 variable "cluster_endpoint_private_access_cidrs" {
-  description = "List of CIDR blocks which can access the Amazon EKS private API server endpoint. To use this `cluster_endpoint_private_access` and `cluster_create_endpoint_private_access_sg_rule` must be set to `true`."
+  description = "List of CIDR blocks which can access the Amazon EKS private API server endpoint. To use this `cluster_endpoint_private_access` and `cluster_create_endpoint_private_access_sg_rule` must be set to `true`"
   type        = list(string)
   default     = null
 }
 
 variable "cluster_endpoint_private_access_sg" {
-  description = "List of security group IDs which can access the Amazon EKS private API server endpoint. To use this `cluster_endpoint_private_access` and `cluster_create_endpoint_private_access_sg_rule` must be set to `true`."
+  description = "List of security group IDs which can access the Amazon EKS private API server endpoint. To use this `cluster_endpoint_private_access` and `cluster_create_endpoint_private_access_sg_rule` must be set to `true`"
   type        = list(string)
   default     = null
 }
@@ -449,26 +499,26 @@ variable "cluster_endpoint_private_access_sg" {
 
 
 variable "manage_cluster_iam_resources" {
-  description = "Whether to let the module manage cluster IAM resources. If set to false, `cluster_iam_role_arn` must be specified."
+  description = "Whether to let the module manage cluster IAM resources. If set to false, `cluster_iam_role_arn` must be specified"
   type        = bool
   default     = true
 }
 
 
 variable "manage_worker_iam_resources" {
-  description = "Whether to let the module manage worker IAM resources. If set to false, iam_instance_profile_name must be specified for workers."
+  description = "Whether to let the module manage worker IAM resources. If set to false, iam_instance_profile_name must be specified for workers"
   type        = bool
   default     = true
 }
 
 variable "workers_role_name" {
-  description = "User defined workers role name."
+  description = "User defined workers role name"
   type        = string
   default     = ""
 }
 
 variable "attach_worker_cni_policy" {
-  description = "Whether to attach the Amazon managed `AmazonEKS_CNI_Policy` IAM policy to the default worker IAM role. WARNING: If set `false` the permissions must be assigned to the `aws-node` DaemonSet pods via another method or nodes will not be able to join the cluster."
+  description = "Whether to attach the Amazon managed `AmazonEKS_CNI_Policy` IAM policy to the default worker IAM role. WARNING: If set `false` the permissions must be assigned to the `aws-node` DaemonSet pods via another method or nodes will not be able to join the cluster"
   type        = bool
   default     = true
 }
@@ -485,40 +535,23 @@ variable "node_groups" {
   default     = {}
 }
 
-variable "fargate_profiles" {
-  description = "Fargate profiles to create. See `fargate_profile` keys section in fargate submodule's README.md for more details"
-  type        = any
-  default     = {}
-}
-
-variable "create_fargate_pod_execution_role" {
-  description = "Controls if the EKS Fargate pod execution IAM role should be created."
-  type        = bool
-  default     = true
-}
-
-variable "fargate_pod_execution_role_name" {
-  description = "The IAM Role that provides permissions for the EKS Fargate Profile."
-  type        = string
-  default     = null
-}
 
 
 
 variable "cluster_egress_cidrs" {
-  description = "List of CIDR blocks that are permitted for cluster egress traffic."
+  description = "List of CIDR blocks that are permitted for cluster egress traffic"
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
 
 variable "workers_egress_cidrs" {
-  description = "List of CIDR blocks that are permitted for workers egress traffic."
+  description = "List of CIDR blocks that are permitted for workers egress traffic"
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
 
 variable "wait_for_cluster_timeout" {
-  description = "A timeout (in seconds) to wait for cluster to be available."
+  description = "A timeout (in seconds) to wait for cluster to be available"
   type        = number
   default     = 300
 }
