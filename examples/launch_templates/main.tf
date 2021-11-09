@@ -6,6 +6,12 @@ locals {
   name            = "launch_template-${random_string.suffix.result}"
   cluster_version = "1.20"
   region          = "eu-west-1"
+
+  tags = {
+    Example    = local.name
+    GithubRepo = "terraform-aws-eks"
+    GithubOrg  = "terraform-aws-modules"
+  }
 }
 
 ################################################################################
@@ -13,64 +19,77 @@ locals {
 ################################################################################
 
 module "eks" {
-  source                          = "../.."
-  cluster_name                    = local.name
-  cluster_version                 = local.cluster_version
-  vpc_id                          = module.vpc.vpc_id
-  subnet_ids                      = module.vpc.private_subnets
+  source = "../.."
+
+  cluster_name    = local.name
+  cluster_version = local.cluster_version
+
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
+
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
-  worker_groups = {
-    one = {
-      name                 = "worker-group-1"
-      instance_type        = "t3.small"
-      asg_desired_capacity = 2
-      public_ip            = true
-      tags = [{
-        key                 = "ExtraTag"
-        value               = "TagValue"
-        propagate_at_launch = true
-      }]
+  launch_templates = {
+    lt_default = {}
+    lt_two = {
+      instance_type = "t3.small"
     }
-    two = {
-      name                 = "worker-group-2"
-      instance_type        = "t3.medium"
-      asg_desired_capacity = 1
-      public_ip            = true
-      ebs_optimized        = true
-    }
-    three = {
-      name                          = "worker-group-3"
-      instance_type                 = "t2.large"
-      asg_desired_capacity          = 1
-      public_ip                     = true
-      elastic_inference_accelerator = "eia2.medium"
-    }
-    four = {
-      name                   = "worker-group-4"
-      instance_type          = "t3.small"
-      asg_desired_capacity   = 1
-      public_ip              = true
-      root_volume_size       = 150
-      root_volume_type       = "gp3"
-      root_volume_throughput = 300
-      additional_ebs_volumes = [
-        {
-          block_device_name = "/dev/xvdb"
-          volume_size       = 100
-          volume_type       = "gp3"
-          throughput        = 150
-        },
-      ]
-    },
   }
 
-  tags = {
-    Example    = local.name
-    GithubRepo = "terraform-aws-eks"
-    GithubOrg  = "terraform-aws-modules"
+  group_default_settings = {
+    launch_template_key = "tl_default"
+    instance_type       = "t3.medium"
   }
+
+  worker_groups = {
+    # one = {
+    #   name                 = "worker-group-1"
+    #   asg_desired_capacity = 2
+    #   public_ip            = true
+    #   tags = {
+    #     ExtraTag = "TagValue"
+    #   }
+    #   propogated_tags = [{
+    #     key                 = "ExtraPropgatedTag"
+    #     value               = "PropogatedTagValue"
+    #     propagate_at_launch = false
+    #   }]
+    # }
+    # two = {
+    #   name                 = "worker-group-2"
+    #   launch_template_key  = "lt_two"
+    #   asg_desired_capacity = 1
+    #   public_ip            = true
+    #   ebs_optimized        = true
+    # }
+    # three = {
+    #   name                          = "worker-group-3"
+    #   instance_type                 = "t2.large"
+    #   asg_desired_capacity          = 1
+    #   public_ip                     = true
+    #   elastic_inference_accelerator = "eia2.medium"
+    # }
+    # four = {
+    #   name                   = "worker-group-4"
+    #   instance_type          = "t3.small"
+    #   asg_desired_capacity   = 1
+    #   public_ip              = true
+    #   root_volume_size       = 150
+    #   root_volume_type       = "gp3"
+    #   root_volume_throughput = 300
+    #   additional_ebs_volumes = [
+    #     {
+    #       block_device_name = "/dev/xvdb"
+    #       volume_size       = 100
+    #       volume_type       = "gp3"
+    #       throughput        = 150
+    #     },
+    #   ]
+    # },
+  }
+
+  tags = local.tags
 }
 
 ################################################################################
@@ -126,9 +145,5 @@ module "vpc" {
     "kubernetes.io/role/internal-elb"     = "1"
   }
 
-  tags = {
-    Example    = local.name
-    GithubRepo = "terraform-aws-eks"
-    GithubOrg  = "terraform-aws-modules"
-  }
+  tags = local.tags
 }

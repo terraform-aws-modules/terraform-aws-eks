@@ -199,6 +199,46 @@ variable "cluster_iam_role_tags" {
 }
 
 ################################################################################
+# Workers IAM Role
+################################################################################
+
+variable "create_worker_iam_role" {
+  description = "Determines whether a worker IAM role is created or to use an existing IAM role"
+  type        = bool
+  default     = true
+}
+
+variable "worker_iam_role_name" {
+  description = "Name to use on worker role created"
+  type        = string
+  default     = null
+}
+
+variable "worker_iam_role_use_name_prefix" {
+  description = "Determines whether worker IAM role name (`worker_iam_role_name`) is used as a prefix"
+  type        = string
+  default     = true
+}
+
+variable "worker_iam_role_path" {
+  description = "Worker IAM role path"
+  type        = string
+  default     = null
+}
+
+variable "worker_iam_role_permissions_boundary" {
+  description = "ARN of the policy that is used to set the permissions boundary for the worker role"
+  type        = string
+  default     = null
+}
+
+variable "worker_iam_role_tags" {
+  description = "A map of additional tags to add to the worker IAM role created"
+  type        = map(string)
+  default     = {}
+}
+
+################################################################################
 # Fargate
 ################################################################################
 
@@ -274,7 +314,7 @@ variable "launch_templates" {
 
 variable "worker_groups" {
   description = "A map of maps defining worker group configurations to be defined using AWS Launch Template"
-  type        = map(any)
+  type        = any
   default     = {}
 }
 
@@ -326,7 +366,7 @@ variable "worker_sg_ingress_from_port" {
   default     = 1025
 }
 
-variable "workers_additional_policies" {
+variable "worker_additional_policies" {
   description = "Additional policies to be added to workers"
   type        = list(string)
   default     = []
@@ -419,7 +459,7 @@ variable "manage_worker_iam_resources" {
   default     = true
 }
 
-variable "workers_role_name" {
+variable "worker_role_name" {
   description = "User defined workers role name"
   type        = string
   default     = ""
@@ -449,7 +489,7 @@ variable "cluster_egress_cidrs" {
   default     = ["0.0.0.0/0"]
 }
 
-variable "workers_egress_cidrs" {
+variable "worker_egress_cidrs" {
   description = "List of CIDR blocks that are permitted for workers egress traffic"
   type        = list(string)
   default     = ["0.0.0.0/0"]

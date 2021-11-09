@@ -41,12 +41,15 @@ resource "aws_launch_template" "this" {
   description = try(each.value.description, var.group_default_settings.description, null)
 
   ebs_optimized = try(each.value.ebs_optimized, var.group_default_settings.ebs_optimized, null)
-  image_id      = try(each.value.image_id, var.group_default_settings.image_id, null)
+  image_id      = try(each.value.image_id, var.group_default_settings.image_id, data.aws_ami.eks_worker[0].image_id)
   instance_type = try(each.value.instance_type, var.group_default_settings.instance_type, "m6i.large")
   key_name      = try(each.value.key_name, var.group_default_settings.key_name, null)
   user_data     = try(each.value.user_data, var.group_default_settings.user_data, null)
 
-  vpc_security_group_ids = try(each.value.vpc_security_group_ids, var.group_default_settings.vpc_security_group_ids, null)
+  vpc_security_group_ids = compact(concat(
+    [try(aws_security_group.worker[0].id, "")],
+    try(each.value.vpc_security_group_ids, var.group_default_settings.vpc_security_group_ids, [])
+  ))
 
   default_version                      = try(each.value.default_version, var.group_default_settings.default_version, null)
   update_default_version               = try(each.value.update_default_version, var.group_default_settings.update_default_version, null)
@@ -135,17 +138,12 @@ resource "aws_launch_template" "this" {
     }
   }
 
-  # iam_instance_profile {
-  #   name = coalescelist(
-  #     aws_iam_instance_profile.workers.*.name,
-  #     data.aws_iam_instance_profile.custom_worker_group_iam_instance_profile.*.name,
-  #   )[count.index]
-  # }
-  # TODO - oy
   dynamic "iam_instance_profile" {
-    for_each = try([each.value.iam_instance_profile_name], [])
+    for_each = [{
+      "arn" = try(each.value.iam_instance_profile_arn, aws_iam_instance_profile.worker[0].arn, {})
+    }]
     content {
-      name = each.value
+      arn = lookup(iam_instance_profile.value, "arn", null)
     }
   }
 
@@ -223,53 +221,50 @@ resource "aws_launch_template" "this" {
     }
   }
 
-  tag_specifications {
-    resource_type = "volume"
-    tags = merge(
-      { "Name" = "${aws_eks_cluster.this[0].name}-${try(each.value.name, each.key)}-eks_asg" },
-      var.tags,
-      { for tag in lookup(each.value, "tags", {}) : tag["key"] => tag["value"] if tag["key"] != "Name" && tag["propagate_at_launch"] }
-    )
-  }
+  # tag_specifications {
+  #   resource_type = "volume"
+  #   tags = merge(
+  #     var.tags,
+  #     lookup(each.value, "tags", {}),
+  #     { "Name" = try(each.value.name, "${aws_eks_cluster.this[0].name}-${each.key}") }
+  #   )
+  # }
 
-  tag_specifications {
-    resource_type = "instance"
-    tags = merge(
-      { "Name" = "${aws_eks_cluster.this[0].name}-${try(each.value.name, each.key)}-eks_asg" },
-      { for tag_key, tag_value in var.tags :
-        tag_key => tag_value
-        if tag_key != "Name" && !contains([for tag in lookup(each.value, "tags", {}) : tag["key"]], tag_key)
-      }
-    )
-  }
+  # tag_specifications {
+  #   resource_type = "instance"
+  #   tags = merge(
+  #     var.tags,
+  #     lookup(each.value, "tags", {}),
+  #     { "Name" = try(each.value.name, "${aws_eks_cluster.this[0].name}-${each.key}") }
+  #   )
+  # }
 
-  tag_specifications {
-    resource_type = "network-interface"
-    tags = merge(
-      { "Name" = "${aws_eks_cluster.this[0].name}-${try(each.value.name, each.key)}-eks_asg" },
-      var.tags,
-      { for tag in lookup(each.value, "tags", {}) : tag["key"] => tag["value"] if tag["key"] != "Name" && tag["propagate_at_launch"] }
-    )
-  }
+  # tag_specifications {
+  #   resource_type = "network-interface"
+  #   tags = merge(
+  #     var.tags,
+  #     lookup(each.value, "tags", {}),
+  #     { "Name" = try(each.value.name, "${aws_eks_cluster.this[0].name}-${each.key}") }
+  #   )
+  # }
 
   # Prevent premature access of security group roles and policies by pods that
-  # require permissions on create/destroy that depend on workers.
+  # require permissions on create/destroy that depend on worker.
   depends_on = [
-    aws_security_group_rule.workers_egress_internet,
-    aws_security_group_rule.workers_ingress_self,
-    aws_security_group_rule.workers_ingress_cluster,
-    aws_security_group_rule.workers_ingress_cluster_kubelet,
-    aws_security_group_rule.workers_ingress_cluster_https,
-    aws_security_group_rule.workers_ingress_cluster_primary,
-    aws_security_group_rule.cluster_primary_ingress_workers,
-    aws_iam_role_policy_attachment.workers_additional_policies
+    aws_security_group_rule.worker_egress_internet,
+    aws_security_group_rule.worker_ingress_self,
+    aws_security_group_rule.worker_ingress_cluster,
+    aws_security_group_rule.worker_ingress_cluster_kubelet,
+    aws_security_group_rule.worker_ingress_cluster_https,
+    aws_security_group_rule.worker_ingress_cluster_primary,
+    aws_security_group_rule.cluster_primary_ingress_worker,
   ]
 
   lifecycle {
     create_before_destroy = true
   }
 
-  tags = merge(var.tags, lookup(each.value, "tags", {}))
+  # tags = merge(var.tags, lookup(each.value, "tags", {}))
 }
 
 ################################################################################
@@ -277,7 +272,7 @@ resource "aws_launch_template" "this" {
 ################################################################################
 
 
-# resource "aws_eks_node_group" "workers" {
+# resource "aws_eks_node_group" "worker" {
 #   for_each = var.create : var.node_groups : {}
 
 #   node_group_name_prefix = lookup(each.value, "name", null) == null ? local.node_groups_names[each.key] : null
@@ -285,7 +280,7 @@ resource "aws_launch_template" "this" {
 
 #   cluster_name  = var.cluster_name
 #   node_role_arn = try(each.value.iam_role_arn, var.default_iam_role_arn)
-#   subnet_ids    = each.value["subnet_ids"]
+#   subnet_ids    = coalescelist(each.value["subnet_ids"], var.subnet_ids, [""])
 
 #   scaling_config {
 #     desired_size = each.value["desired_capacity"]
@@ -371,17 +366,23 @@ resource "aws_launch_template" "this" {
 ################################################################################
 
 resource "aws_autoscaling_group" "this" {
-  for_each = var.create ? var.worker_groups : {}
+  for_each = var.create ? var.worker_groups : object({})
 
   name_prefix = "${join("-", [aws_eks_cluster.this[0].name, try(each.value.name, each.key)])}-"
 
   launch_template {
-    name    = each.value.launch_template_key # required
+    name = try(
+      aws_launch_template.this[each.value.launch_template_key].name,
+      each.value.launch_template_name,
+      # defaults should be last
+      aws_launch_template.this[var.group_default_settings.launch_template_key].name,
+      var.group_default_settings.launch_template_name,
+    )
     version = try(each.value.launch_template_version, var.group_default_settings.launch_template_version, "$Latest")
   }
 
   availability_zones  = try(each.value.availability_zones, var.group_default_settings.availability_zones, null)
-  vpc_zone_identifier = try(each.value.vpc_zone_identifier, var.group_default_settings.vpc_zone_identifier, null)
+  vpc_zone_identifier = try(each.value.vpc_zone_identifier, var.group_default_settings.vpc_zone_identifier, var.subnet_ids)
 
   min_size              = try(each.value.min_size, local.group_default_settings.min_size)
   max_size              = try(each.value.max_size, local.group_default_settings.max_size)
@@ -398,7 +399,7 @@ resource "aws_autoscaling_group" "this" {
 
   force_delete          = try(each.value.force_delete, var.group_default_settings.force_delete, false)
   termination_policies  = try(each.value.termination_policies, var.group_default_settings.termination_policies, null)
-  suspended_processes   = try(each.value.suspended_processes, var.group_default_settings.suspended_processes, "AZRebalance")
+  suspended_processes   = try(each.value.suspended_processes, var.group_default_settings.suspended_processes, ["AZRebalance"])
   max_instance_lifetime = try(each.value.max_instance_lifetime, var.group_default_settings.max_instance_lifetime, null)
 
   enabled_metrics         = try(each.value.enabled_metrics, var.group_default_settings.enabled_metrics, null)
@@ -504,17 +505,21 @@ resource "aws_autoscaling_group" "this" {
           "value"               = "owned"
           "propagate_at_launch" = true
         },
+        {
+          "key"                 = "k8s.io/cluster/${aws_eks_cluster.this[0].name}"
+          "value"               = "owned"
+          "propagate_at_launch" = true
+        },
       ],
       [
-        for tag_key, tag_value in var.tags :
+        for k, v in merge(var.tags, lookup(each.value, "tags", {})) :
         tomap({
-          key                 = tag_key
-          value               = tag_value
+          key                 = k
+          value               = v
           propagate_at_launch = true
         })
-        if tag_key != "Name" && !contains([for tag in lookup(each.value, "tags", []) : tag["key"]], tag_key)
       ],
-      lookup(each.value, "tags", {})
+      lookup(each.value, "propogated_tags", [])
     )
     content {
       key                 = tag.value.key
@@ -527,65 +532,66 @@ resource "aws_autoscaling_group" "this" {
     create_before_destroy = true
     ignore_changes        = [desired_capacity]
   }
+
+  depends_on = [
+    aws_launch_template.this
+  ]
 }
 
 ################################################################################
 # IAM Role & Instance Profile
 ################################################################################
 
-resource "aws_iam_role" "workers" {
-  count = var.manage_worker_iam_resources && var.create ? 1 : 0
-
-  name_prefix           = var.workers_role_name != "" ? null : aws_eks_cluster.this[0].name
-  name                  = var.workers_role_name != "" ? var.workers_role_name : null
-  assume_role_policy    = data.aws_iam_policy_document.workers_assume_role_policy.json
-  permissions_boundary  = var.permissions_boundary
-  path                  = var.iam_path
-  force_detach_policies = true
-
-  tags = var.tags
+locals {
+  worker_iam_role_name = coalesce(var.worker_iam_role_name, var.cluster_name)
 }
 
-resource "aws_iam_instance_profile" "workers" {
-  count = var.create && var.manage_worker_iam_resources ? 1 : 0
+resource "aws_iam_role" "worker" {
+  count = var.create && var.create_worker_iam_role ? 1 : 0
 
-  name_prefix = aws_eks_cluster.this[0].name
-  role        = aws_iam_role.workers[0].id
-  path        = var.iam_path
+  name        = var.worker_iam_role_use_name_prefix ? null : local.worker_iam_role_name
+  name_prefix = var.worker_iam_role_use_name_prefix ? try("${local.worker_iam_role_name}-", local.worker_iam_role_name) : null
+  path        = var.worker_iam_role_path
+
+  assume_role_policy   = data.aws_iam_policy_document.worker_assume_role_policy[0].json
+  permissions_boundary = var.worker_iam_role_permissions_boundary
+  managed_policy_arns = compact(distinct(concat([
+    "${local.policy_arn_prefix}/AmazonEKSWorkerNodePolicy",
+    "${local.policy_arn_prefix}/AmazonEC2ContainerRegistryReadOnly",
+    var.attach_worker_cni_policy ? "${local.policy_arn_prefix}/AmazonEKS_CNI_Policy" : "",
+  ], var.worker_additional_policies)))
+  force_detach_policies = true
+
+  tags = merge(var.tags, var.worker_iam_role_tags)
+}
+
+data "aws_iam_policy_document" "worker_assume_role_policy" {
+  count = var.create && var.create_worker_iam_role ? 1 : 0
+
+  statement {
+    sid     = "EKSWorkerAssumeRole"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = [local.ec2_principal]
+    }
+  }
+}
+
+resource "aws_iam_instance_profile" "worker" {
+  count = var.create && var.create_worker_iam_role ? 1 : 0
+
+  name        = var.worker_iam_role_use_name_prefix ? null : local.worker_iam_role_name
+  name_prefix = var.worker_iam_role_use_name_prefix ? try("${local.worker_iam_role_name}-", local.worker_iam_role_name) : null
+  path        = var.worker_iam_role_path
+  role        = aws_iam_role.worker[0].id
 
   lifecycle {
     create_before_destroy = true
   }
 
-  tags = var.tags
-}
-
-resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {
-  count = var.create && var.manage_worker_iam_resources ? 1 : 0
-
-  policy_arn = "${local.policy_arn_prefix}/AmazonEKSWorkerNodePolicy"
-  role       = aws_iam_role.workers[0].name
-}
-
-resource "aws_iam_role_policy_attachment" "workers_AmazonEKS_CNI_Policy" {
-  count = var.create && var.manage_worker_iam_resources && var.attach_worker_cni_policy ? 1 : 0
-
-  policy_arn = "${local.policy_arn_prefix}/AmazonEKS_CNI_Policy"
-  role       = aws_iam_role.workers[0].name
-}
-
-resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryReadOnly" {
-  count = var.create && var.manage_worker_iam_resources ? 1 : 0
-
-  policy_arn = "${local.policy_arn_prefix}/AmazonEC2ContainerRegistryReadOnly"
-  role       = aws_iam_role.workers[0].name
-}
-
-resource "aws_iam_role_policy_attachment" "workers_additional_policies" {
-  for_each = var.create && var.manage_worker_iam_resources ? toset(var.workers_additional_policies) : []
-
-  role       = aws_iam_role.workers[0].name
-  policy_arn = each.value
+  tags = merge(var.tags, var.worker_iam_role_tags)
 }
 
 ################################################################################
@@ -596,7 +602,7 @@ locals {
   create_worker_sg = var.create && var.worker_create_security_group
 }
 
-resource "aws_security_group" "workers" {
+resource "aws_security_group" "worker" {
   count = local.create_worker_sg ? 1 : 0
 
   name_prefix = var.cluster_name
@@ -611,19 +617,19 @@ resource "aws_security_group" "workers" {
   )
 }
 
-resource "aws_security_group_rule" "workers_egress_internet" {
+resource "aws_security_group_rule" "worker_egress_internet" {
   count = local.create_worker_sg ? 1 : 0
 
   description       = "Allow nodes all egress to the Internet."
   protocol          = "-1"
   security_group_id = local.worker_security_group_id
-  cidr_blocks       = var.workers_egress_cidrs
+  cidr_blocks       = var.worker_egress_cidrs
   from_port         = 0
   to_port           = 0
   type              = "egress"
 }
 
-resource "aws_security_group_rule" "workers_ingress_self" {
+resource "aws_security_group_rule" "worker_ingress_self" {
   count = local.create_worker_sg ? 1 : 0
 
   description              = "Allow node to communicate with each other."
@@ -635,10 +641,10 @@ resource "aws_security_group_rule" "workers_ingress_self" {
   type                     = "ingress"
 }
 
-resource "aws_security_group_rule" "workers_ingress_cluster" {
+resource "aws_security_group_rule" "worker_ingress_cluster" {
   count = local.create_worker_sg ? 1 : 0
 
-  description              = "Allow workers pods to receive communication from the cluster control plane."
+  description              = "Allow worker pods to receive communication from the cluster control plane."
   protocol                 = "tcp"
   security_group_id        = local.worker_security_group_id
   source_security_group_id = local.cluster_security_group_id
@@ -647,10 +653,10 @@ resource "aws_security_group_rule" "workers_ingress_cluster" {
   type                     = "ingress"
 }
 
-resource "aws_security_group_rule" "workers_ingress_cluster_kubelet" {
+resource "aws_security_group_rule" "worker_ingress_cluster_kubelet" {
   count = local.create_worker_sg ? var.worker_sg_ingress_from_port > 10250 ? 1 : 0 : 0
 
-  description              = "Allow workers Kubelets to receive communication from the cluster control plane."
+  description              = "Allow worker Kubelets to receive communication from the cluster control plane."
   protocol                 = "tcp"
   security_group_id        = local.worker_security_group_id
   source_security_group_id = local.cluster_security_group_id
@@ -659,7 +665,7 @@ resource "aws_security_group_rule" "workers_ingress_cluster_kubelet" {
   type                     = "ingress"
 }
 
-resource "aws_security_group_rule" "workers_ingress_cluster_https" {
+resource "aws_security_group_rule" "worker_ingress_cluster_https" {
   count = local.create_worker_sg ? 1 : 0
 
   description              = "Allow pods running extension API servers on port 443 to receive communication from cluster control plane."
@@ -671,10 +677,10 @@ resource "aws_security_group_rule" "workers_ingress_cluster_https" {
   type                     = "ingress"
 }
 
-resource "aws_security_group_rule" "workers_ingress_cluster_primary" {
+resource "aws_security_group_rule" "worker_ingress_cluster_primary" {
   count = local.create_worker_sg && var.worker_create_cluster_primary_security_group_rules ? 1 : 0
 
-  description              = "Allow pods running on workers to receive communication from cluster primary security group (e.g. Fargate pods)."
+  description              = "Allow pods running on worker to receive communication from cluster primary security group (e.g. Fargate pods)."
   protocol                 = "all"
   security_group_id        = local.worker_security_group_id
   source_security_group_id = try(aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id, "")
@@ -683,10 +689,10 @@ resource "aws_security_group_rule" "workers_ingress_cluster_primary" {
   type                     = "ingress"
 }
 
-resource "aws_security_group_rule" "cluster_primary_ingress_workers" {
+resource "aws_security_group_rule" "cluster_primary_ingress_worker" {
   count = local.create_worker_sg && var.worker_create_cluster_primary_security_group_rules ? 1 : 0
 
-  description              = "Allow pods running on workers to send communication to cluster primary security group (e.g. Fargate pods)."
+  description              = "Allow pods running on worker to send communication to cluster primary security group (e.g. Fargate pods)."
   protocol                 = "all"
   security_group_id        = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
   source_security_group_id = local.worker_security_group_id

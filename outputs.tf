@@ -63,20 +63,15 @@ output "oidc_provider_arn" {
   value       = var.enable_irsa ? concat(aws_iam_openid_connect_provider.oidc_provider[*].arn, [""])[0] : null
 }
 
-output "workers_asg_arns" {
-  description = "IDs of the autoscaling groups containing workers."
-  value       = aws_autoscaling_group.this.*.arn
-}
+# output "workers_asg_arns" {
+#   description = "IDs of the autoscaling groups containing workers."
+#   value       = aws_autoscaling_group.this.*.arn
+# }
 
-output "workers_asg_names" {
-  description = "Names of the autoscaling groups containing workers."
-  value       = aws_autoscaling_group.this.*.id
-}
-
-output "workers_user_data" {
-  description = "User data of worker groups"
-  value       = local.launch_template_userdata_rendered
-}
+# output "workers_asg_names" {
+#   description = "Names of the autoscaling groups containing workers."
+#   value       = aws_autoscaling_group.this.*.id
+# }
 
 # output "workers_default_ami_id" {
 #   description = "ID of the default worker group AMI"
@@ -88,20 +83,20 @@ output "workers_user_data" {
 #   value       = local.default_ami_id_windows
 # }
 
-output "workers_launch_template_ids" {
-  description = "IDs of the worker launch templates."
-  value       = aws_launch_template.this.*.id
-}
+# output "workers_launch_template_ids" {
+#   description = "IDs of the worker launch templates."
+#   value       = aws_launch_template.this.*.id
+# }
 
-output "workers_launch_template_arns" {
-  description = "ARNs of the worker launch templates."
-  value       = aws_launch_template.this.*.arn
-}
+# output "workers_launch_template_arns" {
+#   description = "ARNs of the worker launch templates."
+#   value       = aws_launch_template.this.*.arn
+# }
 
-output "workers_launch_template_latest_versions" {
-  description = "Latest versions of the worker launch templates."
-  value       = aws_launch_template.this.*.latest_version
-}
+# output "workers_launch_template_latest_versions" {
+#   description = "Latest versions of the worker launch templates."
+#   value       = aws_launch_template.this.*.latest_version
+# }
 
 output "worker_security_group_id" {
   description = "Security group ID attached to the EKS workers."
@@ -110,22 +105,22 @@ output "worker_security_group_id" {
 
 output "worker_iam_instance_profile_arns" {
   description = "default IAM instance profile ARN for EKS worker groups"
-  value       = aws_iam_instance_profile.workers.*.arn
+  value       = aws_iam_instance_profile.worker.*.arn
 }
 
 output "worker_iam_instance_profile_names" {
   description = "default IAM instance profile name for EKS worker groups"
-  value       = aws_iam_instance_profile.workers.*.name
+  value       = aws_iam_instance_profile.worker.*.name
 }
 
 output "worker_iam_role_name" {
   description = "default IAM role name for EKS worker groups"
-  value       = try(aws_iam_role.workers[0].name, "")
+  value       = try(aws_iam_role.worker[0].name, "")
 }
 
 output "worker_iam_role_arn" {
   description = "default IAM role ARN for EKS worker groups"
-  value       = try(aws_iam_role.workers[0].arn, "")
+  value       = try(aws_iam_role.worker[0].arn, "")
 }
 
 output "fargate_profile_ids" {
