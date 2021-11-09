@@ -15,6 +15,7 @@ locals {
       create_launch_template               = false
       bootstrap_env                        = {}
       kubelet_extra_args                   = var.workers_group_defaults["kubelet_extra_args"]
+      disk_device_name                     = var.workers_group_defaults["root_device_name"]
       disk_size                            = var.workers_group_defaults["root_volume_size"]
       disk_type                            = var.workers_group_defaults["root_volume_type"]
       disk_iops                            = var.workers_group_defaults["root_iops"]

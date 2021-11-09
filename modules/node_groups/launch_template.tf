@@ -38,7 +38,7 @@ resource "aws_launch_template" "workers" {
   update_default_version = lookup(each.value, "update_default_version", true)
 
   block_device_mappings {
-    device_name = "/dev/xvda"
+    device_name = lookup(each.value, "disk_device_name", null)
 
     ebs {
       volume_size           = lookup(each.value, "disk_size", null)
