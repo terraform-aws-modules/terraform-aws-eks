@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 locals {
-  name            = "managed_node_groups-${random_string.suffix.result}"
+  name            = "ex-${replace(basename(path.cwd), "_", "-")}"
   cluster_version = "1.20"
   region          = "eu-west-1"
 }
@@ -24,26 +24,49 @@ module "eks" {
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
-  node_groups_defaults = {
-    ami_type  = "AL2_x86_64"
-    disk_size = 50
-  }
-
   node_groups = {
-    example = {
+    # use arleady defined launch template
+    example1 = {
+      name_prefix      = "example1"
       desired_capacity = 1
-      max_capacity     = 10
+      max_capacity     = 15
       min_capacity     = 1
+
+      launch_template_id      = aws_launch_template.default.id
+      launch_template_version = aws_launch_template.default.default_version
+
+      instance_types = ["t3.small"]
+
+      additional_tags = {
+        ExtraTag = "example1"
+      }
+    }
+    # create launch template
+    example2 = {
+      create_launch_template = true
+      desired_capacity       = 1
+      max_capacity           = 10
+      min_capacity           = 1
+
+      disk_size       = 50
+      disk_type       = "gp3"
+      disk_throughput = 150
+      disk_iops       = 3000
 
       instance_types = ["t3.large"]
       capacity_type  = "SPOT"
+
+      bootstrap_env = {
+        CONTAINER_RUNTIME = "containerd"
+        USE_MAX_PODS      = false
+      }
+      kubelet_extra_args = "--max-pods=110"
       k8s_labels = {
-        Example    = "managed_node_groups"
         GithubRepo = "terraform-aws-eks"
         GithubOrg  = "terraform-aws-modules"
       }
       additional_tags = {
-        ExtraTag = "example"
+        ExtraTag = "example2"
       }
       taints = [
         {
@@ -52,24 +75,6 @@ module "eks" {
           effect = "NO_SCHEDULE"
         }
       ]
-      update_config = {
-        max_unavailable_percentage = 50 # or set `max_unavailable`
-      }
-    }
-    example2 = {
-      desired_capacity = 1
-      max_capacity     = 10
-      min_capacity     = 1
-
-      instance_types = ["t3.medium"]
-      k8s_labels = {
-        Example    = "managed_node_groups"
-        GithubRepo = "terraform-aws-eks"
-        GithubOrg  = "terraform-aws-modules"
-      }
-      additional_tags = {
-        ExtraTag = "example2"
-      }
       update_config = {
         max_unavailable_percentage = 50 # or set `max_unavailable`
       }
@@ -105,13 +110,7 @@ provider "kubernetes" {
 # Supporting Resources
 ################################################################################
 
-data "aws_availability_zones" "available" {
-}
-
-resource "random_string" "suffix" {
-  length  = 8
-  special = false
-}
+data "aws_availability_zones" "available" {}
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"

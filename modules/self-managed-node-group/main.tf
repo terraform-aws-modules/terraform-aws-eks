@@ -1,28 +1,5 @@
 locals {
-  launch_template_name    = var.create_launch_template ? aws_launch_template.this[0].name : var.launch_template_name
   launch_template_version = var.create_launch_template && var.launch_template_version == null ? aws_launch_template.this[0].latest_version : var.launch_template_version
-
-  tags = concat(
-    [
-      {
-        key                 = "Name"
-        value               = var.name
-        propagate_at_launch = var.propagate_name
-      },
-    ],
-    var.tags,
-    null_resource.tags_as_list_of_maps.*.triggers,
-  )
-}
-
-resource "null_resource" "tags_as_list_of_maps" {
-  count = length(keys(var.tags_as_map))
-
-  triggers = {
-    key                 = keys(var.tags_as_map)[count.index]
-    value               = values(var.tags_as_map)[count.index]
-    propagate_at_launch = true
-  }
 }
 
 ################################################################################
@@ -30,22 +7,22 @@ resource "null_resource" "tags_as_list_of_maps" {
 ################################################################################
 
 resource "aws_launch_template" "this" {
-  count = var.create_launch_template ? 1 : 0
+  count = var.create && var.create_launch_template ? 1 : 0
 
-  name        = var.launch_template_use_name_prefix ? null : local.launch_template_name
-  name_prefix = var.launch_template_use_name_prefix ? "${local.launch_template_name}-" : null
+  name        = var.launch_template_use_name_prefix ? null : var.launch_template_name
+  name_prefix = var.launch_template_use_name_prefix ? "${var.launch_template_name}-" : null
   description = var.description
 
   ebs_optimized = var.ebs_optimized
   image_id      = var.image_id
   instance_type = var.instance_type
   key_name      = var.key_name
-  user_data     = var.user_data_base64
+  user_data     = var.user_data
 
-  vpc_security_group_ids = var.security_group_ids
+  vpc_security_group_ids = var.vpc_security_group_ids
 
-  defaulaunch_template_version         = var.defaulaunch_template_version
-  update_defaulaunch_template_version  = var.update_defaulaunch_template_version
+  default_version                      = var.default_version
+  update_default_version               = var.update_default_version
   disable_api_termination              = var.disable_api_termination
   instance_initiated_shutdown_behavior = var.instance_initiated_shutdown_behavior
   kernel_id                            = var.kernel_id
@@ -224,7 +201,7 @@ resource "aws_launch_template" "this" {
     create_before_destroy = true
   }
 
-  tags = var.tags_as_map
+  tags = var.tags
 }
 
 ################################################################################
@@ -232,30 +209,29 @@ resource "aws_launch_template" "this" {
 ################################################################################
 
 resource "aws_autoscaling_group" "this" {
-  count = var.create_asg ? 1 : 0
+  count = var.create ? 1 : 0
 
   name        = var.use_name_prefix ? null : var.name
   name_prefix = var.use_name_prefix ? "${var.name}-" : null
 
   launch_template {
-    name    = local.launch_template
+    name    = var.launch_template_name
     version = local.launch_template_version
   }
 
   availability_zones  = var.availability_zones
   vpc_zone_identifier = var.subnet_ids
 
-  min_size                      = var.min_size
-  max_size                      = var.max_size
-  desired_capacity              = var.desired_capacity
-  capacity_rebalance            = var.capacity_rebalance
-  min_elb_capacity              = var.min_elb_capacity
-  wait_for_elb_capacity         = var.wait_for_elb_capacity
-  wait_for_capacity_timeout     = var.wait_for_capacity_timeout
-  defaulaunch_template_cooldown = var.defaulaunch_template_cooldown
-  protect_from_scale_in         = var.protect_from_scale_in
+  min_size                  = var.min_size
+  max_size                  = var.max_size
+  desired_capacity          = var.desired_capacity
+  capacity_rebalance        = var.capacity_rebalance
+  min_elb_capacity          = var.min_elb_capacity
+  wait_for_elb_capacity     = var.wait_for_elb_capacity
+  wait_for_capacity_timeout = var.wait_for_capacity_timeout
+  default_cooldown          = var.default_cooldown
+  protect_from_scale_in     = var.protect_from_scale_in
 
-  load_balancers            = var.load_balancers
   target_group_arns         = var.target_group_arns
   placement_group           = var.placement_group
   health_check_type         = var.health_check_type
@@ -273,13 +249,13 @@ resource "aws_autoscaling_group" "this" {
   dynamic "initial_lifecycle_hook" {
     for_each = var.initial_lifecycle_hooks
     content {
-      name                        = initial_lifecycle_hook.value.name
-      defaulaunch_template_result = lookup(initial_lifecycle_hook.value, "defaulaunch_template_result", null)
-      heartbeat_timeout           = lookup(initial_lifecycle_hook.value, "heartbeat_timeout", null)
-      lifecycle_transition        = initial_lifecycle_hook.value.lifecycle_transition
-      notification_metadata       = lookup(initial_lifecycle_hook.value, "notification_metadata", null)
-      notification_target_arn     = lookup(initial_lifecycle_hook.value, "notification_target_arn", null)
-      role_arn                    = lookup(initial_lifecycle_hook.value, "role_arn", null)
+      name                    = initial_lifecycle_hook.value.name
+      default_result          = lookup(initial_lifecycle_hook.value, "default_result", null)
+      heartbeat_timeout       = lookup(initial_lifecycle_hook.value, "heartbeat_timeout", null)
+      lifecycle_transition    = initial_lifecycle_hook.value.lifecycle_transition
+      notification_metadata   = lookup(initial_lifecycle_hook.value, "notification_metadata", null)
+      notification_target_arn = lookup(initial_lifecycle_hook.value, "notification_target_arn", null)
+      role_arn                = lookup(initial_lifecycle_hook.value, "role_arn", null)
     }
   }
 
@@ -351,18 +327,34 @@ resource "aws_autoscaling_group" "this" {
     delete = var.delete_timeout
   }
 
-  tags = local.tags
-
   lifecycle {
     create_before_destroy = true
   }
+
+  tags = concat(
+    [
+      {
+        key                 = "Name"
+        value               = var.name
+        propagate_at_launch = var.propagate_name
+      },
+    ],
+    var.propagate_tags,
+    [for k, v in var.tags :
+      {
+        key                 = k
+        value               = v
+        propagate_at_launch = true
+      }
+    ]
+  )
 }
 
 ################################################################################
 # Autoscaling group schedule
 ################################################################################
 resource "aws_autoscaling_schedule" "this" {
-  for_each = var.create_asg && var.create_schedule ? var.schedules : {}
+  for_each = var.create && var.create_schedule ? var.schedules : {}
 
   scheduled_action_name  = each.key
   autoscaling_group_name = aws_autoscaling_group.this[0].name

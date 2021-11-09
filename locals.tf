@@ -10,23 +10,8 @@ locals {
   cluster_security_group_id = var.create_cluster_security_group ? join("", aws_security_group.cluster.*.id) : var.cluster_security_group_id
 
   # Worker groups
-  worker_security_group_id = var.worker_create_security_group ? join("", aws_security_group.worker.*.id) : var.worker_security_group_id
-  worker_groups_platforms  = [for x in var.worker_groups : try(x.platform, var.default_platform)]
-
-  ec2_principal     = "ec2.${data.aws_partition.current.dns_suffix}"
-  sts_principal     = "sts.${data.aws_partition.current.dns_suffix}"
-  policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
-
-  kubeconfig = var.create ? templatefile("${path.module}/templates/kubeconfig.tpl", {
-    kubeconfig_name                         = coalesce(var.kubeconfig_name, "eks_${var.cluster_name}")
-    endpoint                                = local.cluster_endpoint
-    cluster_auth_base64                     = local.cluster_auth_base64
-    aws_authenticator_kubeconfig_apiversion = var.kubeconfig_api_version
-    aws_authenticator_command               = var.kubeconfig_aws_authenticator_command
-    aws_authenticator_command_args          = coalescelist(var.kubeconfig_aws_authenticator_command_args, ["token", "-i", var.cluster_name])
-    aws_authenticator_additional_args       = var.kubeconfig_aws_authenticator_additional_args
-    aws_authenticator_env_variables         = var.kubeconfig_aws_authenticator_env_variables
-  }) : ""
+  worker_security_group_id = var.create_worker_security_group ? join("", aws_security_group.worker.*.id) : var.worker_security_group_id
+  policy_arn_prefix        = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
 
   # launch_template_userdata_rendered = var.create ? [
   #   for key, group in var.worker_groups : templatefile(

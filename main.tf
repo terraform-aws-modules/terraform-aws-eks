@@ -66,7 +66,7 @@ resource "aws_cloudwatch_log_group" "this" {
 ################################################################################
 
 locals {
-  cluster_sg_name                           = coalesce(var.cluster_security_group_name, var.cluster_name)
+  cluster_sg_name                           = coalesce(var.cluster_security_group_name, "${var.cluster_name}-cluster")
   create_cluster_sg                         = var.create && var.create_cluster_security_group
   enable_cluster_private_endpoint_sg_access = local.create_cluster_sg && var.cluster_create_endpoint_private_access_sg_rule && var.cluster_endpoint_private_access
 }
@@ -101,7 +101,7 @@ resource "aws_security_group_rule" "cluster_egress_internet" {
 }
 
 resource "aws_security_group_rule" "cluster_https_worker_ingress" {
-  count = local.create_cluster_sg && var.worker_create_security_group ? 1 : 0
+  count = local.create_cluster_sg && var.create_worker_security_group ? 1 : 0
 
   description              = "Allow pods to communicate with the EKS cluster API"
   protocol                 = "tcp"
@@ -151,7 +151,7 @@ data "tls_certificate" "this" {
 resource "aws_iam_openid_connect_provider" "oidc_provider" {
   count = var.create && var.enable_irsa ? 1 : 0
 
-  client_id_list  = distinct(compact(concat([local.sts_principal], var.openid_connect_audiences)))
+  client_id_list  = distinct(compact(concat(["sts.${data.aws_partition.current.dns_suffix}"], var.openid_connect_audiences)))
   thumbprint_list = [data.tls_certificate.this[0].certificates[0].sha1_fingerprint]
   url             = aws_eks_cluster.this[0].identity[0].oidc[0].issuer
 
@@ -168,7 +168,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 ################################################################################
 
 locals {
-  cluster_iam_role_name = coalesce(var.cluster_iam_role_name, var.cluster_name)
+  cluster_iam_role_name = coalesce(var.cluster_iam_role_name, "${var.cluster_name}-cluster")
 }
 
 resource "aws_iam_role" "cluster" {
