@@ -1,7 +1,3 @@
-locals {
-  launch_template_version = var.create_launch_template && var.launch_template_version == null ? aws_launch_template.this[0].latest_version : var.launch_template_version
-}
-
 ################################################################################
 # Launch template
 ################################################################################
@@ -190,10 +186,10 @@ resource "aws_launch_template" "this" {
   }
 
   dynamic "tag_specifications" {
-    for_each = var.tag_specifications
+    for_each = toset(["instance", "volume", "network-interface"])
     content {
-      resource_type = tag_specifications.value.resource_type
-      tags          = tag_specifications.value.tags
+      resource_type = tag_specifications.key
+      tags          = merge(var.tags, { Name = var.name })
     }
   }
 
@@ -208,6 +204,11 @@ resource "aws_launch_template" "this" {
 # Autoscaling group
 ################################################################################
 
+locals {
+  launch_template_name    = var.create_launch_template ? aws_launch_template.this[0].name : var.launch_template_name
+  launch_template_version = var.create_launch_template && var.launch_template_version == null ? aws_launch_template.this[0].latest_version : var.launch_template_version
+}
+
 resource "aws_autoscaling_group" "this" {
   count = var.create ? 1 : 0
 
@@ -215,7 +216,7 @@ resource "aws_autoscaling_group" "this" {
   name_prefix = var.use_name_prefix ? "${var.name}-" : null
 
   launch_template {
-    name    = var.launch_template_name
+    name    = local.launch_template_name
     version = local.launch_template_version
   }
 
@@ -292,7 +293,7 @@ resource "aws_autoscaling_group" "this" {
 
       launch_template {
         launch_template_specification {
-          launch_template_name = local.launch_template
+          launch_template_name = local.launch_template_name
           version              = local.launch_template_version
         }
 
@@ -336,7 +337,17 @@ resource "aws_autoscaling_group" "this" {
       {
         key                 = "Name"
         value               = var.name
-        propagate_at_launch = var.propagate_name
+        propagate_at_launch = true
+      },
+      {
+        key                 = "kubernetes.io/cluster/${var.cluster_name}"
+        value               = "owned"
+        propagate_at_launch = true
+      },
+      {
+        key                 = "k8s.io/cluster/${var.cluster_name}"
+        value               = "owned"
+        propagate_at_launch = true
       },
     ],
     var.propagate_tags,

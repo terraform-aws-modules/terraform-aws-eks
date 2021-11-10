@@ -198,6 +198,11 @@ variable "delete_timeout" {
   default     = null
 }
 
+variable "cluster_name" {
+  description = "Name of the EKS cluster that the node group will be associated with"
+  type        = string
+  default     = null
+}
 variable "tags" {
   description = "A map of tags and values in the same format as other resources accept. This will be converted into the non-standard format that the aws_autoscaling_group requires."
   type        = map(string)
@@ -210,12 +215,6 @@ variable "propagate_tags" {
   default     = []
 }
 
-variable "propagate_name" {
-  description = "Determines whether to propagate the ASG Name tag or not"
-  type        = bool
-  default     = true
-}
-
 ################################################################################
 # Launch template
 ################################################################################
@@ -223,7 +222,7 @@ variable "propagate_name" {
 variable "create_launch_template" {
   description = "Determines whether to create launch template or not"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "launch_template_use_name_prefix" {

@@ -58,20 +58,20 @@ module "self_managed_node_group" {
 
   for_each = var.create ? var.self_managed_node_groups : {}
 
-  create = var.create
+  cluster_name = var.cluster_name
 
   # Autoscaling Group
-  name            = try(each.value.name, "TODO")
-  use_name_prefix = try(each.value.use_name_prefix, null)
+  name            = try(each.value.name, var.cluster_name)
+  use_name_prefix = try(each.value.use_name_prefix, false)
 
   launch_template_name    = try(each.value.launch_template_name, var.cluster_name)
   launch_template_version = try(each.value.launch_template_version, null)
   availability_zones      = try(each.value.availability_zones, null)
-  subnet_ids              = try(each.value.subnet_ids, null)
+  subnet_ids              = try(each.value.subnet_ids, var.subnet_ids)
 
-  min_size                  = try(each.value.min_size, null)
-  max_size                  = try(each.value.max_size, null)
-  desired_capacity          = try(each.value.desired_capacity, null)
+  min_size                  = try(each.value.min_size, 0)
+  max_size                  = try(each.value.max_size, 0)
+  desired_capacity          = try(each.value.desired_capacity, 0)
   capacity_rebalance        = try(each.value.capacity_rebalance, null)
   min_elb_capacity          = try(each.value.min_elb_capacity, null)
   wait_for_elb_capacity     = try(each.value.wait_for_elb_capacity, null)
@@ -93,22 +93,23 @@ module "self_managed_node_group" {
   metrics_granularity     = try(each.value.metrics_granularity, null)
   service_linked_role_arn = try(each.value.service_linked_role_arn, null)
 
-  initial_lifecycle_hooks    = try(each.value.initial_lifecycle_hooks, null)
+  initial_lifecycle_hooks    = try(each.value.initial_lifecycle_hooks, [])
   instance_refresh           = try(each.value.instance_refresh, null)
-  use_mixed_instances_policy = try(each.value.use_mixed_instances_policy, null)
+  use_mixed_instances_policy = try(each.value.use_mixed_instances_policy, false)
   warm_pool                  = try(each.value.warm_pool, null)
 
-  create_schedule = try(each.value.create_schedule, null)
+  create_schedule = try(each.value.create_schedule, false)
   schedules       = try(each.value.schedules, null)
 
   delete_timeout = try(each.value.delete_timeout, null)
 
   # Launch Template
-  description = try(each.value.description, null)
+  create_launch_template = try(each.value.create_launch_template, true)
+  description            = try(each.value.description, null)
 
   ebs_optimized = try(each.value.ebs_optimized, null)
-  image_id      = try(each.value.image_id, null)
-  instance_type = try(each.value.instance_type, null)
+  image_id      = try(each.value.image_id, data.aws_ami.eks_worker[0].image_id)
+  instance_type = try(each.value.instance_type, "m6i.large")
   key_name      = try(each.value.key_name, null)
   user_data     = try(each.value.user_data, null)
 
@@ -121,7 +122,7 @@ module "self_managed_node_group" {
   kernel_id                            = try(each.value.kernel_id, null)
   ram_disk_id                          = try(each.value.ram_disk_id, null)
 
-  block_device_mappings              = try(each.value.block_device_mappings, null)
+  block_device_mappings              = try(each.value.block_device_mappings, [])
   capacity_reservation_specification = try(each.value.capacity_reservation_specification, null)
   cpu_options                        = try(each.value.cpu_options, null)
   credit_specification               = try(each.value.credit_specification, null)
@@ -135,13 +136,12 @@ module "self_managed_node_group" {
   license_specifications             = try(each.value.license_specifications, null)
   metadata_options                   = try(each.value.metadata_options, null)
   enable_monitoring                  = try(each.value.enable_monitoring, null)
-  network_interfaces                 = try(each.value.network_interfaces, null)
+  network_interfaces                 = try(each.value.network_interfaces, [])
   placement                          = try(each.value.placement, null)
-  tag_specifications                 = try(each.value.tag_specifications, null)
+  tag_specifications                 = try(each.value.tag_specifications, [])
 
-  tags           = try(each.value.tags, null)
+  tags           = try(each.value.tags, {})
   propagate_tags = try(each.value.propagate_tags, [])
-  propagate_name = try(each.value.propagate_name, null)
 }
 
 ################################################################################

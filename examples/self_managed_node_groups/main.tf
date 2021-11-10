@@ -29,52 +29,28 @@ module "eks" {
   #   disk_size = 50
   # }
 
-  # self_managed_node_groups = {
-  #   example1 = {
-  #     desired_capacity = 1
-  #     max_capacity     = 10
-  #     min_capacity     = 1
+  self_managed_node_groups = {
+    example1 = {
+      min_size         = 1
+      max_size         = 10
+      desired_capacity = 1
 
-  #     instance_types = ["t3.large"]
-  #     capacity_type  = "SPOT"
-  #     k8s_labels = {
-  #       Example    = "managed_node_groups"
-  #       GithubRepo = "terraform-aws-eks"
-  #       GithubOrg  = "terraform-aws-modules"
-  #     }
-  #     additional_tags = {
-  #       ExtraTag = "example"
-  #     }
-  #     taints = [
-  #       {
-  #         key    = "dedicated"
-  #         value  = "gpuGroup"
-  #         effect = "NO_SCHEDULE"
-  #       }
-  #     ]
-  #     update_config = {
-  #       max_unavailable_percentage = 50 # or set `max_unavailable`
-  #     }
-  #   }
-  #   example2 = {
-  #     desired_capacity = 1
-  #     max_capacity     = 10
-  #     min_capacity     = 1
-
-  #     instance_types = ["t3.medium"]
-  #     k8s_labels = {
-  #       Example    = "managed_node_groups"
-  #       GithubRepo = "terraform-aws-eks"
-  #       GithubOrg  = "terraform-aws-modules"
-  #     }
-  #     additional_tags = {
-  #       ExtraTag = "example2"
-  #     }
-  #     update_config = {
-  #       max_unavailable_percentage = 50 # or set `max_unavailable`
-  #     }
-  #   }
-  # }
+      instance_type = "t3.large"
+      # capacity_type  = "SPOT"
+      # additional_tags = {
+      #   ExtraTag = "example"
+      # }
+    }
+    example2 = {
+      min_size         = 1
+      max_size         = 10
+      desired_capacity = 1
+      instance_type    = "t3.medium"
+      # additional_tags = {
+      #   ExtraTag = "example2"
+      # }
+    }
+  }
 
   tags = {
     Example    = local.name
