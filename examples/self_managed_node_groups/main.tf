@@ -6,6 +6,12 @@ locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
   cluster_version = "1.20"
   region          = "eu-west-1"
+
+  tags = {
+    Example    = local.name
+    GithubRepo = "terraform-aws-eks"
+    GithubOrg  = "terraform-aws-modules"
+  }
 }
 
 ################################################################################
@@ -40,6 +46,14 @@ module "eks" {
       # additional_tags = {
       #   ExtraTag = "example"
       # }
+      propagate_tags = [
+        for k, v in local.tags :
+        {
+          key                 = k
+          value               = v
+          propogate_at_launch = true
+        }
+      ]
     }
     example2 = {
       min_size         = 1
@@ -52,11 +66,7 @@ module "eks" {
     }
   }
 
-  tags = {
-    Example    = local.name
-    GithubRepo = "terraform-aws-eks"
-    GithubOrg  = "terraform-aws-modules"
-  }
+  tags = local.tags
 }
 
 ################################################################################
@@ -106,9 +116,5 @@ module "vpc" {
     "kubernetes.io/role/internal-elb"     = "1"
   }
 
-  tags = {
-    Example    = local.name
-    GithubRepo = "terraform-aws-eks"
-    GithubOrg  = "terraform-aws-modules"
-  }
+  tags = local.tags
 }
