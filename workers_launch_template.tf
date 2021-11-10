@@ -104,8 +104,11 @@ resource "aws_autoscaling_group" "workers_launch_template" {
   )
   timeouts {
     delete = lookup(
-    lookup(var.worker_groups_launch_template[count.index], "timeouts",
-    local.workers_group_defaults["timeouts"]), "delete", null)
+      lookup(
+        var.worker_groups_launch_template[count.index],
+        "timeouts",
+        local.workers_group_defaults["timeouts"]
+    ), "delete", null)
   }
 
   dynamic "mixed_instances_policy" {
