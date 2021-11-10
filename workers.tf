@@ -104,9 +104,8 @@ resource "aws_autoscaling_group" "workers" {
     local.workers_group_defaults["capacity_rebalance"]
   )
   timeouts {
-    delete = lookup(each.value["timeouts"], "delete", null)
+    delete = lookup(local.workers_group_defaults["timeouts"], "delete", null)
   }
-
   dynamic "initial_lifecycle_hook" {
     for_each = var.worker_create_initial_lifecycle_hooks ? lookup(var.worker_groups[count.index], "asg_initial_lifecycle_hooks", local.workers_group_defaults["asg_initial_lifecycle_hooks"]) : []
     content {

@@ -103,7 +103,7 @@ resource "aws_autoscaling_group" "workers_launch_template" {
     local.workers_group_defaults["capacity_rebalance"]
   )
   timeouts {
-    delete = lookup(each.value["timeouts"], "delete", null)
+    delete = lookup(local.workers_group_defaults["timeouts"], "delete", null)
   }
 
   dynamic "mixed_instances_policy" {
