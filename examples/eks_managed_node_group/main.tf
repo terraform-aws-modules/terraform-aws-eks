@@ -44,9 +44,9 @@ module "eks" {
   eks_managed_node_groups = {
     # default_node_group = {}
     # create_launch_template = {
-    #   create_launch_template = true
-    #   launch_template_name   = "create-launch-template"
-    #   user_data              = data.cloudinit_config.custom.rendered
+    #   create_launch_template  = true
+    #   launch_template_name    = "create-launch-template"
+    #   pre_bootstrap_user_data = "echo 'hello world!'"
     # }
     # custom_ami = {
     #   create_launch_template = true

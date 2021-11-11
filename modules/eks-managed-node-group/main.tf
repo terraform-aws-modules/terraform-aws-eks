@@ -5,12 +5,6 @@ locals {
 
 data "aws_partition" "current" {}
 
-data "aws_eks_cluster" "this" {
-  count = var.create ? 1 : 0
-
-  name = var.cluster_name
-}
-
 ################################################################################
 # User Data
 ################################################################################
@@ -22,33 +16,45 @@ data "aws_eks_cluster" "this" {
 # this merging will NOT happen and you are responsible for nodes joining the cluster.
 # See docs for more details -> https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-user-data
 
-# data "cloudinit_config" "custom_ami_user_data" {
-#   count = var.create && var.create_launch_template && var.use_custom_ami ? 1 : 0
+data "cloudinit_config" "eks_optimized_ami_user_data" {
+  count = var.create && (local.use_custom_launch_template && var.pre_bootstrap_user_data != "") || (var.ami_id != null && var.custom_ami_is_eks_optimized) ? 1 : 0
 
-#   gzip          = false
-#   base64_encode = true
-#   boundary      = "//"
+  gzip          = false
+  base64_encode = true
+  boundary      = "//"
 
-#   part {
-#     content_type = "text/x-shellscript"
-#     content = templatefile("${path.module}/templates/userdata.sh.tpl",
-#       {
-#         use_custom_ami = var.use_custom_ami
-#         ami_id         = var.ami_id
+  dynamic "part" {
+    for_each = var.pre_bootstrap_user_data != "" ? [1] : []
+    content {
+      content_type = "text/x-shellscript"
+      content      = <<-EOT
+      #!/bin/bash -ex
+      ${var.pre_bootstrap_user_data}
+      EOT
+    }
+  }
 
-#         cluster_name                    = var.cluster_name
-#         cluster_endpoint                = var.cluster_endpoint
-#         cluster_auth_base64             = var.cluster_auth_base64
-#         bootstrap_environment_variables = var.user_data_bootstrap_env_vars
-#         kubelet_extra_args              = var.kubelet_extra_args
-#         user_data_pre_bootstrap         = var.user_data_pre_bootstrap
-#         user_data_post_bootstrap        = var.user_data_post_bootstrap
-#         capacity_type                   = var.capacity_type
-#         append_labels                   = length(var.k8s_labels) > 0 ? ",${join(",", [for k, v in var.k8s_labels : "${k}=${v}"])}" : ""
-#       }
-#     )
-#   }
-# }
+  dynamic "part" {
+    for_each = var.ami_id != null && var.custom_ami_is_eks_optimized ? [1] : []
+    content {
+      content_type = "text/x-shellscript"
+      content = templatefile("${path.module}/../../templates/linux_user_data.sh.tpl",
+        {
+          # Required to bootstrap node
+          cluster_name        = var.cluster_name
+          cluster_endpoint    = var.cluster_endpoint
+          cluster_auth_base64 = var.cluster_auth_base64
+          # Optional
+          cluster_dns_ip           = var.cluster_dns_ip
+          bootstrap_extra_args     = var.bootstrap_extra_args
+          kubelet_extra_args       = var.kubelet_extra_args
+          post_bootstrap_user_data = var.post_bootstrap_user_data
+
+        }
+      )
+    }
+  }
+}
 
 ################################################################################
 # Launch template
@@ -66,7 +72,7 @@ resource "aws_launch_template" "this" {
   # # Set on node group instead
   # instance_type = var.launch_template_instance_type
   key_name  = var.key_name
-  user_data = var.user_data
+  user_data = try(data.cloudinit_config.eks_optimized_ami_user_data[0].rendered, var.custom_user_data)
 
   vpc_security_group_ids = var.vpc_security_group_ids
 
@@ -335,6 +341,8 @@ resource "aws_eks_node_group" "this" {
     ]
   }
 
+  # Note - unless you use a custom launch template, `Name` tags will not propagate down to the
+  # EC2 instances https://github.com/aws/containers-roadmap/issues/781
   tags = merge(
     var.tags,
     { Name = var.name }

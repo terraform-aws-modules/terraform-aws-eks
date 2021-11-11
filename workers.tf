@@ -45,7 +45,7 @@ module "eks_managed_node_groups" {
   ami_type            = try(each.value.ami_type, null)
   ami_release_version = try(each.value.ami_release_version, null)
 
-  capacity_type        = try(each.value.capacity_type, null)
+  capacity_type        = try(each.value.capacity_type, "ON_DEMAND") # used in user data so don't use null
   disk_size            = try(each.value.disk_size, null)
   force_update_version = try(each.value.force_update_version, null)
   instance_types       = try(each.value.instance_types, null)
@@ -57,6 +57,18 @@ module "eks_managed_node_groups" {
   update_config = try(each.value.update_config, null)
   timeouts      = try(each.value.timeouts, {})
 
+  # User data
+  custom_user_data            = try(each.value.custom_user_data, null)
+  custom_ami_is_eks_optimized = try(each.value.custom_ami_is_eks_optimized, true)
+  cluster_endpoint            = try(aws_eks_cluster.this[0].endpoint, null)
+  cluster_auth_base64         = try(aws_eks_cluster.this[0].certificate_authority[0].data, null)
+  cluster_dns_ip              = try(aws_eks_cluster.this[0].kubernetes_network_config[0].service_ipv4_cidr, "")
+  pre_bootstrap_user_data     = try(each.value.pre_bootstrap_user_data, "")
+  post_bootstrap_user_data    = try(each.value.post_bootstrap_user_data, "")
+  bootstrap_extra_args        = try(each.value.bootstrap_extra_args, "")
+  kubelet_extra_args          = try(each.value.kubelet_extra_args, "")
+  node_labels                 = try(each.value.node_labels, {})
+
   # Launch Template
   create_launch_template          = try(each.value.create_launch_template, false)
   launch_template_name            = try(each.value.launch_template_name, null)
@@ -66,7 +78,6 @@ module "eks_managed_node_groups" {
 
   ebs_optimized = try(each.value.ebs_optimized, null)
   key_name      = try(each.value.key_name, null)
-  user_data     = try(each.value.user_data, null)
 
   vpc_security_group_ids = try(each.value.vpc_security_group_ids, null)
 

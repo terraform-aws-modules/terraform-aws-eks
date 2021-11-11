@@ -14,16 +14,64 @@ variable "tags" {
 # User Data
 ################################################################################
 
+variable "custom_user_data" {
+  description = "Base64-encoded user data used; should be used when `custom_ami_is_eks_optimized` = `false` to boostrap and join instances to the cluster"
+  type        = string
+  default     = null
+}
+
+variable "custom_ami_is_eks_optimized" {
+  description = "Determines whether the custom AMI ID provided (`ami_id`) is an EKS optimized AMI derivative or not"
+  type        = bool
+  default     = true
+}
+
 variable "cluster_endpoint" {
   description = "Endpoint of associated EKS cluster"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "cluster_auth_base64" {
   description = "Base64 encoded CA of associated EKS cluster"
   type        = string
+  default     = null
+}
+
+variable "cluster_dns_ip" {
+  description = "The CIDR block that the EKS cluster provides service IP addresses from"
+  type        = string
+  default     = "" # used in boostrap script conditional check
+}
+
+variable "pre_bootstrap_user_data" {
+  description = "User data that is injected into the user data script ahead of the EKS bootstrap script"
+  type        = string
   default     = ""
+}
+
+variable "post_bootstrap_user_data" {
+  description = "User data that is appended to the user data script after of the EKS bootstrap script. Only valid when using a custom EKS optimized AMI derivative"
+  type        = string
+  default     = ""
+}
+
+variable "bootstrap_extra_args" {
+  description = "Additional arguments passed to the bootstrap script"
+  type        = string
+  default     = ""
+}
+
+variable "kubelet_extra_args" {
+  description = "Additional arguments passed to the --kubelet flag"
+  type        = string
+  default     = ""
+}
+
+variable "node_labels" {
+  description = "Key-value map of additional labels"
+  type        = map(string)
+  default     = {}
 }
 
 ################################################################################
@@ -68,12 +116,6 @@ variable "ami_id" {
 
 variable "key_name" {
   description = "The key name that should be used for the instance"
-  type        = string
-  default     = null
-}
-
-variable "user_data" {
-  description = "The Base64-encoded user data to provide when launching the instance"
   type        = string
   default     = null
 }
@@ -277,7 +319,7 @@ variable "ami_release_version" {
 variable "capacity_type" {
   description = "Type of capacity associated with the EKS Node Group. Valid values: `ON_DEMAND`, `SPOT`"
   type        = string
-  default     = null
+  default     = "ON_DEMAND"
 }
 
 variable "disk_size" {

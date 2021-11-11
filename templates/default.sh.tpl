@@ -9,7 +9,14 @@ set -ex
 B64_CLUSTER_CA=xxx
 API_SERVER_URL=xxx
 K8S_CLUSTER_DNS_IP=172.20.0.10
-/etc/eks/bootstrap.sh <CLUSTER> --kubelet-extra-args '--node-labels=eks.amazonaws.com/nodegroup-image=ami-0caf35bc73450c396,eks.amazonaws.com/capacityType=ON_DEMAND,eks.amazonaws.com/nodegroup=default_node_group' --b64-cluster-ca $B64_CLUSTER_CA --apiserver-endpoint $API_SERVER_URL --dns-cluster-ip $K8S_CLUSTER_DNS_IP
+/etc/eks/bootstrap.sh <CLUSTER> \
+  --kubelet-extra-args '--node-labels=
+  eks.amazonaws.com/nodegroup-image=ami-0caf35bc73450c396,
+  eks.amazonaws.com/capacityType=ON_DEMAND,
+  eks.amazonaws.com/nodegroup=default_node_group'
+  --b64-cluster-ca $B64_CLUSTER_CA
+  --apiserver-endpoint $API_SERVER_URL
+  --dns-cluster-ip $K8S_CLUSTER_DNS_IP
 
 --//--
 
