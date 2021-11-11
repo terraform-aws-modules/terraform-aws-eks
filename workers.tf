@@ -24,30 +24,87 @@ module "fargate" {
 # EKS Managed Node Group
 ################################################################################
 
-# module "eks_managed_node_groups" {
-#   source = "./modules/eks-managed-node-group"
+module "eks_managed_node_groups" {
+  source = "./modules/eks-managed-node-group"
 
-#   create_eks = var.create_eks
+  for_each = var.create ? var.eks_managed_node_groups : {}
 
-#   cluster_name        = local.cluster_name
-#   cluster_endpoint    = local.cluster_endpoint
-#   cluster_auth_base64 = local.cluster_auth_base64
+  cluster_name = aws_eks_cluster.this[0].name
 
-#   default_iam_role_arn                 = coalescelist(aws_iam_role.workers[*].arn, [""])[0]
-#   ebs_optimized_not_supported          = local.ebs_optimized_not_supported
-#   workers_group_defaults               = local.workers_group_defaults
-#   worker_security_group_id             = local.worker_security_group_id
-#   worker_additional_security_group_ids = var.worker_additional_security_group_ids
+  # EKS Managed Node Group
+  name            = try(each.value.name, each.key)
+  use_name_prefix = try(each.value.use_name_prefix, false)
 
-#   node_groups_defaults = var.node_groups_defaults
-#   node_groups          = var.node_groups
+  subnet_ids = try(each.value.subnet_ids, var.subnet_ids)
 
-#   tags = var.tags
+  min_size     = try(each.value.min_size, 1)
+  max_size     = try(each.value.max_size, 3)
+  desired_size = try(each.value.desired_size, 1)
 
-#   depends_on = [
-#     aws_eks_cluster.this,
-#   ]
-# }
+  ami_id              = try(each.value.ami_id, null)
+  ami_type            = try(each.value.ami_type, null)
+  ami_release_version = try(each.value.ami_release_version, null)
+
+  capacity_type        = try(each.value.capacity_type, null)
+  disk_size            = try(each.value.disk_size, null)
+  force_update_version = try(each.value.force_update_version, null)
+  instance_types       = try(each.value.instance_types, null)
+  labels               = try(each.value.labels, null)
+  cluster_version      = try(each.value.cluster_version, null)
+
+  remote_access = try(each.value.remote_access, null)
+  taints        = try(each.value.taints, null)
+  update_config = try(each.value.update_config, null)
+  timeouts      = try(each.value.timeouts, {})
+
+  # Launch Template
+  create_launch_template          = try(each.value.create_launch_template, false)
+  launch_template_name            = try(each.value.launch_template_name, null)
+  launch_template_use_name_prefix = try(each.value.launch_template_use_name_prefix, true)
+  launch_template_version         = try(each.value.launch_template_version, null)
+  description                     = try(each.value.description, null)
+
+  ebs_optimized = try(each.value.ebs_optimized, null)
+  key_name      = try(each.value.key_name, null)
+  user_data     = try(each.value.user_data, null)
+
+  vpc_security_group_ids = try(each.value.vpc_security_group_ids, null)
+
+  default_version                      = try(each.value.default_version, null)
+  update_default_version               = try(each.value.update_default_version, null)
+  disable_api_termination              = try(each.value.disable_api_termination, null)
+  instance_initiated_shutdown_behavior = try(each.value.instance_initiated_shutdown_behavior, null)
+  kernel_id                            = try(each.value.kernel_id, null)
+  ram_disk_id                          = try(each.value.ram_disk_id, null)
+
+  block_device_mappings              = try(each.value.block_device_mappings, [])
+  capacity_reservation_specification = try(each.value.capacity_reservation_specification, null)
+  cpu_options                        = try(each.value.cpu_options, null)
+  credit_specification               = try(each.value.credit_specification, null)
+  elastic_gpu_specifications         = try(each.value.elastic_gpu_specifications, null)
+  elastic_inference_accelerator      = try(each.value.elastic_inference_accelerator, null)
+  enclave_options                    = try(each.value.enclave_options, null)
+  hibernation_options                = try(each.value.hibernation_options, null)
+  instance_market_options            = try(each.value.instance_market_options, null)
+  license_specifications             = try(each.value.license_specifications, null)
+  metadata_options                   = try(each.value.metadata_options, null)
+  enable_monitoring                  = try(each.value.enable_monitoring, null)
+  network_interfaces                 = try(each.value.network_interfaces, [])
+  placement                          = try(each.value.placement, null)
+
+  # IAM role
+  create_iam_role               = try(each.value.create_iam_role, true)
+  iam_role_arn                  = try(each.value.iam_role_arn, null)
+  iam_role_name                 = try(each.value.iam_role_name, null)
+  iam_role_use_name_prefix      = try(each.value.iam_role_use_name_prefix, true)
+  iam_role_path                 = try(each.value.iam_role_path, null)
+  iam_role_permissions_boundary = try(each.value.iam_role_permissions_boundary, null)
+  iam_role_tags                 = try(each.value.iam_role_tags, {})
+  iam_role_attach_cni_policy    = try(each.value.iam_role_attach_cni_policy, true)
+  iam_role_additional_policies  = try(each.value.iam_role_additional_policies, [])
+
+  tags = var.tags
+}
 
 ################################################################################
 # Self Managed Node Group
@@ -58,20 +115,20 @@ module "self_managed_node_group" {
 
   for_each = var.create ? var.self_managed_node_groups : {}
 
-  cluster_name = var.cluster_name
+  cluster_name = aws_eks_cluster.this[0].name
 
   # Autoscaling Group
-  name            = try(each.value.name, var.cluster_name)
+  name            = try(each.value.name, each.key)
   use_name_prefix = try(each.value.use_name_prefix, false)
 
-  launch_template_name    = try(each.value.launch_template_name, var.cluster_name)
+  launch_template_name    = try(each.value.launch_template_name, each.key)
   launch_template_version = try(each.value.launch_template_version, null)
   availability_zones      = try(each.value.availability_zones, null)
   subnet_ids              = try(each.value.subnet_ids, var.subnet_ids)
 
   min_size                  = try(each.value.min_size, 0)
   max_size                  = try(each.value.max_size, 0)
-  desired_capacity          = try(each.value.desired_capacity, 0)
+  desired_capacity          = try(each.value.desired_size, 0) # to be consisted with EKS MNG
   capacity_rebalance        = try(each.value.capacity_rebalance, null)
   min_elb_capacity          = try(each.value.min_elb_capacity, null)
   wait_for_elb_capacity     = try(each.value.wait_for_elb_capacity, null)

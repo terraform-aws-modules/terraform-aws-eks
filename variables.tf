@@ -328,7 +328,15 @@ variable "self_managed_node_groups" {
   default     = {}
 }
 
+################################################################################
+# EKS Managed Node Group
+################################################################################
 
+variable "eks_managed_node_groups" {
+  description = "Map of EKS managed node group definitions to create"
+  type        = any
+  default     = {}
+}
 
 
 

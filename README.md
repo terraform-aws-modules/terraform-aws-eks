@@ -131,6 +131,7 @@ Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraf
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_eks_managed_node_groups"></a> [eks\_managed\_node\_groups](#module\_eks\_managed\_node\_groups) | ./modules/eks-managed-node-group | n/a |
 | <a name="module_fargate"></a> [fargate](#module\_fargate) | ./modules/fargate | n/a |
 | <a name="module_self_managed_node_group"></a> [self\_managed\_node\_group](#module\_self\_managed\_node\_group) | ./modules/self-managed-node-group | n/a |
 
@@ -204,6 +205,7 @@ Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraf
 | <a name="input_create_fargate_pod_execution_role"></a> [create\_fargate\_pod\_execution\_role](#input\_create\_fargate\_pod\_execution\_role) | Controls if the EKS Fargate pod execution IAM role should be created | `bool` | `true` | no |
 | <a name="input_create_worker_iam_role"></a> [create\_worker\_iam\_role](#input\_create\_worker\_iam\_role) | Determines whether a worker IAM role is created or to use an existing IAM role | `bool` | `true` | no |
 | <a name="input_create_worker_security_group"></a> [create\_worker\_security\_group](#input\_create\_worker\_security\_group) | Whether to create a security group for the worker nodes | `bool` | `true` | no |
+| <a name="input_eks_managed_node_groups"></a> [eks\_managed\_node\_groups](#input\_eks\_managed\_node\_groups) | Map of EKS managed node group definitions to create | `any` | `{}` | no |
 | <a name="input_enable_irsa"></a> [enable\_irsa](#input\_enable\_irsa) | Whether to create OpenID Connect Provider for EKS to enable IRSA | `bool` | `false` | no |
 | <a name="input_fargate_iam_role_path"></a> [fargate\_iam\_role\_path](#input\_fargate\_iam\_role\_path) | Fargate IAM role path | `string` | `null` | no |
 | <a name="input_fargate_iam_role_permissions_boundary"></a> [fargate\_iam\_role\_permissions\_boundary](#input\_fargate\_iam\_role\_permissions\_boundary) | ARN of the policy that is used to set the permissions boundary for the Fargate role | `string` | `null` | no |
