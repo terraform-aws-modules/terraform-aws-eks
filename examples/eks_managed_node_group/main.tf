@@ -18,16 +18,16 @@ locals {
 # EKS Module
 ################################################################################
 
-data "cloudinit_config" "custom" {
-  gzip          = false
-  base64_encode = true
-  boundary      = "//"
+# data "cloudinit_config" "custom" {
+#   gzip          = false
+#   base64_encode = true
+#   boundary      = "//"
 
-  part {
-    content_type = "text/x-shellscript"
-    content      = "echo 'hello world!'"
-  }
-}
+#   part {
+#     content_type = "text/x-shellscript"
+#     content      = "echo 'hello world!'"
+#   }
+# }
 
 module "eks" {
   source = "../.."

@@ -361,19 +361,19 @@ variable "launch_template_version" {
 variable "remote_access" {
   description = "Configuration block with remote access settings"
   type        = map(string)
-  default     = null
+  default     = {}
 }
 
 variable "taints" {
   description = "The Kubernetes taints to be applied to the nodes in the node group. Maximum of 50 taints per node group"
-  type        = map(string)
-  default     = null
+  type        = map(any)
+  default     = {}
 }
 
 variable "update_config" {
   description = "Configuration block of settings for max unavailable resources during node group updates"
   type        = map(string)
-  default     = null
+  default     = {}
 }
 
 variable "timeouts" {

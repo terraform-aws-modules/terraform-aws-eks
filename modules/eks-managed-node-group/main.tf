@@ -74,7 +74,7 @@ resource "aws_launch_template" "this" {
   key_name  = var.key_name
   user_data = try(data.cloudinit_config.eks_optimized_ami_user_data[0].rendered, var.custom_user_data)
 
-  vpc_security_group_ids = var.vpc_security_group_ids
+  vpc_security_group_ids = compact(concat([try(aws_security_group.this[0].id, "")], var.vpc_security_group_ids))
 
   default_version                      = var.default_version
   update_default_version               = var.update_default_version
@@ -306,7 +306,7 @@ resource "aws_eks_node_group" "this" {
   }
 
   dynamic "remote_access" {
-    for_each = var.remote_access != null ? [var.remote_access] : []
+    for_each = var.remote_access
     content {
       ec2_ssh_key               = lookup(remote_access.value, "ec2_ssh_key", null)
       source_security_group_ids = lookup(remote_access.value, "source_security_group_ids", [])
@@ -314,7 +314,7 @@ resource "aws_eks_node_group" "this" {
   }
 
   dynamic "taint" {
-    for_each = var.taints != null ? var.taints : {}
+    for_each = var.taints
     content {
       key    = taint.value.key
       value  = lookup(taint.value, "value")
@@ -323,7 +323,7 @@ resource "aws_eks_node_group" "this" {
   }
 
   dynamic "update_config" {
-    for_each = var.update_config != null ? [var.update_config] : []
+    for_each = [var.update_config]
     content {
       max_unavailable_percentage = lookup(update_config.value, "max_unavailable_percentage", null)
       max_unavailable            = lookup(update_config.value, "max_unavailable", null)

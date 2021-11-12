@@ -37,7 +37,7 @@ module "eks" {
     }
   ]
 
-  worker_groups = {
+  self_managed_node_groups = {
     one = {
       name                 = "worker-group-1"
       instance_type        = "t3.small"

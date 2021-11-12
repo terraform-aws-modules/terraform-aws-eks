@@ -1,5 +1,5 @@
 locals {
-  cluster_security_group_id = var.create_cluster_security_group ? join("", aws_security_group.cluster.*.id) : var.cluster_security_group_id
+  cluster_security_group_id = var.create_cluster_security_group ? join("", aws_security_group.this.*.id) : var.cluster_security_group_id
 
   # Worker groups
   policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
@@ -55,7 +55,7 @@ resource "aws_eks_cluster" "this" {
 
   depends_on = [
     aws_security_group_rule.cluster_egress_internet,
-    aws_security_group_rule.cluster_https_worker_ingress,
+    # aws_security_group_rule.cluster_https_worker_ingress,
     aws_cloudwatch_log_group.this
   ]
 }
@@ -80,7 +80,7 @@ locals {
   enable_cluster_private_endpoint_sg_access = local.create_cluster_sg && var.cluster_create_endpoint_private_access_sg_rule && var.cluster_endpoint_private_access
 }
 
-resource "aws_security_group" "cluster" {
+resource "aws_security_group" "this" {
   count = local.create_cluster_sg ? 1 : 0
 
   name        = var.cluster_security_group_use_name_prefix ? null : local.cluster_sg_name
@@ -122,27 +122,27 @@ resource "aws_security_group_rule" "cluster_egress_internet" {
 # }
 
 resource "aws_security_group_rule" "cluster_private_access_cidrs_source" {
-  for_each = local.enable_cluster_private_endpoint_sg_access && var.cluster_endpoint_private_access_cidrs != null ? toset(var.cluster_endpoint_private_access_cidrs) : []
+  count = local.enable_cluster_private_endpoint_sg_access && length(var.cluster_endpoint_private_access_cidrs) > 0 ? 1 : 0
 
   description = "Allow private K8S API ingress from custom CIDR source"
   type        = "ingress"
   from_port   = 443
   to_port     = 443
   protocol    = "tcp"
-  cidr_blocks = [each.value]
+  cidr_blocks = var.cluster_endpoint_private_access_cidrs
 
   security_group_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
 }
 
 resource "aws_security_group_rule" "cluster_private_access_sg_source" {
-  count = local.enable_cluster_private_endpoint_sg_access && var.cluster_endpoint_private_access_sg != null ? length(var.cluster_endpoint_private_access_sg) : 0
+  for_each = local.enable_cluster_private_endpoint_sg_access ? toset(var.cluster_endpoint_private_access_sg) : toset([])
 
   description              = "Allow private K8S API ingress from custom Security Groups source"
   type                     = "ingress"
   from_port                = 443
   to_port                  = 443
   protocol                 = "tcp"
-  source_security_group_id = var.cluster_endpoint_private_access_sg[count.index]
+  source_security_group_id = each.value
 
   security_group_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
 }

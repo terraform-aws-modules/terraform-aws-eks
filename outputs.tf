@@ -83,7 +83,17 @@ output "fargate_iam_role_arn" {
   value       = module.fargate.iam_role_arn
 }
 
-output "security_group_rule_cluster_https_worker_ingress" {
-  description = "Security group rule responsible for allowing pods to communicate with the EKS cluster API."
-  value       = aws_security_group_rule.cluster_https_worker_ingress
+# output "security_group_rule_cluster_https_worker_ingress" {
+#   description = "Security group rule responsible for allowing pods to communicate with the EKS cluster API."
+#   value       = aws_security_group_rule.cluster_https_worker_ingress
+# }
+
+output "self_managed_node_groups" {
+  description = "Map of attribute maps for all self managed node groups created"
+  value = module.self_managed_node_groups
+}
+
+output "eks_managed_node_groups" {
+  description = "Map of attribute maps for all EKS managed node groups created"
+  value = module.eks_managed_node_groups
 }

@@ -31,10 +31,10 @@ module "eks" {
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
-  worker_additional_security_group_ids = [aws_security_group.all_worker_mgmt.id]
+  # TODO
+  # vpc_security_group_ids = [aws_security_group.additional.id]
 
-  # Worker groups
-  worker_groups = {
+  self_managed_node_groups = {
     one = {
       name                    = "spot-1"
       override_instance_types = ["m5.large", "m5a.large", "m5d.large", "m5ad.large"]
@@ -43,20 +43,24 @@ module "eks" {
       asg_desired_capacity    = 5
       kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot"
       public_ip               = true
+
+      vpc_security_group_ids = [aws_security_group.additional.id] # TODO
     }
   }
 
-  # Managed Node Groups
-  node_groups_defaults = {
-    ami_type  = "AL2_x86_64"
-    disk_size = 50
-  }
+  # # Managed Node Groups
+  # node_groups_defaults = {
+  #   ami_type  = "AL2_x86_64"
+  #   disk_size = 50
+  # }
 
-  node_groups = {
+  eks_managed_node_groups = {
     example = {
       desired_capacity = 1
       max_capacity     = 10
       min_capacity     = 1
+
+      vpc_security_group_ids = [aws_security_group.additional.id] # TODO
 
       instance_types = ["t3.large"]
       capacity_type  = "SPOT"
@@ -68,45 +72,45 @@ module "eks" {
       additional_tags = {
         ExtraTag = "example"
       }
-      taints = [
-        {
+      taints = {
+        dedicated = {
           key    = "dedicated"
           value  = "gpuGroup"
           effect = "NO_SCHEDULE"
         }
-      ]
+      }
       update_config = {
         max_unavailable_percentage = 50 # or set `max_unavailable`
       }
     }
   }
 
-  # Fargate
-  fargate_profiles = {
-    default = {
-      name = "default"
-      selectors = [
-        {
-          namespace = "kube-system"
-          labels = {
-            k8s-app = "kube-dns"
-          }
-        },
-        {
-          namespace = "default"
-        }
-      ]
+  # # Fargate
+  # fargate_profiles = {
+  #   default = {
+  #     name = "default"
+  #     selectors = [
+  #       {
+  #         namespace = "kube-system"
+  #         labels = {
+  #           k8s-app = "kube-dns"
+  #         }
+  #       },
+  #       {
+  #         namespace = "default"
+  #       }
+  #     ]
 
-      tags = {
-        Owner = "test"
-      }
+  #     tags = {
+  #       Owner = "test"
+  #     }
 
-      timeouts = {
-        create = "20m"
-        delete = "20m"
-      }
-    }
-  }
+  #     timeouts = {
+  #       create = "20m"
+  #       delete = "20m"
+  #     }
+  #   }
+  # }
 
   tags = local.tags
 }
@@ -131,31 +135,7 @@ module "disabled_fargate" {
 # Additional security groups for workers
 ################################################################################
 
-resource "aws_security_group" "worker_group_mgmt_one" {
-  name_prefix = "worker_group_mgmt_one"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/8"]
-  }
-}
-
-resource "aws_security_group" "worker_group_mgmt_two" {
-  name_prefix = "worker_group_mgmt_two"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["192.168.0.0/16"]
-  }
-}
-
-resource "aws_security_group" "all_worker_mgmt" {
+resource "aws_security_group" "additional" {
   name_prefix = "all_worker_management"
   vpc_id      = module.vpc.vpc_id
 

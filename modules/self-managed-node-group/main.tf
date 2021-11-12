@@ -29,7 +29,7 @@ resource "aws_launch_template" "this" {
   key_name      = var.key_name
   user_data     = var.user_data
 
-  vpc_security_group_ids = var.vpc_security_group_ids
+  vpc_security_group_ids = compact(concat([try(aws_security_group.this[0].id, "")], var.vpc_security_group_ids))
 
   default_version                      = var.default_version
   update_default_version               = var.update_default_version

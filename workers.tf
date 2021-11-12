@@ -9,7 +9,7 @@ module "fargate" {
   create_fargate_pod_execution_role = var.create_fargate_pod_execution_role
   fargate_pod_execution_role_arn    = var.fargate_pod_execution_role_arn
 
-  cluster_name = aws_eks_cluster.this[0].name
+  cluster_name = try(aws_eks_cluster.this[0].name, var.cluster_name) # TODO - why?!
   subnet_ids   = coalescelist(var.fargate_subnet_ids, var.subnet_ids, [""])
 
   iam_path             = var.fargate_iam_role_path
@@ -52,9 +52,9 @@ module "eks_managed_node_groups" {
   labels               = try(each.value.labels, null)
   cluster_version      = try(each.value.cluster_version, var.cluster_version)
 
-  remote_access = try(each.value.remote_access, null)
-  taints        = try(each.value.taints, null)
-  update_config = try(each.value.update_config, null)
+  remote_access = try(each.value.remote_access, {})
+  taints        = try(each.value.taints, {})
+  update_config = try(each.value.update_config, {})
   timeouts      = try(each.value.timeouts, {})
 
   # User data
@@ -79,7 +79,7 @@ module "eks_managed_node_groups" {
   ebs_optimized = try(each.value.ebs_optimized, null)
   key_name      = try(each.value.key_name, null)
 
-  vpc_security_group_ids = try(each.value.vpc_security_group_ids, null)
+  vpc_security_group_ids = try(each.value.vpc_security_group_ids, [])
 
   default_version                      = try(each.value.default_version, null)
   update_default_version               = try(each.value.update_default_version, null)
@@ -181,7 +181,7 @@ module "self_managed_node_group" {
   key_name        = try(each.value.key_name, null)
   user_data       = try(each.value.user_data, null)
 
-  vpc_security_group_ids = try(each.value.vpc_security_group_ids, null)
+  vpc_security_group_ids = try(each.value.vpc_security_group_ids, [])
 
   default_version                      = try(each.value.default_version, null)
   update_default_version               = try(each.value.update_default_version, null)

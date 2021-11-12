@@ -87,7 +87,7 @@ data "aws_iam_policy_document" "aws_node_termination_handler_events" {
 
 module "aws_node_termination_handler_sqs" {
   source                    = "terraform-aws-modules/sqs/aws"
-  version                   = "~> 3.0.0"
+  version                   = "~> 3.0"
   name                      = local.name
   message_retention_seconds = 300
   policy                    = data.aws_iam_policy_document.aws_node_termination_handler_events.json
@@ -139,7 +139,7 @@ resource "aws_cloudwatch_event_target" "aws_node_termination_handler_spot" {
 
 module "aws_node_termination_handler_role" {
   source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version                       = "4.1.0"
+  version                       = "~> 4.0"
   create_role                   = true
   role_description              = "IRSA role for ANTH, cluster ${local.name}"
   role_name_prefix              = local.name
@@ -216,7 +216,7 @@ module "eks" {
   cluster_endpoint_public_access  = true
 
   enable_irsa = true
-  worker_groups = {
+  self_managed_node_groups = {
     one = {
       name                                 = "refresh"
       asg_max_size                         = 2

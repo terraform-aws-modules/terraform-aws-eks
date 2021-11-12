@@ -34,7 +34,7 @@ module "eks" {
   # You require a node group to schedule coredns which is critical for running correctly internal DNS.
   # If you want to use only fargate you must follow docs `(Optional) Update CoreDNS`
   # available under https://docs.aws.amazon.com/eks/latest/userguide/fargate-getting-started.html
-  node_groups = {
+  eks_managed_node_groups = {
     example = {
       desired_capacity = 1
 

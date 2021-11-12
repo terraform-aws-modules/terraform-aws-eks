@@ -136,6 +136,30 @@ variable "cluster_security_group_use_name_prefix" {
   default     = true
 }
 
+variable "cluster_egress_cidrs" {
+  description = "List of CIDR blocks that are permitted for cluster egress traffic"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "cluster_create_endpoint_private_access_sg_rule" {
+  description = "Whether to create security group rules for the access to the Amazon EKS private API server endpoint. If `true`, `cluster_endpoint_private_access_cidrs` and/or 'cluster_endpoint_private_access_sg' should be provided"
+  type        = bool
+  default     = false
+}
+
+variable "cluster_endpoint_private_access_cidrs" {
+  description = "List of CIDR blocks which can access the Amazon EKS private API server endpoint. `cluster_endpoint_private_access` and `cluster_create_endpoint_private_access_sg_rule` must be set to `true`"
+  type        = list(string)
+  default     = []
+}
+
+variable "cluster_endpoint_private_access_sg" {
+  description = "List of security group IDs which can access the Amazon EKS private API server endpoint. `cluster_endpoint_private_access` and `cluster_create_endpoint_private_access_sg_rule` must be set to `true`"
+  type        = list(string)
+  default     = []
+}
+
 variable "cluster_security_group_tags" {
   description = "A map of additional tags to add to the cluster security group created"
   type        = map(string)
