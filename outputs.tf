@@ -97,24 +97,9 @@ output "cloudwatch_log_group_arn" {
 # Fargate Profile
 ################################################################################
 
-output "fargate_profile_ids" {
-  description = "EKS Cluster name and EKS Fargate Profile names separated by a colon (:)"
-  value       = module.fargate.fargate_profile_ids
-}
-
-output "fargate_profile_arns" {
-  description = "Amazon Resource Name (ARN) of the EKS Fargate Profiles"
-  value       = module.fargate.fargate_profile_arns
-}
-
-output "fargate_iam_role_name" {
-  description = "IAM role name for EKS Fargate pods"
-  value       = module.fargate.iam_role_name
-}
-
-output "fargate_iam_role_arn" {
-  description = "IAM role ARN for EKS Fargate pods"
-  value       = module.fargate.iam_role_arn
+output "fargate_profiles" {
+  description = "Map of attribute maps for all EKS Fargate Profiles created"
+  value       = module.fargate_profile
 }
 
 ################################################################################
@@ -123,7 +108,7 @@ output "fargate_iam_role_arn" {
 
 output "eks_managed_node_groups" {
   description = "Map of attribute maps for all EKS managed node groups created"
-  value       = module.eks_managed_node_groups
+  value       = module.eks_managed_node_group
 }
 
 ################################################################################
@@ -132,5 +117,5 @@ output "eks_managed_node_groups" {
 
 output "self_managed_node_groups" {
   description = "Map of attribute maps for all self managed node groups created"
-  value       = module.self_managed_node_groups
+  value       = module.self_managed_node_group
 }

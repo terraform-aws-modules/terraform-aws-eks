@@ -8,7 +8,7 @@ output "cluster_security_group_id" {
   value       = module.eks.cluster_security_group_id
 }
 
-output "fargate_profile_arns" {
-  description = "Outputs from node groups"
-  value       = module.eks.fargate_profile_arns
-}
+# output "fargate_profile_arn" {
+#   description = "Outputs from node groups"
+#   value       = module.eks.fargate_profile_arn
+# }

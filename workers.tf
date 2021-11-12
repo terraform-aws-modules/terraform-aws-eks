@@ -2,29 +2,36 @@
 # Fargate
 ################################################################################
 
-module "fargate" {
-  source = "./modules/fargate"
+module "fargate_profile" {
+  source = "./modules/fargate-profile"
 
-  create                            = var.create_fargate
-  create_fargate_pod_execution_role = var.create_fargate_pod_execution_role
-  fargate_pod_execution_role_arn    = var.fargate_pod_execution_role_arn
+  for_each = var.create ? var.fargate_profiles : {}
 
-  cluster_name = try(aws_eks_cluster.this[0].name, var.cluster_name) # TODO - why?!
-  subnet_ids   = coalescelist(var.fargate_subnet_ids, var.subnet_ids, [""])
+  # Fargate Profile
+  cluster_name         = aws_eks_cluster.this[0].name
+  fargate_profile_name = try(each.value.fargate_profile_name, each.key, true)
+  subnet_ids           = try(each.value.subnet_ids, var.subnet_ids)
+  selectors            = try(each.value.selectors, {})
+  timeouts             = try(each.value.timeouts, {})
 
-  iam_path             = var.fargate_iam_role_path
-  permissions_boundary = var.fargate_iam_role_permissions_boundary
+  # IAM role
+  create_iam_role               = try(each.value.create_iam_role, true)
+  iam_role_arn                  = try(each.value.iam_role_arn, null)
+  iam_role_name                 = try(each.value.iam_role_name, null)
+  iam_role_use_name_prefix      = try(each.value.iam_role_use_name_prefix, true)
+  iam_role_path                 = try(each.value.iam_role_path, null)
+  iam_role_permissions_boundary = try(each.value.iam_role_permissions_boundary, null)
+  iam_role_tags                 = try(each.value.iam_role_tags, {})
+  iam_role_additional_policies  = try(each.value.iam_role_additional_policies, [])
 
-  fargate_profiles = var.fargate_profiles
-
-  tags = merge(var.tags, var.fargate_tags)
+  tags = merge(var.tags, try(each.value.tags, {}))
 }
 
 ################################################################################
 # EKS Managed Node Group
 ################################################################################
 
-module "eks_managed_node_groups" {
+module "eks_managed_node_group" {
   source = "./modules/eks-managed-node-group"
 
   for_each = var.create ? var.eks_managed_node_groups : {}

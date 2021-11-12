@@ -226,51 +226,9 @@ variable "cluster_iam_role_tags" {
 # Fargate
 ################################################################################
 
-variable "create_fargate" {
-  description = "Determines whether Fargate resources are created"
-  type        = bool
-  default     = false
-}
-
-variable "create_fargate_pod_execution_role" {
-  description = "Controls if the EKS Fargate pod execution IAM role should be created"
-  type        = bool
-  default     = true
-}
-
-variable "fargate_pod_execution_role_arn" {
-  description = "Existing Amazon Resource Name (ARN) of the IAM Role that provides permissions for the EKS Fargate Profile. Required if `create_fargate_pod_execution_role` is `false`"
-  type        = string
-  default     = null
-}
-
-variable "fargate_subnet_ids" {
-  description = "A list of subnet IDs to place Fargate workers within (if different from `subnet_ids`)"
-  type        = list(string)
-  default     = []
-}
-
-variable "fargate_iam_role_path" {
-  description = "Fargate IAM role path"
-  type        = string
-  default     = null
-}
-
-variable "fargate_iam_role_permissions_boundary" {
-  description = "ARN of the policy that is used to set the permissions boundary for the Fargate role"
-  type        = string
-  default     = null
-}
-
 variable "fargate_profiles" {
-  description = "Fargate profiles to create. See `fargate_profile` keys section in Fargate submodule's README.md for more details"
+  description = "Map of Fargate Profile definitions to create"
   type        = any
-  default     = {}
-}
-
-variable "fargate_tags" {
-  description = "A map of additional tags to add to the Fargate resources created"
-  type        = map(string)
   default     = {}
 }
 

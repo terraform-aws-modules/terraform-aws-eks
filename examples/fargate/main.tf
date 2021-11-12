@@ -24,9 +24,8 @@ module "eks" {
   cluster_name    = local.name
   cluster_version = local.cluster_version
 
-  vpc_id             = module.vpc.vpc_id
-  subnet_ids         = [module.vpc.private_subnets[0], module.vpc.public_subnets[1]]
-  fargate_subnet_ids = [module.vpc.private_subnets[2]]
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
 
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
@@ -111,59 +110,60 @@ module "eks" {
 ##############################################
 
 module "fargate_profile_existing_cluster" {
-  source = "../../modules/fargate"
+  source = "../../modules/fargate-profile"
 
   cluster_name = module.eks.cluster_id
-  subnets_ids  = [module.vpc.private_subnets[0], module.vpc.private_subnets[2]]
+  subnet_ids   = [module.vpc.private_subnets[0], module.vpc.private_subnets[2]]
 
-  fargate_profiles = {
-    profile1 = {
-      name = "profile1"
-      selectors = [
-        {
-          namespace = "kube-system"
-          labels = {
-            k8s-app = "kube-dns"
-          }
-        },
-        {
-          namespace = "profile"
-          labels = {
-            WorkerType = "fargate"
-          }
-        }
-      ]
+  create = false # TODO
+  # fargate_profiles = {
+  #   profile1 = {
+  #     name = "profile1"
+  #     selectors = [
+  #       {
+  #         namespace = "kube-system"
+  #         labels = {
+  #           k8s-app = "kube-dns"
+  #         }
+  #       },
+  #       {
+  #         namespace = "profile"
+  #         labels = {
+  #           WorkerType = "fargate"
+  #         }
+  #       }
+  #     ]
 
-      tags = {
-        Owner     = "profile1"
-        submodule = "true"
-      }
-    }
+  #     tags = {
+  #       Owner     = "profile1"
+  #       submodule = "true"
+  #     }
+  #   }
 
-    profile2 = {
-      name = "profile2"
-      selectors = [
-        {
-          namespace = "default"
-          labels = {
-            Fargate = "profile2"
-          }
-        }
-      ]
+  #   profile2 = {
+  #     name = "profile2"
+  #     selectors = [
+  #       {
+  #         namespace = "default"
+  #         labels = {
+  #           Fargate = "profile2"
+  #         }
+  #       }
+  #     ]
 
-      # Using specific subnets instead of the ones configured in EKS (`subnets` and `fargate_subnets`)
-      subnet_ids = [module.vpc.private_subnets[0]]
+  #     # Using specific subnets instead of the ones configured in EKS (`subnets` and `fargate_subnets`)
+  #     subnet_ids = [module.vpc.private_subnets[0]]
 
-      tags = {
-        Owner     = "profile2"
-        submodule = "true"
-      }
+  #     tags = {
+  #       Owner     = "profile2"
+  #       submodule = "true"
+  #     }
 
-      timeouts = {
-        delete = "20m"
-      }
-    }
-  }
+  #     timeouts = {
+  #       delete = "20m"
+  #     }
+  #   }
+  # }
 
   tags = local.tags
 }

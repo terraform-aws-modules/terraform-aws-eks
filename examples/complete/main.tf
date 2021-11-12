@@ -24,9 +24,8 @@ module "eks" {
   cluster_name    = local.name
   cluster_version = local.cluster_version
 
-  vpc_id             = module.vpc.vpc_id
-  subnet_ids         = [module.vpc.private_subnets[0], module.vpc.public_subnets[1]]
-  fargate_subnet_ids = [module.vpc.private_subnets[2]]
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
 
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
@@ -126,9 +125,9 @@ module "disabled_eks" {
 }
 
 module "disabled_fargate" {
-  source = "../../modules/fargate"
+  source = "../../modules/fargate-profile"
 
-  create_fargate_pod_execution_role = false
+  create = false
 }
 
 ################################################################################

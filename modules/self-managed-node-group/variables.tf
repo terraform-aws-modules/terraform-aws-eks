@@ -204,6 +204,7 @@ variable "cluster_name" {
   type        = string
   default     = null
 }
+
 variable "tags" {
   description = "A map of tags and values in the same format as other resources accept. This will be converted into the non-standard format that the aws_autoscaling_group requires."
   type        = map(string)
@@ -352,7 +353,6 @@ variable "tag_specifications" {
   default     = []
 }
 
-
 variable "ebs_optimized" {
   description = "If true, the launched EC2 instance will be EBS-optimized"
   type        = bool
@@ -491,20 +491,20 @@ variable "create_iam_instance_profile" {
   default     = true
 }
 
+variable "iam_instance_profile_arn" {
+  description = "Amazon Resource Name (ARN) of an existing IAM instance profile that provides permissions for the node group"
+  type        = string
+  default     = null
+}
+
 variable "iam_role_name" {
   description = "Name to use on IAM role created"
   type        = string
   default     = null
 }
 
-variable "iam_instance_profile_arn" {
-  description = "The IAM Instance Profile ARN to launch the instance with"
-  type        = string
-  default     = null
-}
-
 variable "iam_role_use_name_prefix" {
-  description = "Amazon Resource Name (ARN) of an existing IAM instance profile that provides permissions for the EKS Node Group"
+  description = "Determines whether cluster IAM role name (`iam_role_name`) is used as a prefix"
   type        = string
   default     = true
 }

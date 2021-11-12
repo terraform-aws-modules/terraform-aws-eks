@@ -36,7 +36,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_eks"></a> [eks](#module\_eks) | ../.. | n/a |
-| <a name="module_fargate_profile_existing_cluster"></a> [fargate\_profile\_existing\_cluster](#module\_fargate\_profile\_existing\_cluster) | ../../modules/fargate | n/a |
+| <a name="module_fargate_profile_existing_cluster"></a> [fargate\_profile\_existing\_cluster](#module\_fargate\_profile\_existing\_cluster) | ../../modules/fargate-profile | n/a |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.0 |
 
 ## Resources
@@ -55,5 +55,4 @@ No inputs.
 |------|-------------|
 | <a name="output_cluster_endpoint"></a> [cluster\_endpoint](#output\_cluster\_endpoint) | Endpoint for EKS control plane. |
 | <a name="output_cluster_security_group_id"></a> [cluster\_security\_group\_id](#output\_cluster\_security\_group\_id) | Security group ids attached to the cluster control plane. |
-| <a name="output_fargate_profile_arns"></a> [fargate\_profile\_arns](#output\_fargate\_profile\_arns) | Outputs from node groups |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

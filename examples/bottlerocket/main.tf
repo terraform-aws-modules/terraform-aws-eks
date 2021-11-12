@@ -24,14 +24,13 @@ module "eks" {
   cluster_name    = local.name
   cluster_version = local.cluster_version
 
-  vpc_id             = module.vpc.vpc_id
-  subnet_ids         = [module.vpc.private_subnets[0], module.vpc.public_subnets[1]]
-  fargate_subnet_ids = [module.vpc.private_subnets[2]]
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
 
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
-  worker_groups = {
+  self_managed_node_groups = {
     one = {
       name                 = "bottlerocket-nodes"
       ami_id               = data.aws_ami.bottlerocket_ami.id
@@ -60,12 +59,13 @@ module "eks" {
   tags = local.tags
 }
 
-# SSM policy for bottlerocket control container access
-# https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-EKS.md#enabling-ssm
-resource "aws_iam_role_policy_attachment" "ssm" {
-  role       = module.eks.worker_iam_role_name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-}
+# TODO
+# # SSM policy for bottlerocket control container access
+# # https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-EKS.md#enabling-ssm
+# resource "aws_iam_role_policy_attachment" "ssm" {
+#   role       = module.eks.worker_iam_role_name
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+# }
 
 ################################################################################
 # Supporting Resources
@@ -95,6 +95,11 @@ resource "aws_key_pair" "nodes" {
 ################################################################################
 
 data "aws_availability_zones" "available" {}
+
+resource "random_string" "suffix" {
+  length  = 8
+  special = false
+}
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"

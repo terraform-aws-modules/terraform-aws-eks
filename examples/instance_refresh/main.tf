@@ -20,10 +20,14 @@ locals {
 
 # Based on the official aws-node-termination-handler setup guide at https://github.com/aws/aws-node-termination-handler#infrastructure-setup
 
+data "aws_eks_cluster_auth" "cluster" {
+  name = module.eks.cluster_id
+}
+
 provider "helm" {
   kubernetes {
-    host                   = data.aws_eks_cluster.cluster.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
+    host                   = module.eks.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
     token                  = data.aws_eks_cluster_auth.cluster.token
   }
 }
@@ -47,7 +51,7 @@ data "aws_iam_policy_document" "aws_node_termination_handler" {
     actions = [
       "autoscaling:CompleteLifecycleAction",
     ]
-    resources = module.eks.workers_asg_arns
+    resources = [for k, v in module.eks.self_managed_node_groups : v.autoscaling_group_arn]
   }
   statement {
     effect = "Allow"
@@ -104,7 +108,7 @@ resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_asg" {
       "detail-type" : [
         "EC2 Instance-terminate Lifecycle Action"
       ]
-      "resources" : module.eks.workers_asg_arns
+      "resources" : [for k, v in module.eks.self_managed_node_groups : v.autoscaling_group_arn]
     }
   )
 }
@@ -126,7 +130,7 @@ resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_spot" {
       "detail-type" : [
         "EC2 Spot Instance Interruption Warning"
       ]
-      "resources" : module.eks.workers_asg_arns
+      "resources" : [for k, v in module.eks.self_managed_node_groups : v.autoscaling_group_arn]
     }
   )
 }
@@ -195,9 +199,9 @@ resource "helm_release" "aws_node_termination_handler" {
 # ensures that node termination does not require the lifecycle action to be completed,
 # and thus allows the ASG to be destroyed cleanly.
 resource "aws_autoscaling_lifecycle_hook" "aws_node_termination_handler" {
-  count                  = length(module.eks.workers_asg_names)
+  for_each               = module.eks.self_managed_node_groups
   name                   = "aws-node-termination-handler"
-  autoscaling_group_name = module.eks.workers_asg_names[count.index]
+  autoscaling_group_name = each.value.autoscaling_group_id
   lifecycle_transition   = "autoscaling:EC2_INSTANCE_TERMINATING"
   heartbeat_timeout      = 300
   default_result         = "CONTINUE"

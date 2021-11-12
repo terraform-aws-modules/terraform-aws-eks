@@ -17,7 +17,7 @@ provider "helm" {
   }
 }
 
-resource "helm_release" "cluster-autoscaler" {
+resource "helm_release" "cluster_autoscaler" {
   depends_on = [
     module.eks
   ]
