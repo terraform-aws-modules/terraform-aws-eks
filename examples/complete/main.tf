@@ -60,17 +60,17 @@ module "eks" {
     },
     # Launch template that uses spot options
     {
-      name                             = "spot-2"
-      instance_type                    = "t3.large"
-      market_type                      = "spot"
-      spot_options                     = {
+      name          = "spot-2"
+      instance_type = "t3.large"
+      market_type   = "spot"
+      spot_options = {
         instance_interruption_behavior = "terminate"
         spot_instance_type             = "one-time"
       }
-      asg_min_size                     = 0
-      asg_max_size                     = 2
-      asg_desired_capacity             = 1
-      kubelet_extra_args               = "--node-labels=node.kubernetes.io/lifecycle=spot"
+      asg_min_size         = 0
+      asg_max_size         = 2
+      asg_desired_capacity = 1
+      kubelet_extra_args   = "--node-labels=node.kubernetes.io/lifecycle=spot"
     }
   ]
 
