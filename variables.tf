@@ -227,46 +227,6 @@ variable "cluster_iam_role_tags" {
 }
 
 ################################################################################
-# Workers IAM Role
-################################################################################
-
-variable "create_worker_iam_role" {
-  description = "Determines whether a worker IAM role is created or to use an existing IAM role"
-  type        = bool
-  default     = true
-}
-
-variable "worker_iam_role_name" {
-  description = "Name to use on worker role created"
-  type        = string
-  default     = null
-}
-
-variable "worker_iam_role_use_name_prefix" {
-  description = "Determines whether worker IAM role name (`worker_iam_role_name`) is used as a prefix"
-  type        = string
-  default     = true
-}
-
-variable "worker_iam_role_path" {
-  description = "Worker IAM role path"
-  type        = string
-  default     = null
-}
-
-variable "worker_iam_role_permissions_boundary" {
-  description = "ARN of the policy that is used to set the permissions boundary for the worker role"
-  type        = string
-  default     = null
-}
-
-variable "worker_iam_role_tags" {
-  description = "A map of additional tags to add to the worker IAM role created"
-  type        = map(string)
-  default     = {}
-}
-
-################################################################################
 # Fargate
 ################################################################################
 

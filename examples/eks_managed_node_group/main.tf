@@ -42,7 +42,7 @@ module "eks" {
   cluster_endpoint_public_access  = true
 
   eks_managed_node_groups = {
-    # default_node_group = {}
+    default_node_group = {}
     # create_launch_template = {
     #   create_launch_template  = true
     #   launch_template_name    = "create-launch-template"
@@ -51,7 +51,6 @@ module "eks" {
     # custom_ami = {
     #   create_launch_template = true
     #   launch_template_name   = "custom-ami"
-    #   # user_data              = data.cloudinit_config.custom_ami.rendered
 
     #   # Current default AMI used by managed node groups - pseudo "custom"
     #   ami_id = "ami-0caf35bc73450c396"

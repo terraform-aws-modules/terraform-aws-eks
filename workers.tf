@@ -45,7 +45,7 @@ module "eks_managed_node_groups" {
   ami_type            = try(each.value.ami_type, null)
   ami_release_version = try(each.value.ami_release_version, null)
 
-  capacity_type        = try(each.value.capacity_type, "ON_DEMAND") # used in user data so don't use null
+  capacity_type        = try(each.value.capacity_type, null)
   disk_size            = try(each.value.disk_size, null)
   force_update_version = try(each.value.force_update_version, null)
   instance_types       = try(each.value.instance_types, null)
@@ -114,7 +114,7 @@ module "eks_managed_node_groups" {
   iam_role_attach_cni_policy    = try(each.value.iam_role_attach_cni_policy, true)
   iam_role_additional_policies  = try(each.value.iam_role_additional_policies, [])
 
-  tags = var.tags
+  tags = merge(var.tags, try(each.value.tags, {}))
 }
 
 ################################################################################
@@ -208,64 +208,19 @@ module "self_managed_node_group" {
   placement                          = try(each.value.placement, null)
   tag_specifications                 = try(each.value.tag_specifications, [])
 
-  tags           = try(each.value.tags, {})
+  # IAM role
+  create_iam_role               = try(each.value.create_iam_role, true)
+  iam_role_arn                  = try(each.value.iam_role_arn, null)
+  iam_role_name                 = try(each.value.iam_role_name, null)
+  iam_role_use_name_prefix      = try(each.value.iam_role_use_name_prefix, true)
+  iam_role_path                 = try(each.value.iam_role_path, null)
+  iam_role_permissions_boundary = try(each.value.iam_role_permissions_boundary, null)
+  iam_role_tags                 = try(each.value.iam_role_tags, {})
+  iam_role_attach_cni_policy    = try(each.value.iam_role_attach_cni_policy, true)
+  iam_role_additional_policies  = try(each.value.iam_role_additional_policies, [])
+
+  tags           = merge(var.tags, try(each.value.tags, {}))
   propagate_tags = try(each.value.propagate_tags, [])
-}
-
-################################################################################
-# IAM Role & Instance Profile
-################################################################################
-
-locals {
-  worker_iam_role_name = coalesce(var.worker_iam_role_name, "${var.cluster_name}-worker")
-}
-
-resource "aws_iam_role" "worker" {
-  count = var.create && var.create_worker_iam_role ? 1 : 0
-
-  name        = var.worker_iam_role_use_name_prefix ? null : local.worker_iam_role_name
-  name_prefix = var.worker_iam_role_use_name_prefix ? try("${local.worker_iam_role_name}-", local.worker_iam_role_name) : null
-  path        = var.worker_iam_role_path
-
-  assume_role_policy   = data.aws_iam_policy_document.worker_assume_role_policy[0].json
-  permissions_boundary = var.worker_iam_role_permissions_boundary
-  managed_policy_arns = compact(distinct(concat([
-    "${local.policy_arn_prefix}/AmazonEKSWorkerNodePolicy",
-    "${local.policy_arn_prefix}/AmazonEC2ContainerRegistryReadOnly",
-    var.attach_worker_cni_policy ? "${local.policy_arn_prefix}/AmazonEKS_CNI_Policy" : "",
-  ], var.worker_additional_policies)))
-  force_detach_policies = true
-
-  tags = merge(var.tags, var.worker_iam_role_tags)
-}
-
-data "aws_iam_policy_document" "worker_assume_role_policy" {
-  count = var.create && var.create_worker_iam_role ? 1 : 0
-
-  statement {
-    sid     = "EKSWorkerAssumeRole"
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.${data.aws_partition.current.dns_suffix}"]
-    }
-  }
-}
-
-resource "aws_iam_instance_profile" "worker" {
-  count = var.create && var.create_worker_iam_role ? 1 : 0
-
-  name        = var.worker_iam_role_use_name_prefix ? null : local.worker_iam_role_name
-  name_prefix = var.worker_iam_role_use_name_prefix ? try("${local.worker_iam_role_name}-", local.worker_iam_role_name) : null
-  path        = var.worker_iam_role_path
-  role        = aws_iam_role.worker[0].id
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags = merge(var.tags, var.worker_iam_role_tags)
 }
 
 ################################################################################
