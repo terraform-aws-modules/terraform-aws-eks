@@ -71,7 +71,8 @@ resource "aws_cloudwatch_log_group" "this" {
 }
 
 ################################################################################
-# Cluster Security Group
+# Security Group
+# Defaults follow https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html
 ################################################################################
 
 locals {
@@ -186,7 +187,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 }
 
 ################################################################################
-# Cluster IAM Role
+# IAM Role
 ################################################################################
 
 locals {

@@ -136,21 +136,27 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_autoscaling_group_arn"></a> [autoscaling\_group\_arn](#output\_autoscaling\_group\_arn) | The ARN for this AutoScaling Group |
-| <a name="output_autoscaling_group_availability_zones"></a> [autoscaling\_group\_availability\_zones](#output\_autoscaling\_group\_availability\_zones) | The availability zones of the autoscale group |
-| <a name="output_autoscaling_group_default_cooldown"></a> [autoscaling\_group\_default\_cooldown](#output\_autoscaling\_group\_default\_cooldown) | Time between a scaling activity and the succeeding scaling activity |
-| <a name="output_autoscaling_group_desired_capacity"></a> [autoscaling\_group\_desired\_capacity](#output\_autoscaling\_group\_desired\_capacity) | The number of Amazon EC2 instances that should be running in the group |
-| <a name="output_autoscaling_group_health_check_grace_period"></a> [autoscaling\_group\_health\_check\_grace\_period](#output\_autoscaling\_group\_health\_check\_grace\_period) | Time after instance comes into service before checking health |
-| <a name="output_autoscaling_group_health_check_type"></a> [autoscaling\_group\_health\_check\_type](#output\_autoscaling\_group\_health\_check\_type) | EC2 or ELB. Controls how health checking is done |
-| <a name="output_autoscaling_group_id"></a> [autoscaling\_group\_id](#output\_autoscaling\_group\_id) | The autoscaling group id |
-| <a name="output_autoscaling_group_load_balancers"></a> [autoscaling\_group\_load\_balancers](#output\_autoscaling\_group\_load\_balancers) | The load balancer names associated with the autoscaling group |
-| <a name="output_autoscaling_group_max_size"></a> [autoscaling\_group\_max\_size](#output\_autoscaling\_group\_max\_size) | The maximum size of the autoscale group |
-| <a name="output_autoscaling_group_min_size"></a> [autoscaling\_group\_min\_size](#output\_autoscaling\_group\_min\_size) | The minimum size of the autoscale group |
-| <a name="output_autoscaling_group_name"></a> [autoscaling\_group\_name](#output\_autoscaling\_group\_name) | The autoscaling group name |
-| <a name="output_autoscaling_group_target_group_arns"></a> [autoscaling\_group\_target\_group\_arns](#output\_autoscaling\_group\_target\_group\_arns) | List of Target Group ARNs that apply to this AutoScaling Group |
-| <a name="output_autoscaling_group_vpc_zone_identifier"></a> [autoscaling\_group\_vpc\_zone\_identifier](#output\_autoscaling\_group\_vpc\_zone\_identifier) | The VPC zone identifier |
-| <a name="output_autoscaling_schedule_arns"></a> [autoscaling\_schedule\_arns](#output\_autoscaling\_schedule\_arns) | ARNs of autoscaling group schedules |
+| <a name="output_iam_instance_profile_arn"></a> [iam\_instance\_profile\_arn](#output\_iam\_instance\_profile\_arn) | ARN assigned by AWS to the instance profile |
+| <a name="output_iam_instance_profile_id"></a> [iam\_instance\_profile\_id](#output\_iam\_instance\_profile\_id) | Instance profile's ID |
+| <a name="output_iam_instance_profile_unique"></a> [iam\_instance\_profile\_unique](#output\_iam\_instance\_profile\_unique) | Stable and unique string identifying the IAM instance profile |
+| <a name="output_iam_role_arn"></a> [iam\_role\_arn](#output\_iam\_role\_arn) | The Amazon Resource Name (ARN) specifying the IAM role |
+| <a name="output_iam_role_name"></a> [iam\_role\_name](#output\_iam\_role\_name) | The name of the IAM role |
+| <a name="output_iam_role_unique_id"></a> [iam\_role\_unique\_id](#output\_iam\_role\_unique\_id) | Stable and unique string identifying the IAM role |
 | <a name="output_launch_template_arn"></a> [launch\_template\_arn](#output\_launch\_template\_arn) | The ARN of the launch template |
 | <a name="output_launch_template_id"></a> [launch\_template\_id](#output\_launch\_template\_id) | The ID of the launch template |
 | <a name="output_launch_template_latest_version"></a> [launch\_template\_latest\_version](#output\_launch\_template\_latest\_version) | The latest version of the launch template |
+| <a name="output_node_group_arn"></a> [node\_group\_arn](#output\_node\_group\_arn) | The ARN for this node group |
+| <a name="output_node_group_availability_zones"></a> [node\_group\_availability\_zones](#output\_node\_group\_availability\_zones) | The availability zones of the node group |
+| <a name="output_node_group_default_cooldown"></a> [node\_group\_default\_cooldown](#output\_node\_group\_default\_cooldown) | Time between a scaling activity and the succeeding scaling activity |
+| <a name="output_node_group_desired_capacity"></a> [node\_group\_desired\_capacity](#output\_node\_group\_desired\_capacity) | The number of Amazon EC2 instances that should be running in the group |
+| <a name="output_node_group_health_check_grace_period"></a> [node\_group\_health\_check\_grace\_period](#output\_node\_group\_health\_check\_grace\_period) | Time after instance comes into service before checking health |
+| <a name="output_node_group_health_check_type"></a> [node\_group\_health\_check\_type](#output\_node\_group\_health\_check\_type) | EC2 or ELB. Controls how health checking is done |
+| <a name="output_node_group_id"></a> [node\_group\_id](#output\_node\_group\_id) | The node group id |
+| <a name="output_node_group_max_size"></a> [node\_group\_max\_size](#output\_node\_group\_max\_size) | The maximum size of the node group |
+| <a name="output_node_group_min_size"></a> [node\_group\_min\_size](#output\_node\_group\_min\_size) | The minimum size of the node group |
+| <a name="output_node_group_name"></a> [node\_group\_name](#output\_node\_group\_name) | The node group name |
+| <a name="output_node_group_vpc_zone_identifier"></a> [node\_group\_vpc\_zone\_identifier](#output\_node\_group\_vpc\_zone\_identifier) | The VPC zone identifier |
+| <a name="output_node_schedule_arns"></a> [node\_schedule\_arns](#output\_node\_schedule\_arns) | ARNs of autoscaling group schedules |
+| <a name="output_security_group_arn"></a> [security\_group\_arn](#output\_security\_group\_arn) | Amazon Resource Name (ARN) of the security group |
+| <a name="output_security_group_id"></a> [security\_group\_id](#output\_security\_group\_id) | ID of the security group |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

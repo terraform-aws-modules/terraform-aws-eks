@@ -1,8 +1,3 @@
-locals {
-  use_custom_launch_template = var.create_launch_template || var.launch_template_name != null
-
-}
-
 data "aws_partition" "current" {}
 
 ################################################################################
@@ -59,6 +54,10 @@ data "cloudinit_config" "eks_optimized_ami_user_data" {
 ################################################################################
 # Launch template
 ################################################################################
+
+locals {
+  use_custom_launch_template = var.create_launch_template || var.launch_template_name != null
+}
 
 resource "aws_launch_template" "this" {
   count = var.create && var.create_launch_template ? 1 : 0
@@ -261,7 +260,7 @@ resource "aws_launch_template" "this" {
 }
 
 ################################################################################
-# EKS Managed Node Group
+# Node Group
 ################################################################################
 
 locals {
@@ -353,7 +352,6 @@ resource "aws_eks_node_group" "this" {
     { Name = var.name }
   )
 }
-
 
 ################################################################################
 # Security Group

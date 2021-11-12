@@ -24,7 +24,7 @@ resource "aws_launch_template" "this" {
   description = coalesce(var.description, "Custom launch template for ${var.name} self managed node group")
 
   ebs_optimized = var.ebs_optimized
-  image_id      = var.image_id
+  image_id      = coalesce(var.image_id, data.aws_ami.eks_default.image_id)
   instance_type = var.instance_type
   key_name      = var.key_name
   user_data     = var.user_data
@@ -211,7 +211,7 @@ resource "aws_launch_template" "this" {
 }
 
 ################################################################################
-# Self Managed Node Group (Autoscaling Group)
+# Node Group
 ################################################################################
 
 locals {
