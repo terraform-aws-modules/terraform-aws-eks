@@ -34,7 +34,7 @@ Only Launch Template is supported in this module; Launch Configuration support h
       spot_instance_pools     = 4
       asg_max_size            = 5
       asg_desired_capacity    = 5
-      kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot"
+      bootstrap_extra_args    = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
       public_ip               = true
     },
   }
@@ -61,7 +61,7 @@ Example launch template to launch 2 on demand instances of type m5.large, and ha
       asg_max_size                             = 20
       spot_instance_pools                      = 3
 
-      kubelet_extra_args = "--node-labels=node.kubernetes.io/lifecycle=`curl -s http://169.254.169.254/latest/meta-data/instance-life-cycle`"
+      bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=`curl -s http://169.254.169.254/latest/meta-data/instance-life-cycle`'"
     }
   }
 ```

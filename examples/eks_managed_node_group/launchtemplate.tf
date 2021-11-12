@@ -5,9 +5,6 @@
 #    cluster_name        = local.name
 #    endpoint            = module.eks.cluster_endpoint
 #    cluster_auth_base64 = module.eks.cluster_certificate_authority_data
-#
-#    bootstrap_extra_args = ""
-#    kubelet_extra_args   = ""
 #  }
 #}
 

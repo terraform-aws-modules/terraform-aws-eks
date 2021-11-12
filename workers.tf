@@ -73,8 +73,6 @@ module "eks_managed_node_group" {
   pre_bootstrap_user_data     = try(each.value.pre_bootstrap_user_data, "")
   post_bootstrap_user_data    = try(each.value.post_bootstrap_user_data, "")
   bootstrap_extra_args        = try(each.value.bootstrap_extra_args, "")
-  kubelet_extra_args          = try(each.value.kubelet_extra_args, "")
-  node_labels                 = try(each.value.node_labels, {})
 
   # Launch Template
   create_launch_template          = try(each.value.create_launch_template, false)
@@ -211,7 +209,6 @@ module "self_managed_node_group" {
   enable_monitoring                  = try(each.value.enable_monitoring, null)
   network_interfaces                 = try(each.value.network_interfaces, [])
   placement                          = try(each.value.placement, null)
-  tag_specifications                 = try(each.value.tag_specifications, [])
 
   # IAM role
   create_iam_instance_profile   = try(each.value.create_iam_instance_profile, true)

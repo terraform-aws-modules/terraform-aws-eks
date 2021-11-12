@@ -40,7 +40,7 @@ module "eks" {
       spot_instance_pools     = 4
       asg_max_size            = 5
       asg_desired_capacity    = 5
-      kubelet_extra_args      = "--node-labels=node.kubernetes.io/lifecycle=spot"
+      bootstrap_extra_args    = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
       public_ip               = true
 
       vpc_security_group_ids = [aws_security_group.additional.id] # TODO

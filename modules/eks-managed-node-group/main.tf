@@ -42,7 +42,6 @@ data "cloudinit_config" "eks_optimized_ami_user_data" {
           # Optional
           cluster_dns_ip           = var.cluster_dns_ip
           bootstrap_extra_args     = var.bootstrap_extra_args
-          kubelet_extra_args       = var.kubelet_extra_args
           post_bootstrap_user_data = var.post_bootstrap_user_data
 
         }

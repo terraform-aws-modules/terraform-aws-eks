@@ -62,18 +62,6 @@ variable "bootstrap_extra_args" {
   default     = ""
 }
 
-variable "kubelet_extra_args" {
-  description = "Additional arguments passed to the --kubelet flag"
-  type        = string
-  default     = ""
-}
-
-variable "node_labels" {
-  description = "Key-value map of additional labels"
-  type        = map(string)
-  default     = {}
-}
-
 ################################################################################
 # Launch template
 ################################################################################
@@ -244,12 +232,6 @@ variable "placement" {
   description = "The placement of the instance"
   type        = map(string)
   default     = null
-}
-
-variable "tag_specifications" {
-  description = "The tags to apply to the resources during launch"
-  type        = list(any)
-  default     = []
 }
 
 ################################################################################

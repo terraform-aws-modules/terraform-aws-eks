@@ -1,10 +1,3 @@
-locals {
-  cluster_security_group_id = var.create_cluster_security_group ? join("", aws_security_group.this.*.id) : var.cluster_security_group_id
-
-  # Worker groups
-  policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
-}
-
 data "aws_partition" "current" {}
 
 ################################################################################
@@ -20,7 +13,7 @@ resource "aws_eks_cluster" "this" {
   enabled_cluster_log_types = var.cluster_enabled_log_types
 
   vpc_config {
-    security_group_ids      = compact([local.cluster_security_group_id])
+    security_group_ids      = var.create_cluster_security_group ? aws_security_group.this[0].id : var.cluster_security_group_id
     subnet_ids              = var.subnet_ids
     endpoint_private_access = var.cluster_endpoint_private_access
     endpoint_public_access  = var.cluster_endpoint_public_access
@@ -192,6 +185,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 
 locals {
   cluster_iam_role_name = coalesce(var.cluster_iam_role_name, "${var.cluster_name}-cluster")
+  policy_arn_prefix     = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
 }
 
 resource "aws_iam_role" "cluster" {

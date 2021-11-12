@@ -34,7 +34,7 @@ resource "aws_iam_role" "this" {
   permissions_boundary  = var.iam_role_permissions_boundary
   force_detach_policies = true
 
-  tags = var.tags
+  tags = merge(var.tags, var.iam_role_tags)
 }
 
 resource "aws_iam_role_policy_attachment" "this" {

@@ -1,9 +1,6 @@
 #!/bin/bash -ex
 
 /etc/eks/bootstrap.sh ${cluster_name} ${bootstrap_extra_args} \
-%{ if length(kubelet_extra_args) > 0 ~}
-  --kubelet-extra-args '${kubelet_extra_args}' \
-%{ endif ~}
 %{ if length(cluster_dns_ip) > 0 ~}
   --dns-cluster-ip ${cluster_dns_ip} \
 %{ endif ~}

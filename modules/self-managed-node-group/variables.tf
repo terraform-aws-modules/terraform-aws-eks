@@ -347,21 +347,9 @@ variable "placement" {
   default     = null
 }
 
-variable "tag_specifications" {
-  description = "The tags to apply to the resources during launch"
-  type        = list(any)
-  default     = []
-}
-
 variable "ebs_optimized" {
   description = "If true, the launched EC2 instance will be EBS-optimized"
   type        = bool
-  default     = null
-}
-
-variable "iam_instance_profile_name" {
-  description = "The name attribute of the IAM instance profile to associate with launched instances"
-  type        = string
   default     = null
 }
 
