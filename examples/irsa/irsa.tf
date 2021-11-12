@@ -1,7 +1,5 @@
 data "aws_caller_identity" "current" {}
 
-data "aws_region" "current" {}
-
 locals {
   k8s_service_account_namespace = "kube-system"
   k8s_service_account_name      = "cluster-autoscaler-aws"
@@ -29,7 +27,7 @@ resource "helm_release" "cluster-autoscaler" {
 
   set {
     name  = "awsRegion"
-    value = data.aws_region.current.name
+    value = local.region
   }
   set {
     name  = "rbac.serviceAccount.name"

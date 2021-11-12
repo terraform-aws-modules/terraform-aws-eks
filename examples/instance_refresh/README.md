@@ -22,19 +22,15 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.22.0 |
-| <a name="requirement_helm"></a> [helm](#requirement\_helm) | ~> 2.0 |
-| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | ~> 2.0 |
-| <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.4 |
-| <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.1 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.56.0 |
+| <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.22.0 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | ~> 2.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | >= 2.1 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.56.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0.0 |
 
 ## Modules
 
@@ -56,14 +52,10 @@ Note that this example may create resources which cost money. Run `terraform des
 | [aws_cloudwatch_event_target.aws_node_termination_handler_spot](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
 | [aws_iam_policy.aws_node_termination_handler](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [helm_release.aws_node_termination_handler](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
-| [random_string.suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
-| [aws_eks_cluster.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
-| [aws_eks_cluster_auth.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
 | [aws_iam_policy_document.aws_node_termination_handler](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.aws_node_termination_handler_events](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
 ## Inputs
 
@@ -75,6 +67,4 @@ No inputs.
 |------|-------------|
 | <a name="output_cluster_endpoint"></a> [cluster\_endpoint](#output\_cluster\_endpoint) | Endpoint for EKS control plane. |
 | <a name="output_cluster_security_group_id"></a> [cluster\_security\_group\_id](#output\_cluster\_security\_group\_id) | Security group ids attached to the cluster control plane. |
-| <a name="output_sqs_queue_asg_notification_arn"></a> [sqs\_queue\_asg\_notification\_arn](#output\_sqs\_queue\_asg\_notification\_arn) | SQS queue ASG notification ARN |
-| <a name="output_sqs_queue_asg_notification_url"></a> [sqs\_queue\_asg\_notification\_url](#output\_sqs\_queue\_asg\_notification\_url) | SQS queue ASG notification URL |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

@@ -3,9 +3,15 @@ provider "aws" {
 }
 
 locals {
-  name            = "complete-${random_string.suffix.result}"
+  name            = "ex-${replace(basename(path.cwd), "_", "-")}"
   cluster_version = "1.20"
   region          = "eu-west-1"
+
+  tags = {
+    Example    = local.name
+    GithubRepo = "terraform-aws-eks"
+    GithubOrg  = "terraform-aws-modules"
+  }
 }
 
 ################################################################################
@@ -24,8 +30,6 @@ module "eks" {
 
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
-
-
 
   worker_additional_security_group_ids = [aws_security_group.all_worker_mgmt.id]
 
@@ -104,11 +108,7 @@ module "eks" {
     }
   }
 
-  tags = {
-    Example    = local.name
-    GithubRepo = "terraform-aws-eks"
-    GithubOrg  = "terraform-aws-modules"
-  }
+  tags = local.tags
 }
 
 ################################################################################
@@ -128,24 +128,6 @@ module "disabled_fargate" {
 }
 
 ################################################################################
-# Kubernetes provider configuration
-################################################################################
-
-data "aws_eks_cluster" "cluster" {
-  name = module.eks.cluster_id
-}
-
-data "aws_eks_cluster_auth" "cluster" {
-  name = module.eks.cluster_id
-}
-
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.cluster.token
-}
-
-################################################################################
 # Additional security groups for workers
 ################################################################################
 
@@ -154,13 +136,10 @@ resource "aws_security_group" "worker_group_mgmt_one" {
   vpc_id      = module.vpc.vpc_id
 
   ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-
-    cidr_blocks = [
-      "10.0.0.0/8",
-    ]
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/8"]
   }
 }
 
@@ -169,13 +148,10 @@ resource "aws_security_group" "worker_group_mgmt_two" {
   vpc_id      = module.vpc.vpc_id
 
   ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-
-    cidr_blocks = [
-      "192.168.0.0/16",
-    ]
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["192.168.0.0/16"]
   }
 }
 
@@ -187,7 +163,6 @@ resource "aws_security_group" "all_worker_mgmt" {
     from_port = 22
     to_port   = 22
     protocol  = "tcp"
-
     cidr_blocks = [
       "10.0.0.0/8",
       "172.16.0.0/12",
@@ -200,13 +175,7 @@ resource "aws_security_group" "all_worker_mgmt" {
 # Supporting resources
 ################################################################################
 
-data "aws_availability_zones" "available" {
-}
-
-resource "random_string" "suffix" {
-  length  = 8
-  special = false
-}
+data "aws_availability_zones" "available" {}
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
@@ -231,9 +200,5 @@ module "vpc" {
     "kubernetes.io/role/internal-elb"     = "1"
   }
 
-  tags = {
-    Example    = local.name
-    GithubRepo = "terraform-aws-eks"
-    GithubOrg  = "terraform-aws-modules"
-  }
+  tags = local.tags
 }

@@ -1,26 +1,26 @@
 output "cluster_id" {
   description = "The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready."
-  value       = local.cluster_id
+  value       = try(aws_eks_cluster.this[0].id, "")
 }
 
 output "cluster_arn" {
   description = "The Amazon Resource Name (ARN) of the cluster."
-  value       = local.cluster_arn
+  value       = try(aws_eks_cluster.this[0].arn, "")
 }
 
 output "cluster_certificate_authority_data" {
   description = "Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster."
-  value       = local.cluster_auth_base64
+  value       = try(aws_eks_cluster.this[0].certificate_authority[0].data, "")
 }
 
 output "cluster_endpoint" {
   description = "The endpoint for your EKS Kubernetes API."
-  value       = local.cluster_endpoint
+  value       = try(aws_eks_cluster.this[0].endpoint, "")
 }
 
 output "cluster_version" {
   description = "The Kubernetes server version for the EKS cluster."
-  value       = element(concat(aws_eks_cluster.this[*].version, [""]), 0)
+  value       = try(aws_eks_cluster.this[0].version, "")
 }
 
 output "cluster_security_group_id" {
@@ -45,22 +45,22 @@ output "cluster_oidc_issuer_url" {
 
 output "cluster_primary_security_group_id" {
   description = "The cluster primary security group ID created by the EKS cluster on 1.14 or later. Referred to as 'Cluster security group' in the EKS console."
-  value       = local.cluster_primary_security_group_id
+  value       = try(aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id, "")
 }
 
 output "cloudwatch_log_group_name" {
   description = "Name of cloudwatch log group created"
-  value       = element(concat(aws_cloudwatch_log_group.this[*].name, [""]), 0)
+  value       = try(aws_cloudwatch_log_group.this[0].name, "")
 }
 
 output "cloudwatch_log_group_arn" {
   description = "Arn of cloudwatch log group created"
-  value       = element(concat(aws_cloudwatch_log_group.this[*].arn, [""]), 0)
+  value       = try(aws_cloudwatch_log_group.this[0].arn, "")
 }
 
 output "oidc_provider_arn" {
   description = "The ARN of the OIDC Provider if `enable_irsa = true`."
-  value       = var.enable_irsa ? concat(aws_iam_openid_connect_provider.oidc_provider[*].arn, [""])[0] : null
+  value       = try(aws_iam_openid_connect_provider.oidc_provider[0].arn, "")
 }
 
 output "fargate_profile_ids" {

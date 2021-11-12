@@ -3,9 +3,15 @@ provider "aws" {
 }
 
 locals {
-  name            = "instance_refresh-${random_string.suffix.result}"
+  name            = "ex-${replace(basename(path.cwd), "_", "-")}"
   cluster_version = "1.20"
   region          = "eu-west-1"
+
+  tags = {
+    Example    = local.name
+    GithubRepo = "terraform-aws-eks"
+    GithubOrg  = "terraform-aws-modules"
+  }
 }
 
 ################################################################################
@@ -60,8 +66,6 @@ resource "aws_iam_policy" "aws_node_termination_handler" {
   policy = data.aws_iam_policy_document.aws_node_termination_handler.json
 }
 
-data "aws_region" "current" {}
-
 data "aws_iam_policy_document" "aws_node_termination_handler_events" {
   statement {
     effect = "Allow"
@@ -76,7 +80,7 @@ data "aws_iam_policy_document" "aws_node_termination_handler_events" {
       "sqs:SendMessage",
     ]
     resources = [
-      "arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${local.name}",
+      "arn:aws:sqs:${local.region}:${data.aws_caller_identity.current.account_id}:${local.name}",
     ]
   }
 }
@@ -158,7 +162,7 @@ resource "helm_release" "aws_node_termination_handler" {
 
   set {
     name  = "awsRegion"
-    value = data.aws_region.current.name
+    value = local.region
   }
   set {
     name  = "serviceAccount.name"
@@ -238,42 +242,14 @@ module "eks" {
     }
   }
 
-  tags = {
-    Example    = local.name
-    GithubRepo = "terraform-aws-eks"
-    GithubOrg  = "terraform-aws-modules"
-  }
-}
-
-################################################################################
-# Kubernetes provider configuration
-################################################################################
-
-data "aws_eks_cluster" "cluster" {
-  name = module.eks.cluster_id
-}
-
-data "aws_eks_cluster_auth" "cluster" {
-  name = module.eks.cluster_id
-}
-
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.cluster.token
+  tags = local.tags
 }
 
 ################################################################################
 # Supporting Resources
 ################################################################################
 
-data "aws_availability_zones" "available" {
-}
-
-resource "random_string" "suffix" {
-  length  = 8
-  special = false
-}
+data "aws_availability_zones" "available" {}
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
@@ -298,9 +274,5 @@ module "vpc" {
     "kubernetes.io/role/internal-elb"     = "1"
   }
 
-  tags = {
-    Example    = local.name
-    GithubRepo = "terraform-aws-eks"
-    GithubOrg  = "terraform-aws-modules"
-  }
+  tags = local.tags
 }

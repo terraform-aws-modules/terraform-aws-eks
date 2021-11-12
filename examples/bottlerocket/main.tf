@@ -3,9 +3,15 @@ provider "aws" {
 }
 
 locals {
-  name            = "bottlerocket-${random_string.suffix.result}"
+  name            = "ex-${replace(basename(path.cwd), "_", "-")}"
   cluster_version = "1.20"
   region          = "eu-west-1"
+
+  tags = {
+    Example    = local.name
+    GithubRepo = "terraform-aws-eks"
+    GithubOrg  = "terraform-aws-modules"
+  }
 }
 
 ################################################################################
@@ -33,11 +39,6 @@ module "eks" {
       asg_desired_capacity = 2
       key_name             = aws_key_pair.nodes.key_name
 
-      # Since we are using default VPC there is no NAT gateway so we need to
-      # attach public ip to nodes so they can reach k8s API server
-      # do not repeat this at home (i.e. production)
-      public_ip = true
-
       # This section overrides default userdata template to pass bottlerocket
       # specific user data
       userdata_template_file = "${path.module}/userdata.toml"
@@ -46,7 +47,7 @@ module "eks" {
       userdata_template_extra_args = {
         enable_admin_container   = false
         enable_control_container = true
-        aws_region               = data.aws_region.current.name
+        aws_region               = local.region
       }
       # example of k8s/kubelet configuration via additional_userdata
       additional_userdata = <<-EOT
@@ -56,11 +57,7 @@ module "eks" {
     }
   }
 
-  tags = {
-    Example    = local.name
-    GithubRepo = "terraform-aws-eks"
-    GithubOrg  = "terraform-aws-modules"
-  }
+  tags = local.tags
 }
 
 # SSM policy for bottlerocket control container access
@@ -71,28 +68,8 @@ resource "aws_iam_role_policy_attachment" "ssm" {
 }
 
 ################################################################################
-# Kubernetes provider configuration
-################################################################################
-
-data "aws_eks_cluster" "cluster" {
-  name = module.eks.cluster_id
-}
-
-data "aws_eks_cluster_auth" "cluster" {
-  name = module.eks.cluster_id
-}
-
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.cluster.token
-}
-
-################################################################################
 # Supporting Resources
 ################################################################################
-
-data "aws_region" "current" {}
 
 data "aws_ami" "bottlerocket_ami" {
   most_recent = true
@@ -117,13 +94,7 @@ resource "aws_key_pair" "nodes" {
 # Supporting Resources
 ################################################################################
 
-data "aws_availability_zones" "available" {
-}
-
-resource "random_string" "suffix" {
-  length  = 8
-  special = false
-}
+data "aws_availability_zones" "available" {}
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
@@ -131,7 +102,7 @@ module "vpc" {
 
   name                 = local.name
   cidr                 = "10.0.0.0/16"
-  azs                  = data.aws_availability_zones.available.names
+  azs                  = [data.aws_availability_zones.available.names]
   private_subnets      = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
   public_subnets       = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
   enable_nat_gateway   = true
@@ -148,9 +119,5 @@ module "vpc" {
     "kubernetes.io/role/internal-elb"     = "1"
   }
 
-  tags = {
-    Example    = local.name
-    GithubRepo = "terraform-aws-eks"
-    GithubOrg  = "terraform-aws-modules"
-  }
+  tags = local.tags
 }

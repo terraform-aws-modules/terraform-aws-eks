@@ -3,9 +3,15 @@ provider "aws" {
 }
 
 locals {
-  name            = "fargate-${random_string.suffix.result}"
+  name            = "ex-${replace(basename(path.cwd), "_", "-")}"
   cluster_version = "1.20"
   region          = "eu-west-1"
+
+  tags = {
+    Example    = local.name
+    GithubRepo = "terraform-aws-eks"
+    GithubOrg  = "terraform-aws-modules"
+  }
 }
 
 ################################################################################
@@ -97,11 +103,7 @@ module "eks" {
     }
   }
 
-  tags = {
-    Example    = local.name
-    GithubRepo = "terraform-aws-eks"
-    GithubOrg  = "terraform-aws-modules"
-  }
+  tags = local.tags
 }
 
 ##############################################
@@ -163,42 +165,14 @@ module "fargate_profile_existing_cluster" {
     }
   }
 
-  tags = {
-    Example    = local.name
-    GithubRepo = "terraform-aws-eks"
-    GithubOrg  = "terraform-aws-modules"
-  }
-}
-
-################################################################################
-# Kubernetes provider configuration
-################################################################################
-
-data "aws_eks_cluster" "cluster" {
-  name = module.eks.cluster_id
-}
-
-data "aws_eks_cluster_auth" "cluster" {
-  name = module.eks.cluster_id
-}
-
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.cluster.token
+  tags = local.tags
 }
 
 ################################################################################
 # Supporting Resources
 ################################################################################
 
-data "aws_availability_zones" "available" {
-}
-
-resource "random_string" "suffix" {
-  length  = 8
-  special = false
-}
+data "aws_availability_zones" "available" {}
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
@@ -223,10 +197,5 @@ module "vpc" {
     "kubernetes.io/role/internal-elb"     = "1"
   }
 
-  tags = {
-    Example    = local.name
-    GithubRepo = "terraform-aws-eks"
-    GithubOrg  = "terraform-aws-modules"
-  }
+  tags = local.tags
 }
-

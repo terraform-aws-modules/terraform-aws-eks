@@ -1,12 +1,4 @@
 locals {
-
-  # EKS Cluster
-  cluster_id                        = try(aws_eks_cluster.this[0].id, "")
-  cluster_arn                       = try(aws_eks_cluster.this[0].arn, "")
-  cluster_endpoint                  = try(aws_eks_cluster.this[0].endpoint, "")
-  cluster_auth_base64               = try(aws_eks_cluster.this[0].certificate_authority[0].data, "")
-  cluster_primary_security_group_id = try(aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id, "")
-
   cluster_security_group_id = var.create_cluster_security_group ? join("", aws_security_group.cluster.*.id) : var.cluster_security_group_id
 
   # Worker groups
