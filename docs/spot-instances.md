@@ -92,15 +92,12 @@ Example launch template to use spot options:
       instance_type                    = "t3.large"
       market_type                      = "spot"
       spot_options                     = {
-        block_duration_minutes         = "60"
         instance_interruption_behavior = "terminate"
-        max_price                      = null
         spot_instance_type             = "one-time"
-        valid_until                    = null
       }
       asg_min_size                     = 0
       asg_max_size                     = 2
-      asg_desired_capacity             = 0
+      asg_desired_capacity             = 1
       kubelet_extra_args               = "--node-labels=node.kubernetes.io/lifecycle=spot"
     }
   ]
