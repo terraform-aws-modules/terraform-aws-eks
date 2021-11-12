@@ -198,8 +198,6 @@ module "self_managed_node_group" {
   elastic_inference_accelerator      = try(each.value.elastic_inference_accelerator, null)
   enclave_options                    = try(each.value.enclave_options, null)
   hibernation_options                = try(each.value.hibernation_options, null)
-  iam_instance_profile_name          = try(each.value.iam_instance_profile_name, null)
-  iam_instance_profile_arn           = try(each.value.iam_instance_profile_arn, null)
   instance_market_options            = try(each.value.instance_market_options, null)
   license_specifications             = try(each.value.license_specifications, null)
   metadata_options                   = try(each.value.metadata_options, null)
@@ -209,8 +207,8 @@ module "self_managed_node_group" {
   tag_specifications                 = try(each.value.tag_specifications, [])
 
   # IAM role
-  create_iam_role               = try(each.value.create_iam_role, true)
-  iam_role_arn                  = try(each.value.iam_role_arn, null)
+  create_iam_instance_profile   = try(each.value.create_iam_instance_profile, true)
+  iam_instance_profile_arn      = try(each.value.iam_instance_profile_arn, null)
   iam_role_name                 = try(each.value.iam_role_name, null)
   iam_role_use_name_prefix      = try(each.value.iam_role_use_name_prefix, true)
   iam_role_path                 = try(each.value.iam_role_path, null)

@@ -322,12 +322,6 @@ variable "hibernation_options" {
   default     = null
 }
 
-variable "iam_instance_profile_arn" {
-  description = "The IAM Instance Profile ARN to launch the instance with"
-  type        = string
-  default     = null
-}
-
 variable "instance_market_options" {
   description = "The market (purchasing) option for the instance"
   type        = any
@@ -429,13 +423,64 @@ variable "schedules" {
   default     = {}
 }
 
+################################################################################
+# Worker Security Group
+################################################################################
+
+variable "create_security_group" {
+  description = "Whether to create a security group"
+  type        = bool
+  default     = true
+}
+
+variable "security_group_name" {
+  description = "Name to use on security group created"
+  type        = string
+  default     = null
+}
+
+variable "security_group_use_name_prefix" {
+  description = "Determines whether the security group name (`security_group_name`) is used as a prefix"
+  type        = string
+  default     = true
+}
+
+variable "security_group_description" {
+  description = "Description for the security group"
+  type        = string
+  default     = "EKS worker security group"
+}
+
+variable "vpc_id" {
+  description = "ID of the VPC where the security group/nodes will be provisioned"
+  type        = string
+  default     = null
+}
+
+variable "security_group_egress_cidr_blocks" {
+  description = "List of CIDR blocks that are permitted for security group egress traffic"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "cluster_security_group_id" {
+  description = "Cluster control plain security group ID"
+  type        = string
+  default     = null
+}
+
+variable "security_group_tags" {
+  description = "A map of additional tags to add to the security group created"
+  type        = map(string)
+  default     = {}
+}
 
 ################################################################################
 # IAM Role
 ################################################################################
 
-variable "create_iam_role" {
-  description = "Determines whether an IAM role is created or to use an existing IAM role"
+variable "create_iam_instance_profile" {
+  description = "Determines whether an IAM instance profile is created or to use an existing IAM instance profile"
   type        = bool
   default     = true
 }
@@ -446,8 +491,14 @@ variable "iam_role_name" {
   default     = null
 }
 
+variable "iam_instance_profile_arn" {
+  description = "The IAM Instance Profile ARN to launch the instance with"
+  type        = string
+  default     = null
+}
+
 variable "iam_role_use_name_prefix" {
-  description = "Determines whether the IAM role name (`iam_role_name`) is used as a prefix"
+  description = "Amazon Resource Name (ARN) of an existing IAM instance profile that provides permissions for the EKS Node Group"
   type        = string
   default     = true
 }

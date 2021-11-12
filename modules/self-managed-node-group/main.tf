@@ -1,3 +1,5 @@
+data "aws_partition" "current" {}
+
 ################################################################################
 # Launch template
 ################################################################################
@@ -104,12 +106,8 @@ resource "aws_launch_template" "this" {
     }
   }
 
-  dynamic "iam_instance_profile" {
-    for_each = var.iam_instance_profile_name != null || var.iam_instance_profile_arn != null ? [1] : []
-    content {
-      name = var.iam_instance_profile_name
-      arn  = var.iam_instance_profile_arn
-    }
+  iam_instance_profile {
+    arn = var.create_iam_instance_profile ? aws_iam_role.this[0].arn : var.iam_instance_profile_arn
   }
 
   dynamic "instance_market_options" {
@@ -383,15 +381,132 @@ resource "aws_autoscaling_schedule" "this" {
 }
 
 ################################################################################
+# Security Group
+# Defaults follow https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html
+################################################################################
+
+locals {
+  security_group_name   = coalesce(var.security_group_name, "${var.name}-worker")
+  create_security_group = var.create && var.create_security_group
+}
+
+resource "aws_security_group" "this" {
+  count = local.create_security_group ? 1 : 0
+
+  name        = var.security_group_use_name_prefix ? null : local.security_group_name
+  name_prefix = var.security_group_use_name_prefix ? "${local.security_group_name}-" : null
+  description = var.security_group_description
+  vpc_id      = var.vpc_id
+
+  tags = merge(
+    var.tags,
+    {
+      "Name"                                      = local.security_group_name
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    },
+    var.security_group_tags
+  )
+}
+
+# Ingress
+resource "aws_security_group_rule" "cluster_https_ingress" {
+  count = local.create_security_group ? 1 : 0
+
+  description              = "Allow communication from cluster control plane on 443/HTTPS"
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.this[0].id
+  source_security_group_id = var.cluster_security_group_id
+  from_port                = 443
+  to_port                  = 443
+  type                     = "ingress"
+}
+
+resource "aws_security_group_rule" "cluster_kubelet_ingress" {
+  count = local.create_security_group ? 1 : 0
+
+  description              = "Allow communication from the cluster control plane to kubelet"
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.this[0].id
+  source_security_group_id = var.cluster_security_group_id
+  from_port                = 10250
+  to_port                  = 10250
+  type                     = "ingress"
+}
+
+resource "aws_security_group_rule" "cluster_coredns_tcp_ingress" {
+  count = local.create_security_group ? 1 : 0
+
+  description              = "Allow communication from cluster control plane on 53/TCP for CoreDNS"
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.this[0].id
+  source_security_group_id = var.cluster_security_group_id
+  from_port                = 53
+  to_port                  = 53
+  type                     = "ingress"
+}
+
+resource "aws_security_group_rule" "cluster_coredns_udp_ingress" {
+  count = local.create_security_group ? 1 : 0
+
+  description              = "Allow communication from cluster control plane on 53/UDP for CoreDNS"
+  protocol                 = "udp"
+  security_group_id        = aws_security_group.this[0].id
+  source_security_group_id = var.cluster_security_group_id
+  from_port                = 53
+  to_port                  = 53
+  type                     = "ingress"
+}
+
+resource "aws_security_group_rule" "cluster_ephemeral_ports_ingress" {
+  count = local.create_security_group ? 1 : 0
+
+  description              = "Allow communication from the cluster control plane on Linux ephemeral ports"
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.this[0].id
+  source_security_group_id = var.cluster_security_group_id
+  from_port                = 1025 # TODO - consider putting back as variable, probably due to windows
+  to_port                  = 65535
+  type                     = "ingress"
+}
+
+# TODO - move to separate security group in root that all node groups will get assigned
+resource "aws_security_group_rule" "ingress_self" {
+  count = local.create_security_group ? 1 : 0
+
+  description       = "Allow node to communicate with each other"
+  protocol          = "-1"
+  security_group_id = aws_security_group.this[0].id
+  self              = true
+  from_port         = 0
+  to_port           = 65535
+  type              = "ingress"
+}
+
+# Egress
+resource "aws_security_group_rule" "worker_egress_all" {
+  count = local.create_security_group ? 1 : 0
+
+  description       = "Allow egress to all ports/protocols"
+  protocol          = "-1"
+  security_group_id = aws_security_group.this[0].id
+  cidr_blocks       = var.security_group_egress_cidr_blocks
+  from_port         = 0
+  to_port           = 65535
+  type              = "egress"
+}
+
+################################################################################
 # IAM Role
 ################################################################################
 
 locals {
   iam_role_name = coalesce(var.iam_role_name, "${var.cluster_name}-worker")
+
+  iam_role_policy_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
-  count = var.create && var.create_iam_role ? 1 : 0
+  count = var.create && var.create_iam_instance_profile ? 1 : 0
 
   statement {
     sid     = "EKSWorkerAssumeRole"
@@ -405,7 +520,7 @@ data "aws_iam_policy_document" "assume_role_policy" {
 }
 
 resource "aws_iam_role" "this" {
-  count = var.create && var.create_iam_role ? 1 : 0
+  count = var.create && var.create_iam_instance_profile ? 1 : 0
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
@@ -419,12 +534,28 @@ resource "aws_iam_role" "this" {
 }
 
 resource "aws_iam_role_policy_attachment" "this" {
-  for_each = var.create && var.create_iam_role ? toset(compact(distinct(concat([
-    "${local.policy_arn_prefix}/AmazonEKSWorkerNodePolicy",
-    "${local.policy_arn_prefix}/AmazonEC2ContainerRegistryReadOnly",
-    var.iam_role_attach_cni_policy ? "${local.policy_arn_prefix}/AmazonEKS_CNI_Policy" : "",
+  for_each = var.create && var.create_iam_instance_profile ? toset(compact(distinct(concat([
+    "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy",
+    "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly",
+    var.iam_role_attach_cni_policy ? "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy" : "",
   ], var.iam_role_additional_policies)))) : toset([])
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name
+}
+
+resource "aws_iam_instance_profile" "this" {
+  count = var.create && var.create_iam_instance_profile ? 1 : 0
+
+  role = aws_iam_role.this[0].name
+
+  name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
+  name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
+  path        = var.iam_role_path
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = merge(var.tags, var.iam_role_tags)
 }

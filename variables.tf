@@ -143,34 +143,6 @@ variable "cluster_security_group_tags" {
 }
 
 ################################################################################
-# Worker Security Group
-################################################################################
-
-variable "create_worker_security_group" {
-  description = "Whether to create a security group for the worker nodes"
-  type        = bool
-  default     = true
-}
-
-variable "worker_security_group_name" {
-  description = "Name to use on worker role created"
-  type        = string
-  default     = null
-}
-
-variable "worker_security_group_use_name_prefix" {
-  description = "Determines whether the worker security group name (`worker_security_group_name`) is used as a prefix"
-  type        = string
-  default     = true
-}
-
-variable "worker_security_group_tags" {
-  description = "A map of additional tags to add to the worker security group created"
-  type        = map(string)
-  default     = {}
-}
-
-################################################################################
 # IRSA
 ################################################################################
 
@@ -297,8 +269,6 @@ variable "eks_managed_node_groups" {
   type        = any
   default     = {}
 }
-
-
 
 variable "worker_security_group_id" {
   description = "If provided, all workers will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the EKS cluster"

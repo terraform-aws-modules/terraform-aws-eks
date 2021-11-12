@@ -138,6 +138,19 @@ resource "aws_security_group_rule" "cluster_private_access_sg_source" {
   security_group_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
 }
 
+# TODO
+# resource "aws_security_group_rule" "cluster_primary_ingress_worker" {
+#   count = local.create_security_group && var.worker_create_cluster_primary_security_group_rules ? 1 : 0
+
+#   description              = "Allow pods running on worker to send communication to cluster primary security group (e.g. Fargate pods)."
+#   protocol                 = "all"
+#   security_group_id        = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
+#   source_security_group_id = local.worker_security_group_id
+#   from_port                = 0
+#   to_port                  = 65535
+#   type                     = "ingress"
+# }
+
 ################################################################################
 # IRSA
 ################################################################################
