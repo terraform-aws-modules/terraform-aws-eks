@@ -50,7 +50,7 @@ module "eks_managed_node_groups" {
   force_update_version = try(each.value.force_update_version, null)
   instance_types       = try(each.value.instance_types, null)
   labels               = try(each.value.labels, null)
-  cluster_version      = try(each.value.cluster_version, null)
+  cluster_version      = try(each.value.cluster_version, var.cluster_version)
 
   remote_access = try(each.value.remote_access, null)
   taints        = try(each.value.taints, null)
@@ -111,7 +111,6 @@ module "eks_managed_node_groups" {
   iam_role_path                 = try(each.value.iam_role_path, null)
   iam_role_permissions_boundary = try(each.value.iam_role_permissions_boundary, null)
   iam_role_tags                 = try(each.value.iam_role_tags, {})
-  iam_role_attach_cni_policy    = try(each.value.iam_role_attach_cni_policy, true)
   iam_role_additional_policies  = try(each.value.iam_role_additional_policies, [])
 
   tags = merge(var.tags, try(each.value.tags, {}))
@@ -175,11 +174,12 @@ module "self_managed_node_group" {
   create_launch_template = try(each.value.create_launch_template, true)
   description            = try(each.value.description, null)
 
-  ebs_optimized = try(each.value.ebs_optimized, null)
-  image_id      = try(each.value.image_id, data.aws_ami.eks_worker[0].image_id)
-  instance_type = try(each.value.instance_type, "m6i.large")
-  key_name      = try(each.value.key_name, null)
-  user_data     = try(each.value.user_data, null)
+  ebs_optimized   = try(each.value.ebs_optimized, null)
+  image_id        = try(each.value.image_id, null)
+  cluster_version = try(each.value.cluster_version, var.cluster_version)
+  instance_type   = try(each.value.instance_type, "m6i.large")
+  key_name        = try(each.value.key_name, null)
+  user_data       = try(each.value.user_data, null)
 
   vpc_security_group_ids = try(each.value.vpc_security_group_ids, null)
 
@@ -221,113 +221,18 @@ module "self_managed_node_group" {
   propagate_tags = try(each.value.propagate_tags, [])
 }
 
-################################################################################
-# Security Group
-################################################################################
+# ################################################################################
+# # Security Group
+# ################################################################################
 
-locals {
-  worker_sg_name   = coalesce(var.worker_security_group_name, "${var.cluster_name}-worker")
-  create_worker_sg = var.create && var.create_worker_security_group
-}
+# resource "aws_security_group_rule" "cluster_primary_ingress_worker" {
+#   count = local.create_worker_sg && var.worker_create_cluster_primary_security_group_rules ? 1 : 0
 
-resource "aws_security_group" "worker" {
-  count = local.create_worker_sg ? 1 : 0
-
-  name        = var.worker_security_group_use_name_prefix ? null : local.worker_sg_name
-  name_prefix = var.worker_security_group_use_name_prefix ? try("${local.worker_sg_name}-", local.worker_sg_name) : null
-  description = "EKS worker security group"
-  vpc_id      = var.vpc_id
-
-  tags = merge(
-    var.tags,
-    {
-      "Name"                                      = local.worker_sg_name
-      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
-    },
-    var.worker_security_group_tags
-  )
-}
-
-resource "aws_security_group_rule" "worker_egress_internet" {
-  count = local.create_worker_sg ? 1 : 0
-
-  description       = "Allow nodes all egress to the Internet."
-  protocol          = "-1"
-  security_group_id = local.worker_security_group_id
-  cidr_blocks       = var.worker_egress_cidrs
-  from_port         = 0
-  to_port           = 0
-  type              = "egress"
-}
-
-resource "aws_security_group_rule" "worker_ingress_self" {
-  count = local.create_worker_sg ? 1 : 0
-
-  description              = "Allow node to communicate with each other."
-  protocol                 = "-1"
-  security_group_id        = local.worker_security_group_id
-  source_security_group_id = local.worker_security_group_id
-  from_port                = 0
-  to_port                  = 65535
-  type                     = "ingress"
-}
-
-resource "aws_security_group_rule" "worker_ingress_cluster" {
-  count = local.create_worker_sg ? 1 : 0
-
-  description              = "Allow worker pods to receive communication from the cluster control plane."
-  protocol                 = "tcp"
-  security_group_id        = local.worker_security_group_id
-  source_security_group_id = local.cluster_security_group_id
-  from_port                = var.worker_sg_ingress_from_port
-  to_port                  = 65535
-  type                     = "ingress"
-}
-
-resource "aws_security_group_rule" "worker_ingress_cluster_kubelet" {
-  count = local.create_worker_sg ? var.worker_sg_ingress_from_port > 10250 ? 1 : 0 : 0
-
-  description              = "Allow worker Kubelets to receive communication from the cluster control plane."
-  protocol                 = "tcp"
-  security_group_id        = local.worker_security_group_id
-  source_security_group_id = local.cluster_security_group_id
-  from_port                = 10250
-  to_port                  = 10250
-  type                     = "ingress"
-}
-
-resource "aws_security_group_rule" "worker_ingress_cluster_https" {
-  count = local.create_worker_sg ? 1 : 0
-
-  description              = "Allow pods running extension API servers on port 443 to receive communication from cluster control plane."
-  protocol                 = "tcp"
-  security_group_id        = local.worker_security_group_id
-  source_security_group_id = local.cluster_security_group_id
-  from_port                = 443
-  to_port                  = 443
-  type                     = "ingress"
-}
-
-resource "aws_security_group_rule" "worker_ingress_cluster_primary" {
-  count = local.create_worker_sg && var.worker_create_cluster_primary_security_group_rules ? 1 : 0
-
-  description              = "Allow pods running on worker to receive communication from cluster primary security group (e.g. Fargate pods)."
-  protocol                 = "all"
-  security_group_id        = local.worker_security_group_id
-  source_security_group_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
-  from_port                = 0
-  to_port                  = 65535
-  type                     = "ingress"
-}
-
-resource "aws_security_group_rule" "cluster_primary_ingress_worker" {
-  count = local.create_worker_sg && var.worker_create_cluster_primary_security_group_rules ? 1 : 0
-
-  description              = "Allow pods running on worker to send communication to cluster primary security group (e.g. Fargate pods)."
-  protocol                 = "all"
-  security_group_id        = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
-  source_security_group_id = local.worker_security_group_id
-  from_port                = 0
-  to_port                  = 65535
-  type                     = "ingress"
-}
+#   description              = "Allow pods running on worker to send communication to cluster primary security group (e.g. Fargate pods)."
+#   protocol                 = "all"
+#   security_group_id        = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
+#   source_security_group_id = local.worker_security_group_id
+#   from_port                = 0
+#   to_port                  = 65535
+#   type                     = "ingress"
+# }

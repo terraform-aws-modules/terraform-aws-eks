@@ -1,6 +1,6 @@
 locals {
   use_custom_launch_template = var.create_launch_template || var.launch_template_name != null
-  policy_arn_prefix          = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
+
 }
 
 data "aws_partition" "current" {}
@@ -65,7 +65,7 @@ resource "aws_launch_template" "this" {
 
   name        = var.launch_template_use_name_prefix ? null : var.launch_template_name
   name_prefix = var.launch_template_use_name_prefix ? "${var.launch_template_name}-" : null
-  description = coalesce(var.description, "EKS Managed Node Group custom LT for ${var.name}")
+  description = coalesce(var.description, "Custom launch template for ${var.name} EKS managed node group")
 
   ebs_optimized = var.ebs_optimized
   image_id      = var.ami_id
@@ -264,6 +264,12 @@ resource "aws_launch_template" "this" {
 # EKS Managed Node Group
 ################################################################################
 
+locals {
+  launch_template_name = try(aws_launch_template.this[0].name, var.launch_template_name)
+  # Change order to allow users to set version priority before using defaults
+  launch_template_version = coalesce(var.launch_template_version, try(aws_launch_template.this[0].default_version, "$Default"))
+}
+
 resource "aws_eks_node_group" "this" {
   count = var.create ? 1 : 0
 
@@ -294,9 +300,8 @@ resource "aws_eks_node_group" "this" {
   dynamic "launch_template" {
     for_each = local.use_custom_launch_template ? [1] : []
     content {
-      name = try(aws_launch_template.this[0].name, var.launch_template_name)
-      # Change order to allow users to set version priority before using defaults
-      version = coalesce(var.launch_template_version, try(aws_launch_template.this[0].default_version, "$Default"))
+      name    = local.launch_template_name
+      version = local.launch_template_version
     }
   }
 
@@ -349,19 +354,136 @@ resource "aws_eks_node_group" "this" {
   )
 }
 
+
+################################################################################
+# Security Group
+# Defaults follow https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html
+################################################################################
+
+locals {
+  security_group_name   = coalesce(var.security_group_name, "${var.name}-worker")
+  create_security_group = var.create && var.create_security_group
+}
+
+resource "aws_security_group" "this" {
+  count = local.create_security_group ? 1 : 0
+
+  name        = var.security_group_use_name_prefix ? null : local.security_group_name
+  name_prefix = var.security_group_use_name_prefix ? "${local.security_group_name}-" : null
+  description = var.security_group_description
+  vpc_id      = var.vpc_id
+
+  tags = merge(
+    var.tags,
+    {
+      "Name"                                      = local.security_group_name
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    },
+    var.security_group_tags
+  )
+}
+
+# Ingress
+resource "aws_security_group_rule" "cluster_https_ingress" {
+  count = local.create_security_group ? 1 : 0
+
+  description              = "Allow communication from cluster control plane on 443/HTTPS"
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.this[0].id
+  source_security_group_id = var.cluster_security_group_id
+  from_port                = 443
+  to_port                  = 443
+  type                     = "ingress"
+}
+
+resource "aws_security_group_rule" "cluster_kubelet_ingress" {
+  count = local.create_security_group ? 1 : 0
+
+  description              = "Allow communication from the cluster control plane to kubelet"
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.this[0].id
+  source_security_group_id = var.cluster_security_group_id
+  from_port                = 10250
+  to_port                  = 10250
+  type                     = "ingress"
+}
+
+resource "aws_security_group_rule" "cluster_coredns_tcp_ingress" {
+  count = local.create_security_group ? 1 : 0
+
+  description              = "Allow communication from cluster control plane on 53/TCP for CoreDNS"
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.this[0].id
+  source_security_group_id = var.cluster_security_group_id
+  from_port                = 53
+  to_port                  = 53
+  type                     = "ingress"
+}
+
+resource "aws_security_group_rule" "cluster_coredns_udp_ingress" {
+  count = local.create_security_group ? 1 : 0
+
+  description              = "Allow communication from cluster control plane on 53/UDP for CoreDNS"
+  protocol                 = "udp"
+  security_group_id        = aws_security_group.this[0].id
+  source_security_group_id = var.cluster_security_group_id
+  from_port                = 53
+  to_port                  = 53
+  type                     = "ingress"
+}
+
+resource "aws_security_group_rule" "cluster_ephemeral_ports_ingress" {
+  count = local.create_security_group ? 1 : 0
+
+  description              = "Allow communication from the cluster control plane on Linux ephemeral ports"
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.this[0].id
+  source_security_group_id = var.cluster_security_group_id
+  from_port                = 1025
+  to_port                  = 65535
+  type                     = "ingress"
+}
+
+# TODO - move to separate security group in root that all node groups will get assigned
+resource "aws_security_group_rule" "ingress_self" {
+  count = local.create_security_group ? 1 : 0
+
+  description       = "Allow node to communicate with each other"
+  protocol          = "-1"
+  security_group_id = aws_security_group.this[0].id
+  self              = true
+  from_port         = 0
+  to_port           = 65535
+  type              = "ingress"
+}
+
+# Egress
+resource "aws_security_group_rule" "worker_egress_all" {
+  count = local.create_security_group ? 1 : 0
+
+  description       = "Allow egress to all ports/protocols"
+  protocol          = "-1"
+  security_group_id = aws_security_group.this[0].id
+  cidr_blocks       = var.security_group_egress_cidr_blocks
+  from_port         = 0
+  to_port           = 65535
+  type              = "egress"
+}
+
 ################################################################################
 # IAM Role
 ################################################################################
 
 locals {
-  iam_role_name = coalesce(var.iam_role_name, "${var.cluster_name}-worker")
+  iam_role_name     = coalesce(var.iam_role_name, "${var.cluster_name}-worker")
+  policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
   count = var.create && var.create_iam_role ? 1 : 0
 
   statement {
-    sid     = "EKSWorkerAssumeRole"
+    sid     = "EKSNodeAssumeRole"
     actions = ["sts:AssumeRole"]
 
     principals {
@@ -385,11 +507,12 @@ resource "aws_iam_role" "this" {
   tags = merge(var.tags, var.iam_role_tags)
 }
 
+# Policies attached ref https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
 resource "aws_iam_role_policy_attachment" "this" {
   for_each = var.create && var.create_iam_role ? toset(compact(distinct(concat([
     "${local.policy_arn_prefix}/AmazonEKSWorkerNodePolicy",
     "${local.policy_arn_prefix}/AmazonEC2ContainerRegistryReadOnly",
-    var.iam_role_attach_cni_policy ? "${local.policy_arn_prefix}/AmazonEKS_CNI_Policy" : "",
+    "${local.policy_arn_prefix}/AmazonEKS_CNI_Policy",
   ], var.iam_role_additional_policies)))) : toset([])
 
   policy_arn = each.value

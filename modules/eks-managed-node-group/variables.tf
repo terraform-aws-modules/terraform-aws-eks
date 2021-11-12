@@ -383,6 +383,58 @@ variable "timeouts" {
 }
 
 ################################################################################
+# Security Group
+################################################################################
+
+variable "create_security_group" {
+  description = "Whether to create a security group"
+  type        = bool
+  default     = true
+}
+
+variable "security_group_name" {
+  description = "Name to use on security group created"
+  type        = string
+  default     = null
+}
+
+variable "security_group_use_name_prefix" {
+  description = "Determines whether the security group name (`security_group_name`) is used as a prefix"
+  type        = string
+  default     = true
+}
+
+variable "security_group_description" {
+  description = "Description for the security group"
+  type        = string
+  default     = "EKS worker security group"
+}
+
+variable "vpc_id" {
+  description = "ID of the VPC where the security group/nodes will be provisioned"
+  type        = string
+  default     = null
+}
+
+variable "security_group_egress_cidr_blocks" {
+  description = "List of CIDR blocks that are permitted for security group egress traffic"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "cluster_security_group_id" {
+  description = "Cluster control plain security group ID"
+  type        = string
+  default     = null
+}
+
+variable "security_group_tags" {
+  description = "A map of additional tags to add to the security group created"
+  type        = map(string)
+  default     = {}
+}
+
+################################################################################
 # IAM Role
 ################################################################################
 
@@ -414,12 +466,6 @@ variable "iam_role_permissions_boundary" {
   description = "ARN of the policy that is used to set the permissions boundary for the IAM role"
   type        = string
   default     = null
-}
-
-variable "iam_role_attach_cni_policy" {
-  description = "Whether to attach the Amazon managed `AmazonEKS_CNI_Policy` IAM policy to the IAM IAM role. WARNING: If set `false` the permissions must be assigned to the `aws-node` DaemonSet pods via another method or nodes will not be able to join the cluster"
-  type        = bool
-  default     = true
 }
 
 variable "iam_role_additional_policies" {

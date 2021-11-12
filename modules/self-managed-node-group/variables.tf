@@ -368,7 +368,13 @@ variable "iam_instance_profile_name" {
 variable "image_id" {
   description = "The AMI from which to launch the instance"
   type        = string
-  default     = ""
+  default     = null
+}
+
+variable "cluster_version" {
+  description = "Kubernetes cluster version - used to lookup default AMI ID if one is not provided"
+  type        = string
+  default     = null
 }
 
 variable "instance_type" {
@@ -424,7 +430,7 @@ variable "schedules" {
 }
 
 ################################################################################
-# Worker Security Group
+# Security Group
 ################################################################################
 
 variable "create_security_group" {

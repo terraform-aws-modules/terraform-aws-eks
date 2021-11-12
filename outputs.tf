@@ -63,66 +63,6 @@ output "oidc_provider_arn" {
   value       = var.enable_irsa ? concat(aws_iam_openid_connect_provider.oidc_provider[*].arn, [""])[0] : null
 }
 
-# output "workers_asg_arns" {
-#   description = "IDs of the autoscaling groups containing workers."
-#   value       = aws_autoscaling_group.this.*.arn
-# }
-
-# output "workers_asg_names" {
-#   description = "Names of the autoscaling groups containing workers."
-#   value       = aws_autoscaling_group.this.*.id
-# }
-
-# output "workers_default_ami_id" {
-#   description = "ID of the default worker group AMI"
-#   value       = local.default_ami_id_linux
-# }
-
-# output "workers_default_ami_id_windows" {
-#   description = "ID of the default Windows worker group AMI"
-#   value       = local.default_ami_id_windows
-# }
-
-# output "workers_launch_template_ids" {
-#   description = "IDs of the worker launch templates."
-#   value       = aws_launch_template.this.*.id
-# }
-
-# output "workers_launch_template_arns" {
-#   description = "ARNs of the worker launch templates."
-#   value       = aws_launch_template.this.*.arn
-# }
-
-# output "workers_launch_template_latest_versions" {
-#   description = "Latest versions of the worker launch templates."
-#   value       = aws_launch_template.this.*.latest_version
-# }
-
-output "worker_security_group_id" {
-  description = "Security group ID attached to the EKS workers."
-  value       = local.worker_security_group_id
-}
-
-output "worker_iam_instance_profile_arns" {
-  description = "default IAM instance profile ARN for EKS worker groups"
-  value       = aws_iam_instance_profile.worker.*.arn
-}
-
-output "worker_iam_instance_profile_names" {
-  description = "default IAM instance profile name for EKS worker groups"
-  value       = aws_iam_instance_profile.worker.*.name
-}
-
-output "worker_iam_role_name" {
-  description = "default IAM role name for EKS worker groups"
-  value       = try(aws_iam_role.worker[0].name, "")
-}
-
-output "worker_iam_role_arn" {
-  description = "default IAM role ARN for EKS worker groups"
-  value       = try(aws_iam_role.worker[0].arn, "")
-}
-
 output "fargate_profile_ids" {
   description = "EKS Cluster name and EKS Fargate Profile names separated by a colon (:)."
   value       = module.fargate.fargate_profile_ids

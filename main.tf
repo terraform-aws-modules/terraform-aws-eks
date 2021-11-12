@@ -1,3 +1,20 @@
+locals {
+
+  # EKS Cluster
+  cluster_id                        = try(aws_eks_cluster.this[0].id, "")
+  cluster_arn                       = try(aws_eks_cluster.this[0].arn, "")
+  cluster_endpoint                  = try(aws_eks_cluster.this[0].endpoint, "")
+  cluster_auth_base64               = try(aws_eks_cluster.this[0].certificate_authority[0].data, "")
+  cluster_primary_security_group_id = try(aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id, "")
+
+  cluster_security_group_id = var.create_cluster_security_group ? join("", aws_security_group.cluster.*.id) : var.cluster_security_group_id
+
+  # Worker groups
+  policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
+}
+
+data "aws_partition" "current" {}
+
 ################################################################################
 # Cluster
 ################################################################################
@@ -75,7 +92,7 @@ resource "aws_security_group" "cluster" {
   count = local.create_cluster_sg ? 1 : 0
 
   name        = var.cluster_security_group_use_name_prefix ? null : local.cluster_sg_name
-  name_prefix = var.cluster_security_group_use_name_prefix ? try("${local.cluster_sg_name}-", local.cluster_sg_name) : null
+  name_prefix = var.cluster_security_group_use_name_prefix ? "${local.cluster_sg_name}-" : null
   description = "EKS cluster security group"
   vpc_id      = var.vpc_id
 
@@ -93,24 +110,24 @@ resource "aws_security_group_rule" "cluster_egress_internet" {
 
   description       = "Allow cluster egress access to the Internet"
   protocol          = "-1"
-  security_group_id = local.cluster_security_group_id
+  security_group_id = aws_security_group.this[0].id
   cidr_blocks       = var.cluster_egress_cidrs
   from_port         = 0
   to_port           = 0
   type              = "egress"
 }
 
-resource "aws_security_group_rule" "cluster_https_worker_ingress" {
-  count = local.create_cluster_sg && var.create_worker_security_group ? 1 : 0
+# resource "aws_security_group_rule" "cluster_https_worker_ingress" {
+#   count = local.create_cluster_sg && var.create_worker_security_group ? 1 : 0
 
-  description              = "Allow pods to communicate with the EKS cluster API"
-  protocol                 = "tcp"
-  security_group_id        = local.cluster_security_group_id
-  source_security_group_id = local.worker_security_group_id
-  from_port                = 443
-  to_port                  = 443
-  type                     = "ingress"
-}
+#   description              = "Allow pods to communicate with the EKS cluster API"
+#   protocol                 = "tcp"
+#   security_group_id        = aws_security_group.this[0].id
+#   source_security_group_id = local.worker_security_group_id # TODO - what a circle, oy
+#   from_port                = 443
+#   to_port                  = 443
+#   type                     = "ingress"
+# }
 
 resource "aws_security_group_rule" "cluster_private_access_cidrs_source" {
   for_each = local.enable_cluster_private_endpoint_sg_access && var.cluster_endpoint_private_access_cidrs != null ? toset(var.cluster_endpoint_private_access_cidrs) : []

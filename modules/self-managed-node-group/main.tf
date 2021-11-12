@@ -1,5 +1,17 @@
 data "aws_partition" "current" {}
 
+data "aws_ami" "eks_default" {
+  count = var.create ? 1 : 0
+
+  filter {
+    name   = "name"
+    values = ["amazon-eks-node-${var.cluster_version}-v*"]
+  }
+
+  most_recent = true
+  owners      = ["amazon"]
+}
+
 ################################################################################
 # Launch template
 ################################################################################
@@ -9,7 +21,7 @@ resource "aws_launch_template" "this" {
 
   name        = var.launch_template_use_name_prefix ? null : var.launch_template_name
   name_prefix = var.launch_template_use_name_prefix ? "${var.launch_template_name}-" : null
-  description = var.description
+  description = coalesce(var.description, "Custom launch template for ${var.name} self managed node group")
 
   ebs_optimized = var.ebs_optimized
   image_id      = var.image_id
@@ -199,7 +211,7 @@ resource "aws_launch_template" "this" {
 }
 
 ################################################################################
-# Autoscaling group
+# Self Managed Node Group (Autoscaling Group)
 ################################################################################
 
 locals {
@@ -509,7 +521,7 @@ data "aws_iam_policy_document" "assume_role_policy" {
   count = var.create && var.create_iam_instance_profile ? 1 : 0
 
   statement {
-    sid     = "EKSWorkerAssumeRole"
+    sid     = "EKSNodeAssumeRole"
     actions = ["sts:AssumeRole"]
 
     principals {
@@ -544,6 +556,7 @@ resource "aws_iam_role_policy_attachment" "this" {
   role       = aws_iam_role.this[0].name
 }
 
+# Only self-managed node group requires instance profile
 resource "aws_iam_instance_profile" "this" {
   count = var.create && var.create_iam_instance_profile ? 1 : 0
 
