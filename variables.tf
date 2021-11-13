@@ -232,6 +232,12 @@ variable "fargate_profiles" {
   default     = {}
 }
 
+variable "fargate_profile_defaults" {
+  description = "Map of Fargate Profile default configurations"
+  type        = any
+  default     = {}
+}
+
 ################################################################################
 # Self Managed Node Group
 ################################################################################
@@ -242,12 +248,24 @@ variable "self_managed_node_groups" {
   default     = {}
 }
 
+variable "self_managed_node_group_defaults" {
+  description = "Map of self-managed node group default configurations"
+  type        = any
+  default     = {}
+}
+
 ################################################################################
 # EKS Managed Node Group
 ################################################################################
 
 variable "eks_managed_node_groups" {
   description = "Map of EKS managed node group definitions to create"
+  type        = any
+  default     = {}
+}
+
+variable "eks_managed_node_group_defaults" {
+  description = "Map of EKS managed node group default configurations"
   type        = any
   default     = {}
 }

@@ -55,7 +55,7 @@ variable "max_size" {
   default     = null
 }
 
-variable "desired_capacity" {
+variable "desired_size" {
   description = "The number of Amazon EC2 instances that should be running in the autoscaling group"
   type        = number
   default     = null

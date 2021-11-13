@@ -235,7 +235,7 @@ resource "aws_autoscaling_group" "this" {
 
   min_size                  = var.min_size
   max_size                  = var.max_size
-  desired_capacity          = var.desired_capacity
+  desired_capacity          = var.desired_size
   capacity_rebalance        = var.capacity_rebalance
   min_elb_capacity          = var.min_elb_capacity
   wait_for_elb_capacity     = var.wait_for_elb_capacity
@@ -382,7 +382,7 @@ resource "aws_autoscaling_schedule" "this" {
 
   min_size         = lookup(each.value, "min_size", null)
   max_size         = lookup(each.value, "max_size", null)
-  desired_capacity = lookup(each.value, "desired_capacity", null)
+  desired_capacity = lookup(each.value, "desired_size", null)
   start_time       = lookup(each.value, "start_time", null)
   end_time         = lookup(each.value, "end_time", null)
   time_zone        = lookup(each.value, "time_zone", null)
