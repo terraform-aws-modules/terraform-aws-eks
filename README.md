@@ -392,15 +392,15 @@ Full contributing [guidelines are covered here](https://github.com/terraform-aws
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.56.0 |
-| <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 2.2.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.64 |
+| <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 2.2 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.56.0 |
-| <a name="provider_tls"></a> [tls](#provider\_tls) | >= 2.2.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.64 |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | >= 2.2 |
 
 ## Modules
 

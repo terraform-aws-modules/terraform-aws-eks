@@ -29,7 +29,7 @@ variable "iam_role_arn" {
 variable "iam_role_name" {
   description = "Name to use on IAM role created"
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "iam_role_use_name_prefix" {
@@ -75,7 +75,7 @@ variable "cluster_name" {
 variable "fargate_profile_name" {
   description = "Name of the EKS Fargate Profile"
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "subnet_ids" {

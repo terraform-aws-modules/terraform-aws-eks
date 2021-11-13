@@ -4,7 +4,7 @@ provider "aws" {
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.20"
+  cluster_version = "1.21"
   region          = "eu-west-1"
 
   tags = {
@@ -36,7 +36,7 @@ module "eks" {
   self_managed_node_groups = {
     one = {
       name                    = "spot-1"
-      override_instance_types = ["m5.large", "m5a.large", "m5d.large", "m5ad.large"]
+      override_instance_types = ["m5.large", "m5d.large", "m6i.large"]
       spot_instance_pools     = 4
       asg_max_size            = 5
       asg_desired_capacity    = 5
@@ -124,30 +124,22 @@ module "disabled_eks" {
   create = false
 }
 
-module "disabled_fargate" {
+module "disabled_fargate_profile" {
   source = "../../modules/fargate-profile"
 
   create = false
 }
 
-################################################################################
-# Additional security groups for workers
-################################################################################
+module "disabled_eks_managed_node_group" {
+  source = "../../modules/eks-managed-node-group"
 
-resource "aws_security_group" "additional" {
-  name_prefix = "all_worker_management"
-  vpc_id      = module.vpc.vpc_id
+  create = false
+}
 
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-    cidr_blocks = [
-      "10.0.0.0/8",
-      "172.16.0.0/12",
-      "192.168.0.0/16",
-    ]
-  }
+module "disabled_self_managed_node_group" {
+  source = "../../modules/self-managed-node-group"
+
+  create = false
 }
 
 ################################################################################
@@ -180,4 +172,20 @@ module "vpc" {
   }
 
   tags = local.tags
+}
+
+resource "aws_security_group" "additional" {
+  name_prefix = "${local.name}-additional"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    from_port = 22
+    to_port   = 22
+    protocol  = "tcp"
+    cidr_blocks = [
+      "10.0.0.0/8",
+      "172.16.0.0/12",
+      "192.168.0.0/16",
+    ]
+  }
 }

@@ -277,7 +277,7 @@ variable "desired_size" {
 variable "name" {
   description = "Name of the EKS Node Group"
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "use_name_prefix" {

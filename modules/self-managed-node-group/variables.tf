@@ -11,6 +11,7 @@ variable "create" {
 variable "name" {
   description = "Name used across the resources created"
   type        = string
+  default     = ""
 }
 
 variable "use_name_prefix" {

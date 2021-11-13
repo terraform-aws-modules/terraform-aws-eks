@@ -281,6 +281,8 @@ resource "aws_autoscaling_group" "this" {
         content {
           instance_warmup        = lookup(preferences.value, "instance_warmup", null)
           min_healthy_percentage = lookup(preferences.value, "min_healthy_percentage", null)
+          checkpoint_delay       = lookup(preferences.value, "checkpoint_delay", null)
+          checkpoint_percentages = lookup(preferences.value, "checkpoint_percentages", null)
         }
       }
     }
