@@ -56,13 +56,14 @@ data "cloudinit_config" "eks_optimized_ami_user_data" {
 
 locals {
   use_custom_launch_template = var.create_launch_template || var.launch_template_name != null
+  launch_template_name       = coalesce(var.launch_template_name, "${var.name}-eks-node-group")
 }
 
 resource "aws_launch_template" "this" {
   count = var.create && var.create_launch_template ? 1 : 0
 
-  name        = var.launch_template_use_name_prefix ? null : var.launch_template_name
-  name_prefix = var.launch_template_use_name_prefix ? "${var.launch_template_name}-" : null
+  name        = var.launch_template_use_name_prefix ? null : local.launch_template_name
+  name_prefix = var.launch_template_use_name_prefix ? "${local.launch_template_name}-" : null
   description = coalesce(var.description, "Custom launch template for ${var.name} EKS managed node group")
 
   ebs_optimized = var.ebs_optimized
@@ -255,18 +256,25 @@ resource "aws_launch_template" "this" {
     create_before_destroy = true
   }
 
+  # Prevent premature access of security group roles and policies by pods that
+  # require permissions on create/destroy that depend on workers.
+  depends_on = [
+    aws_security_group_rule.cluster_https_ingress,
+    aws_security_group_rule.cluster_kubelet_ingress,
+    aws_security_group_rule.cluster_coredns_tcp_ingress,
+    aws_security_group_rule.cluster_coredns_udp_ingress,
+    aws_security_group_rule.cluster_ephemeral_ports_ingress,
+    aws_security_group_rule.self_ingress,
+    aws_security_group_rule.all_egress,
+    aws_iam_role_policy_attachment.this,
+  ]
+
   tags = var.tags
 }
 
 ################################################################################
 # Node Group
 ################################################################################
-
-locals {
-  launch_template_name = try(aws_launch_template.this[0].name, var.launch_template_name)
-  # Change order to allow users to set version priority before using defaults
-  launch_template_version = coalesce(var.launch_template_version, try(aws_launch_template.this[0].default_version, "$Default"))
-}
 
 resource "aws_eks_node_group" "this" {
   count = var.create ? 1 : 0
@@ -289,7 +297,7 @@ resource "aws_eks_node_group" "this" {
   ami_type             = var.ami_type
   release_version      = var.ami_release_version
   capacity_type        = var.capacity_type
-  disk_size            = var.disk_size
+  disk_size            = local.use_custom_launch_template ? null : var.disk_size # if using LT, set disk size on LT or else it will error here
   force_update_version = var.force_update_version
   instance_types       = var.instance_types
   labels               = var.labels
@@ -298,8 +306,9 @@ resource "aws_eks_node_group" "this" {
   dynamic "launch_template" {
     for_each = local.use_custom_launch_template ? [1] : []
     content {
-      name    = local.launch_template_name
-      version = local.launch_template_version
+      name = try(aws_launch_template.this[0].name, var.launch_template_name)
+      # Change order to allow users to set version priority before using defaults
+      version = coalesce(var.launch_template_version, try(aws_launch_template.this[0].default_version, "$Default"))
     }
   }
 
@@ -358,7 +367,7 @@ resource "aws_eks_node_group" "this" {
 ################################################################################
 
 locals {
-  security_group_name   = coalesce(var.security_group_name, "${var.name}-worker")
+  security_group_name   = coalesce(var.security_group_name, "${var.name}-eks-node-group")
   create_security_group = var.create && var.create_security_group
 }
 
@@ -442,7 +451,7 @@ resource "aws_security_group_rule" "cluster_ephemeral_ports_ingress" {
 }
 
 # TODO - move to separate security group in root that all node groups will get assigned
-resource "aws_security_group_rule" "ingress_self" {
+resource "aws_security_group_rule" "self_ingress" {
   count = local.create_security_group ? 1 : 0
 
   description       = "Allow node to communicate with each other"
@@ -455,7 +464,7 @@ resource "aws_security_group_rule" "ingress_self" {
 }
 
 # Egress
-resource "aws_security_group_rule" "worker_egress_all" {
+resource "aws_security_group_rule" "all_egress" {
   count = local.create_security_group ? 1 : 0
 
   description       = "Allow egress to all ports/protocols"
@@ -472,7 +481,7 @@ resource "aws_security_group_rule" "worker_egress_all" {
 ################################################################################
 
 locals {
-  iam_role_name     = coalesce(var.iam_role_name, "${var.cluster_name}-worker")
+  iam_role_name     = coalesce(var.iam_role_name, "${var.name}-eks-node-group")
   policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
 }
 

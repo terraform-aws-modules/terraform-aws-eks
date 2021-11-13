@@ -35,7 +35,7 @@ variable "cluster_version" {
 variable "cluster_enabled_log_types" {
   description = "A list of the desired control plane logging to enable. For more information, see Amazon EKS Control Plane Logging documentation (https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html)"
   type        = list(string)
-  default     = []
+  default     = ["audit", "api", "authenticator"]
 }
 
 variable "cluster_security_group_id" {
@@ -76,7 +76,7 @@ variable "cluster_service_ipv4_cidr" {
 }
 
 variable "cluster_encryption_config" {
-  description = "Configuration block with encryption configuration for the cluster. See examples/secrets_encryption/main.tf for example format"
+  description = "Configuration block with encryption configuration for the cluster"
   type = list(object({
     provider_key_arn = string
     resources        = list(string)
@@ -96,20 +96,30 @@ variable "cluster_timeouts" {
   default     = {}
 }
 
-variable "cluster_log_retention_in_days" {
+################################################################################
+# CloudWatch Log Group
+################################################################################
+
+variable "create_cloudwatch_log_group" {
+  description = "Determines whether a log group is created by this module for the cluster logs. If not, AWS will automatically create one if logging is enabled"
+  type        = bool
+  default     = true
+}
+
+variable "cloudwatch_log_group_retention_in_days" {
   description = "Number of days to retain log events. Default retention - 90 days"
   type        = number
   default     = 90
 }
 
-variable "cluster_log_kms_key_id" {
+variable "cloudwatch_log_group_kms_key_id" {
   description = "If a KMS Key ARN is set, this key will be used to encrypt the corresponding log group. Please be sure that the KMS Key has an appropriate key policy (https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html)"
   type        = string
-  default     = ""
+  default     = null
 }
 
 ################################################################################
-# Cluster Security Group
+# Security Group
 ################################################################################
 
 variable "create_cluster_security_group" {
@@ -119,7 +129,7 @@ variable "create_cluster_security_group" {
 }
 
 variable "vpc_id" {
-  description = "ID of the VPC where the cluster and workers will be provisioned"
+  description = "ID of the VPC where the cluster and its nodes will be provisioned"
   type        = string
   default     = null
 }

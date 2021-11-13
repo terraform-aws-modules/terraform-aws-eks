@@ -86,8 +86,8 @@ variable "subnet_ids" {
 
 variable "selectors" {
   description = "Configuration block(s) for selecting Kubernetes Pods to execute with this Fargate Profile"
-  type        = map(string)
-  default     = {}
+  type        = any
+  default     = []
 }
 
 variable "timeouts" {

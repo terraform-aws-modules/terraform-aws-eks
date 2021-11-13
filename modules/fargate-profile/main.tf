@@ -1,7 +1,7 @@
 data "aws_partition" "current" {}
 
 locals {
-  iam_role_name     = coalesce(var.iam_role_name, var.fargate_profile_name)
+  iam_role_name     = coalesce(var.iam_role_name, var.fargate_profile_name, "fargate-profile")
   policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
 }
 
@@ -51,7 +51,7 @@ resource "aws_iam_role_policy_attachment" "this" {
 ################################################################################
 
 resource "aws_eks_fargate_profile" "this" {
-  for_each = var.create ? 1 : 0
+  count = var.create ? 1 : 0
 
   cluster_name           = var.cluster_name
   fargate_profile_name   = var.fargate_profile_name

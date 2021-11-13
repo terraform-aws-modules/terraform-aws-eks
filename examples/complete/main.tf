@@ -30,8 +30,10 @@ module "eks" {
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
-  # TODO
-  # vpc_security_group_ids = [aws_security_group.additional.id]
+  # Self Managed Node Group(s)
+  self_managed_node_group_defaults = {
+    vpc_security_group_ids = [aws_security_group.additional.id]
+  }
 
   self_managed_node_groups = {
     one = {
@@ -42,34 +44,29 @@ module "eks" {
       asg_desired_capacity    = 5
       bootstrap_extra_args    = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
       public_ip               = true
-
-      vpc_security_group_ids = [aws_security_group.additional.id] # TODO
     }
   }
 
-  # # Managed Node Groups
-  # node_groups_defaults = {
-  #   ami_type  = "AL2_x86_64"
-  #   disk_size = 50
-  # }
+  # EKS Managed Node Group(s)
+  eks_managed_node_group_defaults = {
+    ami_type = "AL2_x86_64"
+    # disk_size              = 50
+    vpc_security_group_ids = [aws_security_group.additional.id]
+    create_launch_template = true
+  }
 
   eks_managed_node_groups = {
-    example = {
-      desired_capacity = 1
-      max_capacity     = 10
-      min_capacity     = 1
-
-      vpc_security_group_ids = [aws_security_group.additional.id] # TODO
+    eks_mng = {
+      min_size     = 1
+      max_size     = 10
+      desired_size = 1
 
       instance_types = ["t3.large"]
       capacity_type  = "SPOT"
-      k8s_labels = {
+      labels = {
         Environment = "test"
         GithubRepo  = "terraform-aws-eks"
         GithubOrg   = "terraform-aws-modules"
-      }
-      additional_tags = {
-        ExtraTag = "example"
       }
       taints = {
         dedicated = {
@@ -81,35 +78,38 @@ module "eks" {
       update_config = {
         max_unavailable_percentage = 50 # or set `max_unavailable`
       }
+      tags = {
+        ExtraTag = "example"
+      }
     }
   }
 
-  # # Fargate
-  # fargate_profiles = {
-  #   default = {
-  #     name = "default"
-  #     selectors = [
-  #       {
-  #         namespace = "kube-system"
-  #         labels = {
-  #           k8s-app = "kube-dns"
-  #         }
-  #       },
-  #       {
-  #         namespace = "default"
-  #       }
-  #     ]
+  # Fargate Profile(s)
+  fargate_profiles = {
+    default = {
+      fargate_profile_name = "default"
+      selectors = [
+        {
+          namespace = "kube-system"
+          labels = {
+            k8s-app = "kube-dns"
+          }
+        },
+        {
+          namespace = "default"
+        }
+      ]
 
-  #     tags = {
-  #       Owner = "test"
-  #     }
+      tags = {
+        Owner = "test"
+      }
 
-  #     timeouts = {
-  #       create = "20m"
-  #       delete = "20m"
-  #     }
-  #   }
-  # }
+      timeouts = {
+        create = "20m"
+        delete = "20m"
+      }
+    }
+  }
 
   tags = local.tags
 }
@@ -146,17 +146,18 @@ module "disabled_self_managed_node_group" {
 # Supporting resources
 ################################################################################
 
-data "aws_availability_zones" "available" {}
-
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 3.0"
 
-  name                 = local.name
-  cidr                 = "10.0.0.0/16"
-  azs                  = data.aws_availability_zones.available.names
-  private_subnets      = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets       = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  name = local.name
+  cidr = "10.0.0.0/16"
+
+  azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  intra_subnets   = ["10.0.7.0/24", "10.0.8.0/24", "10.0.9.0/24"]
+
   enable_nat_gateway   = true
   single_nat_gateway   = true
   enable_dns_hostnames = true

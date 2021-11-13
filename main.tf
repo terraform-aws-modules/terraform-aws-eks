@@ -13,7 +13,7 @@ resource "aws_eks_cluster" "this" {
   enabled_cluster_log_types = var.cluster_enabled_log_types
 
   vpc_config {
-    security_group_ids      = var.create_cluster_security_group ? aws_security_group.this[0].id : var.cluster_security_group_id
+    security_group_ids      = var.create_cluster_security_group ? [aws_security_group.this[0].id] : [var.cluster_security_group_id]
     subnet_ids              = var.subnet_ids
     endpoint_private_access = var.cluster_endpoint_private_access
     endpoint_public_access  = var.cluster_endpoint_public_access
@@ -54,11 +54,11 @@ resource "aws_eks_cluster" "this" {
 }
 
 resource "aws_cloudwatch_log_group" "this" {
-  count = var.create && length(var.cluster_enabled_log_types) > 0 ? 1 : 0
+  count = var.create && var.create_cloudwatch_log_group ? 1 : 0
 
   name              = "/aws/eks/${var.cluster_name}/cluster"
-  retention_in_days = var.cluster_log_retention_in_days
-  kms_key_id        = var.cluster_log_kms_key_id
+  retention_in_days = var.cloudwatch_log_group_retention_in_days
+  kms_key_id        = var.cloudwatch_log_group_kms_key_id
 
   tags = var.tags
 }

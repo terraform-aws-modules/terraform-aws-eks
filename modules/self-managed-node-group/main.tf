@@ -119,7 +119,7 @@ resource "aws_launch_template" "this" {
   }
 
   iam_instance_profile {
-    arn = var.create_iam_instance_profile ? aws_iam_role.this[0].arn : var.iam_instance_profile_arn
+    arn = var.create_iam_instance_profile ? aws_iam_instance_profile.this[0].arn : var.iam_instance_profile_arn
   }
 
   dynamic "instance_market_options" {
@@ -207,6 +207,19 @@ resource "aws_launch_template" "this" {
     create_before_destroy = true
   }
 
+  # Prevent premature access of security group roles and policies by pods that
+  # require permissions on create/destroy that depend on workers.
+  depends_on = [
+    aws_security_group_rule.cluster_https_ingress,
+    aws_security_group_rule.cluster_kubelet_ingress,
+    aws_security_group_rule.cluster_coredns_tcp_ingress,
+    aws_security_group_rule.cluster_coredns_udp_ingress,
+    aws_security_group_rule.cluster_ephemeral_ports_ingress,
+    aws_security_group_rule.self_ingress,
+    aws_security_group_rule.all_egress,
+    aws_iam_role_policy_attachment.this,
+  ]
+
   tags = var.tags
 }
 
@@ -215,8 +228,8 @@ resource "aws_launch_template" "this" {
 ################################################################################
 
 locals {
-  launch_template_name    = var.create_launch_template ? aws_launch_template.this[0].name : var.launch_template_name
-  launch_template_version = var.create_launch_template && var.launch_template_version == null ? aws_launch_template.this[0].latest_version : var.launch_template_version
+  launch_template_name    = var.create && var.create_launch_template ? aws_launch_template.this[0].name : var.launch_template_name
+  launch_template_version = var.create && var.create_launch_template && var.launch_template_version == null ? aws_launch_template.this[0].latest_version : var.launch_template_version
 }
 
 resource "aws_autoscaling_group" "this" {
@@ -400,7 +413,7 @@ resource "aws_autoscaling_schedule" "this" {
 ################################################################################
 
 locals {
-  security_group_name   = coalesce(var.security_group_name, "${var.name}-worker")
+  security_group_name   = coalesce(var.security_group_name, "${var.name}-node-group")
   create_security_group = var.create && var.create_security_group
 }
 
@@ -484,7 +497,7 @@ resource "aws_security_group_rule" "cluster_ephemeral_ports_ingress" {
 }
 
 # TODO - move to separate security group in root that all node groups will get assigned
-resource "aws_security_group_rule" "ingress_self" {
+resource "aws_security_group_rule" "self_ingress" {
   count = local.create_security_group ? 1 : 0
 
   description       = "Allow node to communicate with each other"
@@ -497,7 +510,7 @@ resource "aws_security_group_rule" "ingress_self" {
 }
 
 # Egress
-resource "aws_security_group_rule" "worker_egress_all" {
+resource "aws_security_group_rule" "all_egress" {
   count = local.create_security_group ? 1 : 0
 
   description       = "Allow egress to all ports/protocols"
@@ -514,7 +527,7 @@ resource "aws_security_group_rule" "worker_egress_all" {
 ################################################################################
 
 locals {
-  iam_role_name = coalesce(var.iam_role_name, "${var.cluster_name}-worker")
+  iam_role_name = coalesce(var.iam_role_name, "${var.name}-node-group")
 
   iam_role_policy_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
 }
