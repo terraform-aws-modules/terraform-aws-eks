@@ -1,5 +1,17 @@
 # Self Managed Node Group Module
 
+Configuration in this directory creates a Self Managed Node Group (AutoScaling Group) along with an IAM role, security group, and launch template
+
+## Usage
+
+To run this example you need to execute:
+
+```bash
+$ terraform init
+$ terraform plan
+$ terraform apply
+```
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 

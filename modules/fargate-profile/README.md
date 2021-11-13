@@ -1,14 +1,16 @@
-# EKS `fargate` submodule
+# EKS Fargate Profile Module
 
-Helper submodule to create and manage resources related to `aws_eks_fargate_profile`.
+Configuration in this directory creates a Fargate EKS Profile
 
-## `fargate_profile` keys
+## Usage
 
-`fargate_profile` is a map of maps. Key of first level will be used as unique value for `for_each` resources and in the `aws_eks_fargate_profile` name. Inner map can take the below values.
+To run this example you need to execute:
 
-## Example
-
-See example code in `examples/fargate`.
+```bash
+$ terraform init
+$ terraform plan
+$ terraform apply
+```
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
