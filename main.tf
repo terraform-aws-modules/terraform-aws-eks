@@ -8,7 +8,7 @@ resource "aws_eks_cluster" "this" {
   count = var.create ? 1 : 0
 
   name                      = var.cluster_name
-  role_arn                  = try(aws_iam_role.cluster[0].arn, var.cluster_iam_role_arn)
+  role_arn                  = try(aws_iam_role.this[0].arn, var.iam_role_arn)
   version                   = var.cluster_version
   enabled_cluster_log_types = var.cluster_enabled_log_types
 
@@ -47,6 +47,7 @@ resource "aws_eks_cluster" "this" {
   }
 
   depends_on = [
+    aws_iam_role_policy_attachment.this,
     aws_security_group_rule.cluster_egress_internet,
     # aws_security_group_rule.cluster_https_worker_ingress,
     aws_cloudwatch_log_group.this
@@ -103,17 +104,20 @@ resource "aws_security_group_rule" "cluster_egress_internet" {
   type              = "egress"
 }
 
-# resource "aws_security_group_rule" "cluster_https_worker_ingress" {
-#   count = local.create_cluster_sg && var.create_worker_security_group ? 1 : 0
+resource "aws_security_group_rule" "cluster_ingress_https_nodes" {
+  for_each = local.create_cluster_sg ? merge(
+    { for k, v in module.self_managed_node_group : k => v.security_group_id },
+    { for k, v in module.eks_managed_node_group : k => v.security_group_id }
+  ) : {}
 
-#   description              = "Allow pods to communicate with the EKS cluster API"
-#   protocol                 = "tcp"
-#   security_group_id        = aws_security_group.this[0].id
-#   source_security_group_id = local.worker_security_group_id # TODO - what a circle, oy
-#   from_port                = 443
-#   to_port                  = 443
-#   type                     = "ingress"
-# }
+  description              = "Allow pods to communicate with the EKS cluster API"
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.this[0].id
+  source_security_group_id = each.value
+  from_port                = 443
+  to_port                  = 443
+  type                     = "ingress"
+}
 
 resource "aws_security_group_rule" "cluster_private_access_cidrs_source" {
   count = local.enable_cluster_private_endpoint_sg_access && length(var.cluster_endpoint_private_access_cidrs) > 0 ? 1 : 0
@@ -184,32 +188,12 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 ################################################################################
 
 locals {
-  cluster_iam_role_name = coalesce(var.cluster_iam_role_name, "${var.cluster_name}-cluster")
-  policy_arn_prefix     = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
+  iam_role_name     = coalesce(var.iam_role_name, "${var.cluster_name}-cluster")
+  policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
 }
 
-resource "aws_iam_role" "cluster" {
-  count = var.create && var.create_cluster_iam_role ? 1 : 0
-
-  name        = var.cluster_iam_role_use_name_prefix ? null : local.cluster_iam_role_name
-  name_prefix = var.cluster_iam_role_use_name_prefix ? try("${local.cluster_iam_role_name}-", local.cluster_iam_role_name) : null
-  path        = var.cluster_iam_role_path
-
-  assume_role_policy   = data.aws_iam_policy_document.cluster_assume_role_policy[0].json
-  permissions_boundary = var.cluster_iam_role_permissions_boundary
-  managed_policy_arns = [
-    "${local.policy_arn_prefix}/AmazonEKSClusterPolicy",
-    "${local.policy_arn_prefix}/AmazonEKSServicePolicy",
-    "${local.policy_arn_prefix}/AmazonEKSVPCResourceController",
-    aws_iam_policy.cluster_additional[0].arn,
-  ]
-  force_detach_policies = true
-
-  tags = merge(var.tags, var.cluster_iam_role_tags)
-}
-
-data "aws_iam_policy_document" "cluster_assume_role_policy" {
-  count = var.create && var.create_cluster_iam_role ? 1 : 0
+data "aws_iam_policy_document" "assume_role_policy" {
+  count = var.create && var.create_iam_role ? 1 : 0
 
   statement {
     sid     = "EKSClusterAssumeRole"
@@ -222,8 +206,27 @@ data "aws_iam_policy_document" "cluster_assume_role_policy" {
   }
 }
 
-data "aws_iam_policy_document" "cluster_additional" {
-  count = var.create && var.create_cluster_iam_role ? 1 : 0
+resource "aws_iam_role" "this" {
+  count = var.create && var.create_iam_role ? 1 : 0
+
+  name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
+  name_prefix = var.iam_role_use_name_prefix ? try("${local.iam_role_name}-", local.iam_role_name) : null
+  path        = var.iam_role_path
+
+  assume_role_policy    = data.aws_iam_policy_document.assume_role_policy[0].json
+  permissions_boundary  = var.iam_role_permissions_boundary
+  force_detach_policies = true
+
+  inline_policy {
+    name   = "additional-alb"
+    policy = data.aws_iam_policy_document.additional[0].json
+  }
+
+  tags = merge(var.tags, var.iam_role_tags)
+}
+
+data "aws_iam_policy_document" "additional" {
+  count = var.create && var.create_iam_role ? 1 : 0
 
   # Permissions required to create AWSServiceRoleForElasticLoadBalancing service-linked role by EKS during ELB provisioning
   statement {
@@ -240,21 +243,19 @@ data "aws_iam_policy_document" "cluster_additional" {
   # Deny permissions to logs:CreateLogGroup it is not needed since we create the log group ourselve in this module,
   # and it is causing trouble during cleanup/deletion
   statement {
-    effect = "Deny"
-    actions = [
-      "logs:CreateLogGroup"
-    ]
+    effect    = "Deny"
+    actions   = ["logs:CreateLogGroup"]
     resources = ["*"]
   }
 }
 
-resource "aws_iam_policy" "cluster_additional" {
-  count = var.create && var.create_cluster_iam_role ? 1 : 0
+# Policies attached ref https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
+resource "aws_iam_role_policy_attachment" "this" {
+  for_each = var.create && var.create_iam_role ? toset([
+    "${local.policy_arn_prefix}/AmazonEKSClusterPolicy",
+    "${local.policy_arn_prefix}/AmazonEKSVPCResourceController",
+  ]) : toset([])
 
-  name        = var.cluster_iam_role_use_name_prefix ? null : local.cluster_iam_role_name
-  name_prefix = var.cluster_iam_role_use_name_prefix ? try("${local.cluster_iam_role_name}-", local.cluster_iam_role_name) : null
-  description = "Additional permissions for EKS cluster"
-  policy      = data.aws_iam_policy_document.cluster_additional[0].json
-
-  tags = merge(var.tags, var.cluster_iam_role_tags)
+  policy_arn = each.value
+  role       = aws_iam_role.this[0].name
 }

@@ -66,17 +66,17 @@ output "oidc_provider_arn" {
 
 output "cluster_iam_role_name" {
   description = "IAM role name of the EKS cluster"
-  value       = try(aws_iam_role.cluster[0].name, "")
+  value       = try(aws_iam_role.this[0].name, "")
 }
 
 output "cluster_iam_role_arn" {
   description = "IAM role ARN of the EKS cluster"
-  value       = try(aws_iam_role.cluster[0].arn, "")
+  value       = try(aws_iam_role.this[0].arn, "")
 }
 
 output "cluster_iam_role_unique_id" {
   description = "Stable and unique string identifying the IAM role"
-  value       = try(aws_iam_role.cluster[0].unique_id, "")
+  value       = try(aws_iam_role.this[0].unique_id, "")
 }
 
 ################################################################################

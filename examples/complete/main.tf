@@ -36,15 +36,15 @@ module "eks" {
   }
 
   self_managed_node_groups = {
-    one = {
-      name                    = "spot-1"
-      override_instance_types = ["m5.large", "m5d.large", "m6i.large"]
-      spot_instance_pools     = 4
-      asg_max_size            = 5
-      asg_desired_capacity    = 5
-      bootstrap_extra_args    = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-      public_ip               = true
-    }
+    # one = {
+    #   name                    = "spot-1"
+    #   override_instance_types = ["m5.large", "m5d.large", "m6i.large"]
+    #   spot_instance_pools     = 4
+    #   asg_max_size            = 5
+    #   asg_desired_capacity    = 5
+    #   bootstrap_extra_args    = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+    #   public_ip               = true
+    # }
   }
 
   # EKS Managed Node Group(s)
@@ -56,59 +56,59 @@ module "eks" {
   }
 
   eks_managed_node_groups = {
-    eks_mng = {
-      min_size     = 1
-      max_size     = 10
-      desired_size = 1
+    # eks_mng = {
+    #   min_size     = 1
+    #   max_size     = 10
+    #   desired_size = 1
 
-      instance_types = ["t3.large"]
-      capacity_type  = "SPOT"
-      labels = {
-        Environment = "test"
-        GithubRepo  = "terraform-aws-eks"
-        GithubOrg   = "terraform-aws-modules"
-      }
-      taints = {
-        dedicated = {
-          key    = "dedicated"
-          value  = "gpuGroup"
-          effect = "NO_SCHEDULE"
-        }
-      }
-      update_config = {
-        max_unavailable_percentage = 50 # or set `max_unavailable`
-      }
-      tags = {
-        ExtraTag = "example"
-      }
-    }
+    #   instance_types = ["t3.large"]
+    #   capacity_type  = "SPOT"
+    #   labels = {
+    #     Environment = "test"
+    #     GithubRepo  = "terraform-aws-eks"
+    #     GithubOrg   = "terraform-aws-modules"
+    #   }
+    #   taints = {
+    #     dedicated = {
+    #       key    = "dedicated"
+    #       value  = "gpuGroup"
+    #       effect = "NO_SCHEDULE"
+    #     }
+    #   }
+    #   update_config = {
+    #     max_unavailable_percentage = 50 # or set `max_unavailable`
+    #   }
+    #   tags = {
+    #     ExtraTag = "example"
+    #   }
+    # }
   }
 
   # Fargate Profile(s)
   fargate_profiles = {
-    default = {
-      fargate_profile_name = "default"
-      selectors = [
-        {
-          namespace = "kube-system"
-          labels = {
-            k8s-app = "kube-dns"
-          }
-        },
-        {
-          namespace = "default"
-        }
-      ]
+    # default = {
+    #   fargate_profile_name = "default"
+    #   selectors = [
+    #     {
+    #       namespace = "kube-system"
+    #       labels = {
+    #         k8s-app = "kube-dns"
+    #       }
+    #     },
+    #     {
+    #       namespace = "default"
+    #     }
+    #   ]
 
-      tags = {
-        Owner = "test"
-      }
+    #   tags = {
+    #     Owner = "test"
+    #   }
 
-      timeouts = {
-        create = "20m"
-        delete = "20m"
-      }
-    }
+    #   timeouts = {
+    #     create = "20m"
+    #     delete = "20m"
+    #   }
+    # }
   }
 
   tags = local.tags
@@ -156,7 +156,6 @@ module "vpc" {
   azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
   public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
-  intra_subnets   = ["10.0.7.0/24", "10.0.8.0/24", "10.0.9.0/24"]
 
   enable_nat_gateway   = true
   single_nat_gateway   = true

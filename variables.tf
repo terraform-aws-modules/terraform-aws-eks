@@ -20,8 +20,8 @@ variable "cluster_name" {
   default     = ""
 }
 
-variable "cluster_iam_role_arn" {
-  description = "Existing IAM role ARN for the cluster. Required if `create_cluster_iam_role` is set to `false`"
+variable "iam_role_arn" {
+  description = "Existing IAM role ARN for the cluster. Required if `create_iam_role` is set to `false`"
   type        = string
   default     = null
 }
@@ -141,7 +141,7 @@ variable "cluster_security_group_name" {
 }
 
 variable "cluster_security_group_use_name_prefix" {
-  description = "Determines whether cluster IAM role name (`cluster_iam_role_name`) is used as a prefix"
+  description = "Determines whether cluster IAM role name (`iam_role_name`) is used as a prefix"
   type        = string
   default     = true
 }
@@ -196,37 +196,37 @@ variable "openid_connect_audiences" {
 # Cluster IAM Role
 ################################################################################
 
-variable "create_cluster_iam_role" {
+variable "create_iam_role" {
   description = "Determines whether a cluster IAM role is created or to use an existing IAM role"
   type        = bool
   default     = true
 }
 
-variable "cluster_iam_role_name" {
+variable "iam_role_name" {
   description = "Name to use on cluster role created"
   type        = string
   default     = null
 }
 
-variable "cluster_iam_role_use_name_prefix" {
-  description = "Determines whether cluster IAM role name (`cluster_iam_role_name`) is used as a prefix"
+variable "iam_role_use_name_prefix" {
+  description = "Determines whether cluster IAM role name (`iam_role_name`) is used as a prefix"
   type        = string
   default     = true
 }
 
-variable "cluster_iam_role_path" {
+variable "iam_role_path" {
   description = "Cluster IAM role path"
   type        = string
   default     = null
 }
 
-variable "cluster_iam_role_permissions_boundary" {
+variable "iam_role_permissions_boundary" {
   description = "ARN of the policy that is used to set the permissions boundary for the cluster role"
   type        = string
   default     = null
 }
 
-variable "cluster_iam_role_tags" {
+variable "iam_role_tags" {
   description = "A map of additional tags to add to the cluster IAM role created"
   type        = map(string)
   default     = {}
