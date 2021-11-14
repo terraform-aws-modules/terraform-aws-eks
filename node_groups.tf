@@ -38,7 +38,7 @@ module "eks_managed_node_group" {
 
   cluster_name              = aws_eks_cluster.this[0].name
   cluster_version           = try(each.value.cluster_version, var.eks_managed_node_group_defaults.cluster_version, var.cluster_version)
-  cluster_security_group_id = var.create_cluster_security_group ? aws_security_group.this[0].id : var.cluster_security_group_id
+  cluster_security_group_id = local.cluster_security_group_id
 
   # EKS Managed Node Group
   name            = try(each.value.name, each.key)
@@ -195,7 +195,7 @@ module "self_managed_node_group" {
   user_data       = try(each.value.user_data, var.self_managed_node_group_defaults.user_data, null)
 
   vpc_security_group_ids               = try(each.value.vpc_security_group_ids, var.self_managed_node_group_defaults.vpc_security_group_ids, [])
-  cluster_security_group_id            = var.create_cluster_security_group ? aws_security_group.this[0].id : var.cluster_security_group_id
+  cluster_security_group_id            = local.cluster_security_group_id
   default_version                      = try(each.value.default_version, var.self_managed_node_group_defaults.default_version, null)
   update_default_version               = try(each.value.update_default_version, var.self_managed_node_group_defaults.update_default_version, null)
   disable_api_termination              = try(each.value.disable_api_termination, var.self_managed_node_group_defaults.disable_api_termination, null)

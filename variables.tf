@@ -119,11 +119,11 @@ variable "cloudwatch_log_group_kms_key_id" {
 }
 
 ################################################################################
-# Security Group
+# Cluster Security Group
 ################################################################################
 
 variable "create_cluster_security_group" {
-  description = "Whether to create a security group for the cluster or attach the cluster to `cluster_security_group_id`"
+  description = "Whether to create a security group for the cluster or use the existing `cluster_security_group_id`"
   type        = bool
   default     = true
 }
@@ -135,43 +135,77 @@ variable "vpc_id" {
 }
 
 variable "cluster_security_group_name" {
-  description = "Name to use on cluster role created"
+  description = "Name to use on cluster security group created"
   type        = string
   default     = null
 }
 
 variable "cluster_security_group_use_name_prefix" {
-  description = "Determines whether cluster IAM role name (`iam_role_name`) is used as a prefix"
+  description = "Determines whether cluster security group name (`cluster_security_group_name`) is used as a prefix"
   type        = string
   default     = true
 }
 
-variable "cluster_egress_cidrs" {
-  description = "List of CIDR blocks that are permitted for cluster egress traffic"
-  type        = list(string)
-  default     = ["0.0.0.0/0"]
+variable "cluster_security_group_description" {
+  description = "Description of the cluster security group created"
+  type        = string
+  default     = "EKS cluster security group"
 }
 
-variable "cluster_create_endpoint_private_access_sg_rule" {
-  description = "Whether to create security group rules for the access to the Amazon EKS private API server endpoint. If `true`, `cluster_endpoint_private_access_cidrs` and/or 'cluster_endpoint_private_access_sg' should be provided"
-  type        = bool
-  default     = false
-}
-
-variable "cluster_endpoint_private_access_cidrs" {
-  description = "List of CIDR blocks which can access the Amazon EKS private API server endpoint. `cluster_endpoint_private_access` and `cluster_create_endpoint_private_access_sg_rule` must be set to `true`"
-  type        = list(string)
-  default     = []
-}
-
-variable "cluster_endpoint_private_access_sg" {
-  description = "List of security group IDs which can access the Amazon EKS private API server endpoint. `cluster_endpoint_private_access` and `cluster_create_endpoint_private_access_sg_rule` must be set to `true`"
-  type        = list(string)
-  default     = []
+variable "cluster_additional_security_group_rules" {
+  description = "List of additional security group rules to add to the cluster security group created"
+  type        = map(any)
+  default     = {}
 }
 
 variable "cluster_security_group_tags" {
   description = "A map of additional tags to add to the cluster security group created"
+  type        = map(string)
+  default     = {}
+}
+
+################################################################################
+# Node Security Group
+################################################################################
+
+variable "create_node_security_group" {
+  description = "Whether to create a security group for the node groups or use the existing `node_security_group_id`"
+  type        = bool
+  default     = true
+}
+
+variable "node_security_group_id" {
+  description = "ID of an existing security group to attach to the node groups created"
+  type        = string
+  default     = ""
+}
+
+variable "node_security_group_name" {
+  description = "Name to use on node security group created"
+  type        = string
+  default     = null
+}
+
+variable "node_security_group_use_name_prefix" {
+  description = "Determines whether node security group name (`node_security_group_name`) is used as a prefix"
+  type        = string
+  default     = true
+}
+
+variable "node_security_group_description" {
+  description = "Description of the node security group created"
+  type        = string
+  default     = "EKS node shared security group"
+}
+
+variable "node_additional_security_group_rules" {
+  description = "List of additional security group rules to add to the node security group created"
+  type        = map(any)
+  default     = {}
+}
+
+variable "node_security_group_tags" {
+  description = "A map of additional tags to add to the node security group created"
   type        = map(string)
   default     = {}
 }

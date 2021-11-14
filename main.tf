@@ -13,7 +13,7 @@ resource "aws_eks_cluster" "this" {
   enabled_cluster_log_types = var.cluster_enabled_log_types
 
   vpc_config {
-    security_group_ids      = var.create_cluster_security_group ? [aws_security_group.this[0].id] : [var.cluster_security_group_id]
+    security_group_ids      = [local.cluster_security_group_id]
     subnet_ids              = var.subnet_ids
     endpoint_private_access = var.cluster_endpoint_private_access
     endpoint_public_access  = var.cluster_endpoint_public_access
@@ -48,8 +48,8 @@ resource "aws_eks_cluster" "this" {
 
   depends_on = [
     aws_iam_role_policy_attachment.this,
-    aws_security_group_rule.cluster_egress_internet,
-    # aws_security_group_rule.cluster_https_worker_ingress,
+    aws_security_group_rule.cluster,
+    aws_security_group_rule.node,
     aws_cloudwatch_log_group.this
   ]
 }
@@ -65,98 +65,173 @@ resource "aws_cloudwatch_log_group" "this" {
 }
 
 ################################################################################
-# Security Group
+# Cluster Security Group
 # Defaults follow https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html
 ################################################################################
 
 locals {
-  cluster_sg_name                           = coalesce(var.cluster_security_group_name, "${var.cluster_name}-cluster")
-  create_cluster_sg                         = var.create && var.create_cluster_security_group
-  enable_cluster_private_endpoint_sg_access = local.create_cluster_sg && var.cluster_create_endpoint_private_access_sg_rule && var.cluster_endpoint_private_access
+  cluster_sg_name   = coalesce(var.cluster_security_group_name, "${var.cluster_name}-cluster")
+  create_cluster_sg = var.create && var.create_cluster_security_group
+
+  cluster_security_group_id = local.create_cluster_sg ? aws_security_group.cluster[0].id : var.cluster_security_group_id
+
+  cluster_security_group_rules = {
+    ingress_nodes_443 = {
+      description                = "Node groups to cluster API"
+      protocol                   = "tcp"
+      from_port                  = 443
+      to_port                    = 443
+      type                       = "ingress"
+      source_node_security_group = true
+    }
+    egress_nodes_443 = {
+      description                = "Cluster API to node groups"
+      protocol                   = "tcp"
+      from_port                  = 443
+      to_port                    = 443
+      type                       = "egress"
+      source_node_security_group = true
+    }
+    egress_nodes_kubelet = {
+      description                = "Cluster API to node kubelets"
+      protocol                   = "tcp"
+      from_port                  = 10250
+      to_port                    = 10250
+      type                       = "egress"
+      source_node_security_group = true
+    }
+  }
 }
 
-resource "aws_security_group" "this" {
+resource "aws_security_group" "cluster" {
   count = local.create_cluster_sg ? 1 : 0
 
   name        = var.cluster_security_group_use_name_prefix ? null : local.cluster_sg_name
   name_prefix = var.cluster_security_group_use_name_prefix ? "${local.cluster_sg_name}-" : null
-  description = "EKS cluster security group"
+  description = var.cluster_security_group_description
   vpc_id      = var.vpc_id
 
   tags = merge(
     var.tags,
-    {
-      "Name" = local.cluster_sg_name
-    },
+    { "Name" = local.cluster_sg_name },
     var.cluster_security_group_tags
   )
 }
 
-resource "aws_security_group_rule" "cluster_egress_internet" {
-  count = local.create_cluster_sg ? 1 : 0
+resource "aws_security_group_rule" "cluster" {
+  for_each = local.create_cluster_sg ? merge(local.cluster_security_group_rules, var.cluster_additional_security_group_rules) : {}
 
-  description       = "Allow cluster egress access to the Internet"
-  protocol          = "-1"
-  security_group_id = aws_security_group.this[0].id
-  cidr_blocks       = var.cluster_egress_cidrs
-  from_port         = 0
-  to_port           = 0
-  type              = "egress"
+  # Required
+  security_group_id = aws_security_group.cluster[0].id
+  protocol          = each.value.protocol
+  from_port         = each.value.from_port
+  to_port           = each.value.to_port
+  type              = each.value.type
+
+  # Optional
+  description      = try(each.value.description, null)
+  cidr_blocks      = try(each.value.cidr_blocks, null)
+  ipv6_cidr_blocks = try(each.value.ipv6_cidr_blocks, null)
+  prefix_list_ids  = try(each.value.prefix_list_ids, [])
+  self             = try(each.value.self, null)
+  source_security_group_id = try(
+    each.value.source_security_group_id,
+    try(each.value.source_node_security_group, false) ? local.node_security_group_id : null
+  )
 }
 
-resource "aws_security_group_rule" "cluster_ingress_https_nodes" {
-  for_each = local.create_cluster_sg ? merge(
-    { for k, v in module.self_managed_node_group : k => v.security_group_id },
-    { for k, v in module.eks_managed_node_group : k => v.security_group_id }
-  ) : {}
 
-  description              = "Allow pods to communicate with the EKS cluster API"
-  protocol                 = "tcp"
-  security_group_id        = aws_security_group.this[0].id
-  source_security_group_id = each.value
-  from_port                = 443
-  to_port                  = 443
-  type                     = "ingress"
+################################################################################
+# Node Security Group
+# Defaults follow https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html
+################################################################################
+
+locals {
+  node_sg_name   = coalesce(var.node_security_group_name, "${var.cluster_name}-node")
+  create_node_sg = var.create && var.create_node_security_group
+
+  node_security_group_id = local.create_node_sg ? aws_security_group.node[0].id : var.node_security_group_id
+
+  node_security_group_rules = {
+    egress_cluster_443 = {
+      description                   = "Node groups to cluster API"
+      protocol                      = "tcp"
+      from_port                     = 443
+      to_port                       = 443
+      type                          = "egress"
+      source_cluster_security_group = true
+    }
+    ingress_cluster_443 = {
+      description                   = "Cluster API to node groups"
+      protocol                      = "tcp"
+      from_port                     = 443
+      to_port                       = 443
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }
+    ingress_cluster_kubelet = {
+      description                   = "Cluster API to node kubelets"
+      protocol                      = "tcp"
+      from_port                     = 10250
+      to_port                       = 10250
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }
+    ingress_self_coredns_tcp = {
+      description = "CoreDNS"
+      protocol    = "tcp"
+      from_port   = 53
+      to_port     = 53
+      type        = "ingress"
+      self        = true
+    }
+    ingress_self_coredns_udp = {
+      description = "CoreDNS"
+      protocol    = "udp"
+      from_port   = 53
+      to_port     = 53
+      type        = "ingress"
+      self        = true
+    }
+  }
 }
 
-resource "aws_security_group_rule" "cluster_private_access_cidrs_source" {
-  count = local.enable_cluster_private_endpoint_sg_access && length(var.cluster_endpoint_private_access_cidrs) > 0 ? 1 : 0
+resource "aws_security_group" "node" {
+  count = local.create_node_sg ? 1 : 0
 
-  description = "Allow private K8S API ingress from custom CIDR source"
-  type        = "ingress"
-  from_port   = 443
-  to_port     = 443
-  protocol    = "tcp"
-  cidr_blocks = var.cluster_endpoint_private_access_cidrs
+  name        = var.node_security_group_use_name_prefix ? null : local.node_sg_name
+  name_prefix = var.node_security_group_use_name_prefix ? "${local.node_sg_name}-" : null
+  description = var.node_security_group_description
+  vpc_id      = var.vpc_id
 
-  security_group_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
+  tags = merge(
+    var.tags,
+    { "Name" = local.node_sg_name },
+    var.node_security_group_tags
+  )
 }
 
-resource "aws_security_group_rule" "cluster_private_access_sg_source" {
-  for_each = local.enable_cluster_private_endpoint_sg_access ? toset(var.cluster_endpoint_private_access_sg) : toset([])
+resource "aws_security_group_rule" "node" {
+  for_each = local.create_node_sg ? merge(local.node_security_group_rules, var.node_additional_security_group_rules) : {}
 
-  description              = "Allow private K8S API ingress from custom Security Groups source"
-  type                     = "ingress"
-  from_port                = 443
-  to_port                  = 443
-  protocol                 = "tcp"
-  source_security_group_id = each.value
+  # Required
+  security_group_id = aws_security_group.node[0].id
+  protocol          = each.value.protocol
+  from_port         = each.value.from_port
+  to_port           = each.value.to_port
+  type              = each.value.type
 
-  security_group_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
+  # Optional
+  description      = try(each.value.description, null)
+  cidr_blocks      = try(each.value.cidr_blocks, null)
+  ipv6_cidr_blocks = try(each.value.ipv6_cidr_blocks, null)
+  prefix_list_ids  = try(each.value.prefix_list_ids, [])
+  self             = try(each.value.self, null)
+  source_security_group_id = try(
+    each.value.source_security_group_id,
+    try(each.value.source_cluster_security_group, false) ? local.cluster_security_group_id : null
+  )
 }
-
-# TODO
-# resource "aws_security_group_rule" "cluster_primary_ingress_worker" {
-#   count = local.create_security_group && var.worker_create_cluster_primary_security_group_rules ? 1 : 0
-
-#   description              = "Allow pods running on worker to send communication to cluster primary security group (e.g. Fargate pods)."
-#   protocol                 = "all"
-#   security_group_id        = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
-#   source_security_group_id = local.worker_security_group_id
-#   from_port                = 0
-#   to_port                  = 65535
-#   type                     = "ingress"
-# }
 
 ################################################################################
 # IRSA
@@ -176,9 +251,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
   url             = aws_eks_cluster.this[0].identity[0].oidc[0].issuer
 
   tags = merge(
-    {
-      Name = "${var.cluster_name}-eks-irsa"
-    },
+    { Name = "${var.cluster_name}-eks-irsa" },
     var.tags
   )
 }
@@ -210,7 +283,7 @@ resource "aws_iam_role" "this" {
   count = var.create && var.create_iam_role ? 1 : 0
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
-  name_prefix = var.iam_role_use_name_prefix ? try("${local.iam_role_name}-", local.iam_role_name) : null
+  name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
   path        = var.iam_role_path
 
   assume_role_policy    = data.aws_iam_policy_document.assume_role_policy[0].json
@@ -218,7 +291,7 @@ resource "aws_iam_role" "this" {
   force_detach_policies = true
 
   inline_policy {
-    name   = "additional-alb"
+    name   = local.iam_role_name
     policy = data.aws_iam_policy_document.additional[0].json
   }
 
@@ -228,20 +301,23 @@ resource "aws_iam_role" "this" {
 data "aws_iam_policy_document" "additional" {
   count = var.create && var.create_iam_role ? 1 : 0
 
-  # Permissions required to create AWSServiceRoleForElasticLoadBalancing service-linked role by EKS during ELB provisioning
+  # Permissions required to create AWSServiceRoleForElasticLoadBalancing
+  # service-linked role by EKS during ELB provisioning
   statement {
     sid    = "ELBServiceLinkedRole"
     effect = "Allow"
     actions = [
       "ec2:DescribeAccountAttributes",
+      "ec2:DescribeAddresses",
       "ec2:DescribeInternetGateways",
-      "ec2:DescribeAddresses"
+      "elasticloadbalancing:SetIpAddressType",
+      "elasticloadbalancing:SetSubnets"
     ]
     resources = ["*"]
   }
 
-  # Deny permissions to logs:CreateLogGroup it is not needed since we create the log group ourselve in this module,
-  # and it is causing trouble during cleanup/deletion
+  # Deny permissions to logs:CreateLogGroup since its created through Terraform
+  # in this module, and it causes issues during cleanup/deletion
   statement {
     effect    = "Deny"
     actions   = ["logs:CreateLogGroup"]
