@@ -32,7 +32,7 @@ module "eks" {
 
   # Self Managed Node Group(s)
   self_managed_node_group_defaults = {
-    vpc_security_group_ids = [aws_security_group.additional.id]
+    # vpc_security_group_ids = [aws_security_group.additional.id]
   }
 
   self_managed_node_groups = {
@@ -51,64 +51,64 @@ module "eks" {
   eks_managed_node_group_defaults = {
     ami_type = "AL2_x86_64"
     # disk_size              = 50
-    vpc_security_group_ids = [aws_security_group.additional.id]
+    # vpc_security_group_ids = [aws_security_group.additional.id]
     create_launch_template = true
   }
 
   eks_managed_node_groups = {
-    # eks_mng = {
-    #   min_size     = 1
-    #   max_size     = 10
-    #   desired_size = 1
+    blue = {
+      min_size     = 1
+      max_size     = 10
+      desired_size = 1
 
-    #   instance_types = ["t3.large"]
-    #   capacity_type  = "SPOT"
-    #   labels = {
-    #     Environment = "test"
-    #     GithubRepo  = "terraform-aws-eks"
-    #     GithubOrg   = "terraform-aws-modules"
-    #   }
-    #   taints = {
-    #     dedicated = {
-    #       key    = "dedicated"
-    #       value  = "gpuGroup"
-    #       effect = "NO_SCHEDULE"
-    #     }
-    #   }
-    #   update_config = {
-    #     max_unavailable_percentage = 50 # or set `max_unavailable`
-    #   }
-    #   tags = {
-    #     ExtraTag = "example"
-    #   }
-    # }
+      instance_types = ["t3.large"]
+      capacity_type  = "SPOT"
+      labels = {
+        Environment = "test"
+        GithubRepo  = "terraform-aws-eks"
+        GithubOrg   = "terraform-aws-modules"
+      }
+      # taints = {
+      #   dedicated = {
+      #     key    = "dedicated"
+      #     value  = "gpuGroup"
+      #     effect = "NO_SCHEDULE"
+      #   }
+      # }
+      update_config = {
+        max_unavailable_percentage = 50 # or set `max_unavailable`
+      }
+      tags = {
+        ExtraTag = "example"
+      }
+    }
   }
 
   # Fargate Profile(s)
   fargate_profiles = {
-    # default = {
-    #   fargate_profile_name = "default"
-    #   selectors = [
-    #     {
-    #       namespace = "kube-system"
-    #       labels = {
-    #         k8s-app = "kube-dns"
-    #       }
-    #     },
-    #     {
-    #       namespace = "default"
-    #     }
-    #   ]
+    default = {
+      fargate_profile_name = "default"
+      selectors = [
+        {
+          namespace = "kube-system"
+          labels = {
+            k8s-app = "kube-dns"
+          }
+        },
+        {
+          namespace = "default"
+        }
+      ]
 
-    #   tags = {
-    #     Owner = "test"
-    #   }
+      tags = {
+        Owner = "test"
+      }
 
-    #   timeouts = {
-    #     create = "20m"
-    #     delete = "20m"
-    #   }
-    # }
+      timeouts = {
+        create = "20m"
+        delete = "20m"
+      }
+    }
   }
 
   tags = local.tags
@@ -161,6 +161,10 @@ module "vpc" {
   single_nat_gateway   = true
   enable_dns_hostnames = true
 
+  enable_flow_log                      = true
+  create_flow_log_cloudwatch_iam_role  = true
+  create_flow_log_cloudwatch_log_group = true
+
   public_subnet_tags = {
     "kubernetes.io/cluster/${local.name}" = "shared"
     "kubernetes.io/role/elb"              = "1"
@@ -174,18 +178,18 @@ module "vpc" {
   tags = local.tags
 }
 
-resource "aws_security_group" "additional" {
-  name_prefix = "${local.name}-additional"
-  vpc_id      = module.vpc.vpc_id
+# resource "aws_security_group" "additional" {
+#   name_prefix = "${local.name}-additional"
+#   vpc_id      = module.vpc.vpc_id
 
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-    cidr_blocks = [
-      "10.0.0.0/8",
-      "172.16.0.0/12",
-      "192.168.0.0/16",
-    ]
-  }
-}
+#   ingress {
+#     from_port = 22
+#     to_port   = 22
+#     protocol  = "tcp"
+#     cidr_blocks = [
+#       "10.0.0.0/8",
+#       "172.16.0.0/12",
+#       "192.168.0.0/16",
+#     ]
+#   }
+# }

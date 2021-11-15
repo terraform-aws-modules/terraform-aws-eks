@@ -44,7 +44,6 @@ variable "cluster_security_group_id" {
   default     = ""
 }
 
-# TODO - split out cluster subnets vs workers
 variable "subnet_ids" {
   description = "A list of subnet IDs to place the EKS cluster and workers within"
   type        = list(string)

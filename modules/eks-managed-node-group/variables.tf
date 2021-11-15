@@ -398,10 +398,35 @@ variable "vpc_id" {
   default     = null
 }
 
-variable "security_group_egress_cidr_blocks" {
-  description = "List of CIDR blocks that are permitted for security group egress traffic"
-  type        = list(string)
-  default     = ["0.0.0.0/0"]
+variable "security_group_rules" {
+  description = "List of security group rules to add to the security group created"
+  type        = map(any)
+  default = {
+    egress_https_default = {
+      description = "Egress all HTTPS to internet"
+      protocol    = "tcp"
+      from_port   = 443
+      to_port     = 443
+      type        = "egress"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+    egress_ntp_tcp_default = {
+      description = "Egress NTP/TCP to internet"
+      protocol    = "tcp"
+      from_port   = 123
+      to_port     = 123
+      type        = "egress"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+    egress_ntp_udp_default = {
+      description = "Egress NTP/UDP to internet"
+      protocol    = "udp"
+      from_port   = 123
+      to_port     = 123
+      type        = "egress"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
 }
 
 variable "cluster_security_group_id" {

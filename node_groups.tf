@@ -1,3 +1,31 @@
+locals {
+  default_node_security_group_rules = {
+    egress_https_default = {
+      description = "Egress all HTTPS to internet"
+      protocol    = "tcp"
+      from_port   = 443
+      to_port     = 443
+      type        = "egress"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+    egress_ntp_tcp_default = {
+      description = "Egress NTP/TCP to internet"
+      protocol    = "tcp"
+      from_port   = 123
+      to_port     = 123
+      type        = "egress"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+    egress_ntp_udp_default = {
+      description = "Egress NTP/UDP to internet"
+      protocol    = "udp"
+      from_port   = 123
+      to_port     = 123
+      type        = "egress"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+}
 ################################################################################
 # Fargate Profile
 ################################################################################
@@ -42,7 +70,7 @@ module "eks_managed_node_group" {
 
   # EKS Managed Node Group
   name            = try(each.value.name, each.key)
-  use_name_prefix = try(each.value.use_name_prefix, var.eks_managed_node_group_defaults.use_name_prefix, false)
+  use_name_prefix = try(each.value.use_name_prefix, var.eks_managed_node_group_defaults.use_name_prefix, true)
 
   subnet_ids = try(each.value.subnet_ids, var.eks_managed_node_group_defaults.subnet_ids, var.subnet_ids)
 
@@ -84,7 +112,7 @@ module "eks_managed_node_group" {
 
   ebs_optimized                        = try(each.value.ebs_optimized, var.eks_managed_node_group_defaults.ebs_optimized, null)
   key_name                             = try(each.value.key_name, var.eks_managed_node_group_defaults.key_name, null)
-  vpc_security_group_ids               = try(each.value.vpc_security_group_ids, var.eks_managed_node_group_defaults.vpc_security_group_ids, [])
+  vpc_security_group_ids               = compact(concat([try(aws_security_group.node[0].id, "")], try(each.value.vpc_security_group_ids, var.eks_managed_node_group_defaults.vpc_security_group_ids, [])))
   default_version                      = try(each.value.default_version, var.eks_managed_node_group_defaults.default_version, null)
   update_default_version               = try(each.value.update_default_version, var.eks_managed_node_group_defaults.update_default_version, null)
   disable_api_termination              = try(each.value.disable_api_termination, var.eks_managed_node_group_defaults.disable_api_termination, null)
@@ -118,13 +146,13 @@ module "eks_managed_node_group" {
   iam_role_additional_policies  = try(each.value.iam_role_additional_policies, var.eks_managed_node_group_defaults.iam_role_additional_policies, [])
 
   # Security group
-  create_security_group             = try(each.value.create_security_group, var.eks_managed_node_group_defaults.create_security_group, true)
-  security_group_name               = try(each.value.security_group_name, var.eks_managed_node_group_defaults.security_group_name, null)
-  security_group_use_name_prefix    = try(each.value.security_group_use_name_prefix, var.eks_managed_node_group_defaults.security_group_use_name_prefix, true)
-  security_group_description        = try(each.value.security_group_description, var.eks_managed_node_group_defaults.security_group_description, "EKS managed node group security group")
-  vpc_id                            = try(each.value.vpc_id, var.eks_managed_node_group_defaults.vpc_id, var.vpc_id)
-  security_group_egress_cidr_blocks = try(each.value.security_group_egress_cidr_blocks, var.eks_managed_node_group_defaults.security_group_egress_cidr_blocks, ["0.0.0.0/0"])
-  security_group_tags               = try(each.value.security_group_tags, var.eks_managed_node_group_defaults.security_group_tags, {})
+  create_security_group          = try(each.value.create_security_group, var.eks_managed_node_group_defaults.create_security_group, true)
+  security_group_name            = try(each.value.security_group_name, var.eks_managed_node_group_defaults.security_group_name, null)
+  security_group_use_name_prefix = try(each.value.security_group_use_name_prefix, var.eks_managed_node_group_defaults.security_group_use_name_prefix, true)
+  security_group_description     = try(each.value.security_group_description, var.eks_managed_node_group_defaults.security_group_description, "EKS managed node group security group")
+  vpc_id                         = try(each.value.vpc_id, var.eks_managed_node_group_defaults.vpc_id, var.vpc_id)
+  security_group_rules           = try(each.value.security_group_rules, var.eks_managed_node_group_defaults.security_group_rules, local.default_node_security_group_rules)
+  security_group_tags            = try(each.value.security_group_tags, var.eks_managed_node_group_defaults.security_group_tags, {})
 
   tags = merge(var.tags, try(each.value.tags, var.eks_managed_node_group_defaults.tags, {}))
 }
@@ -194,7 +222,7 @@ module "self_managed_node_group" {
   key_name        = try(each.value.key_name, var.self_managed_node_group_defaults.key_name, null)
   user_data       = try(each.value.user_data, var.self_managed_node_group_defaults.user_data, null)
 
-  vpc_security_group_ids               = try(each.value.vpc_security_group_ids, var.self_managed_node_group_defaults.vpc_security_group_ids, [])
+  vpc_security_group_ids               = compact(concat([try(aws_security_group.node[0].id, "")], try(each.value.vpc_security_group_ids, var.self_managed_node_group_defaults.vpc_security_group_ids, [])))
   cluster_security_group_id            = local.cluster_security_group_id
   default_version                      = try(each.value.default_version, var.self_managed_node_group_defaults.default_version, null)
   update_default_version               = try(each.value.update_default_version, var.self_managed_node_group_defaults.update_default_version, null)
@@ -230,30 +258,14 @@ module "self_managed_node_group" {
   iam_role_additional_policies  = try(each.value.iam_role_additional_policies, var.self_managed_node_group_defaults.iam_role_additional_policies, [])
 
   # Security group
-  create_security_group             = try(each.value.create_security_group, var.eks_managed_node_group_defaults.create_security_group, true)
-  security_group_name               = try(each.value.security_group_name, var.eks_managed_node_group_defaults.security_group_name, null)
-  security_group_use_name_prefix    = try(each.value.security_group_use_name_prefix, var.eks_managed_node_group_defaults.security_group_use_name_prefix, true)
-  security_group_description        = try(each.value.security_group_description, var.eks_managed_node_group_defaults.security_group_description, "Self managed node group security group")
-  vpc_id                            = try(each.value.vpc_id, var.eks_managed_node_group_defaults.vpc_id, var.vpc_id)
-  security_group_egress_cidr_blocks = try(each.value.security_group_egress_cidr_blocks, var.eks_managed_node_group_defaults.security_group_egress_cidr_blocks, ["0.0.0.0/0"])
-  security_group_tags               = try(each.value.security_group_tags, var.eks_managed_node_group_defaults.security_group_tags, {})
+  create_security_group          = try(each.value.create_security_group, var.eks_managed_node_group_defaults.create_security_group, true)
+  security_group_name            = try(each.value.security_group_name, var.eks_managed_node_group_defaults.security_group_name, null)
+  security_group_use_name_prefix = try(each.value.security_group_use_name_prefix, var.eks_managed_node_group_defaults.security_group_use_name_prefix, true)
+  security_group_description     = try(each.value.security_group_description, var.eks_managed_node_group_defaults.security_group_description, "Self managed node group security group")
+  vpc_id                         = try(each.value.vpc_id, var.eks_managed_node_group_defaults.vpc_id, var.vpc_id)
+  security_group_rules           = try(each.value.security_group_rules, var.eks_managed_node_group_defaults.security_group_rules, local.default_node_security_group_rules)
+  security_group_tags            = try(each.value.security_group_tags, var.eks_managed_node_group_defaults.security_group_tags, {})
 
   tags           = merge(var.tags, try(each.value.tags, var.self_managed_node_group_defaults.tags, {}))
   propagate_tags = try(each.value.propagate_tags, var.self_managed_node_group_defaults.propagate_tags, [])
 }
-
-# ################################################################################
-# # Security Group
-# ################################################################################
-
-# resource "aws_security_group_rule" "cluster_primary_ingress_worker" {
-#   count = local.create_worker_sg && var.worker_create_cluster_primary_security_group_rules ? 1 : 0
-
-#   description              = "Allow pods running on worker to send communication to cluster primary security group (e.g. Fargate pods)."
-#   protocol                 = "all"
-#   security_group_id        = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
-#   source_security_group_id = local.worker_security_group_id
-#   from_port                = 0
-#   to_port                  = 65535
-#   type                     = "ingress"
-# }

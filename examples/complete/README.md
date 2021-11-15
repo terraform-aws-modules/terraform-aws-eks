@@ -28,9 +28,7 @@ Note that this example may create resources which cost money. Run `terraform des
 
 ## Providers
 
-| Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.64 |
+No providers.
 
 ## Modules
 
@@ -45,9 +43,7 @@ Note that this example may create resources which cost money. Run `terraform des
 
 ## Resources
 
-| Name | Type |
-|------|------|
-| [aws_security_group.additional](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
+No resources.
 
 ## Inputs
 
