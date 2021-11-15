@@ -4,7 +4,7 @@ provider "aws" {
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.20"
+  cluster_version = "1.21"
   region          = "eu-west-1"
 
   tags = {
@@ -35,15 +35,15 @@ module "eks" {
   # available under https://docs.aws.amazon.com/eks/latest/userguide/fargate-getting-started.html
   eks_managed_node_groups = {
     example = {
-      desired_capacity = 1
+      desired_size = 1
 
       instance_types = ["t3.large"]
-      k8s_labels = {
+      labels = {
         Example    = "managed_node_groups"
         GithubRepo = "terraform-aws-eks"
         GithubOrg  = "terraform-aws-modules"
       }
-      additional_tags = {
+      tags = {
         ExtraTag = "example"
       }
       update_config = {
@@ -54,7 +54,7 @@ module "eks" {
 
   fargate_profiles = {
     default = {
-      name = "default"
+      fargate_profile_name = "default"
       selectors = [
         {
           namespace = "kube-system"
@@ -81,7 +81,7 @@ module "eks" {
     }
 
     secondary = {
-      name = "secondary"
+      fargate_profile_name = "secondary"
       selectors = [
         {
           namespace = "default"
@@ -93,7 +93,7 @@ module "eks" {
         }
       ]
 
-      # Using specific subnets instead of the ones configured in EKS (`subnets` and `fargate_subnets`)
+      # Using specific subnets instead of the subnets supplied for the cluster itself
       subnet_ids = [module.vpc.private_subnets[1]]
 
       tags = {
@@ -109,92 +109,62 @@ module "eks" {
 # Calling submodule with existing EKS cluster
 ##############################################
 
-module "fargate_profile_existing_cluster" {
-  source = "../../modules/fargate-profile"
+# module "fargate_profile_existing_cluster" {
+#   source = "../../modules/fargate-profile"
 
-  cluster_name = module.eks.cluster_id
-  subnet_ids   = [module.vpc.private_subnets[0], module.vpc.private_subnets[2]]
+#   cluster_name = module.eks.cluster_id
+#   subnet_ids   = [module.vpc.private_subnets[0], module.vpc.private_subnets[2]]
 
-  create = false # TODO
-  # fargate_profiles = {
-  #   profile1 = {
-  #     name = "profile1"
-  #     selectors = [
-  #       {
-  #         namespace = "kube-system"
-  #         labels = {
-  #           k8s-app = "kube-dns"
-  #         }
-  #       },
-  #       {
-  #         namespace = "profile"
-  #         labels = {
-  #           WorkerType = "fargate"
-  #         }
-  #       }
-  #     ]
 
-  #     tags = {
-  #       Owner     = "profile1"
-  #       submodule = "true"
-  #     }
-  #   }
+#   fargate_profile_name = "profile1"
+#   selectors = [
+#     {
+#       namespace = "kube-system"
+#       labels = {
+#         k8s-app = "kube-dns"
+#       }
+#     },
+#     {
+#       namespace = "profile"
+#       labels = {
+#         WorkerType = "fargate"
+#       }
+#     }
+#   ]
 
-  #   profile2 = {
-  #     name = "profile2"
-  #     selectors = [
-  #       {
-  #         namespace = "default"
-  #         labels = {
-  #           Fargate = "profile2"
-  #         }
-  #       }
-  #     ]
-
-  #     # Using specific subnets instead of the ones configured in EKS (`subnets` and `fargate_subnets`)
-  #     subnet_ids = [module.vpc.private_subnets[0]]
-
-  #     tags = {
-  #       Owner     = "profile2"
-  #       submodule = "true"
-  #     }
-
-  #     timeouts = {
-  #       delete = "20m"
-  #     }
-  #   }
-  # }
-
-  tags = local.tags
-}
+#   tags = merge(local.tags, {
+#     Owner     = "profile1"
+#     submodule = "true"
+#   })
+# }
 
 ################################################################################
 # Supporting Resources
 ################################################################################
 
-data "aws_availability_zones" "available" {}
-
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 3.0"
 
-  name                 = local.name
-  cidr                 = "10.0.0.0/16"
-  azs                  = data.aws_availability_zones.available.names
-  private_subnets      = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets       = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  name = local.name
+  cidr = "10.0.0.0/16"
+
+  azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+
   enable_nat_gateway   = true
   single_nat_gateway   = true
   enable_dns_hostnames = true
 
   public_subnet_tags = {
     "kubernetes.io/cluster/${local.name}" = "shared"
-    "kubernetes.io/role/elb"              = "1"
+    "kubernetes.io/role/elb"              = 1
   }
 
   private_subnet_tags = {
     "kubernetes.io/cluster/${local.name}" = "shared"
-    "kubernetes.io/role/internal-elb"     = "1"
+    "kubernetes.io/role/internal-elb"     = 1
   }
 
   tags = local.tags

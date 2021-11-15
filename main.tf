@@ -305,40 +305,25 @@ resource "aws_iam_role" "this" {
   permissions_boundary  = var.iam_role_permissions_boundary
   force_detach_policies = true
 
-  # inline_policy {
-  #   name   = local.iam_role_name
-  #   policy = data.aws_iam_policy_document.additional[0].json
-  # }
+  inline_policy {
+    name   = local.iam_role_name
+    policy = data.aws_iam_policy_document.additional[0].json
+  }
 
   tags = merge(var.tags, var.iam_role_tags)
 }
 
-# data "aws_iam_policy_document" "additional" {
-#   count = var.create && var.create_iam_role ? 1 : 0
+data "aws_iam_policy_document" "additional" {
+  count = var.create && var.create_iam_role ? 1 : 0
 
-#   # Permissions required to create AWSServiceRoleForElasticLoadBalancing
-#   # service-linked role by EKS during ELB provisioning
-#   statement {
-#     sid    = "ELBServiceLinkedRole"
-#     effect = "Allow"
-#     actions = [
-#       "ec2:DescribeAccountAttributes",
-#       "ec2:DescribeAddresses",
-#       "ec2:DescribeInternetGateways",
-#       "elasticloadbalancing:SetIpAddressType",
-#       "elasticloadbalancing:SetSubnets"
-#     ]
-#     resources = ["*"]
-#   }
-
-#   # Deny permissions to logs:CreateLogGroup since its created through Terraform
-#   # in this module, and it causes issues during cleanup/deletion
-#   statement {
-#     effect    = "Deny"
-#     actions   = ["logs:CreateLogGroup"]
-#     resources = ["*"]
-#   }
-# }
+  # Deny permissions to logs:CreateLogGroup since its created through Terraform
+  # in this module, and it causes issues during cleanup/deletion
+  statement {
+    effect    = "Deny"
+    actions   = ["logs:CreateLogGroup"]
+    resources = ["*"]
+  }
+}
 
 # Policies attached ref https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
 resource "aws_iam_role_policy_attachment" "this" {

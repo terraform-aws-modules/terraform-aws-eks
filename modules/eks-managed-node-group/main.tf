@@ -324,20 +324,17 @@ resource "aws_eks_node_group" "this" {
   }
 
   dynamic "update_config" {
-    for_each = [var.update_config]
+    for_each = var.update_config
     content {
-      max_unavailable_percentage = lookup(update_config.value, "max_unavailable_percentage", null)
-      max_unavailable            = lookup(update_config.value, "max_unavailable", null)
+      max_unavailable_percentage = try(update_config.value.max_unavailable_percentage, null)
+      max_unavailable            = try(update_config.value.max_unavailable, null)
     }
   }
 
-  dynamic "timeouts" {
-    for_each = [var.timeouts]
-    content {
-      create = lookup(var.timeouts, "create", null)
-      update = lookup(var.timeouts, "update", null)
-      delete = lookup(var.timeouts, "delete", null)
-    }
+  timeouts {
+    create = lookup(var.timeouts, "create", null)
+    update = lookup(var.timeouts, "update", null)
+    delete = lookup(var.timeouts, "delete", null)
   }
 
   lifecycle {
@@ -401,93 +398,6 @@ resource "aws_security_group_rule" "this" {
     try(each.value.source_cluster_security_group, false) ? var.cluster_security_group_id : null
   )
 }
-
-# # Ingress
-# resource "aws_security_group_rule" "cluster_https_ingress" {
-#   count = local.create_security_group ? 1 : 0
-
-#   description              = "Allow communication from cluster control plane on 443/HTTPS"
-#   protocol                 = "tcp"
-#   security_group_id        = aws_security_group.this[0].id
-#   source_security_group_id = var.cluster_security_group_id
-#   from_port                = 443
-#   to_port                  = 443
-#   type                     = "ingress"
-# }
-
-# resource "aws_security_group_rule" "cluster_kubelet_ingress" {
-#   count = local.create_security_group ? 1 : 0
-
-#   description              = "Allow communication from the cluster control plane to kubelet"
-#   protocol                 = "tcp"
-#   security_group_id        = aws_security_group.this[0].id
-#   source_security_group_id = var.cluster_security_group_id
-#   from_port                = 10250
-#   to_port                  = 10250
-#   type                     = "ingress"
-# }
-
-# resource "aws_security_group_rule" "cluster_coredns_tcp_ingress" {
-#   count = local.create_security_group ? 1 : 0
-
-#   description              = "Allow communication from cluster control plane on 53/TCP for CoreDNS"
-#   protocol                 = "tcp"
-#   security_group_id        = aws_security_group.this[0].id
-#   source_security_group_id = var.cluster_security_group_id
-#   from_port                = 53
-#   to_port                  = 53
-#   type                     = "ingress"
-# }
-
-# resource "aws_security_group_rule" "cluster_coredns_udp_ingress" {
-#   count = local.create_security_group ? 1 : 0
-
-#   description              = "Allow communication from cluster control plane on 53/UDP for CoreDNS"
-#   protocol                 = "udp"
-#   security_group_id        = aws_security_group.this[0].id
-#   source_security_group_id = var.cluster_security_group_id
-#   from_port                = 53
-#   to_port                  = 53
-#   type                     = "ingress"
-# }
-
-# resource "aws_security_group_rule" "cluster_ephemeral_ports_ingress" {
-#   count = local.create_security_group ? 1 : 0
-
-#   description              = "Allow communication from the cluster control plane on Linux ephemeral ports"
-#   protocol                 = "tcp"
-#   security_group_id        = aws_security_group.this[0].id
-#   source_security_group_id = var.cluster_security_group_id
-#   from_port                = 1025
-#   to_port                  = 65535
-#   type                     = "ingress"
-# }
-
-# # TODO - move to separate security group in root that all node groups will get assigned
-# resource "aws_security_group_rule" "self_ingress" {
-#   count = local.create_security_group ? 1 : 0
-
-#   description       = "Allow node to communicate with each other"
-#   protocol          = "-1"
-#   security_group_id = aws_security_group.this[0].id
-#   self              = true
-#   from_port         = 0
-#   to_port           = 65535
-#   type              = "ingress"
-# }
-
-# # Egress
-# resource "aws_security_group_rule" "all_egress" {
-#   count = local.create_security_group ? 1 : 0
-
-#   description       = "Allow egress to all ports/protocols"
-#   protocol          = "-1"
-#   security_group_id = aws_security_group.this[0].id
-#   cidr_blocks       = var.security_group_egress_cidr_blocks
-#   from_port         = 0
-#   to_port           = 65535
-#   type              = "egress"
-# }
 
 ################################################################################
 # IAM Role

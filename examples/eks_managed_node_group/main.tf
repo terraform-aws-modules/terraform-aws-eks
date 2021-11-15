@@ -18,17 +18,6 @@ locals {
 # EKS Module
 ################################################################################
 
-# data "cloudinit_config" "custom" {
-#   gzip          = false
-#   base64_encode = true
-#   boundary      = "//"
-
-#   part {
-#     content_type = "text/x-shellscript"
-#     content      = "echo 'hello world!'"
-#   }
-# }
-
 module "eks" {
   source = "../.."
 
@@ -137,12 +126,12 @@ module "vpc" {
 
   public_subnet_tags = {
     "kubernetes.io/cluster/${local.name}" = "shared"
-    "kubernetes.io/role/elb"              = "1"
+    "kubernetes.io/role/elb"              = 1
   }
 
   private_subnet_tags = {
     "kubernetes.io/cluster/${local.name}" = "shared"
-    "kubernetes.io/role/internal-elb"     = "1"
+    "kubernetes.io/role/internal-elb"     = 1
   }
 
   tags = local.tags

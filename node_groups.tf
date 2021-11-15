@@ -33,7 +33,7 @@ locals {
 module "fargate_profile" {
   source = "./modules/fargate-profile"
 
-  for_each = var.create ? var.fargate_profiles : {}
+  for_each = var.create ? var.fargate_profiles : object({})
 
   # Fargate Profile
   cluster_name         = aws_eks_cluster.this[0].name
@@ -62,7 +62,7 @@ module "fargate_profile" {
 module "eks_managed_node_group" {
   source = "./modules/eks-managed-node-group"
 
-  for_each = var.create ? var.eks_managed_node_groups : {}
+  for_each = var.create ? var.eks_managed_node_groups : object({})
 
   cluster_name              = aws_eks_cluster.this[0].name
   cluster_version           = try(each.value.cluster_version, var.eks_managed_node_group_defaults.cluster_version, var.cluster_version)

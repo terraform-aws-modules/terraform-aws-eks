@@ -37,9 +37,9 @@ output "cluster_status" {
   value       = module.eks.cluster_status
 }
 
-output "cluster_security_group_id" {
+output "cluster_primary_security_group_id" {
   description = "Cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication. Referred to as 'Cluster security group' in the EKS console"
-  value       = module.eks.cluster_security_group_id
+  value       = module.eks.cluster_primary_security_group_id
 }
 
 ################################################################################
@@ -49,6 +49,25 @@ output "cluster_security_group_id" {
 output "cluster_security_group_arn" {
   description = "Amazon Resource Name (ARN) of the cluster security group"
   value       = module.eks.cluster_security_group_arn
+}
+
+output "cluster_security_group_id" {
+  description = "ID of the cluster security group"
+  value       = module.eks.cluster_security_group_id
+}
+
+################################################################################
+# Node Security Group
+################################################################################
+
+output "node_security_group_arn" {
+  description = "Amazon Resource Name (ARN) of the node shared security group"
+  value       = module.eks.node_security_group_arn
+}
+
+output "node_security_group_id" {
+  description = "ID of the node shared security group"
+  value       = module.eks.node_security_group_id
 }
 
 ################################################################################
@@ -109,6 +128,7 @@ output "fargate_profiles" {
 output "eks_managed_node_groups" {
   description = "Map of attribute maps for all EKS managed node groups created"
   value       = module.eks.eks_managed_node_groups
+  sensitive   = true
 }
 
 ################################################################################
