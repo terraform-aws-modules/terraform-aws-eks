@@ -25,6 +25,12 @@ locals {
       cidr_blocks = ["0.0.0.0/0"]
     }
   }
+
+  metadata_options = {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 2
+  }
 }
 ################################################################################
 # Fargate Profile
@@ -110,15 +116,14 @@ module "eks_managed_node_group" {
   launch_template_version         = try(each.value.launch_template_version, var.eks_managed_node_group_defaults.launch_template_version, null)
   description                     = try(each.value.description, var.eks_managed_node_group_defaults.description, null)
 
-  ebs_optimized                        = try(each.value.ebs_optimized, var.eks_managed_node_group_defaults.ebs_optimized, null)
-  key_name                             = try(each.value.key_name, var.eks_managed_node_group_defaults.key_name, null)
-  vpc_security_group_ids               = compact(concat([try(aws_security_group.node[0].id, "")], try(each.value.vpc_security_group_ids, var.eks_managed_node_group_defaults.vpc_security_group_ids, [])))
-  default_version                      = try(each.value.default_version, var.eks_managed_node_group_defaults.default_version, null)
-  update_default_version               = try(each.value.update_default_version, var.eks_managed_node_group_defaults.update_default_version, null)
-  disable_api_termination              = try(each.value.disable_api_termination, var.eks_managed_node_group_defaults.disable_api_termination, null)
-  instance_initiated_shutdown_behavior = try(each.value.instance_initiated_shutdown_behavior, var.eks_managed_node_group_defaults.instance_initiated_shutdown_behavior, null)
-  kernel_id                            = try(each.value.kernel_id, var.eks_managed_node_group_defaults.kernel_id, null)
-  ram_disk_id                          = try(each.value.ram_disk_id, var.eks_managed_node_group_defaults.ram_disk_id, null)
+  ebs_optimized           = try(each.value.ebs_optimized, var.eks_managed_node_group_defaults.ebs_optimized, null)
+  key_name                = try(each.value.key_name, var.eks_managed_node_group_defaults.key_name, null)
+  vpc_security_group_ids  = compact(concat([try(aws_security_group.node[0].id, "")], try(each.value.vpc_security_group_ids, var.eks_managed_node_group_defaults.vpc_security_group_ids, [])))
+  default_version         = try(each.value.default_version, var.eks_managed_node_group_defaults.default_version, null)
+  update_default_version  = try(each.value.update_default_version, var.eks_managed_node_group_defaults.update_default_version, null)
+  disable_api_termination = try(each.value.disable_api_termination, var.eks_managed_node_group_defaults.disable_api_termination, null)
+  kernel_id               = try(each.value.kernel_id, var.eks_managed_node_group_defaults.kernel_id, null)
+  ram_disk_id             = try(each.value.ram_disk_id, var.eks_managed_node_group_defaults.ram_disk_id, null)
 
   block_device_mappings              = try(each.value.block_device_mappings, var.eks_managed_node_group_defaults.block_device_mappings, [])
   capacity_reservation_specification = try(each.value.capacity_reservation_specification, var.eks_managed_node_group_defaults.capacity_reservation_specification, null)
@@ -127,10 +132,9 @@ module "eks_managed_node_group" {
   elastic_gpu_specifications         = try(each.value.elastic_gpu_specifications, var.eks_managed_node_group_defaults.elastic_gpu_specifications, null)
   elastic_inference_accelerator      = try(each.value.elastic_inference_accelerator, var.eks_managed_node_group_defaults.elastic_inference_accelerator, null)
   enclave_options                    = try(each.value.enclave_options, var.eks_managed_node_group_defaults.enclave_options, null)
-  hibernation_options                = try(each.value.hibernation_options, var.eks_managed_node_group_defaults.hibernation_options, null)
   instance_market_options            = try(each.value.instance_market_options, var.eks_managed_node_group_defaults.instance_market_options, null)
   license_specifications             = try(each.value.license_specifications, var.eks_managed_node_group_defaults.license_specifications, null)
-  metadata_options                   = try(each.value.metadata_options, var.eks_managed_node_group_defaults.metadata_options, null)
+  metadata_options                   = try(each.value.metadata_options, var.eks_managed_node_group_defaults.metadata_options, local.metadata_options)
   enable_monitoring                  = try(each.value.enable_monitoring, var.eks_managed_node_group_defaults.enable_monitoring, null)
   network_interfaces                 = try(each.value.network_interfaces, var.eks_managed_node_group_defaults.network_interfaces, [])
   placement                          = try(each.value.placement, var.eks_managed_node_group_defaults.placement, null)
@@ -241,7 +245,7 @@ module "self_managed_node_group" {
   hibernation_options                = try(each.value.hibernation_options, var.self_managed_node_group_defaults.hibernation_options, null)
   instance_market_options            = try(each.value.instance_market_options, var.self_managed_node_group_defaults.instance_market_options, null)
   license_specifications             = try(each.value.license_specifications, var.self_managed_node_group_defaults.license_specifications, null)
-  metadata_options                   = try(each.value.metadata_options, var.self_managed_node_group_defaults.metadata_options, null)
+  metadata_options                   = try(each.value.metadata_options, var.self_managed_node_group_defaults.metadata_options, local.metadata_options)
   enable_monitoring                  = try(each.value.enable_monitoring, var.self_managed_node_group_defaults.enable_monitoring, null)
   network_interfaces                 = try(each.value.network_interfaces, var.self_managed_node_group_defaults.network_interfaces, [])
   placement                          = try(each.value.placement, var.self_managed_node_group_defaults.placement, null)

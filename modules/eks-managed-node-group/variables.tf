@@ -132,12 +132,6 @@ variable "disable_api_termination" {
   default     = null
 }
 
-variable "instance_initiated_shutdown_behavior" {
-  description = "Shutdown behavior for the instance. Can be `stop` or `terminate`. (Default: `stop`)"
-  type        = string
-  default     = null
-}
-
 variable "kernel_id" {
   description = "The kernel ID"
   type        = string
@@ -192,12 +186,6 @@ variable "enclave_options" {
   default     = null
 }
 
-variable "hibernation_options" {
-  description = "The hibernation options for the instance"
-  type        = map(string)
-  default     = null
-}
-
 variable "instance_market_options" {
   description = "The market (purchasing) option for the instance"
   type        = any
@@ -213,7 +201,11 @@ variable "license_specifications" {
 variable "metadata_options" {
   description = "Customize the metadata options for the instance"
   type        = map(string)
-  default     = null
+  default = {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 2
+  }
 }
 
 variable "enable_monitoring" {

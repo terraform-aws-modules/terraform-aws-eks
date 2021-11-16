@@ -399,7 +399,11 @@ variable "enable_monitoring" {
 variable "metadata_options" {
   description = "Customize the metadata options for the instance"
   type        = map(string)
-  default     = null
+  default = {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 2
+  }
 }
 
 ################################################################################

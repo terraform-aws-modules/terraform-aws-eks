@@ -14,9 +14,8 @@ data "aws_partition" "current" {}
 data "cloudinit_config" "eks_optimized_ami_user_data" {
   count = var.create && (local.use_custom_launch_template && var.pre_bootstrap_user_data != "") || (var.ami_id != null && var.custom_ami_is_eks_optimized) ? 1 : 0
 
-  gzip          = false
-  base64_encode = true
-  boundary      = "//"
+  gzip     = false
+  boundary = "//"
 
   dynamic "part" {
     for_each = var.pre_bootstrap_user_data != "" ? [1] : []
@@ -36,11 +35,12 @@ data "cloudinit_config" "eks_optimized_ami_user_data" {
       content = templatefile("${path.module}/../../templates/linux_user_data.sh.tpl",
         {
           # Required to bootstrap node
-          cluster_name        = var.cluster_name
+          cluster_name = var.cluster_name
+          # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
           cluster_endpoint    = var.cluster_endpoint
           cluster_auth_base64 = var.cluster_auth_base64
+          cluster_dns_ip      = var.cluster_dns_ip
           # Optional
-          cluster_dns_ip           = var.cluster_dns_ip
           bootstrap_extra_args     = var.bootstrap_extra_args
           post_bootstrap_user_data = var.post_bootstrap_user_data
 
@@ -75,12 +75,14 @@ resource "aws_launch_template" "this" {
 
   vpc_security_group_ids = compact(concat([try(aws_security_group.this[0].id, "")], var.vpc_security_group_ids))
 
-  default_version                      = var.default_version
-  update_default_version               = var.update_default_version
-  disable_api_termination              = var.disable_api_termination
-  instance_initiated_shutdown_behavior = var.instance_initiated_shutdown_behavior
-  kernel_id                            = var.kernel_id
-  ram_disk_id                          = var.ram_disk_id
+  default_version         = var.default_version
+  update_default_version  = var.update_default_version
+  disable_api_termination = var.disable_api_termination
+  # Set on EKS managed node group, will fail if set here
+  # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-basics
+  # instance_initiated_shutdown_behavior = var.instance_initiated_shutdown_behavior
+  kernel_id   = var.kernel_id
+  ram_disk_id = var.ram_disk_id
 
   dynamic "block_device_mappings" {
     for_each = var.block_device_mappings
@@ -155,14 +157,17 @@ resource "aws_launch_template" "this" {
     }
   }
 
-  dynamic "hibernation_options" {
-    for_each = var.hibernation_options != null ? [var.hibernation_options] : []
-    content {
-      configured = hibernation_options.value.configured
-    }
-  }
+  # Set on EKS managed node group, will fail if set here
+  # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-basics
+  # dynamic "hibernation_options" {
+  #   for_each = var.hibernation_options != null ? [var.hibernation_options] : []
+  #   content {
+  #     configured = hibernation_options.value.configured
+  #   }
+  # }
 
-  # # Set on EKS managed node group, will fail if set here
+  # Set on EKS managed node group, will fail if set here
+  # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-basics
   # dynamic "iam_instance_profile" {
   #   for_each = [var.iam_instance_profile]
   #   content {
@@ -202,6 +207,7 @@ resource "aws_launch_template" "this" {
       http_endpoint               = lookup(metadata_options.value, "http_endpoint", null)
       http_tokens                 = lookup(metadata_options.value, "http_tokens", null)
       http_put_response_hop_limit = lookup(metadata_options.value, "http_put_response_hop_limit", null)
+      http_protocol_ipv6          = lookup(metadata_options.value, "http_protocol_ipv6", null)
     }
   }
 
@@ -227,7 +233,9 @@ resource "aws_launch_template" "this" {
       network_interface_id         = lookup(network_interfaces.value, "network_interface_id", null)
       private_ip_address           = lookup(network_interfaces.value, "private_ip_address", null)
       security_groups              = lookup(network_interfaces.value, "security_groups", null) != null ? network_interfaces.value.security_groups : []
-      subnet_id                    = lookup(network_interfaces.value, "subnet_id", null)
+      # Set on EKS managed node group, will fail if set here
+      # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-basics
+      # subnet_id                    = lookup(network_interfaces.value, "subnet_id", null)
     }
   }
 
@@ -288,14 +296,17 @@ resource "aws_eks_node_group" "this" {
   node_group_name        = var.use_name_prefix ? null : var.name
   node_group_name_prefix = var.use_name_prefix ? "${var.name}-" : null
 
-  ami_type             = var.ami_type
-  release_version      = var.ami_release_version
+  # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
+  ami_type        = var.ami_id != null ? null : var.ami_type
+  release_version = var.ami_id != null ? null : var.ami_release_version
+  version         = var.ami_id != null ? null : var.cluster_version
+
   capacity_type        = var.capacity_type
   disk_size            = local.use_custom_launch_template ? null : var.disk_size # if using LT, set disk size on LT or else it will error here
   force_update_version = var.force_update_version
   instance_types       = var.instance_types
   labels               = var.labels
-  version              = var.cluster_version
+
 
   dynamic "launch_template" {
     for_each = local.use_custom_launch_template ? [1] : []
