@@ -278,6 +278,13 @@ resource "aws_launch_template" "this" {
 # Node Group
 ################################################################################
 
+locals {
+  tags = merge(
+    var.tags,
+    { Name = var.name }
+  )
+}
+
 resource "aws_eks_node_group" "this" {
   count = var.create ? 1 : 0
 
@@ -355,12 +362,30 @@ resource "aws_eks_node_group" "this" {
     ]
   }
 
-  # Note - unless you use a custom launch template, `Name` tags will not propagate down to the
-  # EC2 instances https://github.com/aws/containers-roadmap/issues/781
-  tags = merge(
-    var.tags,
-    { Name = var.name }
-  )
+  tags = local.tags
+}
+
+resource "aws_autoscaling_group_tag" "this" {
+  # Only add tags via this manner if not using a custom launch template
+  # Otherwise tags can be set in the launch template
+  # This is intended for EKS managed node groups where users rely on the AWS EKS generated launch template
+  # which will not propagate tags down to the nodes launched
+  for_each = var.create && local.use_custom_launch_template ? toset(
+    [for asg in flatten(
+      [for resources in aws_eks_node_group.this[0].resources : resources.autoscaling_groups]
+    ) : asg.name]
+  ) : toset([])
+
+  autoscaling_group_name = each.value
+
+  dynamic "tag" {
+    for_each = local.tags
+    content {
+      key                 = each.key
+      value               = each.value
+      propagate_at_launch = true
+    }
+  }
 }
 
 ################################################################################
