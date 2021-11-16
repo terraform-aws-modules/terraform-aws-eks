@@ -1,11 +1,11 @@
-# Launch template with managed groups example
+# EKS Managed Node Group Example
 
-This is EKS example using workers custom launch template with managed groups feature in two different ways:
+Configuration in this directory creates an AWS EKS cluster with various EKS Managed Node Groups demonstrating the various methods of configurating/customizing:
 
-- Using a defined existing launch template created outside module
-- Using dlaunch template which will be created by module with user customization
-
-See [the official documentation](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) for more details.
+- A default, "out of the box" EKS managed node group as supplied by AWS EKS
+- An EKS managed node group created from a launch template created outside of the module
+- An EKS managed node group that utilizes a custom AMI that is an EKS optimized AMI derivative
+- An EKS managed node group that demonstrates nearly all of the configurations/customizations offered by the `eks_managed_node_group` sub-module
 
 ## Usage
 
@@ -45,7 +45,11 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Type |
 |------|------|
-| [aws_launch_template.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
+| [aws_kms_key.ebs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
+| [aws_launch_template.external](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
+| [aws_security_group.additional](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_iam_policy_document.ebs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 
 ## Inputs
 

@@ -365,29 +365,6 @@ resource "aws_eks_node_group" "this" {
   tags = local.tags
 }
 
-resource "aws_autoscaling_group_tag" "this" {
-  # Only add tags via this manner if not using a custom launch template
-  # Otherwise tags can be set in the launch template
-  # This is intended for EKS managed node groups where users rely on the AWS EKS generated launch template
-  # which will not propagate tags down to the nodes launched
-  for_each = var.create && local.use_custom_launch_template ? toset(
-    [for asg in flatten(
-      [for resources in aws_eks_node_group.this[0].resources : resources.autoscaling_groups]
-    ) : asg.name]
-  ) : toset([])
-
-  autoscaling_group_name = each.value
-
-  dynamic "tag" {
-    for_each = local.tags
-    content {
-      key                 = each.key
-      value               = each.value
-      propagate_at_launch = true
-    }
-  }
-}
-
 ################################################################################
 # Security Group
 # Defaults follow https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html
@@ -414,7 +391,7 @@ resource "aws_security_group" "this" {
 }
 
 resource "aws_security_group_rule" "this" {
-  for_each = local.create_security_group ? var.security_group_rules : {}
+  for_each = local.create_security_group ? var.security_group_rules : object({})
 
   # Required
   security_group_id = aws_security_group.this[0].id
@@ -464,6 +441,7 @@ resource "aws_iam_role" "this" {
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
   path        = var.iam_role_path
+  description = var.iam_role_description
 
   assume_role_policy    = data.aws_iam_policy_document.assume_role_policy[0].json
   permissions_boundary  = var.iam_role_permissions_boundary

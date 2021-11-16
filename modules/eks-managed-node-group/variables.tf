@@ -21,9 +21,9 @@ variable "custom_user_data" {
 }
 
 variable "custom_ami_is_eks_optimized" {
-  description = "Determines whether the custom AMI ID provided (`ami_id`) is an EKS optimized AMI derivative or not"
+  description = "Determines whether the custom AMI ID provided (`ami_id`) is an EKS optimized AMI derivative or not; if `true` then the module will add the boostrap user data"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "cluster_endpoint" {
@@ -146,8 +146,8 @@ variable "ram_disk_id" {
 
 variable "block_device_mappings" {
   description = "Specify volumes to attach to the instance besides the volumes specified by the AMI"
-  type        = list(any)
-  default     = []
+  type        = any
+  default     = {}
 }
 
 variable "capacity_reservation_specification" {
@@ -340,7 +340,7 @@ variable "remote_access" {
 
 variable "taints" {
   description = "The Kubernetes taints to be applied to the nodes in the node group. Maximum of 50 taints per node group"
-  type        = map(any)
+  type        = any
   default     = {}
 }
 
@@ -392,7 +392,7 @@ variable "vpc_id" {
 
 variable "security_group_rules" {
   description = "List of security group rules to add to the security group created"
-  type        = map(any)
+  type        = any
   default = {
     egress_https_default = {
       description = "Egress all HTTPS to internet"
@@ -457,6 +457,12 @@ variable "iam_role_use_name_prefix" {
 
 variable "iam_role_path" {
   description = "IAM role path"
+  type        = string
+  default     = null
+}
+
+variable "iam_role_description" {
+  description = "Description of the role"
   type        = string
   default     = null
 }
