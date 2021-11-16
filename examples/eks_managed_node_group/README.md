@@ -46,7 +46,6 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Type |
 |------|------|
 | [aws_launch_template.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
-| [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 
 ## Inputs
 
