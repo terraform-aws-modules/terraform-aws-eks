@@ -35,7 +35,7 @@ locals {
       metadata_http_put_response_hop_limit = var.workers_group_defaults["metadata_http_put_response_hop_limit"]
       ami_is_eks_optimized                 = true
       user_data_mime_type                  = "text/x-shellscript"
-      user_data_template_extra_args        = lookup(var.workers_group_defaults, "userdata_template_file", {})
+      user_data_template_extra_args        = lookup(var.workers_group_defaults, "userdata_template_extra_args", {})
       user_data_template_file              = lookup(var.workers_group_defaults, "userdata_template_file", "${path.module}/templates/userdata.sh.tpl")
     },
     var.node_groups_defaults,
