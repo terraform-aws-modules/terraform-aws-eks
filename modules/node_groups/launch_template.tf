@@ -1,5 +1,5 @@
 data "cloudinit_config" "workers_userdata" {
-  for_each = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] }
+  for_each = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] && v["ami_type"] != "BOTTLEROCKET_x86_64" }
 
   gzip          = false
   base64_encode = true
@@ -19,6 +19,30 @@ data "cloudinit_config" "workers_userdata" {
         pre_userdata         = each.value["pre_userdata"]
         capacity_type        = lookup(each.value, "capacity_type", "ON_DEMAND")
         append_labels        = length(lookup(each.value, "k8s_labels", {})) > 0 ? ",${join(",", [for k, v in lookup(each.value, "k8s_labels", {}) : "${k}=${v}"])}" : ""
+      }
+    )
+  }
+}
+
+data "cloudinit_config" "bottlerocket_workers_userdata" {
+  for_each = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] && v["ami_type"] == "BOTTLEROCKET_x86_64" }
+
+  gzip          = false
+  base64_encode = true
+  boundary      = "//"
+
+  part {
+    content_type = "text/x-shellscript"
+    content = templatefile("${path.module}/templates/userdata.toml",
+      {
+        cluster_name             = var.cluster_name
+        endpoint                 = var.cluster_endpoint
+        cluster_auth_base64      = var.cluster_auth_base64
+        enable_admin_container   = lookup(each.value, "enable_admin_container", false)
+        enable_control_container = lookup(each.value, "enable_control_container", true)
+        additional_userdata      = lookup(each.value, "additional_userdata", "")
+        # capacity_type            = lookup(each.value, "capacity_type", "ON_DEMAND")
+        # append_labels            = length(lookup(each.value, "k8s_labels", {})) > 0 ? ",${join(",", [for k, v in lookup(each.value, "k8s_labels", {}) : "${k}=${v}"])}" : ""
       }
     )
   }
@@ -81,7 +105,7 @@ resource "aws_launch_template" "workers" {
   #
   # (optionally you can use https://registry.terraform.io/providers/hashicorp/cloudinit/latest/docs/data-sources/cloudinit_config to render the script, example: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/997#issuecomment-705286151)
 
-  user_data = data.cloudinit_config.workers_userdata[each.key].rendered
+  user_data = each.value["ami_type"] == "BOTTLEROCKET_x86_64" ? data.cloudinit_config.bottlerocket_workers_userdata[each.key].rendered : data.cloudinit_config.workers_userdata[each.key].rendered
 
   key_name = lookup(each.value, "key_name", null)
 
