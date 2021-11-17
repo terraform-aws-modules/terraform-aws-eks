@@ -97,7 +97,6 @@ No modules.
 | <a name="input_create_eks"></a> [create\_eks](#input\_create\_eks) | Controls if EKS resources should be created (it affects almost all resources) | `bool` | `true` | no |
 | <a name="input_default_iam_role_arn"></a> [default\_iam\_role\_arn](#input\_default\_iam\_role\_arn) | ARN of the default IAM worker role to use if one is not specified in `var.node_groups` or `var.node_groups_defaults` | `string` | `""` | no |
 | <a name="input_ebs_optimized_not_supported"></a> [ebs\_optimized\_not\_supported](#input\_ebs\_optimized\_not\_supported) | List of instance types that do not support EBS optimization | `list(string)` | `[]` | no |
-| <a name="input_ng_depends_on"></a> [ng\_depends\_on](#input\_ng\_depends\_on) | List of references to other resources this submodule depends on | `any` | `null` | no |
 | <a name="input_node_groups"></a> [node\_groups](#input\_node\_groups) | Map of maps of `eks_node_groups` to create. See "`node_groups` and `node_groups_defaults` keys" section in README.md for more details | `any` | `{}` | no |
 | <a name="input_node_groups_defaults"></a> [node\_groups\_defaults](#input\_node\_groups\_defaults) | map of maps of node groups to create. See "`node_groups` and `node_groups_defaults` keys" section in README.md for more details | `any` | `{}` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map(string)` | `{}` | no |
