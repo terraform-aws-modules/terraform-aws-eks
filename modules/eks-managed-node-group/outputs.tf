@@ -1,14 +1,4 @@
 ################################################################################
-# User Data
-################################################################################
-
-output "user_data" {
-  description = "Rendered user data output that is supplied to the launch template when enabled/used"
-  value       = try(data.cloudinit_config.eks_optimized_ami_user_data[0].rendered, "")
-  sensitive   = true
-}
-
-################################################################################
 # Launch template
 ################################################################################
 

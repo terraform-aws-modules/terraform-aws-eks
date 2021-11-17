@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 /etc/eks/bootstrap.sh ${cluster_name} ${bootstrap_extra_args} \
 %{ if length(cluster_dns_ip) > 0 ~}

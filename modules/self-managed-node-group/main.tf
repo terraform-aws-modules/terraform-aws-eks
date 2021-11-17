@@ -13,21 +13,60 @@ data "aws_ami" "eks_default" {
 }
 
 ################################################################################
+# User Data
+################################################################################
+
+data "cloudinit_config" "eks_optimized_ami_user_data" {
+  count = var.create && var.enable_bootstrap_user_data ? 1 : 0
+
+  gzip     = false
+  boundary = "//"
+
+  dynamic "part" {
+    for_each = var.pre_bootstrap_user_data != "" ? [1] : []
+    content {
+      content_type = "text/x-shellscript"
+      content      = var.pre_bootstrap_user_data
+    }
+  }
+
+  part {
+    content_type = "text/x-shellscript"
+    content = templatefile("${path.module}/../../templates/linux_user_data.sh.tpl",
+      {
+        # Required to bootstrap node
+        cluster_name        = var.cluster_name
+        cluster_endpoint    = var.cluster_endpoint
+        cluster_auth_base64 = var.cluster_auth_base64
+        cluster_dns_ip      = var.cluster_dns_ip
+        # Optional
+        bootstrap_extra_args     = var.bootstrap_extra_args
+        post_bootstrap_user_data = var.post_bootstrap_user_data
+      }
+    )
+  }
+}
+
+################################################################################
 # Launch template
 ################################################################################
+
+locals {
+  launch_template_name_int = coalesce(var.launch_template_name, "${var.name}-node-group")
+}
 
 resource "aws_launch_template" "this" {
   count = var.create && var.create_launch_template ? 1 : 0
 
-  name        = var.launch_template_use_name_prefix ? null : var.launch_template_name
-  name_prefix = var.launch_template_use_name_prefix ? "${var.launch_template_name}-" : null
-  description = coalesce(var.description, "Custom launch template for ${var.name} self managed node group")
+  name        = var.launch_template_use_name_prefix ? null : local.launch_template_name_int
+  name_prefix = var.launch_template_use_name_prefix ? "${local.launch_template_name_int}-" : null
+  description = var.description
 
   ebs_optimized = var.ebs_optimized
-  image_id      = coalesce(var.image_id, data.aws_ami.eks_default[0].image_id)
+  image_id      = coalesce(var.ami_id, data.aws_ami.eks_default[0].image_id)
   instance_type = var.instance_type
   key_name      = var.key_name
-  user_data     = var.user_data
+  user_data     = try(data.cloudinit_config.eks_optimized_ami_user_data[0].rendered, var.custom_user_data)
 
   vpc_security_group_ids = compact(concat([try(aws_security_group.this[0].id, "")], var.vpc_security_group_ids))
 
@@ -153,6 +192,7 @@ resource "aws_launch_template" "this" {
       http_endpoint               = lookup(metadata_options.value, "http_endpoint", null)
       http_tokens                 = lookup(metadata_options.value, "http_tokens", null)
       http_put_response_hop_limit = lookup(metadata_options.value, "http_put_response_hop_limit", null)
+      http_protocol_ipv6          = lookup(metadata_options.value, "http_protocol_ipv6", null)
     }
   }
 
@@ -222,8 +262,9 @@ resource "aws_launch_template" "this" {
 ################################################################################
 
 locals {
-  launch_template_name    = var.create && var.create_launch_template ? aws_launch_template.this[0].name : var.launch_template_name
-  launch_template_version = var.create && var.create_launch_template && var.launch_template_version == null ? aws_launch_template.this[0].latest_version : var.launch_template_version
+  launch_template_name = try(aws_launch_template.this[0].name, var.launch_template_name)
+  # Change order to allow users to set version priority before using defaults
+  launch_template_version = coalesce(var.launch_template_version, try(aws_launch_template.this[0].default_version, "$Default"))
 }
 
 resource "aws_autoscaling_group" "this" {
@@ -403,7 +444,6 @@ resource "aws_autoscaling_schedule" "this" {
 
 ################################################################################
 # Security Group
-# Defaults follow https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html
 ################################################################################
 
 locals {
@@ -430,7 +470,7 @@ resource "aws_security_group" "this" {
 }
 
 resource "aws_security_group_rule" "this" {
-  for_each = local.create_security_group ? var.security_group_rules : {}
+  for_each = local.create_security_group ? var.security_group_rules : object({})
 
   # Required
   security_group_id = aws_security_group.this[0].id

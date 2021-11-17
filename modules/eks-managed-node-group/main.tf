@@ -21,10 +21,7 @@ data "cloudinit_config" "eks_optimized_ami_user_data" {
     for_each = var.pre_bootstrap_user_data != "" ? [1] : []
     content {
       content_type = "text/x-shellscript"
-      content      = <<-EOT
-      #!/bin/bash -ex
-      ${var.pre_bootstrap_user_data}
-      EOT
+      content      = var.pre_bootstrap_user_data
     }
   }
 
@@ -43,7 +40,6 @@ data "cloudinit_config" "eks_optimized_ami_user_data" {
           # Optional
           bootstrap_extra_args     = var.bootstrap_extra_args
           post_bootstrap_user_data = var.post_bootstrap_user_data
-
         }
       )
     }
@@ -56,15 +52,15 @@ data "cloudinit_config" "eks_optimized_ami_user_data" {
 
 locals {
   use_custom_launch_template = var.create_launch_template || var.launch_template_name != null
-  launch_template_name       = coalesce(var.launch_template_name, "${var.name}-eks-node-group")
+  launch_template_name_int   = coalesce(var.launch_template_name, "${var.name}-eks-node-group")
 }
 
 resource "aws_launch_template" "this" {
   count = var.create && var.create_launch_template ? 1 : 0
 
-  name        = var.launch_template_use_name_prefix ? null : local.launch_template_name
-  name_prefix = var.launch_template_use_name_prefix ? "${local.launch_template_name}-" : null
-  description = coalesce(var.description, "Custom launch template for ${var.name} EKS managed node group")
+  name        = var.launch_template_use_name_prefix ? null : local.launch_template_name_int
+  name_prefix = var.launch_template_use_name_prefix ? "${local.launch_template_name_int}-" : null
+  description = var.description
 
   ebs_optimized = var.ebs_optimized
   image_id      = var.ami_id
@@ -279,12 +275,10 @@ resource "aws_launch_template" "this" {
 ################################################################################
 
 locals {
-  tags = merge(
-    var.tags,
-    { Name = var.name }
-  )
+  launch_template_name = try(aws_launch_template.this[0].name, var.launch_template_name)
+  # Change order to allow users to set version priority before using defaults
+  launch_template_version = coalesce(var.launch_template_version, try(aws_launch_template.this[0].default_version, "$Default"))
 }
-
 resource "aws_eks_node_group" "this" {
   count = var.create ? 1 : 0
 
@@ -318,9 +312,8 @@ resource "aws_eks_node_group" "this" {
   dynamic "launch_template" {
     for_each = local.use_custom_launch_template ? [1] : []
     content {
-      name = try(aws_launch_template.this[0].name, var.launch_template_name)
-      # Change order to allow users to set version priority before using defaults
-      version = coalesce(var.launch_template_version, try(aws_launch_template.this[0].default_version, "$Default"))
+      name    = local.launch_template_name
+      version = local.launch_template_version
     }
   }
 
@@ -362,12 +355,14 @@ resource "aws_eks_node_group" "this" {
     ]
   }
 
-  tags = local.tags
+  tags = merge(
+    var.tags,
+    { Name = var.name }
+  )
 }
 
 ################################################################################
 # Security Group
-# Defaults follow https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html
 ################################################################################
 
 locals {

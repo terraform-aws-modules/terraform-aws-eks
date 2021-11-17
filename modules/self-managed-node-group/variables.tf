@@ -1,12 +1,70 @@
-################################################################################
-# Autoscaling group
-################################################################################
-
 variable "create" {
   description = "Determines whether to create autoscaling group or not"
   type        = bool
   default     = true
 }
+
+variable "tags" {
+  description = "A map of tags and values in the same format as other resources accept. This will be converted into the non-standard format that the aws_autoscaling_group requires."
+  type        = map(string)
+  default     = {}
+}
+
+################################################################################
+# User Data
+################################################################################
+
+variable "enable_bootstrap_user_data" {
+  description = "Determines whether custom bootstrap user data template is used to boostrap node. Enabling this assumes the AMI is an AWS EKS Optimized AMI derivative"
+  type        = bool
+  default     = true
+}
+
+variable "custom_user_data" {
+  description = "Base64-encoded user data used; should be used when `custom_ami_is_eks_optimized` = `false` to boostrap and join instances to the cluster"
+  type        = string
+  default     = null
+}
+
+variable "cluster_endpoint" {
+  description = "Endpoint of associated EKS cluster"
+  type        = string
+  default     = null
+}
+
+variable "cluster_auth_base64" {
+  description = "Base64 encoded CA of associated EKS cluster"
+  type        = string
+  default     = null
+}
+
+variable "cluster_dns_ip" {
+  description = "The CIDR block that the EKS cluster provides service IP addresses from"
+  type        = string
+  default     = "" # used in boostrap script conditional check
+}
+
+variable "pre_bootstrap_user_data" {
+  description = "User data that is injected into the user data script ahead of the EKS bootstrap script"
+  type        = string
+  default     = ""
+}
+
+variable "post_bootstrap_user_data" {
+  description = "User data that is appended to the user data script after of the EKS bootstrap script. Only valid when using a custom EKS optimized AMI derivative"
+  type        = string
+  default     = ""
+}
+
+variable "bootstrap_extra_args" {
+  description = "Additional arguments passed to the bootstrap script"
+  type        = string
+  default     = ""
+}
+
+################################################################################
+# Autoscaling group
+################################################################################
 
 variable "name" {
   description = "Name used across the resources created"
@@ -206,12 +264,6 @@ variable "cluster_name" {
   default     = null
 }
 
-variable "tags" {
-  description = "A map of tags and values in the same format as other resources accept. This will be converted into the non-standard format that the aws_autoscaling_group requires."
-  type        = map(string)
-  default     = {}
-}
-
 variable "propagate_tags" {
   description = "A list of tag blocks. Each element should have keys named key, value, and propagate_at_launch"
   type        = list(map(string))
@@ -354,7 +406,7 @@ variable "ebs_optimized" {
   default     = null
 }
 
-variable "image_id" {
+variable "ami_id" {
   description = "The AMI from which to launch the instance"
   type        = string
   default     = null
@@ -374,12 +426,6 @@ variable "instance_type" {
 
 variable "key_name" {
   description = "The key name that should be used for the instance"
-  type        = string
-  default     = null
-}
-
-variable "user_data" {
-  description = "The Base64-encoded user data to provide when launching the instance. You should use this for Launch Templates instead user_data"
   type        = string
   default     = null
 }
@@ -458,7 +504,7 @@ variable "vpc_id" {
 
 variable "security_group_rules" {
   description = "List of security group rules to add to the security group created"
-  type        = map(any)
+  type        = any
   default = {
     egress_https_default = {
       description = "Egress all HTTPS to internet"

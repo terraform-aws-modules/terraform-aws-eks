@@ -4,7 +4,7 @@ provider "aws" {
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.20"
+  cluster_version = "1.21"
   region          = "eu-west-1"
 
   tags = {
@@ -75,6 +75,7 @@ module "eks" {
       bootstrap_extra_args        = "--kubelet-extra-args '--max-pods=110'"
 
       pre_bootstrap_user_data = <<-EOT
+        #!/bin/bash set -ex
         export CONTAINER_RUNTIME="containerd"
         export USE_MAX_PODS=false
       EOT
@@ -106,9 +107,9 @@ module "eks" {
       # }
 
       create_launch_template          = true
-      launch_template_name            = "long-live-kubelet"
+      launch_template_name            = "eks-managed-ex"
       launch_template_use_name_prefix = true
-      description                     = "The kubelet should live long and prosper"
+      description                     = "EKS managed node group example launch template"
       update_default_version          = true
 
       ebs_optimized           = true
@@ -198,11 +199,13 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 3.0"
 
-  name                 = local.name
-  cidr                 = "10.0.0.0/16"
-  azs                  = ["${local.region}a", "${local.region}b", "${local.region}c"]
-  private_subnets      = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets       = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  name = local.name
+  cidr = "10.0.0.0/16"
+
+  azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+
   enable_nat_gateway   = true
   single_nat_gateway   = true
   enable_dns_hostnames = true

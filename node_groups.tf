@@ -114,7 +114,7 @@ module "eks_managed_node_group" {
   launch_template_name            = try(each.value.launch_template_name, var.eks_managed_node_group_defaults.launch_template_name, null)
   launch_template_use_name_prefix = try(each.value.launch_template_use_name_prefix, var.eks_managed_node_group_defaults.launch_template_use_name_prefix, true)
   launch_template_version         = try(each.value.launch_template_version, var.eks_managed_node_group_defaults.launch_template_version, null)
-  description                     = try(each.value.description, var.eks_managed_node_group_defaults.description, null)
+  description                     = try(each.value.description, var.eks_managed_node_group_defaults.description, "Custom launch template for ${try(each.value.name, each.key)} EKS managed node group")
 
   ebs_optimized           = try(each.value.ebs_optimized, var.eks_managed_node_group_defaults.ebs_optimized, null)
   key_name                = try(each.value.key_name, var.eks_managed_node_group_defaults.key_name, null)
@@ -169,7 +169,7 @@ module "eks_managed_node_group" {
 module "self_managed_node_group" {
   source = "./modules/self-managed-node-group"
 
-  for_each = var.create ? var.self_managed_node_groups : {}
+  for_each = var.create ? var.self_managed_node_groups : object({})
 
   cluster_name = aws_eks_cluster.this[0].name
 
@@ -216,16 +216,25 @@ module "self_managed_node_group" {
 
   delete_timeout = try(each.value.delete_timeout, var.self_managed_node_group_defaults.delete_timeout, null)
 
+  # User data
+  enable_bootstrap_user_data = try(each.value.enable_bootstrap_user_data, var.self_managed_node_group_defaults.enable_bootstrap_user_data, true)
+  custom_user_data           = try(each.value.custom_user_data, var.self_managed_node_group_defaults.custom_user_data, null)
+  cluster_endpoint           = try(aws_eks_cluster.this[0].endpoint, var.self_managed_node_group_defaults.cluster_endpoint, null)
+  cluster_auth_base64        = try(aws_eks_cluster.this[0].certificate_authority[0].data, var.self_managed_node_group_defaults.cluster_auth_base64, null)
+  cluster_dns_ip             = try(aws_eks_cluster.this[0].kubernetes_network_config[0].service_ipv4_cidr, var.self_managed_node_group_defaults.cluster_dns_ip, "")
+  pre_bootstrap_user_data    = try(each.value.pre_bootstrap_user_data, var.self_managed_node_group_defaults.pre_bootstrap_user_data, "")
+  post_bootstrap_user_data   = try(each.value.post_bootstrap_user_data, var.self_managed_node_group_defaults.post_bootstrap_user_data, "")
+  bootstrap_extra_args       = try(each.value.bootstrap_extra_args, var.self_managed_node_group_defaults.bootstrap_extra_args, "")
+
   # Launch Template
   create_launch_template = try(each.value.create_launch_template, var.self_managed_node_group_defaults.create_launch_template, true)
-  description            = try(each.value.description, var.self_managed_node_group_defaults.description, null)
+  description            = try(each.value.description, var.self_managed_node_group_defaults.description, "Custom launch template for ${try(each.value.name, each.key)} EKS managed node group")
 
   ebs_optimized   = try(each.value.ebs_optimized, var.self_managed_node_group_defaults.ebs_optimized, null)
-  image_id        = try(each.value.image_id, var.self_managed_node_group_defaults.image_id, null)
+  ami_id          = try(each.value.ami_id, var.self_managed_node_group_defaults.ami_id, null)
   cluster_version = try(each.value.cluster_version, var.self_managed_node_group_defaults.cluster_version, var.cluster_version)
   instance_type   = try(each.value.instance_type, var.self_managed_node_group_defaults.instance_type, "m6i.large")
   key_name        = try(each.value.key_name, var.self_managed_node_group_defaults.key_name, null)
-  user_data       = try(each.value.user_data, var.self_managed_node_group_defaults.user_data, null)
 
   vpc_security_group_ids               = compact(concat([try(aws_security_group.node[0].id, "")], try(each.value.vpc_security_group_ids, var.self_managed_node_group_defaults.vpc_security_group_ids, [])))
   cluster_security_group_id            = local.cluster_security_group_id
