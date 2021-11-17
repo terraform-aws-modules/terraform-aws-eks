@@ -33,7 +33,7 @@ data "cloudinit_config" "bottlerocket_workers_userdata" {
 
   part {
     content_type = "text/x-shellscript"
-    content = templatefile("${path.module}/templates/userdata.toml",
+    content = templatefile("${path.module}/templates/userdata.toml.tpl",
       {
         cluster_name             = var.cluster_name
         endpoint                 = var.cluster_endpoint
