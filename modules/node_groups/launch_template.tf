@@ -1,5 +1,5 @@
 data "cloudinit_config" "workers_userdata" {
-  for_each = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] && v["ami_type"] != "BOTTLEROCKET_x86_64" }
+  for_each = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] && length(split("BOTTLEROCKET", v["ami_type"])) == 0 }
 
   gzip          = false
   base64_encode = true
@@ -25,7 +25,7 @@ data "cloudinit_config" "workers_userdata" {
 }
 
 data "template_file" "bottlerocket_workers_userdata" {
-  for_each = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] && v["ami_type"] == "BOTTLEROCKET_x86_64" }
+  for_each = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] && length(split("BOTTLEROCKET", v["ami_type"])) > 1 }
 
   template = file("${path.module}/templates/userdata.toml.tpl")
   vars = {
@@ -97,7 +97,7 @@ resource "aws_launch_template" "workers" {
   #
   # (optionally you can use https://registry.terraform.io/providers/hashicorp/cloudinit/latest/docs/data-sources/cloudinit_config to render the script, example: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/997#issuecomment-705286151)
 
-  user_data = each.value["ami_type"] == "BOTTLEROCKET_x86_64" ? base64encode(data.template_file.bottlerocket_workers_userdata[each.key].rendered) : data.cloudinit_config.workers_userdata[each.key].rendered
+  user_data = length(split("BOTTLEROCKET", each.value["ami_type"])) > 1 ? base64encode(data.template_file.bottlerocket_workers_userdata[each.key].rendered) : data.cloudinit_config.workers_userdata[each.key].rendered
 
   key_name = lookup(each.value, "key_name", null)
 
