@@ -27,7 +27,7 @@ data "cloudinit_config" "workers_userdata" {
 data "template_file" "bottlerocket_workers_userdata" {
   for_each = { for k, v in local.node_groups_expanded : k => v if v["create_launch_template"] && v["ami_type"] == "BOTTLEROCKET_x86_64" }
 
-  template = templatefile("${path.module}/templates/userdata.toml.tpl")
+  template = file("${path.module}/templates/userdata.toml.tpl")
   vars = {
     cluster_name             = var.cluster_name
     endpoint                 = var.cluster_endpoint
