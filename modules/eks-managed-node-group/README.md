@@ -85,6 +85,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_ami_id"></a> [ami\_id](#input\_ami\_id) | The AMI from which to launch the instance. If not supplied, EKS will use its own default image | `string` | `null` | no |
+| <a name="input_ami_is_eks_optimized"></a> [ami\_is\_eks\_optimized](#input\_ami\_is\_eks\_optimized) | Determines whether the AMI ID provided (`ami_id`) is an EKS optimized AMI derivative or not; if `true` then the module will add the boostrap user data | `bool` | `true` | no |
 | <a name="input_ami_release_version"></a> [ami\_release\_version](#input\_ami\_release\_version) | AMI version of the EKS Node Group. Defaults to latest version for Kubernetes version | `string` | `null` | no |
 | <a name="input_ami_type"></a> [ami\_type](#input\_ami\_type) | Type of Amazon Machine Image (AMI) associated with the EKS Node Group. Valid values are `AL2_x86_64`, `AL2_x86_64_GPU`, `AL2_ARM_64`, `CUSTOM`, `BOTTLEROCKET_ARM_64`, `BOTTLEROCKET_x86_64` | `string` | `null` | no |
 | <a name="input_block_device_mappings"></a> [block\_device\_mappings](#input\_block\_device\_mappings) | Specify volumes to attach to the instance besides the volumes specified by the AMI | `any` | `{}` | no |
@@ -103,8 +104,7 @@ No modules.
 | <a name="input_create_launch_template"></a> [create\_launch\_template](#input\_create\_launch\_template) | Determines whether to create launch template or not | `bool` | `false` | no |
 | <a name="input_create_security_group"></a> [create\_security\_group](#input\_create\_security\_group) | Whether to create a security group | `bool` | `true` | no |
 | <a name="input_credit_specification"></a> [credit\_specification](#input\_credit\_specification) | Customize the credit specification of the instance | `map(string)` | `null` | no |
-| <a name="input_custom_ami_is_eks_optimized"></a> [custom\_ami\_is\_eks\_optimized](#input\_custom\_ami\_is\_eks\_optimized) | Determines whether the custom AMI ID provided (`ami_id`) is an EKS optimized AMI derivative or not; if `true` then the module will add the boostrap user data | `bool` | `false` | no |
-| <a name="input_custom_user_data"></a> [custom\_user\_data](#input\_custom\_user\_data) | Base64-encoded user data used; should be used when `custom_ami_is_eks_optimized` = `false` to boostrap and join instances to the cluster | `string` | `null` | no |
+| <a name="input_custom_user_data"></a> [custom\_user\_data](#input\_custom\_user\_data) | Base64-encoded user data used; should be used when `ami_is_eks_optimized` = `false` to boostrap and join instances to the cluster | `string` | `""` | no |
 | <a name="input_default_version"></a> [default\_version](#input\_default\_version) | Default Version of the launch template | `string` | `null` | no |
 | <a name="input_description"></a> [description](#input\_description) | Description of the launch template | `string` | `null` | no |
 | <a name="input_desired_size"></a> [desired\_size](#input\_desired\_size) | Desired number of worker nodes | `number` | `1` | no |
@@ -139,13 +139,14 @@ No modules.
 | <a name="input_name"></a> [name](#input\_name) | Name of the EKS Node Group | `string` | `""` | no |
 | <a name="input_network_interfaces"></a> [network\_interfaces](#input\_network\_interfaces) | Customize network interfaces to be attached at instance boot time | `list(any)` | `[]` | no |
 | <a name="input_placement"></a> [placement](#input\_placement) | The placement of the instance | `map(string)` | `null` | no |
+| <a name="input_platform"></a> [platform](#input\_platform) | Identifies if the OS platform is `bottlerocket`, `linux`, or `windows` based | `string` | `"linux"` | no |
 | <a name="input_post_bootstrap_user_data"></a> [post\_bootstrap\_user\_data](#input\_post\_bootstrap\_user\_data) | User data that is appended to the user data script after of the EKS bootstrap script. Only valid when using a custom EKS optimized AMI derivative | `string` | `""` | no |
 | <a name="input_pre_bootstrap_user_data"></a> [pre\_bootstrap\_user\_data](#input\_pre\_bootstrap\_user\_data) | User data that is injected into the user data script ahead of the EKS bootstrap script | `string` | `""` | no |
 | <a name="input_ram_disk_id"></a> [ram\_disk\_id](#input\_ram\_disk\_id) | The ID of the ram disk | `string` | `null` | no |
 | <a name="input_remote_access"></a> [remote\_access](#input\_remote\_access) | Configuration block with remote access settings | `map(string)` | `{}` | no |
 | <a name="input_security_group_description"></a> [security\_group\_description](#input\_security\_group\_description) | Description for the security group | `string` | `"EKS managed node group security group"` | no |
 | <a name="input_security_group_name"></a> [security\_group\_name](#input\_security\_group\_name) | Name to use on security group created | `string` | `null` | no |
-| <a name="input_security_group_rules"></a> [security\_group\_rules](#input\_security\_group\_rules) | List of security group rules to add to the security group created | `any` | <pre>{<br>  "egress_https_default": {<br>    "cidr_blocks": [<br>      "0.0.0.0/0"<br>    ],<br>    "description": "Egress all HTTPS to internet",<br>    "from_port": 443,<br>    "protocol": "tcp",<br>    "to_port": 443,<br>    "type": "egress"<br>  },<br>  "egress_ntp_tcp_default": {<br>    "cidr_blocks": [<br>      "0.0.0.0/0"<br>    ],<br>    "description": "Egress NTP/TCP to internet",<br>    "from_port": 123,<br>    "protocol": "tcp",<br>    "to_port": 123,<br>    "type": "egress"<br>  },<br>  "egress_ntp_udp_default": {<br>    "cidr_blocks": [<br>      "0.0.0.0/0"<br>    ],<br>    "description": "Egress NTP/UDP to internet",<br>    "from_port": 123,<br>    "protocol": "udp",<br>    "to_port": 123,<br>    "type": "egress"<br>  }<br>}</pre> | no |
+| <a name="input_security_group_rules"></a> [security\_group\_rules](#input\_security\_group\_rules) | List of security group rules to add to the security group created | `any` | `{}` | no |
 | <a name="input_security_group_tags"></a> [security\_group\_tags](#input\_security\_group\_tags) | A map of additional tags to add to the security group created | `map(string)` | `{}` | no |
 | <a name="input_security_group_use_name_prefix"></a> [security\_group\_use\_name\_prefix](#input\_security\_group\_use\_name\_prefix) | Determines whether the security group name (`security_group_name`) is used as a prefix | `string` | `true` | no |
 | <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | Identifiers of EC2 Subnets to associate with the EKS Node Group. These subnets must have the following resource tag: `kubernetes.io/cluster/CLUSTER_NAME` | `list(string)` | `null` | no |

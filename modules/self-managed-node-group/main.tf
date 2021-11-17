@@ -16,6 +16,20 @@ data "aws_ami" "eks_default" {
 # User Data
 ################################################################################
 
+locals {
+  platform = {
+    bottlerocket = {
+      content_type = "application/toml"
+    }
+    linux = {
+      content_type = "text/x-shellscript"
+    }
+    windows = {
+      content_type = "text/x-shellscript"
+    }
+  }
+}
+
 data "cloudinit_config" "eks_optimized_ami_user_data" {
   count = var.create && var.enable_bootstrap_user_data ? 1 : 0
 
@@ -25,25 +39,46 @@ data "cloudinit_config" "eks_optimized_ami_user_data" {
   dynamic "part" {
     for_each = var.pre_bootstrap_user_data != "" ? [1] : []
     content {
-      content_type = "text/x-shellscript"
+      content_type = local.platform[var.platform].content_type
       content      = var.pre_bootstrap_user_data
     }
   }
 
-  part {
-    content_type = "text/x-shellscript"
-    content = templatefile("${path.module}/../../templates/linux_user_data.sh.tpl",
-      {
-        # Required to bootstrap node
-        cluster_name        = var.cluster_name
-        cluster_endpoint    = var.cluster_endpoint
-        cluster_auth_base64 = var.cluster_auth_base64
-        cluster_dns_ip      = var.cluster_dns_ip
-        # Optional
-        bootstrap_extra_args     = var.bootstrap_extra_args
-        post_bootstrap_user_data = var.post_bootstrap_user_data
-      }
-    )
+  dynamic "part" {
+    for_each = var.platform != "bottlerocket" ? [1] : []
+    content {
+      content_type = local.platform[var.platform].content_type
+      content = templatefile("${path.module}/../../templates/${var.platform}_user_data.tpl",
+        {
+          # Required to bootstrap node
+          cluster_name        = var.cluster_name
+          cluster_endpoint    = var.cluster_endpoint
+          cluster_auth_base64 = var.cluster_auth_base64
+          cluster_dns_ip      = var.cluster_dns_ip
+          # Optional
+          bootstrap_extra_args     = var.bootstrap_extra_args
+          post_bootstrap_user_data = var.post_bootstrap_user_data
+        }
+      )
+    }
+  }
+
+  dynamic "part" {
+    for_each = var.platform == "bottlerocket" ? [1] : []
+    content {
+      content_type = local.platform[var.platform].content_type
+      content = templatefile("${path.module}/../../templates/${var.platform}_user_data.tpl",
+        {
+          # Required to bootstrap node
+          cluster_name        = var.cluster_name
+          cluster_endpoint    = var.cluster_endpoint
+          cluster_auth_base64 = var.cluster_auth_base64
+          cluster_dns_ip      = var.cluster_dns_ip
+          # Optional
+          bootstrap_extra_args = var.bootstrap_extra_args
+        }
+      )
+    }
   }
 }
 

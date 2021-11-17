@@ -10,20 +10,26 @@ variable "tags" {
   default     = {}
 }
 
+variable "platform" {
+  description = "Identifies if the OS platform is `bottlerocket`, `linux`, or `windows` based"
+  type        = string
+  default     = "linux"
+}
+
 ################################################################################
 # User Data
 ################################################################################
 
 variable "custom_user_data" {
-  description = "Base64-encoded user data used; should be used when `custom_ami_is_eks_optimized` = `false` to boostrap and join instances to the cluster"
+  description = "Base64-encoded user data used; should be used when `ami_is_eks_optimized` = `false` to boostrap and join instances to the cluster"
   type        = string
-  default     = null
+  default     = ""
 }
 
-variable "custom_ami_is_eks_optimized" {
-  description = "Determines whether the custom AMI ID provided (`ami_id`) is an EKS optimized AMI derivative or not; if `true` then the module will add the boostrap user data"
+variable "ami_is_eks_optimized" {
+  description = "Determines whether the AMI ID provided (`ami_id`) is an EKS optimized AMI derivative or not; if `true` then the module will add the boostrap user data"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "cluster_endpoint" {
@@ -393,32 +399,7 @@ variable "vpc_id" {
 variable "security_group_rules" {
   description = "List of security group rules to add to the security group created"
   type        = any
-  default = {
-    egress_https_default = {
-      description = "Egress all HTTPS to internet"
-      protocol    = "tcp"
-      from_port   = 443
-      to_port     = 443
-      type        = "egress"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-    egress_ntp_tcp_default = {
-      description = "Egress NTP/TCP to internet"
-      protocol    = "tcp"
-      from_port   = 123
-      to_port     = 123
-      type        = "egress"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-    egress_ntp_udp_default = {
-      description = "Egress NTP/UDP to internet"
-      protocol    = "udp"
-      from_port   = 123
-      to_port     = 123
-      type        = "egress"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-  }
+  default     = {}
 }
 
 variable "cluster_security_group_id" {

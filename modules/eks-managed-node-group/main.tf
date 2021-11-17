@@ -4,6 +4,32 @@ data "aws_partition" "current" {}
 # User Data
 ################################################################################
 
+locals {
+  platform = {
+    bottlerocket = {
+      user_data = var.custom_user_data != "" ? var.custom_user_data : base64encode(templatefile(
+        "${path.module}/../../templates/bottlerocket_user_data.tpl",
+        {
+          ami_id = var.ami_id
+          # Required to bootstrap node
+          cluster_name = var.cluster_name
+          # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
+          cluster_endpoint    = var.cluster_endpoint
+          cluster_auth_base64 = var.cluster_auth_base64
+          cluster_dns_ip      = var.cluster_dns_ip
+          # Optional
+          bootstrap_extra_args = var.bootstrap_extra_args
+        }
+      ))
+    }
+    linux = {
+      user_data = var.custom_user_data != "" ? var.custom_user_data : try(data.cloudinit_config.eks_optimized_ami_user_data[0].rendered, "")
+    }
+    # Not supported on EKS managed node groups
+    # windows = {}
+  }
+}
+
 # https://github.com/aws/containers-roadmap/issues/596#issuecomment-675097667
 # An important note is that user data must in MIME multi-part archive format,
 # as by default, EKS will merge the bootstrapping command required for nodes to join the
@@ -12,11 +38,13 @@ data "aws_partition" "current" {}
 # See docs for more details -> https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-user-data
 
 data "cloudinit_config" "eks_optimized_ami_user_data" {
-  count = var.create && (local.use_custom_launch_template && var.pre_bootstrap_user_data != "") || (var.ami_id != null && var.custom_ami_is_eks_optimized) ? 1 : 0
+  count = var.create && var.platform == "linux" && ((local.use_custom_launch_template && var.pre_bootstrap_user_data != "") || (var.ami_id != "" && var.ami_is_eks_optimized)) ? 1 : 0
 
-  gzip     = false
-  boundary = "//"
+  base64_encode = true
+  gzip          = false
+  boundary      = "//"
 
+  # Prepend to existing user data suppled by AWS EKS
   dynamic "part" {
     for_each = var.pre_bootstrap_user_data != "" ? [1] : []
     content {
@@ -25,11 +53,12 @@ data "cloudinit_config" "eks_optimized_ami_user_data" {
     }
   }
 
+  # Supply all of bootstrap user data due to custom AMI
   dynamic "part" {
-    for_each = var.ami_id != null && var.custom_ami_is_eks_optimized ? [1] : []
+    for_each = var.ami_id != "" && var.ami_is_eks_optimized ? [1] : []
     content {
       content_type = "text/x-shellscript"
-      content = templatefile("${path.module}/../../templates/linux_user_data.sh.tpl",
+      content = templatefile("${path.module}/../../templates/linux_user_data.tpl",
         {
           # Required to bootstrap node
           cluster_name = var.cluster_name
@@ -51,7 +80,7 @@ data "cloudinit_config" "eks_optimized_ami_user_data" {
 ################################################################################
 
 locals {
-  use_custom_launch_template = var.create_launch_template || var.launch_template_name != null
+  use_custom_launch_template = var.launch_template_name != ""
   launch_template_name_int   = coalesce(var.launch_template_name, "${var.name}-eks-node-group")
 }
 
@@ -67,7 +96,7 @@ resource "aws_launch_template" "this" {
   # # Set on node group instead
   # instance_type = var.launch_template_instance_type
   key_name  = var.key_name
-  user_data = try(data.cloudinit_config.eks_optimized_ami_user_data[0].rendered, var.custom_user_data)
+  user_data = local.platform[var.platform].user_data
 
   vpc_security_group_ids = compact(concat([try(aws_security_group.this[0].id, "")], var.vpc_security_group_ids))
 
@@ -275,10 +304,11 @@ resource "aws_launch_template" "this" {
 ################################################################################
 
 locals {
-  launch_template_name = try(aws_launch_template.this[0].name, var.launch_template_name)
+  launch_template_name = try(aws_launch_template.this[0].name, var.launch_template_name, null)
   # Change order to allow users to set version priority before using defaults
   launch_template_version = coalesce(var.launch_template_version, try(aws_launch_template.this[0].default_version, "$Default"))
 }
+
 resource "aws_eks_node_group" "this" {
   count = var.create ? 1 : 0
 
@@ -298,9 +328,9 @@ resource "aws_eks_node_group" "this" {
   node_group_name_prefix = var.use_name_prefix ? "${var.name}-" : null
 
   # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
-  ami_type        = var.ami_id != null ? null : var.ami_type
-  release_version = var.ami_id != null ? null : var.ami_release_version
-  version         = var.ami_id != null ? null : var.cluster_version
+  ami_type        = var.ami_id != "" ? null : var.ami_type
+  release_version = var.ami_id != "" ? null : var.ami_release_version
+  version         = var.ami_id != "" ? null : var.cluster_version
 
   capacity_type        = var.capacity_type
   disk_size            = local.use_custom_launch_template ? null : var.disk_size # if using LT, set disk size on LT or else it will error here

@@ -65,7 +65,7 @@ module "eks" {
       capacity_type        = "SPOT"
       disk_size            = 256
       force_update_version = true
-      instance_types       = ["m3.large", "m4.large", "m5.large", "m5n.large", "m5zn.large", "m6i.large"]
+      instance_types       = ["m6i.large", "m5.large", "m5n.large", "m5zn.large", "m3.large", "m4.large"]
       labels = {
         GithubRepo = "terraform-aws-eks"
         GithubOrg  = "terraform-aws-modules"
@@ -96,7 +96,7 @@ module "eks" {
             iops                  = 3000
             throughput            = 150
             encrypted             = true
-            kms_key_id            = aws_kms_key.ebs.key_id
+            kms_key_id            = aws_kms_key.ebs.arn
             delete_on_termination = true
           }
         }
@@ -111,7 +111,7 @@ module "eks" {
       create_iam_role          = true
       iam_role_name            = "self-managed-node-group-complete-example"
       iam_role_use_name_prefix = false
-      iam_role_path            = "self"
+      iam_role_path            = "/self/"
       iam_role_description     = "Self managed node group complete example role"
       iam_role_tags = {
         Purpose = "Protector of the kubelet"

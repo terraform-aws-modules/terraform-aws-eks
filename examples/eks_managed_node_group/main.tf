@@ -33,159 +33,193 @@ module "eks" {
   eks_managed_node_group_defaults = {
     ami_type  = "AL2_x86_64"
     disk_size = 50
+    timeouts = {
+      create = "8m"
+      update = "8m"
+      delete = "8m"
+    }
   }
 
   eks_managed_node_groups = {
-    # Default node group - as provided by AWS EKS
-    default_node_group = {}
+    # # Default node group - as provided by AWS EKS
+    # default_node_group = {}
 
-    # Use existing/external launch template
-    external_launch_template = {
-      launch_template_id      = aws_launch_template.external.id
-      launch_template_version = aws_launch_template.external.default_version
+    # Default node group - as provided by AWS EKS using Bottlerocket
+    bottlerocket_default = {
+      ami_type = "BOTTLEROCKET_x86_64"
     }
 
-    # Use a custom AMI
-    custom_ami = {
-      create_launch_template = true
-      launch_template_name   = "custom-ami"
+    # bottlerocket_cust = {
+    #   ami_id   = "ami-0ff61e0bcfc81dc94"
+    #   ami_type = "BOTTLEROCKET_x86_64"
+    #   platform = "bottlerocket"
 
-      # Current default AMI used by managed node groups - pseudo "custom"
-      ami_id = "ami-0caf35bc73450c396"
-      # This will ensure the boostrap user data is used to join the node
-      # By default, EKS managed node groups will not append bootstrap script;
-      # this adds it back in if its an EKS optmized AMI derivative
-      custom_ami_is_eks_optimized = true
-    }
+    #   create_launch_template = true
+    #   launch_template_name   = "bottlerocket-custom"
+    #   update_default_version = true
 
-    # Complete
-    complete = {
-      name            = "complete-eks-mng"
-      use_name_prefix = false
+    #   bootstrap_extra_args = <<-EOT
+    #     [settings.kernel]
+    #     lockdown = "integrity"
 
-      subnet_ids = module.vpc.public_subnets
+    #     [settings.kubernetes.node-labels]
+    #     "label1" = "foo"
+    #     "label2" = "bar"
 
-      min_size     = 1
-      max_size     = 7
-      desired_size = 1
+    #     [settings.kubernetes.node-taints]
+    #     "dedicated" = "experimental:PreferNoSchedule"
+    #     "special" = "true:NoSchedule"
+    #   EOT
+    # }
 
-      ami_id                      = "ami-0caf35bc73450c396"
-      ami_type                    = "AL2_x86_64"
-      custom_ami_is_eks_optimized = true
-      bootstrap_extra_args        = "--kubelet-extra-args '--max-pods=110'"
+    # # Use existing/external launch template
+    # external_lt = {
+    #   launch_template_id      = aws_launch_template.external.id
+    #   launch_template_version = aws_launch_template.external.default_version
+    # }
 
-      pre_bootstrap_user_data = <<-EOT
-        #!/bin/bash set -ex
-        export CONTAINER_RUNTIME="containerd"
-        export USE_MAX_PODS=false
-      EOT
+    # # Use a custom AMI
+    # custom_ami = {
+    #   create_launch_template = true
+    #   launch_template_name   = "custom-ami"
 
-      post_bootstrap_user_data = <<-EOT
-        echo "you are free little kubelet!"
-      EOT
+    #   # Current default AMI used by managed node groups - pseudo "custom"
+    #   ami_id = "ami-0caf35bc73450c396"
+    #   # This will ensure the boostrap user data is used to join the node
+    #   # By default, EKS managed node groups will not append bootstrap script;
+    #   # this adds it back in if its an EKS optmized AMI derivative
+    #   ami_is_eks_optimized = true
+    # }
 
-      capacity_type        = "SPOT"
-      disk_size            = 256
-      force_update_version = true
-      instance_types       = ["m3.large", "m4.large", "m5.large", "m5n.large", "m5zn.large", "m6i.large"]
-      labels = {
-        GithubRepo = "terraform-aws-eks"
-        GithubOrg  = "terraform-aws-modules"
-      }
+    # # Complete
+    # complete = {
+    #   name            = "complete-eks-mng"
+    #   use_name_prefix = false
 
-      taints = [
-        {
-          key    = "dedicated"
-          value  = "gpuGroup"
-          effect = "NO_SCHEDULE"
-        }
-      ]
+    #   subnet_ids = module.vpc.public_subnets
 
-      # TODO - why is this giving an error!!!
-      # update_config = {
-      #   max_unavailable = "1"
-      # }
+    #   min_size     = 1
+    #   max_size     = 7
+    #   desired_size = 1
 
-      create_launch_template          = true
-      launch_template_name            = "eks-managed-ex"
-      launch_template_use_name_prefix = true
-      description                     = "EKS managed node group example launch template"
-      update_default_version          = true
+    #   ami_id                      = "ami-0caf35bc73450c396"
+    #   ami_type                    = "AL2_x86_64"
+    #   ami_is_eks_optimized = true
+    #   bootstrap_extra_args        = "--container-runtime containerd --kubelet-extra-args '--max-pods=20'"
 
-      ebs_optimized           = true
-      vpc_security_group_ids  = [aws_security_group.additional.id]
-      disable_api_termination = false
-      enable_monitoring       = true
+    #   pre_bootstrap_user_data = <<-EOT
+    #     #!/bin/bash set -ex
+    #     export CONTAINER_RUNTIME="containerd"
+    #     export USE_MAX_PODS=false
+    #   EOT
 
-      block_device_mappings = {
-        xvda = {
-          device_name = "/dev/xvda"
-          ebs = {
-            volume_size           = 75
-            volume_type           = "gp3"
-            iops                  = 3000
-            throughput            = 150
-            encrypted             = true
-            kms_key_id            = aws_kms_key.ebs.key_id
-            delete_on_termination = true
-          }
-        }
-      }
+    #   post_bootstrap_user_data = <<-EOT
+    #     echo "you are free little kubelet!"
+    #   EOT
 
-      metadata_options = {
-        http_endpoint               = "enabled"
-        http_tokens                 = "required"
-        http_put_response_hop_limit = 2
-      }
+    #   capacity_type        = "SPOT"
+    #   disk_size            = 256
+    #   force_update_version = true
+    #   instance_types       = ["m6i.large", "m5.large", "m5n.large", "m5zn.large", "m3.large", "m4.large"]
+    #   labels = {
+    #     GithubRepo = "terraform-aws-eks"
+    #     GithubOrg  = "terraform-aws-modules"
+    #   }
 
-      create_iam_role          = true
-      iam_role_name            = "eks-managed-node-group-complete-example"
-      iam_role_use_name_prefix = false
-      iam_role_path            = "eks"
-      iam_role_description     = "EKS managed node group complete example role"
-      iam_role_tags = {
-        Purpose = "Protector of the kubelet"
-      }
-      iam_role_additional_policies = [
-        "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-      ]
+    #   taints = [
+    #     {
+    #       key    = "dedicated"
+    #       value  = "gpuGroup"
+    #       effect = "NO_SCHEDULE"
+    #     }
+    #   ]
 
-      create_security_group          = true
-      security_group_name            = "eks-managed-node-group-complete-example"
-      security_group_use_name_prefix = false
-      security_group_description     = "EKS managed node group complete example security group"
-      security_group_rules = {
-        phoneOut = {
-          description = "Hello CloudFlare"
-          protocol    = "udp"
-          from_port   = 53
-          to_port     = 53
-          type        = "egress"
-          cidr_blocks = ["1.1.1.1/32"]
-        }
-        phoneHome = {
-          description                   = "Hello cluster"
-          protocol                      = "udp"
-          from_port                     = 53
-          to_port                       = 53
-          type                          = "egress"
-          source_cluster_security_group = true # bit of reflection lookup
-        }
-      }
-      security_group_tags = {
-        Purpose = "Protector of the kubelet"
-      }
+    #   # TODO - why is this giving an error!!!
+    #   # update_config = {
+    #   #   max_unavailable = "1"
+    #   # }
 
-      timeouts = {
-        create = "80m"
-        update = "80m"
-        delete = "80m"
-      }
+    #   create_launch_template          = true
+    #   launch_template_name            = "eks-managed-ex"
+    #   launch_template_use_name_prefix = true
+    #   description                     = "EKS managed node group example launch template"
+    #   update_default_version          = true
 
-      tags = {
-        ExtraTag = "EKS managed node group complete example"
-      }
-    }
+    #   ebs_optimized           = true
+    #   vpc_security_group_ids  = [aws_security_group.additional.id]
+    #   disable_api_termination = false
+    #   enable_monitoring       = true
+
+    #   block_device_mappings = {
+    #     xvda = {
+    #       device_name = "/dev/xvda"
+    #       ebs = {
+    #         volume_size           = 75
+    #         volume_type           = "gp3"
+    #         iops                  = 3000
+    #         throughput            = 150
+    #         encrypted             = true
+    #         kms_key_id            = aws_kms_key.ebs.arn
+    #         delete_on_termination = true
+    #       }
+    #     }
+    #   }
+
+    #   metadata_options = {
+    #     http_endpoint               = "enabled"
+    #     http_tokens                 = "required"
+    #     http_put_response_hop_limit = 2
+    #   }
+
+    #   create_iam_role          = true
+    #   iam_role_name            = "eks-managed-node-group-complete-example"
+    #   iam_role_use_name_prefix = false
+    #   iam_role_path            = "/eks/"
+    #   iam_role_description     = "EKS managed node group complete example role"
+    #   iam_role_tags = {
+    #     Purpose = "Protector of the kubelet"
+    #   }
+    #   iam_role_additional_policies = [
+    #     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+    #   ]
+
+    #   create_security_group          = true
+    #   security_group_name            = "eks-managed-node-group-complete-example"
+    #   security_group_use_name_prefix = false
+    #   security_group_description     = "EKS managed node group complete example security group"
+    #   security_group_rules = {
+
+    #     phoneOut = {
+    #       description = "Hello CloudFlare"
+    #       protocol    = "udp"
+    #       from_port   = 53
+    #       to_port     = 53
+    #       type        = "egress"
+    #       cidr_blocks = ["1.1.1.1/32"]
+    #     }
+    #     phoneHome = {
+    #       description                   = "Hello cluster"
+    #       protocol                      = "udp"
+    #       from_port                     = 53
+    #       to_port                       = 53
+    #       type                          = "egress"
+    #       source_cluster_security_group = true # bit of reflection lookup
+    #     }
+    #   }
+    #   security_group_tags = {
+    #     Purpose = "Protector of the kubelet"
+    #   }
+
+    #   timeouts = {
+    #     create = "8m"
+    #     update = "8m"
+    #     delete = "8m"
+    #   }
+
+    #   tags = {
+    #     ExtraTag = "EKS managed node group complete example"
+    #   }
+    # }
   }
 
   tags = local.tags
@@ -307,7 +341,7 @@ data "aws_iam_policy_document" "ebs" {
 # then the default user-data for bootstrapping a cluster is merged in the copy.
 
 resource "aws_launch_template" "external" {
-  name_prefix            = "eks-example-"
+  name_prefix            = "external-eks-ex-"
   description            = "EKS managed node group external launch template"
   update_default_version = true
 
