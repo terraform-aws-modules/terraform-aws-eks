@@ -29,10 +29,9 @@ data "cloudinit_config" "bottlerocket_workers_userdata" {
 
   gzip          = false
   base64_encode = true
-  boundary      = "//"
 
   part {
-    content_type = "text/x-shellscript"
+    content_type = "application/toml"
     content = templatefile("${path.module}/templates/userdata.toml.tpl",
       {
         cluster_name             = var.cluster_name
