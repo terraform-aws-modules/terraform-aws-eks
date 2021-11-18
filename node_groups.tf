@@ -340,7 +340,7 @@ module "self_managed_node_group" {
   description            = try(each.value.description, var.self_managed_node_group_defaults.description, "Custom launch template for ${try(each.value.name, each.key)} self managed node group")
 
   ebs_optimized   = try(each.value.ebs_optimized, var.self_managed_node_group_defaults.ebs_optimized, null)
-  ami_id          = try(each.value.ami_id, var.self_managed_node_group_defaults.ami_id, null)
+  ami_id          = try(each.value.ami_id, var.self_managed_node_group_defaults.ami_id, "")
   cluster_version = try(each.value.cluster_version, var.self_managed_node_group_defaults.cluster_version, var.cluster_version)
   instance_type   = try(each.value.instance_type, var.self_managed_node_group_defaults.instance_type, "m6i.large")
   key_name        = try(each.value.key_name, var.self_managed_node_group_defaults.key_name, null)

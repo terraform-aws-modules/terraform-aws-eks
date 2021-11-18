@@ -415,7 +415,7 @@ variable "ebs_optimized" {
 variable "ami_id" {
   description = "The AMI from which to launch the instance"
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "cluster_version" {
