@@ -10,7 +10,12 @@
     [
       "@semantic-release/github",
       {
+<<<<<<< HEAD
         "successComment": "This ${issue.pull_request ? 'PR is included' : 'issue has been resolved'} in version [${nextRelease.version}](${releaseInfos[0].url}) :tada:",
+=======
+        "successComment":
+        "This ${issue.pull_request ? 'PR is included' : 'issue has been resolved'} in version ${nextRelease.version} :tada:",
+>>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
         "labels": false,
         "releasedLabels": false
       }

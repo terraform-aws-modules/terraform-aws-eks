@@ -44,12 +44,6 @@ variable "cluster_auth_base64" {
   default     = null
 }
 
-variable "cluster_dns_ip" {
-  description = "The CIDR block that the EKS cluster provides service IP addresses from"
-  type        = string
-  default     = "" # used in boostrap script conditional check
-}
-
 variable "pre_bootstrap_user_data" {
   description = "User data that is injected into the user data script ahead of the EKS bootstrap script"
   type        = string

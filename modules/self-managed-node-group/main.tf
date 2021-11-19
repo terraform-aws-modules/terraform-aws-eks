@@ -54,7 +54,6 @@ data "cloudinit_config" "eks_optimized_ami_user_data" {
           cluster_name        = var.cluster_name
           cluster_endpoint    = var.cluster_endpoint
           cluster_auth_base64 = var.cluster_auth_base64
-          cluster_dns_ip      = var.cluster_dns_ip
           # Optional
           bootstrap_extra_args     = var.bootstrap_extra_args
           post_bootstrap_user_data = var.post_bootstrap_user_data
@@ -73,7 +72,6 @@ data "cloudinit_config" "eks_optimized_ami_user_data" {
           cluster_name        = var.cluster_name
           cluster_endpoint    = var.cluster_endpoint
           cluster_auth_base64 = var.cluster_auth_base64
-          cluster_dns_ip      = var.cluster_dns_ip
           # Optional
           bootstrap_extra_args = var.bootstrap_extra_args
         }

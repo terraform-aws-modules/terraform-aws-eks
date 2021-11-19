@@ -1,6 +1,10 @@
 repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
+<<<<<<< HEAD
     rev: v1.57.0
+=======
+    rev: v1.58.0
+>>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
     hooks:
       - id: terraform_fmt
       - id: terraform_validate
@@ -17,7 +21,11 @@ repos:
           - '--args=--only=terraform_documented_variables'
           - '--args=--only=terraform_typed_variables'
           - '--args=--only=terraform_module_pinned_source'
+<<<<<<< HEAD
           - '--args=--only=terraform_naming_convention'
+=======
+          # - '--args=--only=terraform_naming_convention'
+>>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
           - '--args=--only=terraform_required_version'
           - '--args=--only=terraform_required_providers'
           - '--args=--only=terraform_standard_module_structure'

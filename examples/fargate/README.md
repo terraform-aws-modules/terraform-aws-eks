@@ -23,17 +23,36 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
+<<<<<<< HEAD
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.64 |
 
 ## Providers
 
 No providers.
+=======
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.56 |
+| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 1.11.1 |
+| <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.4 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.1 |
+| <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 2.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.56 |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 2.1 |
+>>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_eks"></a> [eks](#module\_eks) | ../.. | n/a |
+<<<<<<< HEAD
+=======
+| <a name="module_fargate_profile_existing_cluster"></a> [fargate\_profile\_existing\_cluster](#module\_fargate\_profile\_existing\_cluster) | ../../modules/fargate | n/a |
+>>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.0 |
 
 ## Resources
