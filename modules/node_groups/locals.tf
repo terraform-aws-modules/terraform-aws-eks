@@ -48,4 +48,15 @@ locals {
       join("-", [var.cluster_name, k])
     )
   ) }
+
+  bottlerocket_workers_userdata = {
+    for k, v in local.node_groups_expanded : k => templatefile(format("%s/templates/userdata.toml.tpl", path.module), {
+      cluster_name             = var.cluster_name
+      endpoint                 = var.cluster_endpoint
+      cluster_auth_base64      = var.cluster_auth_base64
+      enable_admin_container   = lookup(each.value, "enable_admin_container", false)
+      enable_control_container = lookup(each.value, "enable_control_container", true)
+      additional_userdata      = lookup(each.value, "additional_userdata", "")
+    }) if v["create_launch_template"] && length(split("BOTTLEROCKET", v["ami_type"])) > 1
+  }
 }
