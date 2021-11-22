@@ -1,3 +1,21 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+# [17.24.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.23.0...v17.24.0) (2021-11-22)
+
+
+### Bug Fixes
+
+* Added Deny for CreateLogGroup action in EKS cluster role ([#1594](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1594)) ([6959b9b](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/6959b9bae32309357bc97a85a1f09c7b590c8a6d))
+* update CI/CD process to enable auto-release workflow ([#1698](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1698)) ([b876ff9](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/b876ff95136fbb419cbb33feaa8f354a053047e0))
+
+
+### Features
+
+* Add ability to define custom timeout for fargate profiles ([#1614](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1614)) ([b7539dc](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/b7539dc220f6b5fe199d67569b6f3619ec00fdf0))
+* Removed ng_depends_on variable and related hack ([#1672](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1672)) ([56e93d7](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/56e93d77de58f311f1d1d7051f40bf77e7b03524))
+
 <a name="v17.23.0"></a>
 ## [v17.23.0] - 2021-11-02
 FEATURES:
