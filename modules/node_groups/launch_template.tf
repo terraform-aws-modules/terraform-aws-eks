@@ -35,8 +35,6 @@ data "template_file" "bottlerocket_workers_userdata" {
     enable_admin_container   = lookup(each.value, "enable_admin_container", false)
     enable_control_container = lookup(each.value, "enable_control_container", true)
     additional_userdata      = lookup(each.value, "additional_userdata", "")
-    # capacity_type          = lookup(each.value, "capacity_type", "ON_DEMAND")
-    # append_labels          = length(lookup(each.value, "k8s_labels", {})) > 0 ? ",${join(",", [for k, v in lookup(each.value, "k8s_labels", {}) : "${k}=${v}"])}" : ""
   }
 }
 
@@ -54,7 +52,7 @@ resource "aws_launch_template" "workers" {
   update_default_version = lookup(each.value, "update_default_version", true)
 
   block_device_mappings {
-    device_name = "/dev/xvda"
+    device_name = length(split("BOTTLEROCKET", each.value["ami_type"])) > 1 ? "/dev/xvdb" : "/dev/xvda"
 
     ebs {
       volume_size           = lookup(each.value, "disk_size", null)
