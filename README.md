@@ -135,8 +135,8 @@ Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraf
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_fargate"></a> [fargate](#module\_fargate) | ./modules/fargate |  |
-| <a name="module_node_groups"></a> [node\_groups](#module\_node\_groups) | ./modules/node_groups |  |
+| <a name="module_fargate"></a> [fargate](#module\_fargate) | ./modules/fargate | n/a |
+| <a name="module_node_groups"></a> [node\_groups](#module\_node\_groups) | ./modules/node_groups | n/a |
 
 ## Resources
 
