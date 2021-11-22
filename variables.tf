@@ -200,17 +200,17 @@ variable "kubeconfig_api_version" {
 variable "kubeconfig_aws_authenticator_command" {
   description = "Command to use to fetch AWS EKS credentials."
   type        = string
-  default     = "aws-iam-authenticator"
+  default     = "aws"
 }
 
 variable "kubeconfig_aws_authenticator_command_args" {
-  description = "Default arguments passed to the authenticator command. Defaults to [token -i $cluster_name]."
+  description = "Default arguments passed to the authenticator command. Defaults to [\"eks\", \"get-token\", \"--cluster-name\", --$cluster-name, \"--region\", --$region]."
   type        = list(string)
   default     = []
 }
 
 variable "kubeconfig_aws_authenticator_additional_args" {
-  description = "Any additional arguments to pass to the authenticator such as the role to assume. e.g. [\"-r\", \"MyEksRole\"]."
+  description = "Any additional arguments to pass to the authenticator such as the role to assume. e.g. [\"--role-arn\", \"arn:aws:iam::012345678910:role/MyEksRole\"]."
   type        = list(string)
   default     = []
 }
@@ -433,4 +433,3 @@ variable "openid_connect_audiences" {
   type        = list(string)
   default     = []
 }
-
