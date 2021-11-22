@@ -81,7 +81,6 @@ resource "aws_launch_template" "workers" {
   #
   # (optionally you can use https://registry.terraform.io/providers/hashicorp/cloudinit/latest/docs/data-sources/cloudinit_config to render the script, example: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/997#issuecomment-705286151)
 
-  # user_data = length(split("BOTTLEROCKET", each.value["ami_type"])) > 1 ? base64encode(data.template_file.bottlerocket_workers_userdata[each.key].rendered) : data.cloudinit_config.workers_userdata[each.key].rendered
   user_data = length(split("BOTTLEROCKET", each.value["ami_type"])) > 1 ? base64encode(local.bottlerocket_workers_userdata[each.key]) : data.cloudinit_config.workers_userdata[each.key].rendered
 
   key_name = lookup(each.value, "key_name", null)
