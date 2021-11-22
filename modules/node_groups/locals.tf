@@ -54,9 +54,9 @@ locals {
       cluster_name             = var.cluster_name
       endpoint                 = var.cluster_endpoint
       cluster_auth_base64      = var.cluster_auth_base64
-      enable_admin_container   = lookup(each.value, "enable_admin_container", false)
-      enable_control_container = lookup(each.value, "enable_control_container", true)
-      additional_userdata      = lookup(each.value, "additional_userdata", "")
+      enable_admin_container   = lookup(v, "enable_admin_container", false)
+      enable_control_container = lookup(v, "enable_control_container", true)
+      additional_userdata      = lookup(v, "additional_userdata", "")
     }) if v["create_launch_template"] && length(split("BOTTLEROCKET", v["ami_type"])) > 1
   }
 }
