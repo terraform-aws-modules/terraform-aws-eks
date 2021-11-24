@@ -103,6 +103,7 @@ locals {
     metadata_http_put_response_hop_limit = null       # The desired HTTP PUT response hop limit for instance metadata requests.
     # Settings for launch templates with mixed instances policy
     override_instance_types                  = ["m5.large", "m5a.large", "m5d.large", "m5ad.large"] # A list of override instance types for mixed instances policy
+    instance_type_weights                    = {}                                                   # A map of instance types to their respective weights. You can use this to make a 2xlarge instance provide 2 instances while an xlarge instance only provides 1. If omitted, 1 will be used.
     on_demand_allocation_strategy            = null                                                 # Strategy to use when launching on-demand instances. Valid values: prioritized.
     on_demand_base_capacity                  = "0"                                                  # Absolute minimum amount of desired capacity that must be fulfilled by on-demand instances
     on_demand_percentage_above_base_capacity = "0"                                                  # Percentage split between on-demand and Spot instances above the base on-demand capacity
