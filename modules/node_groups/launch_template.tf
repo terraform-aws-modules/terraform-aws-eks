@@ -15,6 +15,7 @@ data "cloudinit_config" "workers_userdata" {
         ami_id               = lookup(each.value, "ami_id", "")
         ami_is_eks_optimized = each.value["ami_is_eks_optimized"]
         bootstrap_env        = each.value["bootstrap_env"]
+        bootstrap_extra_args = each.value["bootstrap_extra_args"]
         kubelet_extra_args   = each.value["kubelet_extra_args"]
         pre_userdata         = each.value["pre_userdata"]
         capacity_type        = lookup(each.value, "capacity_type", "ON_DEMAND")
