@@ -15,6 +15,7 @@ See example code in `examples/fargate`.
 | name | Fargate profile name | `string` | Auto generated in the following format `[cluster_name]-fargate-[fargate_profile_map_key]`| no |
 | selectors | A list of Kubernetes selectors. See examples/fargate/main.tf for example format. | <pre>list(map({<br>namespace = string<br>labels = map(string)<br>}))</pre>| `[]` | no |
 | subnets | List of subnet IDs. Will replace the root module subnets. | `list(string)` | `var.subnets` | no |
+| timeouts | A map of timeouts for create/delete operations. | `map(string)` | Provider default behavior | no |
 | tags | Key-value map of resource tags. Will be merged with root module tags. | `map(string)` | `var.tags` | no |
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
@@ -23,13 +24,13 @@ See example code in `examples/fargate`.
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.40.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.56 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.40.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.56 |
 
 ## Modules
 

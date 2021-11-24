@@ -114,6 +114,11 @@ module "eks" {
       tags = {
         Owner = "test"
       }
+
+      timeouts = {
+        create = "20m"
+        delete = "20m"
+      }
     }
   }
 
