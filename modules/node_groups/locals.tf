@@ -48,4 +48,17 @@ locals {
       join("-", [var.cluster_name, k])
     )
   ) }
+
+  asg_tag_list = flatten([
+    for name, info in aws_eks_node_group.workers : [
+      [
+        for key, value in lookup(local.node_groups_expanded[name], "asg_tags", []) : {
+          asg_name  = info.resources[0].autoscaling_groups[0].name
+          key       = key
+          propagate = try(local.node_groups_expanded[name].asg_tags_propagate_at_launch, false)
+          value     = value
+        }
+      ]
+    ]
+  ])
 }

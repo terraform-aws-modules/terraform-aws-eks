@@ -20,6 +20,8 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | ami\_type | AMI Type. See Terraform or AWS docs | string | Provider default behavior |
 | ami\_id | ID of custom AMI. If you use a custom AMI, you need to set `ami_is_eks_optimized` | string | Provider default behavior |
 | ami\_is\_eks\_optimized | If the custom AMI is an EKS optimised image, ignored if `ami_id` is not set. If this is `true` then `bootstrap.sh` is called automatically (max pod logic needs to be manually set), if this is `false` you need to provide all the node configuration in `pre_userdata` | bool | `true` |
+| asg\_tags | Tags to be added to the autoscaling group that is generated automatically by AWS as part of the managed node group creation | map(string) |
+| asg\_tags\_propagate\_at\_launch | Controls whether or not the tags defined in `asg_tags` will be propagated to the instances generated from the autoscaling group | bool |
 | capacity\_type | Type of instance capacity to provision. Options are `ON_DEMAND` and `SPOT` | string | Provider default behavior |
 | create_launch_template | Create and use a default launch template | bool |  `false` |
 | desired\_capacity | Desired number of workers | number | `var.workers_group_defaults[asg_desired_capacity]` |

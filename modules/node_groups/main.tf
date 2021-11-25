@@ -103,3 +103,14 @@ resource "aws_eks_node_group" "workers" {
   }
 
 }
+
+resource "aws_autoscaling_group_tag" "tag" {
+  for_each = { for map in local.asg_tag_list : "${map.asg_name}_${map.key}" => map if length(local.asg_tag_list) > 0 }
+
+  autoscaling_group_name = replace(each.key, "_${each.value.key}", "")
+  tag {
+    key                 = each.value.key
+    value               = each.value.value
+    propagate_at_launch = each.value.propagate
+  }
+}
