@@ -61,7 +61,7 @@ resource "aws_eks_cluster" "this" {
 
   lifecycle {
     ignore_changes = [
-      var.subnets
+      vpc_config.0.subnet_ids,
     ]
   }
 }
