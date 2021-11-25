@@ -105,7 +105,7 @@ resource "aws_eks_node_group" "workers" {
 }
 
 resource "aws_autoscaling_group_tag" "tag" {
-  for_each = { for map in local.asg_tag_list : "${map.group_name}_${map.key}" => map if length(local.asg_tag_list) != {} }
+  for_each = { for map in local.asg_tag_list : "${map.group_name}_${map.key}" => map }
 
   autoscaling_group_name = aws_eks_node_group.workers[replace(each.key, "_${each.value.key}", "")].resources[0].autoscaling_groups[0].name
 
