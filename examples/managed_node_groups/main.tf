@@ -42,9 +42,13 @@ module "eks" {
         GithubRepo = "terraform-aws-eks"
         GithubOrg  = "terraform-aws-modules"
       }
-      asg_tags = {
-        "k8s.io/cluster-autoscaler/node-template/label/monitoring" = true
-      }
+      asg_tags = [
+        {
+          key                 = "k8s.io/cluster-autoscaler/node-template/label/monitoring"
+          value               = true
+          propagate_at_launch = true // optional, defaults to false.
+        }
+      ]
       additional_tags = {
         ExtraTag = "example"
       }
