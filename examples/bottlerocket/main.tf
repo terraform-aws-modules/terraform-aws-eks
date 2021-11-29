@@ -30,16 +30,30 @@ module "eks" {
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
+  cluster_addons = {
+    coredns = {
+      resolve_conflicts = "OVERWRITE"
+    }
+    kube-proxy = {}
+    vpc-cni = {
+      resolve_conflicts = "OVERWRITE"
+    }
+  }
+
+  # Self Managed Node Group(s)
+  self_managed_node_group_defaults = {
+    update_default_version = true
+  }
+
   self_managed_node_groups = {
-    one = {
+    two = {
       name = "bottlerocket-nodes"
 
-      create_launch_template = true
-      platform               = "bottlerocket"
-      ami_id                 = data.aws_ami.bottlerocket_ami.id
-      instance_type          = "m5.large"
-      desired_size           = 2
-      key_name               = aws_key_pair.this.key_name
+      platform      = "bottlerocket"
+      ami_id        = data.aws_ami.bottlerocket_ami.id
+      instance_type = "m5.large"
+      desired_size  = 2
+      key_name      = aws_key_pair.this.key_name
 
       iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
 
@@ -65,6 +79,59 @@ module "eks" {
 }
 
 ################################################################################
+# aws-auth configmap
+# Only EKS managed node groups automatically add roles to aws-auth configmap
+# so we need to ensure fargate profiles and self-managed node roles are added
+################################################################################
+
+data "aws_eks_cluster_auth" "this" {
+  name = module.eks.cluster_id
+}
+
+locals {
+  kubeconfig = yamlencode({
+    apiVersion      = "v1"
+    kind            = "Config"
+    current-context = "terraform"
+    clusters = [{
+      name = "${module.eks.cluster_id}"
+      cluster = {
+        certificate-authority-data = "${module.eks.cluster_certificate_authority_data}"
+        server                     = "${module.eks.cluster_endpoint}"
+      }
+    }]
+    contexts = [{
+      name = "terraform"
+      context = {
+        cluster = "${module.eks.cluster_id}"
+        user    = "terraform"
+      }
+    }]
+    users = [{
+      name = "terraform"
+      user = {
+        token = "${data.aws_eks_cluster_auth.this.token}"
+      }
+    }]
+  })
+}
+
+resource "null_resource" "patch_cni" {
+  triggers = {
+    kubeconfig = base64encode(local.kubeconfig)
+    cmd_patch  = "kubectl patch configmap/aws-auth -n kube-system --patch \"${module.eks.aws_auth_configmap_yaml}\" -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)"
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    environment = {
+      KUBECONFIG = self.triggers.kubeconfig
+    }
+    command = self.triggers.cmd_patch
+  }
+}
+
+################################################################################
 # Supporting Resources
 ################################################################################
 
@@ -86,10 +153,6 @@ resource "aws_key_pair" "this" {
   key_name   = local.name
   public_key = tls_private_key.this.public_key_openssh
 }
-
-################################################################################
-# Supporting Resources
-################################################################################
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"

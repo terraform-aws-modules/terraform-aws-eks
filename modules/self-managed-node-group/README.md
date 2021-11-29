@@ -172,6 +172,7 @@ No modules.
 | <a name="output_launch_template_arn"></a> [launch\_template\_arn](#output\_launch\_template\_arn) | The ARN of the launch template |
 | <a name="output_launch_template_id"></a> [launch\_template\_id](#output\_launch\_template\_id) | The ID of the launch template |
 | <a name="output_launch_template_latest_version"></a> [launch\_template\_latest\_version](#output\_launch\_template\_latest\_version) | The latest version of the launch template |
+| <a name="output_platform"></a> [platform](#output\_platform) | Identifies if the OS platform is `bottlerocket`, `linux`, or `windows` based |
 | <a name="output_security_group_arn"></a> [security\_group\_arn](#output\_security\_group\_arn) | Amazon Resource Name (ARN) of the security group |
 | <a name="output_security_group_id"></a> [security\_group\_id](#output\_security\_group\_id) | ID of the security group |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

@@ -99,6 +99,24 @@ output "cluster_iam_role_unique_id" {
 }
 
 ################################################################################
+# EKS Addons
+################################################################################
+
+output "cluster_addons" {
+  description = "Map of attribute maps for all EKS cluster addons enabled"
+  value       = aws_eks_addon.this
+}
+
+################################################################################
+# EKS Identity Provider
+################################################################################
+
+output "cluster_identity_providers" {
+  description = "Map of attribute maps for all EKS identity providers enabled"
+  value       = aws_eks_identity_provider_config.this
+}
+
+################################################################################
 # CloudWatch Log Group
 ################################################################################
 
@@ -137,4 +155,20 @@ output "eks_managed_node_groups" {
 output "self_managed_node_groups" {
   description = "Map of attribute maps for all self managed node groups created"
   value       = module.self_managed_node_group
+}
+
+################################################################################
+# Additional
+################################################################################
+
+output "aws_auth_configmap_yaml" {
+  description = "Formatted yaml output for base aws-auth configmap containing roles used in cluster node groups/fargate profiles"
+  value = templatefile("${path.module}/templates/aws_auth_cm.tpl",
+    {
+      eks_managed_role_arns        = [for group in module.eks_managed_node_group : group.iam_role_arn]
+      self_managed_role_arns       = [for group in module.self_managed_node_group : group.iam_role_arn if group.platform != "windows"]
+      win32_self_managed_role_arns = [for group in module.self_managed_node_group : group.iam_role_arn if group.platform == "windows"]
+      fargate_profile_arns         = [for group in module.fargate_profile : group.fargate_profile_arn]
+    }
+  )
 }

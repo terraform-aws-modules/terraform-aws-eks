@@ -21,42 +21,81 @@ locals {
 module "eks" {
   source = "../.."
 
-  cluster_name    = local.name
-  cluster_version = local.cluster_version
+  cluster_name                    = local.name
+  cluster_version                 = local.cluster_version
+  cluster_endpoint_private_access = true
+  cluster_endpoint_public_access  = true
+
+  cluster_addons = {
+    coredns = {
+      resolve_conflicts = "OVERWRITE"
+    }
+    kube-proxy = {}
+    vpc-cni = {
+      resolve_conflicts = "OVERWRITE"
+    }
+  }
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
-  cluster_endpoint_private_access = true
-  cluster_endpoint_public_access  = true
+  enable_irsa = true
 
   # Self Managed Node Group(s)
   self_managed_node_group_defaults = {
-    vpc_security_group_ids = [aws_security_group.additional.id]
+    update_default_version       = true
+    vpc_security_group_ids       = [aws_security_group.additional.id]
+    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
   }
 
   self_managed_node_groups = {
     one = {
-      name                    = "spot-1"
-      override_instance_types = ["m5.large", "m5d.large", "m6i.large"]
-      spot_instance_pools     = 4
-      asg_max_size            = 5
-      asg_desired_capacity    = 5
-      bootstrap_extra_args    = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-      public_ip               = true
+      name = "spot-1"
+
+      use_mixed_instances_policy = true
+      mixed_instances_policy = {
+        instances_distribution = {
+          on_demand_base_capacity                  = 0
+          on_demand_percentage_above_base_capacity = 10
+          spot_allocation_strategy                 = "capacity-optimized"
+        }
+
+        override = [
+          {
+            instance_type     = "m5.large"
+            weighted_capacity = "2"
+          },
+          {
+            instance_type     = "m6i.large"
+            weighted_capacity = "1"
+          },
+        ]
+      }
+
+      max_size                 = 5
+      desired_size             = 5
+      bootstrap_extra_args     = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+      post_bootstrap_user_data = <<-EOT
+      cd /tmp
+      sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+      sudo systemctl enable amazon-ssm-agent
+      sudo systemctl start amazon-ssm-agent
+      EOT
+      public_ip                = true
     }
   }
 
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
-    ami_type = "AL2_x86_64"
-    # disk_size              = 50
+    ami_type               = "AL2_x86_64"
+    disk_size              = 50
     vpc_security_group_ids = [aws_security_group.additional.id]
     create_launch_template = true
   }
 
   eks_managed_node_groups = {
-    blue = {
+    blue = {}
+    green = {
       min_size     = 1
       max_size     = 10
       desired_size = 1
@@ -83,7 +122,6 @@ module "eks" {
         ExtraTag = "example"
       }
     }
-    green = {}
   }
 
   # Fargate Profile(s)
@@ -145,72 +183,57 @@ module "disabled_self_managed_node_group" {
 }
 
 ################################################################################
-# Kubernetes provider configuration
+# aws-auth configmap
+# Only EKS managed node groups automatically add roles to aws-auth configmap
+# so we need to ensure fargate profiles and self-managed node roles are added
 ################################################################################
 
-# data "aws_eks_cluster" "cluster" {
-#   name = module.eks.cluster_id
-# }
+data "aws_eks_cluster_auth" "this" {
+  name = module.eks.cluster_id
+}
 
-# data "aws_eks_cluster_auth" "cluster" {
-#   name = module.eks.cluster_id
-# }
+locals {
+  kubeconfig = yamlencode({
+    apiVersion      = "v1"
+    kind            = "Config"
+    current-context = "terraform"
+    clusters = [{
+      name = "${module.eks.cluster_id}"
+      cluster = {
+        certificate-authority-data = "${module.eks.cluster_certificate_authority_data}"
+        server                     = "${module.eks.cluster_endpoint}"
+      }
+    }]
+    contexts = [{
+      name = "terraform"
+      context = {
+        cluster = "${module.eks.cluster_id}"
+        user    = "terraform"
+      }
+    }]
+    users = [{
+      name = "terraform"
+      user = {
+        token = "${data.aws_eks_cluster_auth.this.token}"
+      }
+    }]
+  })
+}
 
-# provider "kubernetes" {
-#   host                   = data.aws_eks_cluster.cluster.endpoint
-#   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
-#   token                  = data.aws_eks_cluster_auth.cluster.token
-#   experiments {
-#     manifest_resource = true
-#   }
-# }
+resource "null_resource" "patch_cni" {
+  triggers = {
+    kubeconfig = base64encode(local.kubeconfig)
+    cmd_patch  = "kubectl patch configmap/aws-auth -n kube-system --patch \"${module.eks.aws_auth_configmap_yaml}\" -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)"
+  }
 
-# locals {
-#   fargate_roles = [for k, v in module.eks.fargate_profiles :
-#     {
-#       rolearn  = v.iam_role_arn
-#       username = "system:node:{{SessionName}}"
-#       groups = [
-#         "system:bootstrappers",
-#         "system:nodes",
-#         "system:node-proxier",
-#       ]
-#     }
-#   ]
-#   linux_roles = [for k, v in module.eks.eks_managed_node_groups :
-#     {
-#       rolearn  = v.iam_role_arn
-#       username = "system:node:{{EC2PrivateDNSName}}"
-#       groups = [
-#         "system:bootstrappers",
-#         "system:nodes",
-#       ]
-#     }
-#   ]
-# }
-
-# data "http" "wait_for_cluster" {
-#   url            = "${module.eks.cluster_endpoint}/healthz"
-#   ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-#   timeout        = 300
-# }
-
-# resource "kubernetes_manifest" "aws_auth" {
-#   manifest = {
-#     apiVersion = "v1"
-#     kind       = "ConfigMap"
-#     metadata = {
-#       name      = "aws-auth"
-#       namespace = "kube-system"
-#     }
-
-#     data = {
-#       mapRoles = yamlencode(concat(local.fargate_roles, local.linux_roles))
-#     }
-#   }
-
-#   depends_on = [data.http.wait_for_cluster]
-# }
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    environment = {
+      KUBECONFIG = self.triggers.kubeconfig
+    }
+    command = self.triggers.cmd_patch
+  }
+}
 
 ################################################################################
 # Supporting resources

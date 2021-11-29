@@ -26,7 +26,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
 <<<<<<< HEAD
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.64 |
-| <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.0 |
+| <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
 | <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 2.2 |
 =======
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.56 |
@@ -42,6 +42,7 @@ Note that this example may create resources which cost money. Run `terraform des
 |------|---------|
 <<<<<<< HEAD
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.64 |
+| <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | >= 2.2 |
 =======
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.56 |
@@ -61,8 +62,10 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Type |
 |------|------|
 | [aws_key_pair.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair) | resource |
+| [null_resource.patch_cni](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [tls_private_key.this](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
 | [aws_ami.bottlerocket_ami](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
+| [aws_eks_cluster_auth.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
 
 ## Inputs
 
@@ -72,8 +75,10 @@ No inputs.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_aws_auth_configmap_yaml"></a> [aws\_auth\_configmap\_yaml](#output\_aws\_auth\_configmap\_yaml) | Formatted yaml output for base aws-auth configmap containing roles used in cluster node groups/fargate profiles |
 | <a name="output_cloudwatch_log_group_arn"></a> [cloudwatch\_log\_group\_arn](#output\_cloudwatch\_log\_group\_arn) | Arn of cloudwatch log group created |
 | <a name="output_cloudwatch_log_group_name"></a> [cloudwatch\_log\_group\_name](#output\_cloudwatch\_log\_group\_name) | Name of cloudwatch log group created |
+| <a name="output_cluster_addons"></a> [cluster\_addons](#output\_cluster\_addons) | Map of attribute maps for all EKS cluster addons enabled |
 | <a name="output_cluster_arn"></a> [cluster\_arn](#output\_cluster\_arn) | The Amazon Resource Name (ARN) of the cluster |
 | <a name="output_cluster_certificate_authority_data"></a> [cluster\_certificate\_authority\_data](#output\_cluster\_certificate\_authority\_data) | Base64 encoded certificate data required to communicate with the cluster |
 | <a name="output_cluster_endpoint"></a> [cluster\_endpoint](#output\_cluster\_endpoint) | Endpoint for your Kubernetes API server |
@@ -81,6 +86,7 @@ No inputs.
 | <a name="output_cluster_iam_role_name"></a> [cluster\_iam\_role\_name](#output\_cluster\_iam\_role\_name) | IAM role name of the EKS cluster |
 | <a name="output_cluster_iam_role_unique_id"></a> [cluster\_iam\_role\_unique\_id](#output\_cluster\_iam\_role\_unique\_id) | Stable and unique string identifying the IAM role |
 | <a name="output_cluster_id"></a> [cluster\_id](#output\_cluster\_id) | The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready |
+| <a name="output_cluster_identity_providers"></a> [cluster\_identity\_providers](#output\_cluster\_identity\_providers) | Map of attribute maps for all EKS identity providers enabled |
 | <a name="output_cluster_oidc_issuer_url"></a> [cluster\_oidc\_issuer\_url](#output\_cluster\_oidc\_issuer\_url) | The URL on the EKS cluster for the OpenID Connect identity provider |
 | <a name="output_cluster_platform_version"></a> [cluster\_platform\_version](#output\_cluster\_platform\_version) | Platform version for the cluster |
 | <a name="output_cluster_primary_security_group_id"></a> [cluster\_primary\_security\_group\_id](#output\_cluster\_primary\_security\_group\_id) | Cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication. Referred to as 'Cluster security group' in the EKS console |

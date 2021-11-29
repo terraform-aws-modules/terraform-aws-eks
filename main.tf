@@ -142,6 +142,7 @@ resource "aws_security_group_rule" "cluster" {
 
 ################################################################################
 # IRSA
+# Note - this is different from EKS identity provider
 ################################################################################
 
 data "tls_certificate" "this" {
@@ -226,4 +227,45 @@ resource "aws_iam_role_policy_attachment" "this" {
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name
+}
+
+################################################################################
+# EKS Addons
+################################################################################
+
+resource "aws_eks_addon" "this" {
+  for_each = { for k, v in var.cluster_addons : k => v if var.create }
+
+  cluster_name = aws_eks_cluster.this[0].name
+  addon_name   = try(each.value.name, each.key)
+
+  addon_version            = lookup(each.value, "addon_version", null)
+  resolve_conflicts        = lookup(each.value, "resolve_conflicts", null)
+  service_account_role_arn = lookup(each.value, "service_account_role_arn", null)
+
+  tags = var.tags
+}
+
+################################################################################
+# EKS Identity Provider
+# Note - this is different from IRSA
+################################################################################
+
+resource "aws_eks_identity_provider_config" "this" {
+  for_each = { for k, v in var.cluster_identity_providers : k => v if var.create }
+
+  cluster_name = aws_eks_cluster.this[0].name
+
+  oidc {
+    client_id                     = each.value.client_id
+    groups_claim                  = lookup(each.value, "groups_claim", null)
+    groups_prefix                 = lookup(each.value, "groups_prefix", null)
+    identity_provider_config_name = try(each.value.identity_provider_config_name, each.key)
+    issuer_url                    = each.value.issuer_url
+    required_claims               = lookup(each.value, "required_claims", null)
+    username_claim                = lookup(each.value, "username_claim", null)
+    username_prefix               = lookup(each.value, "username_prefix", null)
+  }
+
+  tags = var.tags
 }

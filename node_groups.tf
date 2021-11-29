@@ -334,7 +334,7 @@ module "self_managed_node_group" {
   bootstrap_extra_args       = try(each.value.bootstrap_extra_args, var.self_managed_node_group_defaults.bootstrap_extra_args, "")
 
   # Launch Template
-  create_launch_template = try(each.value.create_launch_template, var.self_managed_node_group_defaults.create_launch_template, false)
+  create_launch_template = try(each.value.create_launch_template, var.self_managed_node_group_defaults.create_launch_template, true)
   description            = try(each.value.description, var.self_managed_node_group_defaults.description, "Custom launch template for ${try(each.value.name, each.key)} self managed node group")
 
   ebs_optimized   = try(each.value.ebs_optimized, var.self_managed_node_group_defaults.ebs_optimized, null)

@@ -20,6 +20,17 @@ locals {
   platform = {
     bottlerocket = {
       content_type = "application/toml"
+      user_data = var.platform == "bottlerocket" ? base64encode(templatefile("${path.module}/../../templates/${var.platform}_user_data.tpl",
+        {
+          ami_id = var.ami_id
+          # Required to bootstrap node
+          cluster_name        = var.cluster_name
+          cluster_endpoint    = var.cluster_endpoint
+          cluster_auth_base64 = var.cluster_auth_base64
+          # Optional
+          bootstrap_extra_args = var.bootstrap_extra_args
+        }
+      )) : ""
     }
     linux = {
       content_type = "text/x-shellscript"
@@ -31,7 +42,7 @@ locals {
 }
 
 data "cloudinit_config" "eks_optimized_ami_user_data" {
-  count = var.create && var.enable_bootstrap_user_data ? 1 : 0
+  count = var.create && var.enable_bootstrap_user_data && var.platform != "bottlerocket" ? 1 : 0
 
   gzip     = false
   boundary = "//"
@@ -44,41 +55,20 @@ data "cloudinit_config" "eks_optimized_ami_user_data" {
     }
   }
 
-  dynamic "part" {
-    for_each = var.platform != "bottlerocket" ? [1] : []
-    content {
-      content_type = local.platform[var.platform].content_type
-      content = templatefile("${path.module}/../../templates/${var.platform}_user_data.tpl",
-        {
-          ami_id = var.ami_id
-          # Required to bootstrap node
-          cluster_name        = var.cluster_name
-          cluster_endpoint    = var.cluster_endpoint
-          cluster_auth_base64 = var.cluster_auth_base64
-          # Optional
-          bootstrap_extra_args     = var.bootstrap_extra_args
-          post_bootstrap_user_data = var.post_bootstrap_user_data
-        }
-      )
-    }
-  }
-
-  dynamic "part" {
-    for_each = var.platform == "bottlerocket" ? [1] : []
-    content {
-      content_type = local.platform[var.platform].content_type
-      content = templatefile("${path.module}/../../templates/${var.platform}_user_data.tpl",
-        {
-          ami_id = var.ami_id
-          # Required to bootstrap node
-          cluster_name        = var.cluster_name
-          cluster_endpoint    = var.cluster_endpoint
-          cluster_auth_base64 = var.cluster_auth_base64
-          # Optional
-          bootstrap_extra_args = var.bootstrap_extra_args
-        }
-      )
-    }
+  part {
+    content_type = local.platform[var.platform].content_type
+    content = templatefile("${path.module}/../../templates/${var.platform}_user_data.tpl",
+      {
+        ami_id = "JustNeedsToBeSomethingToEnsureUserDataIsPopulated"
+        # Required to bootstrap node
+        cluster_name        = var.cluster_name
+        cluster_endpoint    = var.cluster_endpoint
+        cluster_auth_base64 = var.cluster_auth_base64
+        # Optional
+        bootstrap_extra_args     = var.bootstrap_extra_args
+        post_bootstrap_user_data = var.post_bootstrap_user_data
+      }
+    )
   }
 }
 
@@ -101,7 +91,7 @@ resource "aws_launch_template" "this" {
   image_id      = coalesce(var.ami_id, data.aws_ami.eks_default[0].image_id)
   instance_type = var.instance_type
   key_name      = var.key_name
-  user_data     = try(data.cloudinit_config.eks_optimized_ami_user_data[0].rendered, var.custom_user_data)
+  user_data     = var.platform == "bottlerocket" ? local.platform.bottlerocket.user_data : try(data.cloudinit_config.eks_optimized_ami_user_data[0].rendered, var.custom_user_data)
 
   vpc_security_group_ids = compact(concat([try(aws_security_group.this[0].id, "")], var.vpc_security_group_ids))
 
@@ -308,9 +298,13 @@ resource "aws_autoscaling_group" "this" {
   name        = var.use_name_prefix ? null : var.name
   name_prefix = var.use_name_prefix ? "${var.name}-" : null
 
-  launch_template {
-    name    = local.launch_template_name
-    version = local.launch_template_version
+  dynamic "launch_template" {
+    for_each = var.use_mixed_instances_policy ? [] : [1]
+
+    content {
+      name    = local.launch_template_name
+      version = local.launch_template_version
+    }
   }
 
   availability_zones  = var.availability_zones
@@ -375,7 +369,7 @@ resource "aws_autoscaling_group" "this" {
     for_each = var.use_mixed_instances_policy ? [var.mixed_instances_policy] : []
     content {
       dynamic "instances_distribution" {
-        for_each = lookup(mixed_instances_policy.value, "instances_distribution", null) != null ? [mixed_instances_policy.value.instances_distribution] : []
+        for_each = try([mixed_instances_policy.value.instances_distribution], [])
         content {
           on_demand_allocation_strategy            = lookup(instances_distribution.value, "on_demand_allocation_strategy", null)
           on_demand_base_capacity                  = lookup(instances_distribution.value, "on_demand_base_capacity", null)
@@ -393,7 +387,7 @@ resource "aws_autoscaling_group" "this" {
         }
 
         dynamic "override" {
-          for_each = lookup(mixed_instances_policy.value, "override", null) != null ? mixed_instances_policy.value.override : []
+          for_each = try(mixed_instances_policy.value.override, [])
           content {
             instance_type     = lookup(override.value, "instance_type", null)
             weighted_capacity = lookup(override.value, "weighted_capacity", null)

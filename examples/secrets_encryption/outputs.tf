@@ -99,6 +99,24 @@ output "cluster_iam_role_unique_id" {
 }
 
 ################################################################################
+# EKS Addons
+################################################################################
+
+output "cluster_addons" {
+  description = "Map of attribute maps for all EKS cluster addons enabled"
+  value       = module.eks.cluster_addons
+}
+
+################################################################################
+# EKS Identity Provider
+################################################################################
+
+output "cluster_identity_providers" {
+  description = "Map of attribute maps for all EKS identity providers enabled"
+  value       = module.eks.cluster_identity_providers
+}
+
+################################################################################
 # CloudWatch Log Group
 ################################################################################
 
@@ -137,4 +155,13 @@ output "eks_managed_node_groups" {
 output "self_managed_node_groups" {
   description = "Map of attribute maps for all self managed node groups created"
   value       = module.eks.self_managed_node_groups
+}
+
+################################################################################
+# Additional
+################################################################################
+
+output "aws_auth_configmap_yaml" {
+  description = "Formatted yaml output for base aws-auth configmap containing roles used in cluster node groups/fargate profiles"
+  value       = module.eks.aws_auth_configmap_yaml
 }

@@ -266,6 +266,26 @@ variable "iam_role_tags" {
 }
 
 ################################################################################
+# EKS Addons
+################################################################################
+
+variable "cluster_addons" {
+  description = "Map of cluster addon configurations to enable for the cluster. Addon name can be the map keys or set with `name`"
+  type        = any
+  default     = {}
+}
+
+################################################################################
+# EKS Identity Provider
+################################################################################
+
+variable "cluster_identity_providers" {
+  description = "Map of cluster identity provider configurations to enable for the cluster. Note - this is different from IRSA"
+  type        = any
+  default     = {}
+}
+
+################################################################################
 # Fargate
 ################################################################################
 
