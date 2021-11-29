@@ -71,9 +71,9 @@ module "eks" {
         GithubOrg  = "terraform-aws-modules"
       }
 
-      # TODO - why is this giving an error!!!
+      # TODO - this is throwing an error
       # update_config = {
-      #   max_unavailable = "1"
+      #   max_unavailable_percentage = 50 # or set `max_unavailable`
       # }
 
       create_launch_template          = true
@@ -180,6 +180,10 @@ module "vpc" {
   single_nat_gateway   = true
   enable_dns_hostnames = true
 
+  enable_flow_log                      = true
+  create_flow_log_cloudwatch_iam_role  = true
+  create_flow_log_cloudwatch_log_group = true
+
   public_subnet_tags = {
     "kubernetes.io/cluster/${local.name}" = "shared"
     "kubernetes.io/role/elb"              = 1
@@ -198,11 +202,17 @@ resource "aws_security_group" "additional" {
   vpc_id      = module.vpc.vpc_id
 
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["10.99.0.0/28"]
+    from_port = 22
+    to_port   = 22
+    protocol  = "tcp"
+    cidr_blocks = [
+      "10.0.0.0/8",
+      "172.16.0.0/12",
+      "192.168.0.0/16",
+    ]
   }
+
+  tags = local.tags
 }
 
 data "aws_caller_identity" "current" {}

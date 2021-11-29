@@ -59,6 +59,7 @@ data "cloudinit_config" "eks_optimized_ami_user_data" {
       content_type = "text/x-shellscript"
       content = templatefile("${path.module}/../../templates/linux_user_data.tpl",
         {
+          ami_id = var.ami_id
           # Required to bootstrap node
           cluster_name = var.cluster_name
           # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
@@ -413,7 +414,7 @@ resource "aws_security_group" "this" {
 }
 
 resource "aws_security_group_rule" "this" {
-  for_each = local.create_security_group ? var.security_group_rules : object({})
+  for_each = { for k, v in var.security_group_rules : k => v if local.create_security_group }
 
   # Required
   security_group_id = aws_security_group.this[0].id

@@ -99,7 +99,7 @@ variable "ebs_optimized" {
 variable "ami_id" {
   description = "The AMI from which to launch the instance. If not supplied, EKS will use its own default image"
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "key_name" {

@@ -68,16 +68,17 @@ module "eks" {
         GithubRepo  = "terraform-aws-eks"
         GithubOrg   = "terraform-aws-modules"
       }
-      # taints = {
-      #   dedicated = {
-      #     key    = "dedicated"
-      #     value  = "gpuGroup"
-      #     effect = "NO_SCHEDULE"
-      #   }
-      # }
-      update_config = {
-        max_unavailable_percentage = 50 # or set `max_unavailable`
+      taints = {
+        dedicated = {
+          key    = "dedicated"
+          value  = "gpuGroup"
+          effect = "NO_SCHEDULE"
+        }
       }
+      # TODO - this is throwing an error
+      # update_config = {
+      #   max_unavailable_percentage = 50 # or set `max_unavailable`
+      # }
       tags = {
         ExtraTag = "example"
       }
@@ -261,4 +262,6 @@ resource "aws_security_group" "additional" {
       "192.168.0.0/16",
     ]
   }
+
+  tags = local.tags
 }

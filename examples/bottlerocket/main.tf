@@ -4,7 +4,7 @@ provider "aws" {
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.20"
+  cluster_version = "1.21"
   region          = "eu-west-1"
 
   tags = {
@@ -32,24 +32,29 @@ module "eks" {
 
   self_managed_node_groups = {
     one = {
-      name                 = "bottlerocket-nodes"
-      ami_id               = data.aws_ami.bottlerocket_ami.id
-      instance_type        = "t3a.small"
-      asg_desired_capacity = 2
-      key_name             = aws_key_pair.nodes.key_name
+      name = "bottlerocket-nodes"
 
-      # This section overrides default userdata template to pass bottlerocket
-      # specific user data
-      userdata_template_file = "${path.module}/userdata.toml"
-      # we are using this section to pass additional arguments for
-      # userdata template rendering
-      userdata_template_extra_args = {
-        enable_admin_container   = false
-        enable_control_container = true
-        aws_region               = local.region
-      }
-      # example of k8s/kubelet configuration via additional_userdata
-      additional_userdata = <<-EOT
+      create_launch_template = true
+      platform               = "bottlerocket"
+      ami_id                 = data.aws_ami.bottlerocket_ami.id
+      instance_type          = "m5.large"
+      desired_size           = 2
+      key_name               = aws_key_pair.this.key_name
+
+      iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+
+      bootstrap_extra_args = <<-EOT
+      # The admin host container provides SSH access and runs with "superpowers".
+      # It is disabled by default, but can be disabled explicitly.
+      [settings.host-containers.admin]
+      enabled = false
+
+      # The control host container provides out-of-band access via SSM.
+      # It is enabled by default, and can be disabled if you do not expect to use SSM.
+      # This could leave you with no way to access the API and change settings on an existing node!
+      [settings.host-containers.control]
+      enabled = true
+
       [settings.kubernetes.node-labels]
       ingress = "allowed"
       EOT
@@ -58,14 +63,6 @@ module "eks" {
 
   tags = local.tags
 }
-
-# TODO
-# # SSM policy for bottlerocket control container access
-# # https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-EKS.md#enabling-ssm
-# resource "aws_iam_role_policy_attachment" "ssm" {
-#   role       = module.eks.worker_iam_role_name
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-# }
 
 ################################################################################
 # Supporting Resources
@@ -81,47 +78,46 @@ data "aws_ami" "bottlerocket_ami" {
   }
 }
 
-resource "tls_private_key" "nodes" {
+resource "tls_private_key" "this" {
   algorithm = "RSA"
 }
 
-resource "aws_key_pair" "nodes" {
-  key_name   = "bottlerocket-nodes-${random_string.suffix.result}"
-  public_key = tls_private_key.nodes.public_key_openssh
+resource "aws_key_pair" "this" {
+  key_name   = local.name
+  public_key = tls_private_key.this.public_key_openssh
 }
 
 ################################################################################
 # Supporting Resources
 ################################################################################
 
-data "aws_availability_zones" "available" {}
-
-resource "random_string" "suffix" {
-  length  = 8
-  special = false
-}
-
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 3.0"
 
-  name                 = local.name
-  cidr                 = "10.0.0.0/16"
-  azs                  = [data.aws_availability_zones.available.names]
-  private_subnets      = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets       = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  name = local.name
+  cidr = "10.0.0.0/16"
+
+  azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+
   enable_nat_gateway   = true
   single_nat_gateway   = true
   enable_dns_hostnames = true
 
+  enable_flow_log                      = true
+  create_flow_log_cloudwatch_iam_role  = true
+  create_flow_log_cloudwatch_log_group = true
+
   public_subnet_tags = {
     "kubernetes.io/cluster/${local.name}" = "shared"
-    "kubernetes.io/role/elb"              = "1"
+    "kubernetes.io/role/elb"              = 1
   }
 
   private_subnet_tags = {
     "kubernetes.io/cluster/${local.name}" = "shared"
-    "kubernetes.io/role/internal-elb"     = "1"
+    "kubernetes.io/role/internal-elb"     = 1
   }
 
   tags = local.tags

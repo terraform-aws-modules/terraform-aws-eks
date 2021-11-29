@@ -42,7 +42,6 @@ Note that this example may create resources which cost money. Run `terraform des
 |------|---------|
 <<<<<<< HEAD
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.64 |
-| <a name="provider_random"></a> [random](#provider\_random) | >= 2.0 |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | >= 2.2 |
 =======
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.56 |
@@ -61,11 +60,9 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Type |
 |------|------|
-| [aws_key_pair.nodes](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair) | resource |
-| [random_string.suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
-| [tls_private_key.nodes](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
+| [aws_key_pair.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair) | resource |
+| [tls_private_key.this](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
 | [aws_ami.bottlerocket_ami](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
-| [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 
 ## Inputs
 

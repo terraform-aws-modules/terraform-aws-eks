@@ -4,7 +4,7 @@ provider "aws" {
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.20"
+  cluster_version = "1.21"
   region          = "eu-west-1"
 
   tags = {
@@ -207,6 +207,10 @@ resource "aws_autoscaling_lifecycle_hook" "aws_node_termination_handler" {
   default_result         = "CONTINUE"
 }
 
+################################################################################
+# EKS Module
+################################################################################
+
 module "eks" {
   source = "../.."
 
@@ -220,11 +224,13 @@ module "eks" {
   cluster_endpoint_public_access  = true
 
   enable_irsa = true
+
   self_managed_node_groups = {
     one = {
-      name                                 = "refresh"
-      asg_max_size                         = 2
-      asg_desired_capacity                 = 2
+      name         = "refresh"
+      max_size     = 2
+      desired_size = 2
+
       instance_refresh_enabled             = true
       instance_refresh_instance_warmup     = 60
       public_ip                            = true
@@ -257,14 +263,20 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 3.0"
 
-  name                 = local.name
-  cidr                 = "10.0.0.0/16"
-  azs                  = ["${local.region}a", "${local.region}b", "${local.region}c"]
-  private_subnets      = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets       = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  name = local.name
+  cidr = "10.0.0.0/16"
+
+  azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+
   enable_nat_gateway   = true
   single_nat_gateway   = true
   enable_dns_hostnames = true
+
+  enable_flow_log                      = true
+  create_flow_log_cloudwatch_iam_role  = true
+  create_flow_log_cloudwatch_log_group = true
 
   public_subnet_tags = {
     "kubernetes.io/cluster/${local.name}" = "shared"

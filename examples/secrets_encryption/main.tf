@@ -4,7 +4,7 @@ provider "aws" {
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.20"
+  cluster_version = "1.21"
   region          = "eu-west-1"
 
   tags = {
@@ -39,10 +39,10 @@ module "eks" {
 
   self_managed_node_groups = {
     one = {
-      name                 = "worker-group-1"
-      instance_type        = "t3.small"
-      additional_userdata  = "echo foo bar"
-      asg_desired_capacity = 2
+      name                     = "worker-group-1"
+      instance_type            = "t3.small"
+      post_bootstrap_user_data = "echo foo bar"
+      desired_size             = 2
     },
   }
 
@@ -58,11 +58,7 @@ resource "aws_kms_key" "eks" {
   deletion_window_in_days = 7
   enable_key_rotation     = true
 
-  tags = {
-    Example    = local.name
-    GithubRepo = "terraform-aws-eks"
-    GithubOrg  = "terraform-aws-modules"
-  }
+  tags = local.tags
 }
 
 ################################################################################
@@ -73,14 +69,20 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 3.0"
 
-  name                 = local.name
-  cidr                 = "10.0.0.0/16"
-  azs                  = ["${local.region}a", "${local.region}b", "${local.region}c"]
-  private_subnets      = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets       = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  name = local.name
+  cidr = "10.0.0.0/16"
+
+  azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+
   enable_nat_gateway   = true
   single_nat_gateway   = true
   enable_dns_hostnames = true
+
+  enable_flow_log                      = true
+  create_flow_log_cloudwatch_iam_role  = true
+  create_flow_log_cloudwatch_log_group = true
 
   public_subnet_tags = {
     "kubernetes.io/cluster/${local.name}" = "shared"

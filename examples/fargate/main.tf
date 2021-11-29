@@ -46,9 +46,10 @@ module "eks" {
       tags = {
         ExtraTag = "example"
       }
-      update_config = {
-        max_unavailable_percentage = 50 # or set `max_unavailable`
-      }
+      # TODO - this is throwing an error
+      # update_config = {
+      #   max_unavailable_percentage = 50 # or set `max_unavailable`
+      # }
     }
   }
 
@@ -156,6 +157,10 @@ module "vpc" {
   enable_nat_gateway   = true
   single_nat_gateway   = true
   enable_dns_hostnames = true
+
+  enable_flow_log                      = true
+  create_flow_log_cloudwatch_iam_role  = true
+  create_flow_log_cloudwatch_log_group = true
 
   public_subnet_tags = {
     "kubernetes.io/cluster/${local.name}" = "shared"
