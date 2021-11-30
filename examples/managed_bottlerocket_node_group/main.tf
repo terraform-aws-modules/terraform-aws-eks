@@ -57,6 +57,9 @@ module "eks" {
 [settings.kubernetes.node-labels]
 ingress = "allowed"
 EOT
+
+      device_name = "/dev/xvdb"
+      disk_type   = "gp3"
     }
   }
 

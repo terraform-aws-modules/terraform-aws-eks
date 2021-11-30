@@ -15,6 +15,7 @@ locals {
       create_launch_template               = false
       bootstrap_env                        = {}
       kubelet_extra_args                   = var.workers_group_defaults["kubelet_extra_args"]
+      device_name                          = coalesce(var.workers_group_defaults["root_block_device_name"], "/dev/xvda")
       disk_size                            = var.workers_group_defaults["root_volume_size"]
       disk_type                            = var.workers_group_defaults["root_volume_type"]
       disk_iops                            = var.workers_group_defaults["root_iops"]
