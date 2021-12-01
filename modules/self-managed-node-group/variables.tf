@@ -330,8 +330,8 @@ variable "ram_disk_id" {
 
 variable "block_device_mappings" {
   description = "Specify volumes to attach to the instance besides the volumes specified by the AMI"
-  type        = list(any)
-  default     = []
+  type        = any
+  default     = {}
 }
 
 variable "capacity_reservation_specification" {

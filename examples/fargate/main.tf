@@ -21,14 +21,32 @@ locals {
 module "eks" {
   source = "../.."
 
-  cluster_name    = local.name
-  cluster_version = local.cluster_version
+  cluster_name                    = local.name
+  cluster_version                 = local.cluster_version
+  cluster_endpoint_private_access = true
+  cluster_endpoint_public_access  = true
+
+  cluster_addons = {
+    coredns = {
+      resolve_conflicts = "OVERWRITE"
+    }
+    kube-proxy = {}
+    vpc-cni = {
+      resolve_conflicts = "OVERWRITE"
+    }
+  }
+
+  cluster_encryption_config = [
+    {
+      provider_key_arn = aws_kms_key.eks.arn
+      resources        = ["secrets"]
+    }
+  ]
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
-  cluster_endpoint_private_access = true
-  cluster_endpoint_public_access  = true
+  enable_irsa = true
 
   # You require a node group to schedule coredns which is critical for running correctly internal DNS.
   # If you want to use only fargate you must follow docs `(Optional) Update CoreDNS`
@@ -46,10 +64,6 @@ module "eks" {
       tags = {
         ExtraTag = "example"
       }
-      # TODO - this is throwing an error
-      # update_config = {
-      #   max_unavailable_percentage = 50 # or set `max_unavailable`
-      # }
     }
   }
 
@@ -106,39 +120,6 @@ module "eks" {
   tags = local.tags
 }
 
-##############################################
-# Calling submodule with existing EKS cluster
-##############################################
-
-# module "fargate_profile_existing_cluster" {
-#   source = "../../modules/fargate-profile"
-
-#   cluster_name = module.eks.cluster_id
-#   subnet_ids   = [module.vpc.private_subnets[0], module.vpc.private_subnets[2]]
-
-
-#   fargate_profile_name = "profile1"
-#   selectors = [
-#     {
-#       namespace = "kube-system"
-#       labels = {
-#         k8s-app = "kube-dns"
-#       }
-#     },
-#     {
-#       namespace = "profile"
-#       labels = {
-#         WorkerType = "fargate"
-#       }
-#     }
-#   ]
-
-#   tags = merge(local.tags, {
-#     Owner     = "profile1"
-#     submodule = "true"
-#   })
-# }
-
 ################################################################################
 # Supporting Resources
 ################################################################################
@@ -171,6 +152,14 @@ module "vpc" {
     "kubernetes.io/cluster/${local.name}" = "shared"
     "kubernetes.io/role/internal-elb"     = 1
   }
+
+  tags = local.tags
+}
+
+resource "aws_kms_key" "eks" {
+  description             = "EKS Secret Encryption Key"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
 
   tags = local.tags
 }

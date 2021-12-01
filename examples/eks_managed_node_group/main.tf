@@ -34,86 +34,80 @@ module "eks" {
     ami_type       = "AL2_x86_64"
     disk_size      = 50
     instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
-    # fail deploy early helps with development
-    timeouts = {
-      create = "8m"
-      update = "40m"
-      delete = "12m"
-    }
   }
 
   eks_managed_node_groups = {
-    # # Default node group - as provided by AWS EKS
-    # default_node_group = {}
+    # Default node group - as provided by AWS EKS
+    default_node_group = {}
 
-    # # Default node group - as provided by AWS EKS using Bottlerocket
-    # bottlerocket_default = {
-    #   ami_type = "BOTTLEROCKET_x86_64"
-    # }
+    # Default node group - as provided by AWS EKS using Bottlerocket
+    bottlerocket_default = {
+      ami_type = "BOTTLEROCKET_x86_64"
+    }
 
-    # # Adds to the AWS provided user data
-    # bottlerocket_add = {
-    #   ami_type = "BOTTLEROCKET_x86_64"
+    # Adds to the AWS provided user data
+    bottlerocket_add = {
+      ami_type = "BOTTLEROCKET_x86_64"
 
-    #   create_launch_template = true
-    #   launch_template_name   = "bottlerocket-custom"
-    #   update_default_version = true
+      create_launch_template = true
+      launch_template_name   = "bottlerocket-custom"
+      update_default_version = true
 
-    #   # this will get added to what AWS provides
-    #   bootstrap_extra_args = <<-EOT
-    #       [settings.kernel]
-    #       lockdown = "integrity"
-    #     EOT
-    # }
+      # this will get added to what AWS provides
+      bootstrap_extra_args = <<-EOT
+          [settings.kernel]
+          lockdown = "integrity"
+        EOT
+    }
 
-    # # Custom AMI, using module provided bootstrap data
-    # bottlerocket_custom = {
-    #   # Current bottlerocket AMI
-    #   ami_id   = "ami-0ff61e0bcfc81dc94"
-    #   platform = "bottlerocket"
+    # Custom AMI, using module provided bootstrap data
+    bottlerocket_custom = {
+      # Current bottlerocket AMI
+      ami_id   = "ami-0ff61e0bcfc81dc94"
+      platform = "bottlerocket"
 
-    #   create_launch_template = true
-    #   launch_template_name   = "bottlerocket-custom"
-    #   update_default_version = true
+      create_launch_template = true
+      launch_template_name   = "bottlerocket-custom"
+      update_default_version = true
 
-    #   bootstrap_extra_args = <<-EOT
-    #       [settings.kernel]
-    #       lockdown = "integrity"
+      bootstrap_extra_args = <<-EOT
+          [settings.kernel]
+          lockdown = "integrity"
 
-    #       [settings.kubernetes.node-labels]
-    #       "label1" = "foo"
-    #       "label2" = "bar"
+          [settings.kubernetes.node-labels]
+          "label1" = "foo"
+          "label2" = "bar"
 
-    #       [settings.kubernetes.node-taints]
-    #       "dedicated" = "experimental:PreferNoSchedule"
-    #       "special" = "true:NoSchedule"
-    #     EOT
-    # }
+          [settings.kubernetes.node-taints]
+          "dedicated" = "experimental:PreferNoSchedule"
+          "special" = "true:NoSchedule"
+        EOT
+    }
 
-    # # Use existing/external launch template
-    # external_lt = {
-    #   create_launch_template  = false
-    #   launch_template_name    = aws_launch_template.external.name
-    #   launch_template_version = aws_launch_template.external.default_version
-    # }
+    # Use existing/external launch template
+    external_lt = {
+      create_launch_template  = false
+      launch_template_name    = aws_launch_template.external.name
+      launch_template_version = aws_launch_template.external.default_version
+    }
 
-    # # Use a custom AMI
-    # custom_ami = {
-    #   create_launch_template = true
-    #   launch_template_name   = "custom-ami"
+    # Use a custom AMI
+    custom_ami = {
+      create_launch_template = true
+      launch_template_name   = "custom-ami"
 
-    #   # Current default AMI used by managed node groups - pseudo "custom"
-    #   ami_id = "ami-0caf35bc73450c396"
-    #   # This will ensure the boostrap user data is used to join the node
-    #   # By default, EKS managed node groups will not append bootstrap script;
-    #   # this adds it back in if its an EKS optmized AMI derivative
-    #   ami_is_eks_optimized = true
-    # }
+      # Current default AMI used by managed node groups - pseudo "custom"
+      ami_id = "ami-0caf35bc73450c396"
+      # This will ensure the boostrap user data is used to join the node
+      # By default, EKS managed node groups will not append bootstrap script;
+      # this adds it back in if its an EKS optmized AMI derivative
+      ami_is_eks_optimized = true
+    }
 
     # Complete
     complete = {
       name            = "complete-eks-mng"
-      use_name_prefix = true
+      use_name_prefix = false
 
       subnet_ids = module.vpc.private_subnets
 
@@ -144,13 +138,13 @@ module "eks" {
         GithubOrg  = "terraform-aws-modules"
       }
 
-      # taints = [
-      #   {
-      #     key    = "dedicated"
-      #     value  = "gpuGroup"
-      #     effect = "NO_SCHEDULE"
-      #   }
-      # ]
+      taints = [
+        {
+          key    = "dedicated"
+          value  = "gpuGroup"
+          effect = "NO_SCHEDULE"
+        }
+      ]
 
       # TODO - this is throwing an error
       # update_config = {
@@ -168,20 +162,20 @@ module "eks" {
       disable_api_termination = false
       enable_monitoring       = true
 
-      # block_device_mappings = {
-      #   xvda = {
-      #     device_name = "/dev/xvda"
-      #     ebs = {
-      #       volume_size = 75
-      #       volume_type = "gp3"
-      #       iops        = 3000
-      #       throughput  = 150
-      #       # encrypted             = true
-      #       # kms_key_id            = aws_kms_key.ebs.arn
-      #       delete_on_termination = true
-      #     }
-      #   }
-      # }
+      block_device_mappings = {
+        xvda = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_size           = 75
+            volume_type           = "gp3"
+            iops                  = 3000
+            throughput            = 150
+            encrypted             = true
+            kms_key_id            = aws_kms_key.ebs.arn
+            delete_on_termination = true
+          }
+        }
+      }
 
       metadata_options = {
         http_endpoint               = "enabled"
@@ -189,19 +183,16 @@ module "eks" {
         http_put_response_hop_limit = 2
       }
 
-      # TODO - something commented is not letting node to come up successfully
-      #
-      # create_iam_role          = true
-      # iam_role_name            = "eks-managed-node-group-complete-example"
-      # iam_role_use_name_prefix = false
-      # iam_role_path            = "/eks/"
-      # iam_role_description     = "EKS managed node group complete example role"
-      # iam_role_tags = {
-      #   Purpose = "Protector of the kubelet"
-      # }
-      # iam_role_additional_policies = [
-      #   "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-      # ]
+      create_iam_role          = true
+      iam_role_name            = "eks-managed-node-group-complete-example"
+      iam_role_use_name_prefix = false
+      iam_role_description     = "EKS managed node group complete example role"
+      iam_role_tags = {
+        Purpose = "Protector of the kubelet"
+      }
+      iam_role_additional_policies = [
+        "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+      ]
 
       create_security_group          = true
       security_group_name            = "eks-managed-node-group-complete-example"
@@ -230,19 +221,66 @@ module "eks" {
         Purpose = "Protector of the kubelet"
       }
 
-      # timeouts = {
-      #   create = "8m"
-      #   update = "8m"
-      #   delete = "8m"
-      # }
-
-      # tags = {
-      #   ExtraTag = "EKS managed node group complete example"
-      # }
+      tags = {
+        ExtraTag = "EKS managed node group complete example"
+      }
     }
   }
 
   tags = local.tags
+}
+
+################################################################################
+# aws-auth configmap
+# Only EKS managed node groups automatically add roles to aws-auth configmap
+# so we need to ensure fargate profiles and self-managed node roles are added
+################################################################################
+
+data "aws_eks_cluster_auth" "this" {
+  name = module.eks.cluster_id
+}
+
+locals {
+  kubeconfig = yamlencode({
+    apiVersion      = "v1"
+    kind            = "Config"
+    current-context = "terraform"
+    clusters = [{
+      name = "${module.eks.cluster_id}"
+      cluster = {
+        certificate-authority-data = "${module.eks.cluster_certificate_authority_data}"
+        server                     = "${module.eks.cluster_endpoint}"
+      }
+    }]
+    contexts = [{
+      name = "terraform"
+      context = {
+        cluster = "${module.eks.cluster_id}"
+        user    = "terraform"
+      }
+    }]
+    users = [{
+      name = "terraform"
+      user = {
+        token = "${data.aws_eks_cluster_auth.this.token}"
+      }
+    }]
+  })
+}
+
+resource "null_resource" "patch" {
+  triggers = {
+    kubeconfig = base64encode(local.kubeconfig)
+    cmd_patch  = "kubectl patch configmap/aws-auth --patch \"${module.eks.aws_auth_configmap_yaml}\" -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)"
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    environment = {
+      KUBECONFIG = self.triggers.kubeconfig
+    }
+    command = self.triggers.cmd_patch
+  }
 }
 
 ################################################################################
@@ -402,7 +440,6 @@ resource "aws_launch_template" "external" {
   # (optionally you can use https://registry.terraform.io/providers/hashicorp/cloudinit/latest/docs/data-sources/cloudinit_config to render the script, example: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/997#issuecomment-705286151)
   # user_data = base64encode(data.template_file.launch_template_userdata.rendered)
 
-  # Supplying custom tags to EKS instances is another use-case for LaunchTemplates
   tag_specifications {
     resource_type = "instance"
 
@@ -411,7 +448,6 @@ resource "aws_launch_template" "external" {
     }
   }
 
-  # Supplying custom tags to EKS instances root volumes is another use-case for LaunchTemplates. (doesnt add tags to dynamically provisioned volumes via PVC)
   tag_specifications {
     resource_type = "volume"
 
@@ -420,7 +456,6 @@ resource "aws_launch_template" "external" {
     }
   }
 
-  # Supplying custom tags to EKS instances ENI's is another use-case for LaunchTemplates
   tag_specifications {
     resource_type = "network-interface"
 
@@ -429,7 +464,6 @@ resource "aws_launch_template" "external" {
     }
   }
 
-  # Tag the LT itself
   tags = {
     CustomTag = "Launch template custom tag"
   }

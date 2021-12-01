@@ -36,6 +36,13 @@ module "eks" {
     }
   }
 
+  cluster_encryption_config = [
+    {
+      provider_key_arn = aws_kms_key.eks.arn
+      resources        = ["secrets"]
+    }
+  ]
+
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
@@ -220,10 +227,10 @@ locals {
   })
 }
 
-resource "null_resource" "patch_cni" {
+resource "null_resource" "patch" {
   triggers = {
     kubeconfig = base64encode(local.kubeconfig)
-    cmd_patch  = "kubectl patch configmap/aws-auth -n kube-system --patch \"${module.eks.aws_auth_configmap_yaml}\" -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)"
+    cmd_patch  = "kubectl patch configmap/aws-auth --patch \"${module.eks.aws_auth_configmap_yaml}\" -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)"
   }
 
   provisioner "local-exec" {
@@ -285,6 +292,14 @@ resource "aws_security_group" "additional" {
       "192.168.0.0/16",
     ]
   }
+
+  tags = local.tags
+}
+
+resource "aws_kms_key" "eks" {
+  description             = "EKS Secret Encryption Key"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
 
   tags = local.tags
 }

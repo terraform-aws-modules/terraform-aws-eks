@@ -30,13 +30,53 @@ module "eks" {
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
+  cluster_addons = {
+    coredns = {
+      resolve_conflicts = "OVERWRITE"
+    }
+    kube-proxy = {}
+    vpc-cni = {
+      resolve_conflicts = "OVERWRITE"
+    }
+  }
+
   self_managed_node_group_defaults = {
-    disk_size = 50
+    disk_size      = 50
+    instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
   }
 
   self_managed_node_groups = {
     # Default node group - as provisioned by the module defaults
     default_node_group = {}
+
+    # Bottlerocket node group
+    bottlerocket = {
+      name = "bottlerocket-self-mng"
+
+      platform      = "bottlerocket"
+      ami_id        = data.aws_ami.bottlerocket_ami.id
+      instance_type = "m5.large"
+      desired_size  = 2
+      key_name      = aws_key_pair.this.key_name
+
+      iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+
+      bootstrap_extra_args = <<-EOT
+      # The admin host container provides SSH access and runs with "superpowers".
+      # It is disabled by default, but can be disabled explicitly.
+      [settings.host-containers.admin]
+      enabled = false
+
+      # The control host container provides out-of-band access via SSM.
+      # It is enabled by default, and can be disabled if you do not expect to use SSM.
+      # This could leave you with no way to access the API and change settings on an existing node!
+      [settings.host-containers.control]
+      enabled = true
+
+      [settings.kubernetes.node-labels]
+      ingress = "allowed"
+      EOT
+    }
 
     # Complete
     complete = {
@@ -111,7 +151,6 @@ module "eks" {
       create_iam_role          = true
       iam_role_name            = "self-managed-node-group-complete-example"
       iam_role_use_name_prefix = false
-      iam_role_path            = "/self/"
       iam_role_description     = "Self managed node group complete example role"
       iam_role_tags = {
         Purpose = "Protector of the kubelet"
@@ -159,6 +198,62 @@ module "eks" {
   }
 
   tags = local.tags
+}
+
+################################################################################
+# aws-auth configmap
+# Only EKS managed node groups automatically add roles to aws-auth configmap
+# so we need to ensure fargate profiles and self-managed node roles are added
+################################################################################
+
+data "aws_eks_cluster_auth" "this" {
+  name = module.eks.cluster_id
+}
+
+locals {
+  kubeconfig = yamlencode({
+    apiVersion      = "v1"
+    kind            = "Config"
+    current-context = "terraform"
+    clusters = [{
+      name = "${module.eks.cluster_id}"
+      cluster = {
+        certificate-authority-data = "${module.eks.cluster_certificate_authority_data}"
+        server                     = "${module.eks.cluster_endpoint}"
+      }
+    }]
+    contexts = [{
+      name = "terraform"
+      context = {
+        cluster = "${module.eks.cluster_id}"
+        user    = "terraform"
+      }
+    }]
+    users = [{
+      name = "terraform"
+      user = {
+        token = "${data.aws_eks_cluster_auth.this.token}"
+      }
+    }]
+  })
+}
+
+resource "null_resource" "apply" {
+  triggers = {
+    kubeconfig = base64encode(local.kubeconfig)
+    cmd_patch  = <<-EOT
+      kubectl create configmap aws-auth -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)
+      kubectl patch configmap/aws-auth --patch "${module.eks.aws_auth_configmap_yaml}" -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)
+    EOT
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    environment = {
+      KUBECONFIG = self.triggers.kubeconfig
+    }
+    command = self.triggers.cmd_patch
+  }
 }
 
 ################################################################################
@@ -213,6 +308,25 @@ resource "aws_security_group" "additional" {
   }
 
   tags = local.tags
+}
+
+data "aws_ami" "bottlerocket_ami" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["bottlerocket-aws-k8s-${local.cluster_version}-x86_64-*"]
+  }
+}
+
+resource "tls_private_key" "this" {
+  algorithm = "RSA"
+}
+
+resource "aws_key_pair" "this" {
+  key_name   = local.name
+  public_key = tls_private_key.this.public_key_openssh
 }
 
 data "aws_caller_identity" "current" {}

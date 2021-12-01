@@ -25,13 +25,31 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
+<<<<<<< HEAD
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.64 |
+| <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
+| <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 2.2 |
+=======
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.56 |
+| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 1.11.1 |
+| <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.4 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.1 |
+| <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 2.0 |
+>>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
 
 ## Providers
 
 | Name | Version |
 |------|---------|
+<<<<<<< HEAD
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.64 |
+| <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | >= 2.2 |
+=======
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.56 |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 2.1 |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | >= 2.0 |
+>>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
 
 ## Modules
 
@@ -44,9 +62,14 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Type |
 |------|------|
+| [aws_key_pair.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair) | resource |
 | [aws_kms_key.ebs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
 | [aws_security_group.additional](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
+| [null_resource.apply](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [tls_private_key.this](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
+| [aws_ami.bottlerocket_ami](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_eks_cluster_auth.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
 | [aws_iam_policy_document.ebs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 
 ## Inputs

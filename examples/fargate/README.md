@@ -28,6 +28,7 @@ Note that this example may create resources which cost money. Run `terraform des
 
 ## Providers
 
+<<<<<<< HEAD
 No providers.
 =======
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.56 |
@@ -43,6 +44,11 @@ No providers.
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.56 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 2.1 |
 >>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
+=======
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.64 |
+>>>>>>> 43280e5 (refactor: splitting out user data to internal module for better testing/validation)
 
 ## Modules
 
@@ -57,7 +63,9 @@ No providers.
 
 ## Resources
 
-No resources.
+| Name | Type |
+|------|------|
+| [aws_kms_key.eks](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
 
 ## Inputs
 
