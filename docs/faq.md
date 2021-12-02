@@ -199,3 +199,37 @@ Both can be used together in the same cluster.
 This happen because Core DNS can be scheduled on Self-Managed worker groups and by default, the terraform module doesn't create security group rules to ensure communication between pods schedulled on Self-Managed worker group and AWS-Managed node groups.
 
 You can set `var.worker_create_cluster_primary_security_group_rules` to `true` to create required rules.
+
+## Dedicated control plane subnets
+
+[AWS recommends](https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html) to create dedicated subnets for EKS created network interfaces (control plane). The module fully supports this approach. To set up this, you must configure the module by adding additional `subnets` into workers default specification `workers_group_defaults` map or directly `subnets` definition in worker definition.
+
+```hcl
+module "eks" {
+  source = "terraform-aws-modules/eks/aws"
+
+  cluster_version = "1.21"
+  cluster_name    = "my-cluster"
+  vpc_id          = "vpc-1234556abcdef"
+  subnets         = ["subnet-abcde123", "subnet-abcde456", "subnet-abcde789"]
+
+  workers_group_defaults = {
+    subnets = ["subnet-xyz123", "subnet-xyz456", "subnet-xyz789"]
+  }
+
+  worker_groups = [
+    {
+      instance_type = "m4.large"
+      asg_max_size  = 5
+    },
+    {
+      name                 = "worker-group-2"
+      subnets              = ["subnet-qwer123"]
+      instance_type        = "t3.medium"
+      asg_desired_capacity = 1
+      public_ip            = true
+      ebs_optimized        = true
+    }
+  ]
+}
+```

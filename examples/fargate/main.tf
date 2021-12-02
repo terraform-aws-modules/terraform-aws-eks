@@ -68,6 +68,11 @@ module "eks" {
       tags = {
         Owner = "default"
       }
+
+      timeouts = {
+        create = "20m"
+        delete = "20m"
+      }
     }
 
     secondary = {
@@ -153,6 +158,10 @@ module "fargate_profile_existing_cluster" {
       tags = {
         Owner     = "profile2"
         submodule = "true"
+      }
+
+      timeouts = {
+        delete = "20m"
       }
     }
   }
