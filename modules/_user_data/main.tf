@@ -1,10 +1,10 @@
 
 locals {
-  int_linux_default_user_data = var.create && var.platform == "linux" && (var.is_custom_ami || var.user_data_template_path != "") ? base64encode(templatefile(
+  int_linux_default_user_data = var.create && var.platform == "linux" && (var.enable_bootstrap_user_data || var.user_data_template_path != "") ? base64encode(templatefile(
     coalesce(var.user_data_template_path, "${path.module}/../../templates/linux_user_data.tpl"),
     {
       # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
-      is_custom_ami = var.is_custom_ami
+      enable_bootstrap_user_data = var.enable_bootstrap_user_data
       # Required to bootstrap node
       cluster_name        = var.cluster_name
       cluster_endpoint    = var.cluster_endpoint
@@ -17,11 +17,11 @@ locals {
   )) : ""
   platform = {
     bottlerocket = {
-      user_data = var.create && var.platform == "bottlerocket" ? base64encode(templatefile(
+      user_data = var.create && var.platform == "bottlerocket" && var.enable_bootstrap_user_data ? base64encode(templatefile(
         coalesce(var.user_data_template_path, "${path.module}/../../templates/bottlerocket_user_data.tpl"),
         {
           # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
-          is_custom_ami = var.is_custom_ami
+          enable_bootstrap_user_data = var.enable_bootstrap_user_data
           # Required to bootstrap node
           cluster_name        = var.cluster_name
           cluster_endpoint    = var.cluster_endpoint
@@ -36,7 +36,7 @@ locals {
 
     }
     windows = {
-      user_data = var.create && var.platform == "windows" ? base64encode(templatefile(
+      user_data = var.create && var.platform == "windows" && var.enable_bootstrap_user_data ? base64encode(templatefile(
         coalesce(var.user_data_template_path, "${path.module}/../../templates/windows_user_data.tpl"),
         {
           # Required to bootstrap node
@@ -61,7 +61,7 @@ locals {
 # See docs for more details -> https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-user-data
 
 data "cloudinit_config" "linux_eks_managed_node_group" {
-  count = var.create && var.platform == "linux" && var.is_eks_managed_node_group && !var.is_custom_ami && var.pre_bootstrap_user_data != "" && var.user_data_template_path == "" ? 1 : 0
+  count = var.create && var.platform == "linux" && var.is_eks_managed_node_group && !var.enable_bootstrap_user_data && var.pre_bootstrap_user_data != "" && var.user_data_template_path == "" ? 1 : 0
 
   base64_encode = true
   gzip          = false

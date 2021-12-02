@@ -21,6 +21,12 @@ module "eks_mng_linux_additional" {
   echo "foo"
   export FOO=bar
   EOT
+
+  bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+
+  post_bootstrap_user_data = <<-EOT
+  echo "All done"
+  EOT
 }
 
 module "eks_mng_linux_custom_ami" {
@@ -30,11 +36,17 @@ module "eks_mng_linux_custom_ami" {
   cluster_endpoint    = local.cluster_endpoint
   cluster_auth_base64 = local.cluster_auth_base64
 
-  is_custom_ami = true
+  enable_bootstrap_user_data = true
 
   pre_bootstrap_user_data = <<-EOT
   echo "foo"
   export FOO=bar
+  EOT
+
+  bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+
+  post_bootstrap_user_data = <<-EOT
+  echo "All done"
   EOT
 }
 
@@ -51,6 +63,12 @@ module "eks_mng_linux_custom_template" {
   pre_bootstrap_user_data = <<-EOT
   echo "foo"
   export FOO=bar
+  EOT
+
+  bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+
+  post_bootstrap_user_data = <<-EOT
+  echo "All done"
   EOT
 }
 
@@ -82,7 +100,7 @@ module "eks_mng_bottlerocket_custom_ami" {
   cluster_endpoint    = local.cluster_endpoint
   cluster_auth_base64 = local.cluster_auth_base64
 
-  is_custom_ami = true
+  enable_bootstrap_user_data = true
 
   bootstrap_extra_args = <<-EOT
   # extra args added
@@ -106,5 +124,164 @@ module "eks_mng_bottlerocket_custom_template" {
   # extra args added
   [settings.kernel]
   lockdown = "integrity"
+  EOT
+}
+
+# Self managed node group - linux
+module "self_mng_linux_no_op" {
+  source = "../../modules/_user_data"
+
+  is_eks_managed_node_group = false
+}
+
+module "self_mng_linux_bootstrap" {
+  source = "../../modules/_user_data"
+
+  enable_bootstrap_user_data = true
+  is_eks_managed_node_group  = false
+
+  cluster_name        = local.name
+  cluster_endpoint    = local.cluster_endpoint
+  cluster_auth_base64 = local.cluster_auth_base64
+
+  pre_bootstrap_user_data = <<-EOT
+  echo "foo"
+  export FOO=bar
+  EOT
+
+  bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+
+  post_bootstrap_user_data = <<-EOT
+  echo "All done"
+  EOT
+}
+
+module "self_mng_linux_custom_template" {
+  source = "../../modules/_user_data"
+
+  enable_bootstrap_user_data = true
+  is_eks_managed_node_group  = false
+
+  cluster_name        = local.name
+  cluster_endpoint    = local.cluster_endpoint
+  cluster_auth_base64 = local.cluster_auth_base64
+
+  user_data_template_path = "${path.module}/templates/linux_custom.tpl"
+
+  pre_bootstrap_user_data = <<-EOT
+  echo "foo"
+  export FOO=bar
+  EOT
+
+  bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+
+  post_bootstrap_user_data = <<-EOT
+  echo "All done"
+  EOT
+}
+
+# Self managed node group - bottlerocket
+module "self_mng_bottlerocket_no_op" {
+  source = "../../modules/_user_data"
+
+  platform = "bottlerocket"
+
+  is_eks_managed_node_group = false
+}
+
+module "self_mng_bottlerocket_bootstrap" {
+  source = "../../modules/_user_data"
+
+  platform = "bottlerocket"
+
+  enable_bootstrap_user_data = true
+  is_eks_managed_node_group  = false
+
+  cluster_name        = local.name
+  cluster_endpoint    = local.cluster_endpoint
+  cluster_auth_base64 = local.cluster_auth_base64
+
+  bootstrap_extra_args = <<-EOT
+  # extra args added
+  [settings.kernel]
+  lockdown = "integrity"
+  EOT
+}
+
+module "self_mng_bottlerocket_custom_template" {
+  source = "../../modules/_user_data"
+
+  platform = "bottlerocket"
+
+  enable_bootstrap_user_data = true
+  is_eks_managed_node_group  = false
+
+  cluster_name        = local.name
+  cluster_endpoint    = local.cluster_endpoint
+  cluster_auth_base64 = local.cluster_auth_base64
+
+  user_data_template_path = "${path.module}/templates/bottlerocket_custom.tpl"
+
+  bootstrap_extra_args = <<-EOT
+  # extra args added
+  [settings.kernel]
+  lockdown = "integrity"
+  EOT
+}
+
+# Self managed node group - windows
+module "self_mng_windows_no_op" {
+  source = "../../modules/_user_data"
+
+  platform = "windows"
+
+  is_eks_managed_node_group = false
+}
+
+module "self_mng_windows_bootstrap" {
+  source = "../../modules/_user_data"
+
+  platform = "windows"
+
+  enable_bootstrap_user_data = true
+  is_eks_managed_node_group  = false
+
+  cluster_name        = local.name
+  cluster_endpoint    = local.cluster_endpoint
+  cluster_auth_base64 = local.cluster_auth_base64
+
+  pre_bootstrap_user_data = <<-EOT
+  [string]$Something = 'IDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
+  EOT
+  # I don't know if this is the right way on WindowsOS, but its just a string check here anyways
+  bootstrap_extra_args = "-KubeletExtraArgs --node-labels=node.kubernetes.io/lifecycle=spot"
+
+  post_bootstrap_user_data = <<-EOT
+  [string]$Something = 'IStillDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
+  EOT
+}
+
+module "self_mng_windows_custom_template" {
+  source = "../../modules/_user_data"
+
+  platform = "windows"
+
+  enable_bootstrap_user_data = true
+  is_eks_managed_node_group  = false
+
+  cluster_name        = local.name
+  cluster_endpoint    = local.cluster_endpoint
+  cluster_auth_base64 = local.cluster_auth_base64
+
+  user_data_template_path = "${path.module}/templates/windows_custom.tpl"
+
+  pre_bootstrap_user_data = <<-EOT
+  [string]$Something = 'IDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
+  EOT
+  # I don't know if this is the right way on WindowsOS, but its just a string check here anyways
+  bootstrap_extra_args = "-KubeletExtraArgs --node-labels=node.kubernetes.io/lifecycle=spot"
+
+  post_bootstrap_user_data = <<-EOT
+  [string]$Something = 'IStillDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
   EOT
 }

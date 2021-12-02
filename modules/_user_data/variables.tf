@@ -10,8 +10,8 @@ variable "platform" {
   default     = "linux"
 }
 
-variable "is_custom_ami" {
-  description = "Determines whether a custom AMI is used or the default AMI in the case of EKS managed node groups"
+variable "enable_bootstrap_user_data" {
+  description = "Determines whether the bootstrap configurations are populated within the user data template"
   type        = bool
   default     = false
 }

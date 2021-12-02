@@ -1,4 +1,4 @@
-%{ if is_custom_ami ~}
+%{ if enable_bootstrap_user_data ~}
 [settings.kubernetes]
 "cluster-name" = "${cluster_name}"
 "api-server" = "${cluster_endpoint}"
