@@ -69,7 +69,7 @@ module "eks" {
 
   fargate_profiles = {
     default = {
-      fargate_profile_name = "default"
+      name = "default"
       selectors = [
         {
           namespace = "kube-system"
@@ -96,7 +96,7 @@ module "eks" {
     }
 
     secondary = {
-      fargate_profile_name = "secondary"
+      name = "secondary"
       selectors = [
         {
           namespace = "default"

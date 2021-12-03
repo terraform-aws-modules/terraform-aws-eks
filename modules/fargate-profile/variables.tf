@@ -72,7 +72,7 @@ variable "cluster_name" {
   default     = null
 }
 
-variable "fargate_profile_name" {
+variable "name" {
   description = "Name of the EKS Fargate Profile"
   type        = string
   default     = ""

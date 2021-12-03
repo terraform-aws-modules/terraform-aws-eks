@@ -75,7 +75,7 @@ variable "create_launch_template" {
 variable "launch_template_name" {
   description = "Launch template name - either to be created (`var.create_launch_template` = `true`) or existing (`var.create_launch_template` = `false`)"
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "launch_template_use_name_prefix" {
@@ -111,7 +111,7 @@ variable "key_name" {
 variable "vpc_security_group_ids" {
   description = "A list of security group IDs to associate"
   type        = list(string)
-  default     = null
+  default     = []
 }
 
 variable "default_version" {

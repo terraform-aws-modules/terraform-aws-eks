@@ -14,6 +14,8 @@ locals {
   }
 }
 
+data "aws_caller_identity" "current" {}
+
 ################################################################################
 # EKS Module
 ################################################################################
@@ -21,12 +23,8 @@ locals {
 module "eks" {
   source = "../.."
 
-  cluster_name    = local.name
-  cluster_version = local.cluster_version
-
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
-
+  cluster_name                    = local.name
+  cluster_version                 = local.cluster_version
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
@@ -39,6 +37,18 @@ module "eks" {
       resolve_conflicts = "OVERWRITE"
     }
   }
+
+  cluster_encryption_config = [
+    {
+      provider_key_arn = aws_kms_key.eks.arn
+      resources        = ["secrets"]
+    }
+  ]
+
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
+
+  enable_irsa = true
 
   self_managed_node_group_defaults = {
     disk_size      = 50
@@ -309,6 +319,14 @@ resource "aws_security_group" "additional" {
   tags = local.tags
 }
 
+resource "aws_kms_key" "eks" {
+  description             = "EKS Secret Encryption Key"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+
+  tags = local.tags
+}
+
 data "aws_ami" "bottlerocket_ami" {
   most_recent = true
   owners      = ["amazon"]
@@ -327,8 +345,6 @@ resource "aws_key_pair" "this" {
   key_name   = local.name
   public_key = tls_private_key.this.public_key_openssh
 }
-
-data "aws_caller_identity" "current" {}
 
 resource "aws_kms_key" "ebs" {
   description             = "Customer managed key to encrypt self managed node group volumes"

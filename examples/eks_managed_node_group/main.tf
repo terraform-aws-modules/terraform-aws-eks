@@ -14,6 +14,8 @@ locals {
   }
 }
 
+data "aws_caller_identity" "current" {}
+
 ################################################################################
 # EKS Module
 ################################################################################
@@ -21,14 +23,32 @@ locals {
 module "eks" {
   source = "../.."
 
-  cluster_name    = local.name
-  cluster_version = local.cluster_version
+  cluster_name                    = local.name
+  cluster_version                 = local.cluster_version
+  cluster_endpoint_private_access = true
+  cluster_endpoint_public_access  = true
+
+  cluster_addons = {
+    coredns = {
+      resolve_conflicts = "OVERWRITE"
+    }
+    kube-proxy = {}
+    vpc-cni = {
+      resolve_conflicts = "OVERWRITE"
+    }
+  }
+
+  cluster_encryption_config = [
+    {
+      provider_key_arn = aws_kms_key.eks.arn
+      resources        = ["secrets"]
+    }
+  ]
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
-  cluster_endpoint_private_access = true
-  cluster_endpoint_public_access  = true
+  enable_irsa = true
 
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
@@ -43,11 +63,13 @@ module "eks" {
     # Default node group - as provided by AWS EKS using Bottlerocket
     bottlerocket_default = {
       ami_type = "BOTTLEROCKET_x86_64"
+      platform = "bottlerocket"
     }
 
     # Adds to the AWS provided user data
     bottlerocket_add = {
       ami_type = "BOTTLEROCKET_x86_64"
+      platform = "bottlerocket"
 
       create_launch_template = true
       launch_template_name   = "bottlerocket-custom"
@@ -55,9 +77,10 @@ module "eks" {
 
       # this will get added to what AWS provides
       bootstrap_extra_args = <<-EOT
-          [settings.kernel]
-          lockdown = "integrity"
-        EOT
+      # extra args added
+      [settings.kernel]
+      lockdown = "integrity"
+      EOT
     }
 
     # Custom AMI, using module provided bootstrap data
@@ -70,20 +93,22 @@ module "eks" {
       launch_template_name   = "bottlerocket-custom"
       update_default_version = true
 
+      # use module user data template to boostrap
       enable_bootstrap_user_data = true
-
+      # this will get added to the template
       bootstrap_extra_args = <<-EOT
-          [settings.kernel]
-          lockdown = "integrity"
+      # extra args added
+      [settings.kernel]
+      lockdown = "integrity"
 
-          [settings.kubernetes.node-labels]
-          "label1" = "foo"
-          "label2" = "bar"
+      [settings.kubernetes.node-labels]
+      "label1" = "foo"
+      "label2" = "bar"
 
-          [settings.kubernetes.node-taints]
-          "dedicated" = "experimental:PreferNoSchedule"
-          "special" = "true:NoSchedule"
-        EOT
+      [settings.kubernetes.node-taints]
+      "dedicated" = "experimental:PreferNoSchedule"
+      "special" = "true:NoSchedule"
+      EOT
     }
 
     # Use existing/external launch template
@@ -201,7 +226,6 @@ module "eks" {
       security_group_use_name_prefix = false
       security_group_description     = "EKS managed node group complete example security group"
       security_group_rules = {
-
         phoneOut = {
           description = "Hello CloudFlare"
           protocol    = "udp"
@@ -339,7 +363,13 @@ resource "aws_security_group" "additional" {
   tags = local.tags
 }
 
-data "aws_caller_identity" "current" {}
+resource "aws_kms_key" "eks" {
+  description             = "EKS Secret Encryption Key"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+
+  tags = local.tags
+}
 
 resource "aws_kms_key" "ebs" {
   description             = "Customer managed key to encrypt EKS managed node group volumes"

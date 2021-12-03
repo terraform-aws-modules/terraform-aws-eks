@@ -22,6 +22,10 @@ terraform {
       version = ">= 2.1"
 >>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
     }
+    null = {
+      source  = "hashicorp/null"
+      version = ">= 3.0"
+    }
     helm = {
       source  = "hashicorp/helm"
       version = ">= 2.0"

@@ -20,6 +20,12 @@ variable "platform" {
 # User Data
 ################################################################################
 
+variable "cluster_name" {
+  description = "Name of the EKS cluster that the node group will be associated with"
+  type        = string
+  default     = null
+}
+
 variable "cluster_endpoint" {
   description = "Endpoint of associated EKS cluster"
   type        = string
@@ -99,19 +105,19 @@ variable "subnet_ids" {
 variable "min_size" {
   description = "The minimum size of the autoscaling group"
   type        = number
-  default     = null
+  default     = 0
 }
 
 variable "max_size" {
   description = "The maximum size of the autoscaling group"
   type        = number
-  default     = null
+  default     = 3
 }
 
 variable "desired_size" {
   description = "The number of Amazon EC2 instances that should be running in the autoscaling group"
   type        = number
-  default     = null
+  default     = 1
 }
 
 variable "capacity_rebalance" {
@@ -248,12 +254,6 @@ variable "warm_pool" {
 
 variable "delete_timeout" {
   description = "Delete timeout to wait for destroying autoscaling group"
-  type        = string
-  default     = null
-}
-
-variable "cluster_name" {
-  description = "Name of the EKS cluster that the node group will be associated with"
   type        = string
   default     = null
 }
@@ -427,7 +427,7 @@ variable "key_name" {
 variable "vpc_security_group_ids" {
   description = "A list of security group IDs to associate"
   type        = list(string)
-  default     = null
+  default     = []
 }
 
 variable "enable_monitoring" {

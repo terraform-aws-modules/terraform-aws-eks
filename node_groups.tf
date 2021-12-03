@@ -149,11 +149,11 @@ module "fargate_profile" {
   for_each = { for k, v in var.fargate_profiles : k => v if var.create }
 
   # Fargate Profile
-  cluster_name         = aws_eks_cluster.this[0].name
-  fargate_profile_name = try(each.value.fargate_profile_name, each.key)
-  subnet_ids           = try(each.value.subnet_ids, var.fargate_profile_defaults.subnet_ids, var.subnet_ids)
-  selectors            = try(each.value.selectors, var.fargate_profile_defaults.selectors, [])
-  timeouts             = try(each.value.timeouts, var.fargate_profile_defaults.timeouts, {})
+  cluster_name = aws_eks_cluster.this[0].name
+  name         = try(each.value.name, each.key)
+  subnet_ids   = try(each.value.subnet_ids, var.fargate_profile_defaults.subnet_ids, var.subnet_ids)
+  selectors    = try(each.value.selectors, var.fargate_profile_defaults.selectors, [])
+  timeouts     = try(each.value.timeouts, var.fargate_profile_defaults.timeouts, {})
 
   # IAM role
   create_iam_role               = try(each.value.create_iam_role, var.fargate_profile_defaults.create_iam_role, true)
@@ -289,7 +289,7 @@ module "self_managed_node_group" {
   availability_zones      = try(each.value.availability_zones, var.self_managed_node_group_defaults.availability_zones, null)
   subnet_ids              = try(each.value.subnet_ids, var.self_managed_node_group_defaults.subnet_ids, var.subnet_ids)
 
-  min_size                  = try(each.value.min_size, var.self_managed_node_group_defaults.min_size, 1)
+  min_size                  = try(each.value.min_size, var.self_managed_node_group_defaults.min_size, 0)
   max_size                  = try(each.value.max_size, var.self_managed_node_group_defaults.max_size, 3)
   desired_size              = try(each.value.desired_size, var.self_managed_node_group_defaults.desired_size, 1)
   capacity_rebalance        = try(each.value.capacity_rebalance, var.self_managed_node_group_defaults.capacity_rebalance, null)

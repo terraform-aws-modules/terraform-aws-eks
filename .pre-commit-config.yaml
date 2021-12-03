@@ -1,10 +1,14 @@
 repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
 <<<<<<< HEAD
+<<<<<<< HEAD
     rev: v1.57.0
 =======
     rev: v1.58.0
 >>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
+=======
+    rev: v1.59.0
+>>>>>>> fb3eb35 (chore: remove karpenter, back to instance refresh and node termination handler)
     hooks:
       - id: terraform_fmt
       - id: terraform_validate

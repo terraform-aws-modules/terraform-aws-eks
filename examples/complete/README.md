@@ -67,6 +67,9 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_disabled_node_groups"></a> [disabled\_node\_groups](#module\_disabled\_node\_groups) | ../../modules/node_groups | n/a |
 >>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
 | <a name="module_eks"></a> [eks](#module\_eks) | ../.. | n/a |
+| <a name="module_eks_managed_node_group"></a> [eks\_managed\_node\_group](#module\_eks\_managed\_node\_group) | ../../modules/eks-managed-node-group | n/a |
+| <a name="module_fargate_profile"></a> [fargate\_profile](#module\_fargate\_profile) | ../../modules/fargate-profile | n/a |
+| <a name="module_self_managed_node_group"></a> [self\_managed\_node\_group](#module\_self\_managed\_node\_group) | ../../modules/self-managed-node-group | n/a |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.0 |
 
 ## Resources

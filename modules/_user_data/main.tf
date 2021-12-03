@@ -17,7 +17,7 @@ locals {
   )) : ""
   platform = {
     bottlerocket = {
-      user_data = var.create && var.platform == "bottlerocket" && var.enable_bootstrap_user_data ? base64encode(templatefile(
+      user_data = var.create && var.platform == "bottlerocket" && (var.enable_bootstrap_user_data || var.user_data_template_path != "" || var.bootstrap_extra_args != "") ? base64encode(templatefile(
         coalesce(var.user_data_template_path, "${path.module}/../../templates/bottlerocket_user_data.tpl"),
         {
           # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami

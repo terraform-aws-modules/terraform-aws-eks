@@ -1,8 +1,9 @@
-# Instance refresh example
+# IRSA, Cluster Autoscaler, and Instance Refresh example
 
-This is EKS example using [instance refresh](https://aws.amazon.com/blogs/compute/introducing-instance-refresh-for-ec2-auto-scaling/) feature for worker groups.
-
-See [the official documentation](https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-instance-refresh.html) for more details.
+This is EKS example uses:
+- [IAM Roles for Service Accounts (IRSA)](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
+- [Cluster Autoscaler](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md)
+- [Instance Refresh](https://aws.amazon.com/blogs/compute/introducing-instance-refresh-for-ec2-auto-scaling/) feature for self managed node groups
 
 ## Usage
 
@@ -25,6 +26,7 @@ Note that this example may create resources which cost money. Run `terraform des
 <<<<<<< HEAD
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.64 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0 |
+<<<<<<< HEAD:examples/karpenter/README.md
 =======
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.56 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0 |
@@ -32,6 +34,9 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.4 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.1 |
 >>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
+=======
+| <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
+>>>>>>> fb3eb35 (chore: remove karpenter, back to instance refresh and node termination handler):examples/irsa_autoscale_refresh/README.md
 
 ## Providers
 
@@ -40,16 +45,29 @@ Note that this example may create resources which cost money. Run `terraform des
 <<<<<<< HEAD
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.64 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0 |
+<<<<<<< HEAD:examples/karpenter/README.md
+<<<<<<< HEAD:examples/custom/README.md
+<<<<<<< HEAD:examples/instance_refresh/README.md
 =======
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.56 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 2.1 |
 >>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
+=======
+| <a name="provider_null"></a> [null](#provider\_null) | n/a |
+>>>>>>> bc35987 (chore: updating custom example):examples/custom/README.md
+=======
+>>>>>>> 84f3af3 (chore: ugh, just work already):examples/karpenter/README.md
+=======
+| <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
+>>>>>>> fb3eb35 (chore: remove karpenter, back to instance refresh and node termination handler):examples/irsa_autoscale_refresh/README.md
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
+<<<<<<< HEAD:examples/karpenter/README.md
+<<<<<<< HEAD:examples/instance_refresh/README.md
 <<<<<<< HEAD
 | <a name="module_aws_node_termination_handler_role"></a> [aws\_node\_termination\_handler\_role](#module\_aws\_node\_termination\_handler\_role) | terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc | ~> 4.0 |
 | <a name="module_aws_node_termination_handler_sqs"></a> [aws\_node\_termination\_handler\_sqs](#module\_aws\_node\_termination\_handler\_sqs) | terraform-aws-modules/sqs/aws | ~> 3.0 |
@@ -57,7 +75,14 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_aws_node_termination_handler_role"></a> [aws\_node\_termination\_handler\_role](#module\_aws\_node\_termination\_handler\_role) | terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc | 4.1.0 |
 | <a name="module_aws_node_termination_handler_sqs"></a> [aws\_node\_termination\_handler\_sqs](#module\_aws\_node\_termination\_handler\_sqs) | terraform-aws-modules/sqs/aws | ~> 3.0.0 |
 >>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
+=======
+>>>>>>> bc35987 (chore: updating custom example):examples/custom/README.md
+=======
+| <a name="module_aws_node_termination_handler_role"></a> [aws\_node\_termination\_handler\_role](#module\_aws\_node\_termination\_handler\_role) | terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc | ~> 4.0 |
+| <a name="module_aws_node_termination_handler_sqs"></a> [aws\_node\_termination\_handler\_sqs](#module\_aws\_node\_termination\_handler\_sqs) | terraform-aws-modules/sqs/aws | ~> 3.0 |
+>>>>>>> fb3eb35 (chore: remove karpenter, back to instance refresh and node termination handler):examples/irsa_autoscale_refresh/README.md
 | <a name="module_eks"></a> [eks](#module\_eks) | ../.. | n/a |
+| <a name="module_iam_assumable_role_cluster_autoscaler"></a> [iam\_assumable\_role\_cluster\_autoscaler](#module\_iam\_assumable\_role\_cluster\_autoscaler) | terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc | ~> 4.0 |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.0 |
 
 ## Resources
@@ -70,11 +95,16 @@ Note that this example may create resources which cost money. Run `terraform des
 | [aws_cloudwatch_event_target.aws_node_termination_handler_asg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
 | [aws_cloudwatch_event_target.aws_node_termination_handler_spot](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
 | [aws_iam_policy.aws_node_termination_handler](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
+| [aws_iam_policy.cluster_autoscaler](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [helm_release.aws_node_termination_handler](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
+| [helm_release.cluster_autoscaler](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
+| [null_resource.apply](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_eks_cluster_auth.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
+| [aws_eks_cluster_auth.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
 | [aws_iam_policy_document.aws_node_termination_handler](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.aws_node_termination_handler_events](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.aws_node_termination_handler_sqs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.cluster_autoscaler](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 
 ## Inputs
 

@@ -142,7 +142,7 @@ module "eks" {
   # Fargate Profile(s)
   fargate_profiles = {
     default = {
-      fargate_profile_name = "default"
+      name = "default"
       selectors = [
         {
           namespace = "kube-system"
@@ -167,6 +167,56 @@ module "eks" {
   }
 
   tags = local.tags
+}
+
+################################################################################
+# Sub-Module Usage on Existing/Separate Cluster
+################################################################################
+
+module "eks_managed_node_group" {
+  source = "../../modules/eks-managed-node-group"
+
+  name            = "separate-eks-mng"
+  cluster_name    = module.eks.cluster_id
+  cluster_version = local.cluster_version
+
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
+
+  tags = merge(local.tags, { Separate = "eks-managed-node-group" })
+}
+
+module "self_managed_node_group" {
+  source = "../../modules/self-managed-node-group"
+
+  name                = "separate-self-mng"
+  cluster_name        = module.eks.cluster_id
+  cluster_version     = local.cluster_version
+  cluster_endpoint    = module.eks.cluster_endpoint
+  cluster_auth_base64 = module.eks.cluster_certificate_authority_data
+
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
+
+  create_launch_template = true
+  launch_template_name   = "separate-self-mng"
+  instance_type          = "m5.large"
+
+  tags = merge(local.tags, { Separate = "self-managed-node-group" })
+}
+
+module "fargate_profile" {
+  source = "../../modules/fargate-profile"
+
+  name         = "separate-fargate-profile"
+  cluster_name = module.eks.cluster_id
+
+  subnet_ids = module.vpc.private_subnets
+  selectors = [{
+    namespace = "kube-system"
+  }]
+
+  tags = merge(local.tags, { Separate = "fargate-profile" })
 }
 
 ################################################################################
@@ -233,6 +283,27 @@ locals {
       }
     }]
   })
+
+  # we have to combine the configmap created by the eks module with the externally created node group/profile sub-modules
+  # aws_auth_configmap = <<-EOT
+  # ${chomp(module.eks.aws_auth_configmap_yaml)}
+  #     - rolearn: ${module.eks_managed_node_group.iam_role_arn}
+  #         username: system:node:{{EC2PrivateDNSName}}
+  #         groups:
+  #           - system:bootstrappers
+  #           - system:nodes
+  #     - rolearn: ${module.self_managed_node_group.iam_role_arn}
+  #       username: system:node:{{EC2PrivateDNSName}}
+  #       groups:
+  #         - system:bootstrappers
+  #         - system:nodes
+  #     - rolearn: ${module.fargate_profile.fargate_profile_arn}
+  #       username: system:node:{{SessionName}}
+  #       groups:
+  #         - system:bootstrappers
+  #         - system:nodes
+  #         - system:node-proxier
+  # EOT
 }
 
 resource "null_resource" "patch" {

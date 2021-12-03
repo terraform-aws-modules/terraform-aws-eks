@@ -1,7 +1,7 @@
 data "aws_partition" "current" {}
 
 locals {
-  iam_role_name     = coalesce(var.iam_role_name, var.fargate_profile_name, "fargate-profile")
+  iam_role_name     = coalesce(var.iam_role_name, var.name, "fargate-profile")
   policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
 }
 
@@ -54,7 +54,7 @@ resource "aws_eks_fargate_profile" "this" {
   count = var.create ? 1 : 0
 
   cluster_name           = var.cluster_name
-  fargate_profile_name   = var.fargate_profile_name
+  fargate_profile_name   = var.name
   pod_execution_role_arn = var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
   subnet_ids             = var.subnet_ids
 
