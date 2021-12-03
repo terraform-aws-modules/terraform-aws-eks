@@ -4,74 +4,21 @@ data "aws_partition" "current" {}
 # User Data
 ################################################################################
 
-locals {
-  platform = {
-    bottlerocket = {
-      user_data = var.custom_user_data != "" ? var.custom_user_data : base64encode(templatefile(
-        "${path.module}/../../templates/bottlerocket_user_data.tpl",
-        {
-          ami_id = var.ami_id
-          # Required to bootstrap node
-          cluster_name = var.cluster_name
-          # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
-          cluster_endpoint    = var.cluster_endpoint
-          cluster_auth_base64 = var.cluster_auth_base64
-          # Optional
-          bootstrap_extra_args = var.bootstrap_extra_args
-        }
-      ))
-    }
-    linux = {
-      user_data = var.custom_user_data != "" ? var.custom_user_data : try(data.cloudinit_config.eks_optimized_ami_user_data[0].rendered, "")
-    }
-    # Not supported on EKS managed node groups
-    # windows = {}
-  }
-}
+module "user_data" {
+  source = "../_user_data"
 
-# https://github.com/aws/containers-roadmap/issues/596#issuecomment-675097667
-# An important note is that user data must in MIME multi-part archive format,
-# as by default, EKS will merge the bootstrapping command required for nodes to join the
-# cluster with your user data. If you use a custom AMI in your launch template,
-# this merging will NOT happen and you are responsible for nodes joining the cluster.
-# See docs for more details -> https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-user-data
+  create   = var.create
+  platform = var.platform
 
-data "cloudinit_config" "eks_optimized_ami_user_data" {
-  count = var.create && var.platform == "linux" && ((local.use_custom_launch_template && var.pre_bootstrap_user_data != "") || (var.ami_id != "" && var.ami_is_eks_optimized)) ? 1 : 0
+  cluster_name        = var.cluster_name
+  cluster_endpoint    = var.cluster_endpoint
+  cluster_auth_base64 = var.cluster_auth_base64
 
-  base64_encode = true
-  gzip          = false
-  boundary      = "//"
-
-  # Prepend to existing user data suppled by AWS EKS
-  dynamic "part" {
-    for_each = var.pre_bootstrap_user_data != "" ? [1] : []
-    content {
-      content_type = "text/x-shellscript"
-      content      = var.pre_bootstrap_user_data
-    }
-  }
-
-  # Supply all of bootstrap user data due to custom AMI
-  dynamic "part" {
-    for_each = var.ami_id != "" && var.ami_is_eks_optimized ? [1] : []
-    content {
-      content_type = "text/x-shellscript"
-      content = templatefile("${path.module}/../../templates/linux_user_data.tpl",
-        {
-          ami_id = var.ami_id
-          # Required to bootstrap node
-          cluster_name = var.cluster_name
-          # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
-          cluster_endpoint    = var.cluster_endpoint
-          cluster_auth_base64 = var.cluster_auth_base64
-          # Optional
-          bootstrap_extra_args     = var.bootstrap_extra_args
-          post_bootstrap_user_data = var.post_bootstrap_user_data
-        }
-      )
-    }
-  }
+  enable_bootstrap_user_data = var.enable_bootstrap_user_data
+  pre_bootstrap_user_data    = var.pre_bootstrap_user_data
+  post_bootstrap_user_data   = var.post_bootstrap_user_data
+  bootstrap_extra_args       = var.bootstrap_extra_args
+  user_data_template_path    = var.user_data_template_path
 }
 
 ################################################################################
@@ -95,7 +42,7 @@ resource "aws_launch_template" "this" {
   # # Set on node group instead
   # instance_type = var.launch_template_instance_type
   key_name  = var.key_name
-  user_data = local.platform[var.platform].user_data
+  user_data = module.user_data.user_data
 
   vpc_security_group_ids = compact(concat([try(aws_security_group.this[0].id, "")], var.vpc_security_group_ids))
 

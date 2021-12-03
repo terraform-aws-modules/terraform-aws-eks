@@ -70,6 +70,8 @@ module "eks" {
       launch_template_name   = "bottlerocket-custom"
       update_default_version = true
 
+      enable_bootstrap_user_data = true
+
       bootstrap_extra_args = <<-EOT
           [settings.kernel]
           lockdown = "integrity"
@@ -98,10 +100,11 @@ module "eks" {
 
       # Current default AMI used by managed node groups - pseudo "custom"
       ami_id = "ami-0caf35bc73450c396"
+
       # This will ensure the boostrap user data is used to join the node
       # By default, EKS managed node groups will not append bootstrap script;
       # this adds it back in if its an EKS optmized AMI derivative
-      ami_is_eks_optimized = true
+      enable_bootstrap_user_data = true
     }
 
     # Complete
@@ -115,12 +118,11 @@ module "eks" {
       max_size     = 7
       desired_size = 1
 
-      ami_id               = "ami-0caf35bc73450c396"
-      ami_is_eks_optimized = true
-      bootstrap_extra_args = "--container-runtime containerd --kubelet-extra-args '--max-pods=20'"
+      ami_id                     = "ami-0caf35bc73450c396"
+      enable_bootstrap_user_data = true
+      bootstrap_extra_args       = "--container-runtime containerd --kubelet-extra-args '--max-pods=20'"
 
       pre_bootstrap_user_data = <<-EOT
-        #!/bin/bash set -ex
         export CONTAINER_RUNTIME="containerd"
         export USE_MAX_PODS=false
       EOT

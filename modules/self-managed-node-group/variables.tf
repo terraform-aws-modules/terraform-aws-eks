@@ -20,28 +20,16 @@ variable "platform" {
 # User Data
 ################################################################################
 
-variable "enable_bootstrap_user_data" {
-  description = "Determines whether custom bootstrap user data template is used to boostrap node. Enabling this assumes the AMI is an AWS EKS Optimized AMI derivative"
-  type        = bool
-  default     = true
-}
-
-variable "custom_user_data" {
-  description = "Base64-encoded user data used; should be used when `ami_is_eks_optimized` = `false` to boostrap and join instances to the cluster"
-  type        = string
-  default     = ""
-}
-
 variable "cluster_endpoint" {
   description = "Endpoint of associated EKS cluster"
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "cluster_auth_base64" {
   description = "Base64 encoded CA of associated EKS cluster"
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "pre_bootstrap_user_data" {
@@ -58,6 +46,12 @@ variable "post_bootstrap_user_data" {
 
 variable "bootstrap_extra_args" {
   description = "Additional arguments passed to the bootstrap script"
+  type        = string
+  default     = ""
+}
+
+variable "user_data_template_path" {
+  description = "Path to a local, custom user data template file to use when rendering user data"
   type        = string
   default     = ""
 }

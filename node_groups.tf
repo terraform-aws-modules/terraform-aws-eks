@@ -207,14 +207,14 @@ module "eks_managed_node_group" {
   timeouts      = try(each.value.timeouts, var.eks_managed_node_group_defaults.timeouts, {})
 
   # User data
-  platform                 = try(each.value.platform, var.eks_managed_node_group_defaults.platform, "linux")
-  custom_user_data         = try(each.value.custom_user_data, var.eks_managed_node_group_defaults.custom_user_data, "")
-  ami_is_eks_optimized     = try(each.value.ami_is_eks_optimized, var.eks_managed_node_group_defaults.ami_is_eks_optimized, true)
-  cluster_endpoint         = try(aws_eks_cluster.this[0].endpoint, var.eks_managed_node_group_defaults.cluster_endpoint, null)
-  cluster_auth_base64      = try(aws_eks_cluster.this[0].certificate_authority[0].data, var.eks_managed_node_group_defaults.cluster_auth_base64, null)
-  pre_bootstrap_user_data  = try(each.value.pre_bootstrap_user_data, var.eks_managed_node_group_defaults.pre_bootstrap_user_data, "")
-  post_bootstrap_user_data = try(each.value.post_bootstrap_user_data, var.eks_managed_node_group_defaults.post_bootstrap_user_data, "")
-  bootstrap_extra_args     = try(each.value.bootstrap_extra_args, var.eks_managed_node_group_defaults.bootstrap_extra_args, "")
+  platform                   = try(each.value.platform, var.eks_managed_node_group_defaults.platform, "linux")
+  cluster_endpoint           = try(aws_eks_cluster.this[0].endpoint, var.eks_managed_node_group_defaults.cluster_endpoint, "")
+  cluster_auth_base64        = try(aws_eks_cluster.this[0].certificate_authority[0].data, var.eks_managed_node_group_defaults.cluster_auth_base64, "")
+  enable_bootstrap_user_data = try(each.value.enable_bootstrap_user_data, var.eks_managed_node_group_defaults.enable_bootstrap_user_data, false)
+  pre_bootstrap_user_data    = try(each.value.pre_bootstrap_user_data, var.eks_managed_node_group_defaults.pre_bootstrap_user_data, "")
+  post_bootstrap_user_data   = try(each.value.post_bootstrap_user_data, var.eks_managed_node_group_defaults.post_bootstrap_user_data, "")
+  bootstrap_extra_args       = try(each.value.bootstrap_extra_args, var.eks_managed_node_group_defaults.bootstrap_extra_args, "")
+  user_data_template_path    = try(each.value.user_data_template_path, var.eks_managed_node_group_defaults.user_data_template_path, "")
 
   # Launch Template
   create_launch_template          = try(each.value.create_launch_template, var.eks_managed_node_group_defaults.create_launch_template, false)
@@ -324,14 +324,13 @@ module "self_managed_node_group" {
   delete_timeout = try(each.value.delete_timeout, var.self_managed_node_group_defaults.delete_timeout, null)
 
   # User data
-  platform                   = try(each.value.platform, var.eks_managed_node_group_defaults.platform, "linux")
-  enable_bootstrap_user_data = try(each.value.enable_bootstrap_user_data, var.self_managed_node_group_defaults.enable_bootstrap_user_data, true)
-  custom_user_data           = try(each.value.custom_user_data, var.self_managed_node_group_defaults.custom_user_data, "")
-  cluster_endpoint           = try(aws_eks_cluster.this[0].endpoint, var.self_managed_node_group_defaults.cluster_endpoint, null)
-  cluster_auth_base64        = try(aws_eks_cluster.this[0].certificate_authority[0].data, var.self_managed_node_group_defaults.cluster_auth_base64, null)
-  pre_bootstrap_user_data    = try(each.value.pre_bootstrap_user_data, var.self_managed_node_group_defaults.pre_bootstrap_user_data, "")
-  post_bootstrap_user_data   = try(each.value.post_bootstrap_user_data, var.self_managed_node_group_defaults.post_bootstrap_user_data, "")
-  bootstrap_extra_args       = try(each.value.bootstrap_extra_args, var.self_managed_node_group_defaults.bootstrap_extra_args, "")
+  platform                 = try(each.value.platform, var.self_managed_node_group_defaults.platform, "linux")
+  cluster_endpoint         = try(aws_eks_cluster.this[0].endpoint, var.self_managed_node_group_defaults.cluster_endpoint, "")
+  cluster_auth_base64      = try(aws_eks_cluster.this[0].certificate_authority[0].data, var.self_managed_node_group_defaults.cluster_auth_base64, "")
+  pre_bootstrap_user_data  = try(each.value.pre_bootstrap_user_data, var.self_managed_node_group_defaults.pre_bootstrap_user_data, "")
+  post_bootstrap_user_data = try(each.value.post_bootstrap_user_data, var.self_managed_node_group_defaults.post_bootstrap_user_data, "")
+  bootstrap_extra_args     = try(each.value.bootstrap_extra_args, var.self_managed_node_group_defaults.bootstrap_extra_args, "")
+  user_data_template_path  = try(each.value.user_data_template_path, var.self_managed_node_group_defaults.user_data_template_path, "")
 
   # Launch Template
   create_launch_template = try(each.value.create_launch_template, var.self_managed_node_group_defaults.create_launch_template, true)

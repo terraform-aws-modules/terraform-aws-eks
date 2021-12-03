@@ -93,7 +93,6 @@ module "eks" {
       bootstrap_extra_args = "--kubelet-extra-args '--max-pods=110'"
 
       pre_bootstrap_user_data = <<-EOT
-        #!/bin/bash set -ex
         export CONTAINER_RUNTIME="containerd"
         export USE_MAX_PODS=false
       EOT

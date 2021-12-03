@@ -59,6 +59,11 @@ module "eks" {
     one = {
       name = "spot-1"
 
+      public_ip = true
+
+      max_size     = 5
+      desired_size = 2
+
       use_mixed_instances_policy = true
       mixed_instances_policy = {
         instances_distribution = {
@@ -70,25 +75,28 @@ module "eks" {
         override = [
           {
             instance_type     = "m5.large"
-            weighted_capacity = "2"
+            weighted_capacity = "1"
           },
           {
             instance_type     = "m6i.large"
-            weighted_capacity = "1"
+            weighted_capacity = "2"
           },
         ]
       }
 
-      max_size                 = 5
-      desired_size             = 5
-      bootstrap_extra_args     = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+      pre_bootstrap_user_data = <<-EOT
+      echo "foo"
+      export FOO=bar
+      EOT
+
+      bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+
       post_bootstrap_user_data = <<-EOT
       cd /tmp
       sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
       sudo systemctl enable amazon-ssm-agent
       sudo systemctl start amazon-ssm-agent
       EOT
-      public_ip                = true
     }
   }
 
