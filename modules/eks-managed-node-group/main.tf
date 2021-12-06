@@ -46,8 +46,8 @@ resource "aws_launch_template" "this" {
 
   vpc_security_group_ids = compact(concat([try(aws_security_group.this[0].id, "")], var.vpc_security_group_ids))
 
-  default_version         = var.default_version
-  update_default_version  = var.update_default_version
+  default_version         = var.launch_template_default_version
+  update_default_version  = var.update_launch_template_default_version
   disable_api_termination = var.disable_api_termination
   # Set on EKS managed node group, will fail if set here
   # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-basics

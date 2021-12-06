@@ -193,6 +193,7 @@ resource "aws_iam_role" "this" {
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
   path        = var.iam_role_path
+  description = var.iam_role_description
 
   assume_role_policy    = data.aws_iam_policy_document.assume_role_policy[0].json
   permissions_boundary  = var.iam_role_permissions_boundary
@@ -220,10 +221,10 @@ data "aws_iam_policy_document" "additional" {
 
 # Policies attached ref https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
 resource "aws_iam_role_policy_attachment" "this" {
-  for_each = var.create && var.create_iam_role ? toset([
+  for_each = var.create && var.create_iam_role ? toset(compact(distinct(concat([
     "${local.policy_arn_prefix}/AmazonEKSClusterPolicy",
     "${local.policy_arn_prefix}/AmazonEKSVPCResourceController",
-  ]) : toset([])
+  ], var.iam_role_additional_policies)))) : toset([])
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name

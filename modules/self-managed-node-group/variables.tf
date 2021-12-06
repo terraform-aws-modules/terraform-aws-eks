@@ -1,11 +1,11 @@
 variable "create" {
-  description = "Determines whether to create autoscaling group or not"
+  description = "Determines whether to create self managed node group or not"
   type        = bool
   default     = true
 }
 
 variable "tags" {
-  description = "A map of tags and values in the same format as other resources accept. This will be converted into the non-standard format that the aws_autoscaling_group requires."
+  description = "A map of tags to add to all resources"
   type        = map(string)
   default     = {}
 }
@@ -21,7 +21,7 @@ variable "platform" {
 ################################################################################
 
 variable "cluster_name" {
-  description = "Name of the EKS cluster that the node group will be associated with"
+  description = "Name of associated EKS cluster"
   type        = string
   default     = null
 }
@@ -39,19 +39,19 @@ variable "cluster_auth_base64" {
 }
 
 variable "pre_bootstrap_user_data" {
-  description = "User data that is injected into the user data script ahead of the EKS bootstrap script"
+  description = "User data that is injected into the user data script ahead of the EKS bootstrap script. Not used when `platform` = `bottlerocket`"
   type        = string
   default     = ""
 }
 
 variable "post_bootstrap_user_data" {
-  description = "User data that is appended to the user data script after of the EKS bootstrap script. Only valid when using a custom EKS optimized AMI derivative"
+  description = "User data that is appended to the user data script after of the EKS bootstrap script. Not used when `platform` = `bottlerocket`"
   type        = string
   default     = ""
 }
 
 variable "bootstrap_extra_args" {
-  description = "Additional arguments passed to the bootstrap script"
+  description = "Additional arguments passed to the bootstrap script. When `platform` = `bottlerocket`; these are additional [settings](https://github.com/bottlerocket-os/bottlerocket#settings) that are provided to the Bottlerocket user data"
   type        = string
   default     = ""
 }
@@ -63,17 +63,11 @@ variable "user_data_template_path" {
 }
 
 ################################################################################
-# Autoscaling group
+# Launch template
 ################################################################################
 
-variable "name" {
-  description = "Name used across the resources created"
-  type        = string
-  default     = ""
-}
-
-variable "use_name_prefix" {
-  description = "Determines whether to use `name` as is or create a unique name beginning with the `name` as the prefix"
+variable "create_launch_template" {
+  description = "Determines whether to create launch template or not"
   type        = bool
   default     = true
 }
@@ -82,6 +76,194 @@ variable "launch_template_name" {
   description = "Launch template name - either to be created (`var.create_launch_template` = `true`) or existing (`var.create_launch_template` = `false`)"
   type        = string
   default     = null
+}
+
+variable "launch_template_use_name_prefix" {
+  description = "Determines whether to use `launch_template_name` as is or create a unique name beginning with the `launch_template_name` as the prefix"
+  type        = bool
+  default     = true
+}
+
+variable "description" {
+  description = "Description of the launch template"
+  type        = string
+  default     = null
+}
+
+variable "launch_template_default_version" {
+  description = "Default Version of the launch template"
+  type        = string
+  default     = null
+}
+
+variable "update_launch_template_default_version" {
+  description = "Whether to update Default Version each update. Conflicts with `launch_template_default_version`"
+  type        = string
+  default     = null
+}
+
+variable "disable_api_termination" {
+  description = "If true, enables EC2 instance termination protection"
+  type        = bool
+  default     = null
+}
+
+variable "instance_initiated_shutdown_behavior" {
+  description = "Shutdown behavior for the instance. Can be `stop` or `terminate`. (Default: `stop`)"
+  type        = string
+  default     = null
+}
+
+variable "kernel_id" {
+  description = "The kernel ID"
+  type        = string
+  default     = null
+}
+
+variable "ram_disk_id" {
+  description = "The ID of the ram disk"
+  type        = string
+  default     = null
+}
+
+variable "block_device_mappings" {
+  description = "Specify volumes to attach to the instance besides the volumes specified by the AMI"
+  type        = any
+  default     = {}
+}
+
+variable "capacity_reservation_specification" {
+  description = "Targeting for EC2 capacity reservations"
+  type        = any
+  default     = null
+}
+
+variable "cpu_options" {
+  description = "The CPU options for the instance"
+  type        = map(string)
+  default     = null
+}
+
+variable "credit_specification" {
+  description = "Customize the credit specification of the instance"
+  type        = map(string)
+  default     = null
+}
+
+variable "elastic_gpu_specifications" {
+  description = "The elastic GPU to attach to the instance"
+  type        = map(string)
+  default     = null
+}
+
+variable "elastic_inference_accelerator" {
+  description = "Configuration block containing an Elastic Inference Accelerator to attach to the instance"
+  type        = map(string)
+  default     = null
+}
+
+variable "enclave_options" {
+  description = "Enable Nitro Enclaves on launched instances"
+  type        = map(string)
+  default     = null
+}
+
+variable "hibernation_options" {
+  description = "The hibernation options for the instance"
+  type        = map(string)
+  default     = null
+}
+
+variable "instance_market_options" {
+  description = "The market (purchasing) option for the instance"
+  type        = any
+  default     = null
+}
+
+variable "license_specifications" {
+  description = "A list of license specifications to associate with"
+  type        = map(string)
+  default     = null
+}
+
+variable "network_interfaces" {
+  description = "Customize network interfaces to be attached at instance boot time"
+  type        = list(any)
+  default     = []
+}
+
+variable "placement" {
+  description = "The placement of the instance"
+  type        = map(string)
+  default     = null
+}
+
+variable "ebs_optimized" {
+  description = "If true, the launched EC2 instance will be EBS-optimized"
+  type        = bool
+  default     = null
+}
+
+variable "ami_id" {
+  description = "The AMI from which to launch the instance"
+  type        = string
+  default     = ""
+}
+
+variable "cluster_version" {
+  description = "Kubernetes cluster version - used to lookup default AMI ID if one is not provided"
+  type        = string
+  default     = null
+}
+
+variable "instance_type" {
+  description = "The type of the instance to launch"
+  type        = string
+  default     = ""
+}
+
+variable "key_name" {
+  description = "The key name that should be used for the instance"
+  type        = string
+  default     = null
+}
+
+variable "vpc_security_group_ids" {
+  description = "A list of security group IDs to associate"
+  type        = list(string)
+  default     = []
+}
+
+variable "enable_monitoring" {
+  description = "Enables/disables detailed monitoring"
+  type        = bool
+  default     = true
+}
+
+variable "metadata_options" {
+  description = "Customize the metadata options for the instance"
+  type        = map(string)
+  default = {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 2
+  }
+}
+
+################################################################################
+# Autoscaling group
+################################################################################
+
+variable "name" {
+  description = "Name of the Self managed Node Group"
+  type        = string
+  default     = ""
+}
+
+variable "use_name_prefix" {
+  description = "Determines whether to use `name` as is or create a unique name beginning with the `name` as the prefix"
+  type        = bool
+  default     = true
 }
 
 variable "launch_template_version" {
@@ -259,191 +441,9 @@ variable "delete_timeout" {
 }
 
 variable "propagate_tags" {
-  description = "A list of tag blocks. Each element should have keys named key, value, and propagate_at_launch"
+  description = "A list of tag blocks. Each element should have keys named `key`, `value`, and `propagate_at_launch`"
   type        = list(map(string))
   default     = []
-}
-
-################################################################################
-# Launch template
-################################################################################
-
-variable "create_launch_template" {
-  description = "Determines whether to create launch template or not"
-  type        = bool
-  default     = true
-}
-
-variable "launch_template_use_name_prefix" {
-  description = "Determines whether to use `launch_template_name` as is or create a unique name beginning with the `launch_template_name` as the prefix"
-  type        = bool
-  default     = true
-}
-
-variable "description" {
-  description = "Description of the launch template"
-  type        = string
-  default     = null
-}
-
-variable "default_version" {
-  description = "Default Version of the launch template"
-  type        = string
-  default     = null
-}
-
-variable "update_default_version" {
-  description = "Whether to update Default Version each update. Conflicts with `default_version`"
-  type        = string
-  default     = null
-}
-
-variable "disable_api_termination" {
-  description = "If true, enables EC2 instance termination protection"
-  type        = bool
-  default     = null
-}
-
-variable "instance_initiated_shutdown_behavior" {
-  description = "Shutdown behavior for the instance. Can be `stop` or `terminate`. (Default: `stop`)"
-  type        = string
-  default     = null
-}
-
-variable "kernel_id" {
-  description = "The kernel ID"
-  type        = string
-  default     = null
-}
-
-variable "ram_disk_id" {
-  description = "The ID of the ram disk"
-  type        = string
-  default     = null
-}
-
-variable "block_device_mappings" {
-  description = "Specify volumes to attach to the instance besides the volumes specified by the AMI"
-  type        = any
-  default     = {}
-}
-
-variable "capacity_reservation_specification" {
-  description = "Targeting for EC2 capacity reservations"
-  type        = any
-  default     = null
-}
-
-variable "cpu_options" {
-  description = "The CPU options for the instance"
-  type        = map(string)
-  default     = null
-}
-
-variable "credit_specification" {
-  description = "Customize the credit specification of the instance"
-  type        = map(string)
-  default     = null
-}
-
-variable "elastic_gpu_specifications" {
-  description = "The elastic GPU to attach to the instance"
-  type        = map(string)
-  default     = null
-}
-
-variable "elastic_inference_accelerator" {
-  description = "Configuration block containing an Elastic Inference Accelerator to attach to the instance"
-  type        = map(string)
-  default     = null
-}
-
-variable "enclave_options" {
-  description = "Enable Nitro Enclaves on launched instances"
-  type        = map(string)
-  default     = null
-}
-
-variable "hibernation_options" {
-  description = "The hibernation options for the instance"
-  type        = map(string)
-  default     = null
-}
-
-variable "instance_market_options" {
-  description = "The market (purchasing) option for the instance"
-  type        = any
-  default     = null
-}
-
-variable "license_specifications" {
-  description = "A list of license specifications to associate with"
-  type        = map(string)
-  default     = null
-}
-
-variable "network_interfaces" {
-  description = "Customize network interfaces to be attached at instance boot time"
-  type        = list(any)
-  default     = []
-}
-
-variable "placement" {
-  description = "The placement of the instance"
-  type        = map(string)
-  default     = null
-}
-
-variable "ebs_optimized" {
-  description = "If true, the launched EC2 instance will be EBS-optimized"
-  type        = bool
-  default     = null
-}
-
-variable "ami_id" {
-  description = "The AMI from which to launch the instance"
-  type        = string
-  default     = ""
-}
-
-variable "cluster_version" {
-  description = "Kubernetes cluster version - used to lookup default AMI ID if one is not provided"
-  type        = string
-  default     = null
-}
-
-variable "instance_type" {
-  description = "The type of the instance to launch"
-  type        = string
-  default     = ""
-}
-
-variable "key_name" {
-  description = "The key name that should be used for the instance"
-  type        = string
-  default     = null
-}
-
-variable "vpc_security_group_ids" {
-  description = "A list of security group IDs to associate"
-  type        = list(string)
-  default     = []
-}
-
-variable "enable_monitoring" {
-  description = "Enables/disables detailed monitoring"
-  type        = bool
-  default     = null
-}
-
-variable "metadata_options" {
-  description = "Customize the metadata options for the instance"
-  type        = map(string)
-  default = {
-    http_endpoint               = "enabled"
-    http_tokens                 = "required"
-    http_put_response_hop_limit = 2
-  }
 }
 
 ################################################################################
@@ -467,7 +467,7 @@ variable "schedules" {
 ################################################################################
 
 variable "create_security_group" {
-  description = "Whether to create a security group"
+  description = "Determines whether to create a security group"
   type        = bool
   default     = true
 }
@@ -485,7 +485,7 @@ variable "security_group_use_name_prefix" {
 }
 
 variable "security_group_description" {
-  description = "Description for the security group"
+  description = "Description for the security group created"
   type        = string
   default     = "EKS worker security group"
 }
@@ -503,7 +503,7 @@ variable "security_group_rules" {
 }
 
 variable "cluster_security_group_id" {
-  description = "Cluster control plain security group ID"
+  description = "Cluster control plane security group ID"
   type        = string
   default     = null
 }
@@ -525,7 +525,7 @@ variable "create_iam_instance_profile" {
 }
 
 variable "iam_instance_profile_arn" {
-  description = "Amazon Resource Name (ARN) of an existing IAM instance profile that provides permissions for the node group"
+  description = "Amazon Resource Name (ARN) of an existing IAM instance profile that provides permissions for the node group. Required if `create_iam_instance_profile` = `false`"
   type        = string
   default     = null
 }

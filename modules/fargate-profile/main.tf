@@ -29,6 +29,7 @@ resource "aws_iam_role" "this" {
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
   path        = var.iam_role_path
+  description = var.iam_role_description
 
   assume_role_policy    = data.aws_iam_policy_document.assume_role_policy[0].json
   permissions_boundary  = var.iam_role_permissions_boundary

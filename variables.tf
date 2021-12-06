@@ -1,13 +1,13 @@
-variable "tags" {
-  description = "A map of tags to add to all resources"
-  type        = map(string)
-  default     = {}
-}
-
 variable "create" {
   description = "Controls if EKS resources should be created (affects nearly all resources)"
   type        = bool
   default     = true
+}
+
+variable "tags" {
+  description = "A map of tags to add to all resources"
+  type        = map(string)
+  default     = {}
 }
 
 ################################################################################
@@ -224,7 +224,7 @@ variable "openid_connect_audiences" {
 ################################################################################
 
 variable "create_iam_role" {
-  description = "Determines whether a cluster IAM role is created or to use an existing IAM role"
+  description = "Determines whether a an IAM role is created or to use an existing IAM role"
   type        = bool
   default     = true
 }
@@ -236,13 +236,13 @@ variable "iam_role_arn" {
 }
 
 variable "iam_role_name" {
-  description = "Name to use on cluster role created"
+  description = "Name to use on IAM role created"
   type        = string
   default     = null
 }
 
 variable "iam_role_use_name_prefix" {
-  description = "Determines whether cluster IAM role name (`iam_role_name`) is used as a prefix"
+  description = "Determines whether the IAM role name (`iam_role_name`) is used as a prefix"
   type        = string
   default     = true
 }
@@ -253,14 +253,26 @@ variable "iam_role_path" {
   default     = null
 }
 
-variable "iam_role_permissions_boundary" {
-  description = "ARN of the policy that is used to set the permissions boundary for the cluster role"
+variable "iam_role_description" {
+  description = "Description of the role"
   type        = string
   default     = null
 }
 
+variable "iam_role_permissions_boundary" {
+  description = "ARN of the policy that is used to set the permissions boundary for the IAM role"
+  type        = string
+  default     = null
+}
+
+variable "iam_role_additional_policies" {
+  description = "Additional policies to be added to the IAM role"
+  type        = list(string)
+  default     = []
+}
+
 variable "iam_role_tags" {
-  description = "A map of additional tags to add to the cluster IAM role created"
+  description = "A map of additional tags to add to the IAM role created"
   type        = map(string)
   default     = {}
 }

@@ -1,5 +1,5 @@
 variable "create" {
-  description = "Controls if Fargate resources should be created (it affects all resources)"
+  description = "Determines whether to create Fargate profile or not"
   type        = bool
   default     = true
 }
@@ -15,13 +15,13 @@ variable "tags" {
 ################################################################################
 
 variable "create_iam_role" {
-  description = "Controls if the the IAM Role that provides permissions for the EKS Fargate Profile will be created"
+  description = "Determines whether an IAM role is created or to use an existing IAM role"
   type        = bool
   default     = true
 }
 
 variable "iam_role_arn" {
-  description = "Amazon Resource Name (ARN) of an existing IAM role that provides permissions for the Fargate pod executions"
+  description = "Existing IAM role ARN for the Fargate profile. Required if `create_iam_role` is set to `false`"
   type        = string
   default     = null
 }
@@ -40,6 +40,12 @@ variable "iam_role_use_name_prefix" {
 
 variable "iam_role_path" {
   description = "IAM role path"
+  type        = string
+  default     = null
+}
+
+variable "iam_role_description" {
+  description = "Description of the role"
   type        = string
   default     = null
 }

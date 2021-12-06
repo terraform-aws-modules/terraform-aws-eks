@@ -43,10 +43,10 @@ module "eks" {
       max_size     = 5
       desired_size = 1
 
-      instance_types         = ["m5.large", "m5n.large", "m5zn.large", "m6i.large", ]
-      create_launch_template = true
-      launch_template_name   = "refresh"
-      update_default_version = true
+      instance_types                  = ["m5.large", "m5n.large", "m5zn.large", "m6i.large", ]
+      create_launch_template          = true
+      launch_template_name            = "refresh"
+      launch_template_default_version = true
 
       instance_refresh = {
         strategy = "Rolling"

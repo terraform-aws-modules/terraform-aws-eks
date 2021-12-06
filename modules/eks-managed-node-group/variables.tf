@@ -11,7 +11,7 @@ variable "tags" {
 }
 
 variable "platform" {
-  description = "Identifies if the OS platform is `bottlerocket`, `linux`, or `windows` based"
+  description = "Identifies if the OS platform is `bottlerocket` or `linux` based; `windows` is not supported"
   type        = string
   default     = "linux"
 }
@@ -24,6 +24,12 @@ variable "enable_bootstrap_user_data" {
   description = "Determines whether the bootstrap configurations are populated within the user data template"
   type        = bool
   default     = false
+}
+
+variable "cluster_name" {
+  description = "Name of associated EKS cluster"
+  type        = string
+  default     = null
 }
 
 variable "cluster_endpoint" {
@@ -39,19 +45,19 @@ variable "cluster_auth_base64" {
 }
 
 variable "pre_bootstrap_user_data" {
-  description = "User data that is injected into the user data script ahead of the EKS bootstrap script"
+  description = "User data that is injected into the user data script ahead of the EKS bootstrap script. Not used when `platform` = `bottlerocket`"
   type        = string
   default     = ""
 }
 
 variable "post_bootstrap_user_data" {
-  description = "User data that is appended to the user data script after of the EKS bootstrap script. Only valid when using a custom EKS optimized AMI derivative"
+  description = "User data that is appended to the user data script after of the EKS bootstrap script. Not used when `platform` = `bottlerocket`"
   type        = string
   default     = ""
 }
 
 variable "bootstrap_extra_args" {
-  description = "Additional arguments passed to the bootstrap script"
+  description = "Additional arguments passed to the bootstrap script. When `platform` = `bottlerocket`; these are additional [settings](https://github.com/bottlerocket-os/bottlerocket#settings) that are provided to the Bottlerocket user data"
   type        = string
   default     = ""
 }
@@ -67,7 +73,7 @@ variable "user_data_template_path" {
 ################################################################################
 
 variable "create_launch_template" {
-  description = "Determines whether to create launch template or not"
+  description = "Determines whether to create a launch template or not. By default, EKS will use its own default launch template"
   type        = bool
   default     = false
 }
@@ -91,7 +97,7 @@ variable "description" {
 }
 
 variable "ebs_optimized" {
-  description = "If true, the launched EC2 instance will be EBS-optimized"
+  description = "If true, the launched EC2 instance(s) will be EBS-optimized"
   type        = bool
   default     = null
 }
@@ -103,7 +109,7 @@ variable "ami_id" {
 }
 
 variable "key_name" {
-  description = "The key name that should be used for the instance"
+  description = "The key name that should be used for the instance(s)"
   type        = string
   default     = null
 }
@@ -114,14 +120,14 @@ variable "vpc_security_group_ids" {
   default     = []
 }
 
-variable "default_version" {
-  description = "Default Version of the launch template"
+variable "launch_template_default_version" {
+  description = "Default version of the launch template"
   type        = string
   default     = null
 }
 
-variable "update_default_version" {
-  description = "Whether to update Default Version each update. Conflicts with `default_version`"
+variable "update_launch_template_default_version" {
+  description = "Whether to update the launch templates default version on each update. Conflicts with `launch_template_default_version`"
   type        = bool
   default     = true
 }
@@ -211,7 +217,7 @@ variable "metadata_options" {
 variable "enable_monitoring" {
   description = "Enables/disables detailed monitoring"
   type        = bool
-  default     = null
+  default     = true
 }
 
 variable "network_interfaces" {
@@ -229,18 +235,6 @@ variable "placement" {
 ################################################################################
 # EKS Managed Node Group
 ################################################################################
-
-variable "cluster_name" {
-  description = "Name of associated EKS cluster"
-  type        = string
-  default     = null
-}
-
-variable "iam_role_arn" {
-  description = "Amazon Resource Name (ARN) of the IAM Role that provides permissions for the EKS Node Group"
-  type        = string
-  default     = null
-}
 
 variable "subnet_ids" {
   description = "Identifiers of EC2 Subnets to associate with the EKS Node Group. These subnets must have the following resource tag: `kubernetes.io/cluster/CLUSTER_NAME`"
@@ -267,7 +261,7 @@ variable "desired_size" {
 }
 
 variable "name" {
-  description = "Name of the EKS Node Group"
+  description = "Name of the EKS managed node group"
   type        = string
   default     = ""
 }
@@ -361,7 +355,7 @@ variable "timeouts" {
 ################################################################################
 
 variable "create_security_group" {
-  description = "Whether to create a security group"
+  description = "Determines whether to create a security group"
   type        = bool
   default     = true
 }
@@ -379,7 +373,7 @@ variable "security_group_use_name_prefix" {
 }
 
 variable "security_group_description" {
-  description = "Description for the security group"
+  description = "Description for the security group created"
   type        = string
   default     = "EKS managed node group security group"
 }
@@ -397,7 +391,7 @@ variable "security_group_rules" {
 }
 
 variable "cluster_security_group_id" {
-  description = "Cluster control plain security group ID"
+  description = "Cluster control plane security group ID"
   type        = string
   default     = null
 }
@@ -416,6 +410,12 @@ variable "create_iam_role" {
   description = "Determines whether an IAM role is created or to use an existing IAM role"
   type        = bool
   default     = true
+}
+
+variable "iam_role_arn" {
+  description = "Existing IAM role ARN for the node group. Required if `create_iam_role` is set to `false`"
+  type        = string
+  default     = null
 }
 
 variable "iam_role_name" {
