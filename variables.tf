@@ -187,7 +187,7 @@ variable "worker_sg_ingress_from_port" {
 }
 
 variable "workers_additional_policies" {
-  description = "Additional policies to be added to workers"
+  description = "List of additional policy ARNs to be added to the default worker/managed node role"
   type        = list(string)
   default     = []
 }
