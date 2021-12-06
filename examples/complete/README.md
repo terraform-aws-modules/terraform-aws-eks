@@ -1,10 +1,20 @@
 # Complete AWS EKS Cluster
 
-Configuration in this directory creates EKS cluster with different features shown all-in-one cluster (e.g. Managed Node Groups, Worker Groups, Fargate, Spot instances, AWS Auth enabled).
+Configuration in this directory creates an AWS EKS cluster with a broad mix of various features and settings provided by this module:
 
-This example can be used to do smoke test.
-
-See configurations in other `examples` directories for more specific cases.
+- AWS EKS cluster
+- Disabled EKS cluster
+- Self managed node group
+- Externally attached self managed node group
+- Disabled self managed node group
+- EKS managed node group
+- Externally attached EKS managed node group
+- Disabled self managed node group
+- Fargate profile
+- Externally attached Fargate profile
+- Disabled Fargate profile
+- Cluster addons: CoreDNS, Kube-Proxy, and VPC-CNI
+- IAM roles for service accounts
 
 ## Usage
 

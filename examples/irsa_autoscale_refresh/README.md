@@ -1,9 +1,10 @@
 # IRSA, Cluster Autoscaler, and Instance Refresh example
 
-This is EKS example uses:
-- [IAM Roles for Service Accounts (IRSA)](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
-- [Cluster Autoscaler](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md)
+Configuration in this directory creates an AWS EKS cluster with:
+- [IAM Roles for Service Accounts (IRSA)](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html) enabled
+- [Cluster Autoscaler](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md) provisioned via a Helm Chart manifest
 - [Instance Refresh](https://aws.amazon.com/blogs/compute/introducing-instance-refresh-for-ec2-auto-scaling/) feature for self managed node groups
+- [Node Termination Handler](https://github.com/aws/aws-node-termination-handler) provisioned via a Helm Chart manifest
 
 ## Usage
 

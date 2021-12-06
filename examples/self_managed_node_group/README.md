@@ -1,11 +1,12 @@
-# Managed groups example
+# Self Managed Node Groups Example
 
-This is EKS example using managed groups feature in two different ways:
+Configuration in this directory creates an AWS EKS cluster with various Self Managed Node Groups (AutoScaling Groups) demonstrating the various methods of configurating/customizing:
 
-- Using SPOT instances in node group
-- Using ON_DEMAND instance in node group
+- A default, "out of the box" self managed node group as supplied by the `self-managed-node-group` sub-module
+- A Bottlerocket self managed node group that demonstrates many of the configuration/customizations offered by the `self-manged-node-group` sub-module for the Bottlerocket OS
+- A self managed node group that demonstrates nearly all of the configurations/customizations offered by the `self-managed-node-group` sub-module
 
-See [the official documentation](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) for more details.
+See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) for further details.
 
 ## Usage
 

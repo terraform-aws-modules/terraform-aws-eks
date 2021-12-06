@@ -38,12 +38,10 @@ module "eks" {
     }
   }
 
-  cluster_encryption_config = [
-    {
-      provider_key_arn = aws_kms_key.eks.arn
-      resources        = ["secrets"]
-    }
-  ]
+  cluster_encryption_config = [{
+    provider_key_arn = aws_kms_key.eks.arn
+    resources        = ["secrets"]
+  }]
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets

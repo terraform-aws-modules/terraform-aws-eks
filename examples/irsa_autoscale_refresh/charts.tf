@@ -118,7 +118,7 @@ data "aws_iam_policy_document" "cluster_autoscaler" {
 ################################################################################
 # Node Termination Handler
 # Based on the official docs at
-# https://docs.aws.amazon.com/autoscaling/ec2/userguide/asg-instance-refresh.html
+# https://github.com/aws/aws-node-termination-handler
 ################################################################################
 
 resource "helm_release" "aws_node_termination_handler" {

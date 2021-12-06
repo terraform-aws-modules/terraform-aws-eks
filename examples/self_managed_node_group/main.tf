@@ -38,12 +38,10 @@ module "eks" {
     }
   }
 
-  cluster_encryption_config = [
-    {
-      provider_key_arn = aws_kms_key.eks.arn
-      resources        = ["secrets"]
-    }
-  ]
+  cluster_encryption_config = [{
+    provider_key_arn = aws_kms_key.eks.arn
+    resources        = ["secrets"]
+  }]
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
@@ -51,8 +49,7 @@ module "eks" {
   enable_irsa = true
 
   self_managed_node_group_defaults = {
-    disk_size      = 50
-    instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
+    disk_size = 50
   }
 
   self_managed_node_groups = {
@@ -114,7 +111,7 @@ module "eks" {
       capacity_type        = "SPOT"
       disk_size            = 256
       force_update_version = true
-      instance_types       = ["m6i.large", "m5.large", "m5n.large", "m5zn.large", "m3.large", "m4.large"]
+      instance_type        = "m6i.large"
       labels = {
         GithubRepo = "terraform-aws-eks"
         GithubOrg  = "terraform-aws-modules"

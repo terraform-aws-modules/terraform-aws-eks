@@ -1,11 +1,11 @@
 variable "tags" {
-  description = "A map of tags to add to all resources. Tags added to launch configuration or templates override these values for ASG Tags only"
+  description = "A map of tags to add to all resources"
   type        = map(string)
   default     = {}
 }
 
 variable "create" {
-  description = "Controls if EKS resources should be created (it affects almost all resources)"
+  description = "Controls if EKS resources should be created (affects nearly all resources)"
   type        = bool
   default     = true
 }
@@ -15,37 +15,25 @@ variable "create" {
 ################################################################################
 
 variable "cluster_name" {
-  description = "Name of the EKS cluster and default name (prefix) used throughout the resources created"
+  description = "Name of the EKS cluster"
   type        = string
   default     = ""
 }
 
-variable "iam_role_arn" {
-  description = "Existing IAM role ARN for the cluster. Required if `create_iam_role` is set to `false`"
-  type        = string
-  default     = null
-}
-
 variable "cluster_version" {
-  description = "Kubernetes minor version to use for the EKS cluster (for example 1.21)"
+  description = "Kubernetes `<major>.<minor>` version to use for the EKS cluster (i.e.: `1.21`)"
   type        = string
   default     = null
 }
 
 variable "cluster_enabled_log_types" {
-  description = "A list of the desired control plane logging to enable. For more information, see Amazon EKS Control Plane Logging documentation (https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html)"
+  description = "A list of the desired control plane logs to enable. For more information, see Amazon EKS Control Plane Logging documentation (https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html)"
   type        = list(string)
   default     = ["audit", "api", "authenticator"]
 }
 
-variable "cluster_security_group_id" {
-  description = "If provided, the EKS cluster will be attached to this security group. If not given, a security group will be created with necessary ingress/egress to work with the workers"
-  type        = string
-  default     = ""
-}
-
 variable "subnet_ids" {
-  description = "A list of subnet IDs to place the EKS cluster and workers within"
+  description = "A list of subnet IDs where the EKS cluster (ENIs) will be provisioned along with the nodes/node groups. Node groups can be deployed within a different set of subnet IDs from within the node group configuration"
   type        = list(string)
   default     = []
 }
@@ -57,7 +45,7 @@ variable "cluster_endpoint_private_access" {
 }
 
 variable "cluster_endpoint_public_access" {
-  description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled. When it's set to `false` ensure to have a proper private access with `cluster_endpoint_private_access = true`"
+  description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled"
   type        = bool
   default     = true
 }
@@ -69,7 +57,7 @@ variable "cluster_endpoint_public_access_cidrs" {
 }
 
 variable "cluster_service_ipv4_cidr" {
-  description = "service ipv4 cidr for the kubernetes cluster"
+  description = "The CIDR block to assign Kubernetes service IP addresses from. If you don't specify a block, Kubernetes assigns addresses from either the 10.100.0.0/16 or 172.20.0.0/16 CIDR blocks"
   type        = string
   default     = null
 }
@@ -122,9 +110,15 @@ variable "cloudwatch_log_group_kms_key_id" {
 ################################################################################
 
 variable "create_cluster_security_group" {
-  description = "Whether to create a security group for the cluster or use the existing `cluster_security_group_id`"
+  description = "Determines if a security group is created for the cluster or use the existing `cluster_security_group_id`"
   type        = bool
   default     = true
+}
+
+variable "cluster_security_group_id" {
+  description = "Existing security group ID to be attached to the cluster. Required if `create_cluster_security_group` = `false`"
+  type        = string
+  default     = ""
 }
 
 variable "vpc_id" {
@@ -168,7 +162,7 @@ variable "cluster_security_group_tags" {
 ################################################################################
 
 variable "create_node_security_group" {
-  description = "Whether to create a security group for the node groups or use the existing `node_security_group_id`"
+  description = "Determines whether to create a security group for the node groups or use the existing `node_security_group_id`"
   type        = bool
   default     = true
 }
@@ -214,7 +208,7 @@ variable "node_security_group_tags" {
 ################################################################################
 
 variable "enable_irsa" {
-  description = "Whether to create OpenID Connect Provider for EKS to enable IRSA"
+  description = "Determines whether to create an OpenID Connect Provider for EKS to enable IRSA"
   type        = bool
   default     = false
 }
@@ -233,6 +227,12 @@ variable "create_iam_role" {
   description = "Determines whether a cluster IAM role is created or to use an existing IAM role"
   type        = bool
   default     = true
+}
+
+variable "iam_role_arn" {
+  description = "Existing IAM role ARN for the cluster. Required if `create_iam_role` is set to `false`"
+  type        = string
+  default     = null
 }
 
 variable "iam_role_name" {
@@ -280,7 +280,7 @@ variable "cluster_addons" {
 ################################################################################
 
 variable "cluster_identity_providers" {
-  description = "Map of cluster identity provider configurations to enable for the cluster. Note - this is different from IRSA"
+  description = "Map of cluster identity provider configurations to enable for the cluster. Note - this is different/separate from IRSA"
   type        = any
   default     = {}
 }

@@ -1,9 +1,6 @@
 # AWS EKS Cluster with Fargate profiles
 
-Configuration in this directory creates EKS cluster with Fargate profiles in two different ways:
-
-- Using a root module, where EKS Cluster and Fargate profiles should be created at once. This is the default behaviour for most users.
-- Using `modules/fargate` submodule where Fargate profiles should be attached to the existing EKS Cluster.
+Configuration in this directory creates an AWS EKS cluster utilizing Fargate profiles.
 
 ## Usage
 

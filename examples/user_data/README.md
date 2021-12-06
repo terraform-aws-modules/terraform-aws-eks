@@ -1,5 +1,7 @@
 # Internal User Data Module
 
+Configuration in this directory render various user data outputs used for testing and validating the internal `_user-data` sub-module.
+
 ## Usage
 
 To run this example you need to execute:

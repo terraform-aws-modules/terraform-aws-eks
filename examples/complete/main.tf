@@ -36,12 +36,10 @@ module "eks" {
     }
   }
 
-  cluster_encryption_config = [
-    {
-      provider_key_arn = aws_kms_key.eks.arn
-      resources        = ["secrets"]
-    }
-  ]
+  cluster_encryption_config = [{
+    provider_key_arn = aws_kms_key.eks.arn
+    resources        = ["secrets"]
+  }]
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
@@ -59,8 +57,7 @@ module "eks" {
     one = {
       name = "spot-1"
 
-      public_ip = true
-
+      public_ip    = true
       max_size     = 5
       desired_size = 2
 
@@ -104,6 +101,7 @@ module "eks" {
   eks_managed_node_group_defaults = {
     ami_type               = "AL2_x86_64"
     disk_size              = 50
+    instance_types         = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
     vpc_security_group_ids = [aws_security_group.additional.id]
     create_launch_template = true
   }

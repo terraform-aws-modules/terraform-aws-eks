@@ -17,13 +17,13 @@ variable "enable_bootstrap_user_data" {
 }
 
 variable "is_eks_managed_node_group" {
-  description = "Determines whether the user data is used on nodes in an EKS managed node group"
+  description = "Determines whether the user data is used on nodes in an EKS managed node group. Used to determine if user data will be appended or not"
   type        = bool
   default     = true
 }
 
 variable "cluster_name" {
-  description = "Name of the EKS cluster and default name (prefix) used throughout the resources created"
+  description = "Name of the EKS cluster"
   type        = string
   default     = ""
 }
@@ -41,19 +41,19 @@ variable "cluster_auth_base64" {
 }
 
 variable "pre_bootstrap_user_data" {
-  description = "User data that is injected into the user data script ahead of the EKS bootstrap script"
+  description = "User data that is injected into the user data script ahead of the EKS bootstrap script. Not used when `platform` = `bottlerocket`"
   type        = string
   default     = ""
 }
 
 variable "post_bootstrap_user_data" {
-  description = "User data that is appended to the user data script after of the EKS bootstrap script. Only valid when using a custom EKS optimized AMI derivative"
+  description = "User data that is appended to the user data script after of the EKS bootstrap script. Not used when `platform` = `bottlerocket`"
   type        = string
   default     = ""
 }
 
 variable "bootstrap_extra_args" {
-  description = "Additional arguments passed to the bootstrap script"
+  description = "Additional arguments passed to the bootstrap script. When `platform` = `bottlerocket`; these are additional [settings](https://github.com/bottlerocket-os/bottlerocket#settings) that are provided to the Bottlerocket user data"
   type        = string
   default     = ""
 }
