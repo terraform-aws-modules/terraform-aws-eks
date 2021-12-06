@@ -197,9 +197,14 @@ module "self_managed_node_group" {
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
+  vpc_security_group_ids = [
+    module.eks.cluster_primary_security_group_id,
+    module.eks.cluster_security_group_id,
+  ]
 
   create_launch_template = true
   launch_template_name   = "separate-self-mng"
+  update_default_version = true
   instance_type          = "m5.large"
 
   tags = merge(local.tags, { Separate = "self-managed-node-group" })
@@ -285,31 +290,31 @@ locals {
   })
 
   # we have to combine the configmap created by the eks module with the externally created node group/profile sub-modules
-  # aws_auth_configmap = <<-EOT
-  # ${chomp(module.eks.aws_auth_configmap_yaml)}
-  #     - rolearn: ${module.eks_managed_node_group.iam_role_arn}
-  #         username: system:node:{{EC2PrivateDNSName}}
-  #         groups:
-  #           - system:bootstrappers
-  #           - system:nodes
-  #     - rolearn: ${module.self_managed_node_group.iam_role_arn}
-  #       username: system:node:{{EC2PrivateDNSName}}
-  #       groups:
-  #         - system:bootstrappers
-  #         - system:nodes
-  #     - rolearn: ${module.fargate_profile.fargate_profile_arn}
-  #       username: system:node:{{SessionName}}
-  #       groups:
-  #         - system:bootstrappers
-  #         - system:nodes
-  #         - system:node-proxier
-  # EOT
+  aws_auth_configmap_yaml = <<-EOT
+  ${chomp(module.eks.aws_auth_configmap_yaml)}
+      - rolearn: ${module.eks_managed_node_group.iam_role_arn}
+        username: system:node:{{EC2PrivateDNSName}}
+        groups:
+          - system:bootstrappers
+          - system:nodes
+      - rolearn: ${module.self_managed_node_group.iam_role_arn}
+        username: system:node:{{EC2PrivateDNSName}}
+        groups:
+          - system:bootstrappers
+          - system:nodes
+      - rolearn: ${module.fargate_profile.fargate_profile_arn}
+        username: system:node:{{SessionName}}
+        groups:
+          - system:bootstrappers
+          - system:nodes
+          - system:node-proxier
+  EOT
 }
 
 resource "null_resource" "patch" {
   triggers = {
     kubeconfig = base64encode(local.kubeconfig)
-    cmd_patch  = "kubectl patch configmap/aws-auth --patch \"${module.eks.aws_auth_configmap_yaml}\" -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)"
+    cmd_patch  = "kubectl patch configmap/aws-auth --patch \"${local.aws_auth_configmap_yaml}\" -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)"
   }
 
   provisioner "local-exec" {
