@@ -12,40 +12,6 @@ $ terraform plan
 $ terraform apply
 ```
 
-# TODO - Update Notes vvv
-
-Note that this example may create resources which cost money. Run `terraform destroy` when you don't need these resources.
-
-# User Data Configurations
-
-- https://github.com/aws/containers-roadmap/issues/596#issuecomment-675097667
-> An important note is that user data must in MIME multi-part archive format,
-> as by default, EKS will merge the bootstrapping command required for nodes to join the
-> cluster with your user data. If you use a custom AMI in your launch template,
-> this merging will (__NOT__) happen and you are responsible for nodes joining the cluster.
-> See [docs for more details](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-user-data)
-
-- https://aws.amazon.com/blogs/containers/introducing-launch-template-and-custom-ami-support-in-amazon-eks-managed-node-groups/
-
-a. Use EKS provided AMI which merges its user data with the user data users provide in the launch template
-  i. No additional user data
-  ii. Add additional user data
-b. Use custom AMI which MUST bring its own user data that bootstraps the node
-  i. Bring your own user data (whole shebang)
-  ii. Use "default" template provided by module here and (optionally) any additional user data
-
-TODO - need to try these out in order and verify and document what happens with user data.
-
-
-## From LT
-This is based on the LT that EKS would create if no custom one is specified (aws ec2 describe-launch-template-versions --launch-template-id xxx) there are several more options one could set but you probably dont need to modify them you can take the default and add your custom AMI and/or custom tags
-#
-Trivia: AWS transparently creates a copy of your LaunchTemplate and actually uses that copy then for the node group. If you DONT use a custom AMI,
-
-If you use a custom AMI, you need to supply via user-data, the bootstrap script as EKS DOESNT merge its managed user-data then you can add more than the minimum code you see in the template, e.g. install SSM agent, see https://github.com/aws/containers-roadmap/issues/593#issuecomment-577181345
-  #
-(optionally you can use https://registry.terraform.io/providers/hashicorp/cloudinit/latest/docs/data-sources/cloudinit_config to render the script, example: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/997#issuecomment-705286151) then the default user-data for bootstrapping a cluster is merged in the copy.
-
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 

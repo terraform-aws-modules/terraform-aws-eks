@@ -32,6 +32,12 @@ variable "cluster_enabled_log_types" {
   default     = ["audit", "api", "authenticator"]
 }
 
+variable "cluster_additional_security_group_ids" {
+  description = "List of additional, externally created security group IDs to attach to the cluster control plane"
+  type        = list(string)
+  default     = []
+}
+
 variable "subnet_ids" {
   description = "A list of subnet IDs where the EKS cluster (ENIs) will be provisioned along with the nodes/node groups. Node groups can be deployed within a different set of subnet IDs from within the node group configuration"
   type        = list(string)

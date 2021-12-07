@@ -48,9 +48,9 @@ module "eks" {
 
   # Self Managed Node Group(s)
   self_managed_node_group_defaults = {
-    launch_template_default_version = true
-    vpc_security_group_ids          = [aws_security_group.additional.id]
-    iam_role_additional_policies    = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    update_launch_template_default_version = true
+    vpc_security_group_ids                 = [aws_security_group.additional.id]
+    iam_role_additional_policies           = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
   }
 
   self_managed_node_groups = {
@@ -120,6 +120,7 @@ module "eks" {
         GithubRepo  = "terraform-aws-eks"
         GithubOrg   = "terraform-aws-modules"
       }
+
       taints = {
         dedicated = {
           key    = "dedicated"
@@ -127,10 +128,11 @@ module "eks" {
           effect = "NO_SCHEDULE"
         }
       }
-      # TODO - this is throwing an error
-      # update_config = {
-      #   max_unavailable_percentage = 50 # or set `max_unavailable`
-      # }
+
+      update_config = {
+        max_unavailable_percentage = 50 # or set `max_unavailable`
+      }
+
       tags = {
         ExtraTag = "example"
       }
@@ -200,10 +202,10 @@ module "self_managed_node_group" {
     module.eks.cluster_security_group_id,
   ]
 
-  create_launch_template          = true
-  launch_template_name            = "separate-self-mng"
-  launch_template_default_version = true
-  instance_type                   = "m5.large"
+  create_launch_template                 = true
+  launch_template_name                   = "separate-self-mng"
+  update_launch_template_default_version = true
+  instance_type                          = "m5.large"
 
   tags = merge(local.tags, { Separate = "self-managed-node-group" })
 }
@@ -266,23 +268,23 @@ locals {
     kind            = "Config"
     current-context = "terraform"
     clusters = [{
-      name = "${module.eks.cluster_id}"
+      name = module.eks.cluster_id
       cluster = {
-        certificate-authority-data = "${module.eks.cluster_certificate_authority_data}"
-        server                     = "${module.eks.cluster_endpoint}"
+        certificate-authority-data = module.eks.cluster_certificate_authority_data
+        server                     = module.eks.cluster_endpoint
       }
     }]
     contexts = [{
       name = "terraform"
       context = {
-        cluster = "${module.eks.cluster_id}"
+        cluster = module.eks.cluster_id
         user    = "terraform"
       }
     }]
     users = [{
       name = "terraform"
       user = {
-        token = "${data.aws_eks_cluster_auth.this.token}"
+        token = data.aws_eks_cluster_auth.this.token
       }
     }]
   })

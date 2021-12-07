@@ -168,6 +168,55 @@ module "eks" {
 }
 ```
 
+## Module Design Considerations
+
+### General Notes
+
+While the module is designed to be flexible and support as many use cases and configurations as possible, there is a limit to what first class support can be provided without over-burdening the complexity of the module. Below are a list of general notes on the design intent captured by this module which hopefully explains some of the decisions that are, or will be made, in terms of what is added/supported natively by the module:
+
+- Despite the addition of Windows Subsystem for Linux (WSL for short), containerization technology is very much a suite of Linux constrcuts and therefore Linux is the primary OS supported by this module. In addition, due to the first class support provided by AWS, Bottlerocket OS and Fargate Profiles are also very much natively supported by this module. This module does not make any attempt to NOT support Windows, as in preventing the usage of Windows based nodes, however it is up to users to put in additional effort in order to operate Winodws based nodes when using the module. User can refere to the [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html) for further details. What does this mean:
+  - AWS EKS Managed Node Groups default to `linux` as the `platform`, but `bottlerocket` is also supported by AWS (`windows` is not supported by AWS EKS Managed Node groups)
+  - AWS Self Managed Node Groups also default to `linux` and the default AMI used is the latest AMI for the selected Kubernetes version. If you wish to use a different OS or AMI then you will need to opt in to the necessary configurations to ensure the correct AMI is used in conjunction with the necessary user data to ensure the nodes are launched and joined to your cluster successfully.
+- AWS EKS Managed Node groups are current the preffered route over Self Managed Node Groups for compute nodes. Both operate very similarly - both are backed by autoscaling groups and launch templates deployed and visible within your account. However, AWS EKS Managed Node groups provide a better user experience and offer a more "managed service" experience and therefore has precedence over Self Managed Node Groups. That said, there are currently inherent limitations as AWS continues to rollout additional feature support similar to the level of customization you can achieve with Self Managed Node Groups. When reqeusting added feature support for AWS EKS Managed Node groups, please ensure you have verified that the feature(s) are 1) supported by AWS and 2) supported by the Terraform AWS provider before submitting a feature request.
+- Due to the plethora of tooling and different manners of configuring your cluster, cluster configuration is intentionally left out of the module in order to simplify the module for a broader user base. Previous module versions provided support for managing the aws-auth configmap via the Kubernetes Terraform provider using the now deprecated aws-iam-authenticator; these are no longer included in the module. This module strictly focuses on the infrastructure resources to provision an EKS cluster as well as any supporting AWS resources - how the internals of the cluster are configured and managed is up to users and is outside the scope of this module. There is an output attribute, `aws_auth_configmap_yaml`, that has been provided that can be useful to help bridge this transition. Please see the various examples provided where this attribute is used to ensure that self managed node groups or external node groups have their IAM roles appropriately mapped to the aws-auth configmap. How users elect to manage the aws-auth configmap is left up to their choosing.
+
+### User Data & Bootstrapping
+
+There are a multitude of different possible configurations for how module users require their user data to be configured. In order to better support the various combinations from simple, out of the box support provided by the module to full customization of the user data using a template provided by users - the user data has been abstracted out to its own module. Users can see the various methods of using and providing user data through the [user data examples](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/user_data) as well more detailed information on the design and possible configurations via the [user data module itself](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/_user_data)
+
+In general (tl;dr):
+- AWS EKS Managed Node Groups
+  - `linux` platform (default) -> user data is pre-pended to the AWS provided bootstrap user data (bash/shell script) when using the AWS EKS provided AMI, otherwise users need to opt in via `enable_bootstrap_user_data` and use the module provided user data template or provide their own user data template to boostrap nodes to join the cluster
+  - `bottlerocket` platform -> user data is merged with the AWS provided bootstrap user data (TOML file) when using the AWS EKS provided AMI, otherwise users need to opt in via `enable_bootstrap_user_data` and use the module provided user data template or provide their own user data template to boostrap nodes to join the cluster
+- Self Managed Node Groups
+  - `linux` platform (default) -> the user data template (bash/shell script) provided by the module is used as the default; users are able to provide their own user data template
+  - `bottlerocket` platform -> the user data template (TOML file) provided by the module is used as the default; users are able to provide their own user data template
+  - `windows` platform -> the user data template (powershell/PS1 script) provided by the module is used as the default; users are able to provide their own user data template
+
+Module provided default templates can be found under the [templates directory](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/templates)
+
+### Security Groups
+
+- Cluster Security Group
+  - This module by default creates a cluster security group ("additional" security group when viewed from the console) in addition to the default security group created by the AWS EKS service. This "additional" security group allows users to customize inbound and outbound rules via the module as they see fit
+    - The default inbound/outbound rules provided by the module are derived from the [AWS minimum recommendations](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html) in addition to NTP and HTTPS public internet egress rules (without, these show up in VPC flow logs as rejects - they are used for clock sync and downloading necessary packages/updates)
+    - The minimum inbound/outbound rules are provided for cluster and node creation to succeed without errors, but users will most likely need to add the necessary port and protocol for node-to-node communication (this is user specific based on how nodes are configured to communicate across the cluster)
+    - Users have the ability to opt out of the security group creation and instead provide their own externally created security group if so desired
+    - The security group that is created is designed to handle the bare minimum communication necessary between the control plane and the nodes, as well as any external egress to allow the cluster to successfully launch without error
+  - Users also have the option to supply additional, externally created security groups to the cluster as well via the `cluster_additional_security_group_ids` variable
+
+- Node Group Security Group(s)
+  - Each node group (EKS Managed Node Group and Self Managed Node Group) by default creates its own security group. By default, this security group does not contain any additional security group rules. It is merely an "empty container" that offers users the ability to opt into any addition inbound our outbound rules as necessary
+  - Users also have the option to supply their own, and/or additonal, externally created security group(s) to the node group as well via the `vpc_security_group_ids` variable
+
+The security groups created by this module are depicted in the image shown below along with their default inbound/outbound rules:
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/terraform-aws-modules/terraform-aws-eks/master/.github/images/security_groups.svg" alt="Security Groups" width="100%">
+  <!-- TODO - Delete this line below before merging -->
+  <img src=".github/images/security_groups.svg" alt="Security Groups" width="100%">
+</p>
+
 ## Notes
 
 - Setting `instance_refresh_enabled = true` will recreate your worker nodes without draining them first. It is recommended to install [aws-node-termination-handler](https://github.com/aws/aws-node-termination-handler) for proper node draining. See the [instance_refresh](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/instance_refresh) example provided.
@@ -325,6 +374,7 @@ Full contributing [guidelines are covered here](https://github.com/terraform-aws
 |------|-------------|------|---------|:--------:|
 | <a name="input_cloudwatch_log_group_kms_key_id"></a> [cloudwatch\_log\_group\_kms\_key\_id](#input\_cloudwatch\_log\_group\_kms\_key\_id) | If a KMS Key ARN is set, this key will be used to encrypt the corresponding log group. Please be sure that the KMS Key has an appropriate key policy (https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html) | `string` | `null` | no |
 | <a name="input_cloudwatch_log_group_retention_in_days"></a> [cloudwatch\_log\_group\_retention\_in\_days](#input\_cloudwatch\_log\_group\_retention\_in\_days) | Number of days to retain log events. Default retention - 90 days | `number` | `90` | no |
+| <a name="input_cluster_additional_security_group_ids"></a> [cluster\_additional\_security\_group\_ids](#input\_cluster\_additional\_security\_group\_ids) | List of additional, externally created security group IDs to attach to the cluster control plane | `list(string)` | `[]` | no |
 | <a name="input_cluster_additional_security_group_rules"></a> [cluster\_additional\_security\_group\_rules](#input\_cluster\_additional\_security\_group\_rules) | List of additional security group rules to add to the cluster security group created | `map(any)` | `{}` | no |
 | <a name="input_cluster_addons"></a> [cluster\_addons](#input\_cluster\_addons) | Map of cluster addon configurations to enable for the cluster. Addon name can be the map keys or set with `name` | `any` | `{}` | no |
 | <a name="input_cluster_enabled_log_types"></a> [cluster\_enabled\_log\_types](#input\_cluster\_enabled\_log\_types) | A list of the desired control plane logs to enable. For more information, see Amazon EKS Control Plane Logging documentation (https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html) | `list(string)` | <pre>[<br>  "audit",<br>  "api",<br>  "authenticator"<br>]</pre> | no |

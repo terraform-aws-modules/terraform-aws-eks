@@ -112,7 +112,10 @@ resource "aws_security_group" "node" {
 
   tags = merge(
     var.tags,
-    { "Name" = local.node_sg_name },
+    {
+      "Name"                                      = local.node_sg_name
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    },
     var.node_security_group_tags
   )
 }
@@ -228,7 +231,7 @@ module "eks_managed_node_group" {
   key_name                               = try(each.value.key_name, var.eks_managed_node_group_defaults.key_name, null)
   vpc_security_group_ids                 = compact(concat([try(aws_security_group.node[0].id, "")], try(each.value.vpc_security_group_ids, var.eks_managed_node_group_defaults.vpc_security_group_ids, [])))
   launch_template_default_version        = try(each.value.launch_template_default_version, var.eks_managed_node_group_defaults.launch_template_default_version, null)
-  update_launch_template_default_version = try(each.value.update_launch_template_default_version, var.eks_managed_node_group_defaults.update_launch_template_default_version, null)
+  update_launch_template_default_version = try(each.value.update_launch_template_default_version, var.eks_managed_node_group_defaults.update_launch_template_default_version, true)
   disable_api_termination                = try(each.value.disable_api_termination, var.eks_managed_node_group_defaults.disable_api_termination, null)
   kernel_id                              = try(each.value.kernel_id, var.eks_managed_node_group_defaults.kernel_id, null)
   ram_disk_id                            = try(each.value.ram_disk_id, var.eks_managed_node_group_defaults.ram_disk_id, null)
@@ -346,7 +349,7 @@ module "self_managed_node_group" {
   vpc_security_group_ids                 = compact(concat([try(aws_security_group.node[0].id, "")], try(each.value.vpc_security_group_ids, var.self_managed_node_group_defaults.vpc_security_group_ids, [])))
   cluster_security_group_id              = local.cluster_security_group_id
   launch_template_default_version        = try(each.value.launch_template_default_version, var.self_managed_node_group_defaults.launch_template_default_version, null)
-  update_launch_template_default_version = try(each.value.update_launch_template_default_version, var.self_managed_node_group_defaults.update_launch_template_default_version, null)
+  update_launch_template_default_version = try(each.value.update_launch_template_default_version, var.self_managed_node_group_defaults.update_launch_template_default_version, true)
   disable_api_termination                = try(each.value.disable_api_termination, var.self_managed_node_group_defaults.disable_api_termination, null)
   instance_initiated_shutdown_behavior   = try(each.value.instance_initiated_shutdown_behavior, var.self_managed_node_group_defaults.instance_initiated_shutdown_behavior, null)
   kernel_id                              = try(each.value.kernel_id, var.self_managed_node_group_defaults.kernel_id, null)

@@ -117,10 +117,9 @@ module "eks" {
         GithubOrg  = "terraform-aws-modules"
       }
 
-      # TODO - this is throwing an error
-      # update_config = {
-      #   max_unavailable_percentage = 50 # or set `max_unavailable`
-      # }
+      update_config = {
+        max_unavailable_percentage = 50 # or set `max_unavailable`
+      }
 
       create_launch_template          = true
       launch_template_name            = "self-managed-ex"
@@ -222,23 +221,23 @@ locals {
     kind            = "Config"
     current-context = "terraform"
     clusters = [{
-      name = "${module.eks.cluster_id}"
+      name = module.eks.cluster_id
       cluster = {
-        certificate-authority-data = "${module.eks.cluster_certificate_authority_data}"
-        server                     = "${module.eks.cluster_endpoint}"
+        certificate-authority-data = module.eks.cluster_certificate_authority_data
+        server                     = module.eks.cluster_endpoint
       }
     }]
     contexts = [{
       name = "terraform"
       context = {
-        cluster = "${module.eks.cluster_id}"
+        cluster = module.eks.cluster_id
         user    = "terraform"
       }
     }]
     users = [{
       name = "terraform"
       user = {
-        token = "${data.aws_eks_cluster_auth.this.token}"
+        token = data.aws_eks_cluster_auth.this.token
       }
     }]
   })

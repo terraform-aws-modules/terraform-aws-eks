@@ -43,10 +43,10 @@ module "eks" {
       max_size     = 5
       desired_size = 1
 
-      instance_types                  = ["m5.large", "m5n.large", "m5zn.large", "m6i.large", ]
-      create_launch_template          = true
-      launch_template_name            = "refresh"
-      launch_template_default_version = true
+      instance_type                          = "m5.large"
+      create_launch_template                 = true
+      launch_template_name                   = "refresh"
+      update_launch_template_default_version = true
 
       instance_refresh = {
         strategy = "Rolling"
@@ -86,23 +86,23 @@ locals {
     kind            = "Config"
     current-context = "terraform"
     clusters = [{
-      name = "${module.eks.cluster_id}"
+      name = module.eks.cluster_id
       cluster = {
-        certificate-authority-data = "${module.eks.cluster_certificate_authority_data}"
-        server                     = "${module.eks.cluster_endpoint}"
+        certificate-authority-data = module.eks.cluster_certificate_authority_data
+        server                     = module.eks.cluster_endpoint
       }
     }]
     contexts = [{
       name = "terraform"
       context = {
-        cluster = "${module.eks.cluster_id}"
+        cluster = module.eks.cluster_id
         user    = "terraform"
       }
     }]
     users = [{
       name = "terraform"
       user = {
-        token = "${data.aws_eks_cluster_auth.this.token}"
+        token = data.aws_eks_cluster_auth.this.token
       }
     }]
   })
@@ -159,7 +159,5 @@ module "vpc" {
     "kubernetes.io/role/internal-elb"     = 1
   }
 
-  tags = merge(local.tags,
-    { "kubernetes.io/cluster/${local.name}" = "shared" }
-  )
+  tags = local.tags
 }

@@ -52,7 +52,7 @@ resource "helm_release" "cluster_autoscaler" {
   }
 
   depends_on = [
-    module.eks
+    module.eks.cluster_id
   ]
 }
 
@@ -166,7 +166,7 @@ resource "helm_release" "aws_node_termination_handler" {
   }
 
   depends_on = [
-    module.eks
+    module.eks.cluster_id
   ]
 }
 

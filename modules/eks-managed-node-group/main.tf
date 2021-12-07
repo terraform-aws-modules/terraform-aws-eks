@@ -310,7 +310,7 @@ resource "aws_eks_node_group" "this" {
   }
 
   dynamic "update_config" {
-    for_each = var.update_config
+    for_each = length(var.update_config) > 0 ? [var.update_config] : []
     content {
       max_unavailable_percentage = try(update_config.value.max_unavailable_percentage, null)
       max_unavailable            = try(update_config.value.max_unavailable, null)
