@@ -4,12 +4,43 @@ Configuration in this directory creates an EKS Managed Node Group along with an 
 
 ## Usage
 
-To run this example you need to execute:
+```hcl
+module "eks_managed_node_group" {
+  source = "terraform-aws-modules/eks/aws//modules/eks-managed-node-group"
 
-```bash
-$ terraform init
-$ terraform plan
-$ terraform apply
+  name            = "separate-eks-mng"
+  cluster_name    = "my-cluster"
+  cluster_version = "1.21"
+
+  vpc_id     = "vpc-1234556abcdef"
+  subnet_ids = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
+
+  min_size     = 1
+  max_size     = 10
+  desired_size = 1
+
+  instance_types = ["t3.large"]
+  capacity_type  = "SPOT"
+
+  labels = {
+    Environment = "test"
+    GithubRepo  = "terraform-aws-eks"
+    GithubOrg   = "terraform-aws-modules"
+  }
+
+  taints = {
+    dedicated = {
+      key    = "dedicated"
+      value  = "gpuGroup"
+      effect = "NO_SCHEDULE"
+    }
+  }
+
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
+}
 ```
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

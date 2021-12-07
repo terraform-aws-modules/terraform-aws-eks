@@ -2,6 +2,8 @@
 
 Configuration in this directory renderes the appropriate user data for the given inputs. There are a number of different ways that user data can be utilized and this internal module is designed to aid in making that flexibility possible as well as providing a means for out of bands testing and validation.
 
+See the [`examples/user_data/` directory](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/user_data) for various examples of using the module.
+
 ## Combinations
 
 At a high level, AWS EKS users have two methods for launching nodes within this EKS module (ignoring Fargate profiles):
@@ -73,16 +75,6 @@ The rough flow of logic that is encapsulated within the `_user_data` internal mo
   <!-- TODO - Delete this line below before merging -->
   <img src="../../.github/images/user_data.svg" alt="User Data" width="60%">
 </p>
-
-## Usage
-
-To run this example you need to execute:
-
-```bash
-$ terraform init
-$ terraform plan
-$ terraform apply
-````
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements

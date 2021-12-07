@@ -4,21 +4,24 @@ Configuration in this directory creates a Fargate EKS Profile
 
 ## Usage
 
-To run this example you need to execute:
+```hcl
+module "fargate_profile" {
+  source = "terraform-aws-modules/eks/aws//modules/fargate-profile"
 
-```bash
-$ terraform init
-$ terraform plan
-$ terraform apply
+  name                = "separate-fargate-profile"
+  cluster_name        = "my-cluster"
+
+  subnet_ids = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
+  selectors = [{
+    namespace = "kube-system"
+  }]
+
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
+}
 ```
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| name | Fargate profile name | `string` | Auto generated in the following format `[cluster_name]-fargate-[fargate_profile_map_key]`| no |
-| selectors | A list of Kubernetes selectors. See examples/fargate/main.tf for example format. | <pre>list(map({<br>namespace = string<br>labels = map(string)<br>}))</pre>| `[]` | no |
-| subnets | List of subnet IDs. Will replace the root module subnets. | `list(string)` | `var.subnets` | no |
-| timeouts | A map of timeouts for create/delete operations. | `map(string)` | Provider default behavior | no |
-| tags | Key-value map of resource tags. Will be merged with root module tags. | `map(string)` | `var.tags` | no |
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
