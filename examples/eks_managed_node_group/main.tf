@@ -124,7 +124,8 @@ module "eks" {
 
       # This will ensure the boostrap user data is used to join the node
       # By default, EKS managed node groups will not append bootstrap script;
-      # this adds it back in if its an EKS optmized AMI derivative
+      # this adds it back in using the default template provided by the module
+      # Note: this assumes the AMI provided is an EKS optimized AMI derivative
       enable_bootstrap_user_data = true
     }
 
