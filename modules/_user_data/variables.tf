@@ -1,5 +1,5 @@
 variable "create" {
-  description = "Determines whether to create EKS managed node group or not"
+  description = "Determines whether to create user-data or not"
   type        = bool
   default     = true
 }
