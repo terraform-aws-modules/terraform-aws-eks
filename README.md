@@ -179,124 +179,126 @@ module "eks" {
 1. By default, the `eks-managed-node-group` sub-module will use the default configurations provided by AWS EKS Managed Node Groups; EKS MNG will provide its own launch template and utilize the latest AWS EKS Optimized AMI (Linux) for the given Kubernetes version:
 
 ```hcl
-  cluster_version = "1.21"
-
-  default = {}
+  eks_managed_node_groups = {
+    default = {}
+  }
 ```
 
 2. AWS EKS Managed Node Group also offers native, default support for Bottlerocket OS by simply specifying the AMI type:
 
 ```hcl
-  cluster_version = "1.21"
-
-  bottlerocket_default = {
-    ami_type = "BOTTLEROCKET_x86_64"
-    platform = "bottlerocket"
+  eks_managed_node_groups = {
+    bottlerocket_default = {
+      ami_type = "BOTTLEROCKET_x86_64"
+      platform = "bottlerocket"
+    }
   }
 ```
 
 3. AWS EKS Managed Node Groups allow you to extend configurations by providing your own launch template and user data that is merged with what the service provides. For example, to provide additional user data before the nodes are bootstrapped as well as supply additional arguments to the bootstrap script:
 
 ```hcl
-  cluster_version = "1.21"
+  eks_managed_node_groups = {
+    extend_config = {
+      create_launch_template = true
 
-  extend_config = {
-    create_launch_template = true
+      # This is supplied to the AWS EKS Optimized AMI
+      # bootstrap script https://github.com/awslabs/amazon-eks-ami/blob/master/files/bootstrap.sh
+      bootstrap_extra_args = "--container-runtime containerd --kubelet-extra-args '--max-pods=20'"
 
-    # This is supplied to the AWS EKS Optimized AMI bootstrap script https://github.com/awslabs/amazon-eks-ami/blob/master/files/bootstrap.sh
-    bootstrap_extra_args = "--container-runtime containerd --kubelet-extra-args '--max-pods=20'"
-
-    # This user data will be injected prior to the user data provided by the AWS EKS Managed Node Group service (contains the actually bootstrap configuration)
-    pre_bootstrap_user_data = <<-EOT
-      export CONTAINER_RUNTIME="containerd"
-      export USE_MAX_PODS=false
-    EOT
+      # This user data will be injected prior to the user data provided by the
+      # AWS EKS Managed Node Group service (contains the actually bootstrap configuration)
+      pre_bootstrap_user_data = <<-EOT
+        export CONTAINER_RUNTIME="containerd"
+        export USE_MAX_PODS=false
+      EOT
+    }
   }
 ```
 
 4. The same configurations extension is offered when utilizing Bottlerocket OS AMIs, but the user data is slightly different. Bottlerocket OS uses a TOML user data file and you can provide additional configuration settings via the `bootstrap_extra_args` variable which gets merged into what is provided by the AWS EKS Managed Node Service:
 
 ```hcl
-  cluster_version = "1.21"
+  eks_managed_node_groups = {
+    bottlerocket_extend_config = {
+      create_launch_template = true
 
-  bottlerocket_extend_config = {
-    create_launch_template = true
+      ami_type = "BOTTLEROCKET_x86_64"
+      platform = "bottlerocket"
 
-    ami_type = "BOTTLEROCKET_x86_64"
-    platform = "bottlerocket"
+      create_launch_template = true
 
-    create_launch_template = true
-
-    # this will get added to what AWS provides
-    bootstrap_extra_args = <<-EOT
-    # extra args added
-    [settings.kernel]
-    lockdown = "integrity"
-    EOT
+      # this will get added to what AWS provides
+      bootstrap_extra_args = <<-EOT
+      # extra args added
+      [settings.kernel]
+      lockdown = "integrity"
+      EOT
+    }
   }
 ```
 
 5. Users can also utilize a custom AMI, but doing so means that AWS EKS Managed Node Group will NOT inject the necessary bootstrap script and configurations into the user data supplied to the launch template. When using a custom AMI, users must also opt in to bootstrapping the nodes  via user data and either use the module default user data template or provide your own user data template file:
 
 ```hcl
-  cluster_version = "1.21"
+  eks_managed_node_groups = {
+    custom_ami = {
+      create_launch_template = true
 
-  custom_ami = {
-    create_launch_template = true
+      ami_id = "ami-0caf35bc73450c396"
 
-    ami_id = "ami-0caf35bc73450c396"
+      # By default, EKS managed node groups will not append bootstrap script;
+      # this adds it back in using the default template provided by the module
+      # Note: this assumes the AMI provided is an EKS optimized AMI derivative
+      enable_bootstrap_user_data = true
 
-    # By default, EKS managed node groups will not append bootstrap script;
-    # this adds it back in using the default template provided by the module
-    # Note: this assumes the AMI provided is an EKS optimized AMI derivative
-    enable_bootstrap_user_data = true
+      bootstrap_extra_args = "--container-runtime containerd --kubelet-extra-args '--max-pods=20'"
 
-    bootstrap_extra_args       = "--container-runtime containerd --kubelet-extra-args '--max-pods=20'"
+      pre_bootstrap_user_data = <<-EOT
+        export CONTAINER_RUNTIME="containerd"
+        export USE_MAX_PODS=false
+      EOT
 
-    pre_bootstrap_user_data = <<-EOT
-      export CONTAINER_RUNTIME="containerd"
-      export USE_MAX_PODS=false
-    EOT
-
-    # Because we have full control over the user data supplied, we can also run additional
-    # scripts/configuration changes after the bootstrap script has been run
-    post_bootstrap_user_data = <<-EOT
-      echo "you are free little kubelet!"
-    EOT
+      # Because we have full control over the user data supplied, we can also run additional
+      # scripts/configuration changes after the bootstrap script has been run
+      post_bootstrap_user_data = <<-EOT
+        echo "you are free little kubelet!"
+      EOT
+    }
   }
 ```
 
 6. Similarly, for Bottlerocket there is similar support:
 
 ```hcl
-  cluster_version = "1.21"
+  eks_managed_node_groups = {
+    bottlerocket_custom_ami = {
+      ami_id   = "ami-0ff61e0bcfc81dc94"
+      platform = "bottlerocket"
 
-  bottlerocket_custom_ami = {
-    ami_id   = "ami-0ff61e0bcfc81dc94"
-    platform = "bottlerocket"
+      create_launch_template = true
 
-    create_launch_template = true
+      # use module user data template to bootstrap
+      enable_bootstrap_user_data = true
+      # this will get added to the template
+      bootstrap_extra_args = <<-EOT
+      # extra args added
+      [settings.kernel]
+      lockdown = "integrity"
 
-    # use module user data template to boostrap
-    enable_bootstrap_user_data = true
-    # this will get added to the template
-    bootstrap_extra_args = <<-EOT
-    # extra args added
-    [settings.kernel]
-    lockdown = "integrity"
+      [settings.kubernetes.node-labels]
+      "label1" = "foo"
+      "label2" = "bar"
 
-    [settings.kubernetes.node-labels]
-    "label1" = "foo"
-    "label2" = "bar"
-
-    [settings.kubernetes.node-taints]
-    "dedicated" = "experimental:PreferNoSchedule"
-    "special" = "true:NoSchedule"
-    EOT
+      [settings.kubernetes.node-taints]
+      "dedicated" = "experimental:PreferNoSchedule"
+      "special" = "true:NoSchedule"
+      EOT
+    }
   }
 ```
 
-See the [`examples/eks_managed_node_group/ example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_managed_node_group) for a working example of these configurations.
+See the [`examples/eks_managed_node_group/` example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_managed_node_group) for a working example of these configurations.
 
 ### Self Managed Node Groups
 
@@ -308,7 +310,9 @@ See the [`examples/eks_managed_node_group/ example](https://github.com/terraform
   cluster_version = "1.21"
 
   # This self managed node group will use the latest AWS EKS Optimized AMI for Kubernetes 1.21
-  default = {}
+  self_managed_node_groups = {
+    default = {}
+  }
 ```
 
 2. To use Bottlerocket, specify the `platform` as `bottlerocket` and supply the Bottlerocket AMI. The module provided user data for Bottlerocket will be used to bootstrap the nodes created:
@@ -316,15 +320,196 @@ See the [`examples/eks_managed_node_group/ example](https://github.com/terraform
 ```hcl
   cluster_version = "1.21"
 
-  bottle_rocket = {
-    platform = "bottlerocket"
-    ami_id   = data.aws_ami.bottlerocket_ami.id
+  self_managed_node_groups = {
+    bottlerocket = {
+      platform = "bottlerocket"
+      ami_id   = data.aws_ami.bottlerocket_ami.id
+    }
   }
 ```
 
 ### Fargate Profiles
 
-Fargate profiles are rather straightforward. Simply supply the necessary information for the desired profile(s). See the [`examples/fargate_profile/ example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/fargate_profile) for a working example of the various configurations.
+Fargate profiles are rather straightforward. Simply supply the necessary information for the desired profile(s). See the [`examples/fargate_profile/` example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/fargate_profile) for a working example of the various configurations.
+
+### Mixed Node Groups
+
+ℹ️ Only the pertinent attributes are shown for brevity
+
+Users are free to mix and match the different node group types that meet their needs. For example, the following are just an example of the different possibilities:
+- AWS EKS Cluster with one or more AWS EKS Managed Node Groups
+- AWS EKS Cluster with one or more Self Managed Node Groups
+- AWS EKS Cluster with one or more Fargate profiles
+- AWS EKS Cluster with one or more AWS EKS Managed Node Groups, one or more Self Managed Node Groups, one or more Fargate profiles
+
+It is also possible to have the various node groups of each family configured differently, as well as externally defined (outside of the root `eks` module definition) node groups using the provided sub-modules attached to the cluster created - there are no restrictions on the the various different possibilities provided by the module.
+
+```hcl
+  self_managed_node_group_defaults = {
+    vpc_security_group_ids       = [aws_security_group.additional.id]
+    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+  }
+
+  self_managed_node_groups = {
+    one = {
+      name = "spot-1"
+
+      public_ip    = true
+      max_size     = 5
+      desired_size = 2
+
+      use_mixed_instances_policy = true
+      mixed_instances_policy = {
+        instances_distribution = {
+          on_demand_base_capacity                  = 0
+          on_demand_percentage_above_base_capacity = 10
+          spot_allocation_strategy                 = "capacity-optimized"
+        }
+
+        override = [
+          {
+            instance_type     = "m5.large"
+            weighted_capacity = "1"
+          },
+          {
+            instance_type     = "m6i.large"
+            weighted_capacity = "2"
+          },
+        ]
+      }
+
+      pre_bootstrap_user_data = <<-EOT
+      echo "foo"
+      export FOO=bar
+      EOT
+
+      bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+
+      post_bootstrap_user_data = <<-EOT
+      cd /tmp
+      sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+      sudo systemctl enable amazon-ssm-agent
+      sudo systemctl start amazon-ssm-agent
+      EOT
+    }
+  }
+
+  # EKS Managed Node Group(s)
+  eks_managed_node_group_defaults = {
+    ami_type               = "AL2_x86_64"
+    disk_size              = 50
+    instance_types         = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
+    vpc_security_group_ids = [aws_security_group.additional.id]
+    create_launch_template = true
+  }
+
+  eks_managed_node_groups = {
+    blue = {}
+    green = {
+      min_size     = 1
+      max_size     = 10
+      desired_size = 1
+
+      instance_types = ["t3.large"]
+      capacity_type  = "SPOT"
+      labels = {
+        Environment = "test"
+        GithubRepo  = "terraform-aws-eks"
+        GithubOrg   = "terraform-aws-modules"
+      }
+
+      taints = {
+        dedicated = {
+          key    = "dedicated"
+          value  = "gpuGroup"
+          effect = "NO_SCHEDULE"
+        }
+      }
+
+      update_config = {
+        max_unavailable_percentage = 50 # or set `max_unavailable`
+      }
+
+      tags = {
+        ExtraTag = "example"
+      }
+    }
+  }
+
+  # Fargate Profile(s)
+  fargate_profiles = {
+    default = {
+      name = "default"
+      selectors = [
+        {
+          namespace = "kube-system"
+          labels = {
+            k8s-app = "kube-dns"
+          }
+        },
+        {
+          namespace = "default"
+        }
+      ]
+
+      tags = {
+        Owner = "test"
+      }
+
+      timeouts = {
+        create = "20m"
+        delete = "20m"
+      }
+    }
+  }
+```
+
+See the [`examples/complete/` example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/complete) for a working example of these configurations.
+
+### Default configurations
+
+Each node group type (EKS managed node group, self managed node group, Fargate profile) provides a default configuration setting that allows users to provide their own default configurations instead of the modules default configurations. This allows users to set a common set of defaults for their node groups and still maintain the ability to override these settings within the specific node group definition. The order of precedence for each node group type roughly follows (from highest precedence, to least):
+- Node group individual configuration
+  - Node group family default configuration
+    - Module default configuration
+
+These are provided via the following variables for the respective node group family:
+- `eks_managed_node_group_defaults`
+- `self_managed_node_group_defaults`
+- `fargate_profile_defaults`
+
+For example, the following creates 4 AWS EKS Managed Node Groups:
+
+```hcl
+  eks_managed_node_group_defaults = {
+    ami_type               = "AL2_x86_64"
+    disk_size              = 50
+    instance_types         = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
+    create_launch_template = true
+  }
+
+  eks_managed_node_groups = {
+    # Uses defaults provided by module with the default settings above overriding the module defaults
+    default = {}
+
+    # This further overrides the instance types used
+    compute = {
+      instance_types = ["c5.large", "c6i.large", "c6d.large"]
+    }
+
+    # This further overrides the instance types and disk size used
+    persistent = {
+      disk_size = 1024
+      instance_types = ["r5.xlarge", "r6i.xlarge", "r5b.xlarge"]
+    }
+
+    # This overrides the OS used
+    bottlerocket = {
+      ami_type = "BOTTLEROCKET_x86_64"
+      platform = "bottlerocket"
+    }
+  }
+```
 
 ## Module Design Considerations
 
