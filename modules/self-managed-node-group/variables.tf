@@ -98,8 +98,8 @@ variable "launch_template_default_version" {
 
 variable "update_launch_template_default_version" {
   description = "Whether to update Default Version each update. Conflicts with `launch_template_default_version`"
-  type        = string
-  default     = null
+  type        = bool
+  default     = true
 }
 
 variable "disable_api_termination" {

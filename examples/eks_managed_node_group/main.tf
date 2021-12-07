@@ -69,9 +69,8 @@ module "eks" {
       ami_type = "BOTTLEROCKET_x86_64"
       platform = "bottlerocket"
 
-      create_launch_template                 = true
-      launch_template_name                   = "bottlerocket-custom"
-      update_launch_template_default_version = true
+      create_launch_template = true
+      launch_template_name   = "bottlerocket-custom"
 
       # this will get added to what AWS provides
       bootstrap_extra_args = <<-EOT
@@ -87,9 +86,8 @@ module "eks" {
       ami_id   = "ami-0ff61e0bcfc81dc94"
       platform = "bottlerocket"
 
-      create_launch_template                 = true
-      launch_template_name                   = "bottlerocket-custom"
-      update_launch_template_default_version = true
+      create_launch_template = true
+      launch_template_name   = "bottlerocket-custom"
 
       # use module user data template to boostrap
       enable_bootstrap_user_data = true
@@ -175,11 +173,10 @@ module "eks" {
         max_unavailable_percentage = 50 # or set `max_unavailable`
       }
 
-      create_launch_template                 = true
-      launch_template_name                   = "eks-managed-ex"
-      launch_template_use_name_prefix        = true
-      description                            = "EKS managed node group example launch template"
-      update_launch_template_default_version = true
+      create_launch_template          = true
+      launch_template_name            = "eks-managed-ex"
+      launch_template_use_name_prefix = true
+      description                     = "EKS managed node group example launch template"
 
       ebs_optimized           = true
       vpc_security_group_ids  = [aws_security_group.additional.id]

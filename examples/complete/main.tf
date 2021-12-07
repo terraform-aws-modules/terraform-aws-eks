@@ -48,9 +48,8 @@ module "eks" {
 
   # Self Managed Node Group(s)
   self_managed_node_group_defaults = {
-    update_launch_template_default_version = true
-    vpc_security_group_ids                 = [aws_security_group.additional.id]
-    iam_role_additional_policies           = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    vpc_security_group_ids       = [aws_security_group.additional.id]
+    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
   }
 
   self_managed_node_groups = {
@@ -202,10 +201,9 @@ module "self_managed_node_group" {
     module.eks.cluster_security_group_id,
   ]
 
-  create_launch_template                 = true
-  launch_template_name                   = "separate-self-mng"
-  update_launch_template_default_version = true
-  instance_type                          = "m5.large"
+  create_launch_template = true
+  launch_template_name   = "separate-self-mng"
+  instance_type          = "m5.large"
 
   tags = merge(local.tags, { Separate = "self-managed-node-group" })
 }
