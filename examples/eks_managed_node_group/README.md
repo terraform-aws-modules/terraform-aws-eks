@@ -1,6 +1,6 @@
 # EKS Managed Node Group Example
 
-Configuration in this directory creates an AWS EKS cluster with various EKS Managed Node Groups demonstrating the various methods of configurating/customizing:
+Configuration in this directory creates an AWS EKS cluster with various EKS Managed Node Groups demonstrating the various methods of configuring/customizing:
 
 - A default, "out of the box" EKS managed node group as supplied by AWS EKS
 - A default, "out of the box" Bottlerocket EKS managed node group as supplied by AWS EKS

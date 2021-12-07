@@ -1,6 +1,6 @@
 # Self Managed Node Groups Example
 
-Configuration in this directory creates an AWS EKS cluster with various Self Managed Node Groups (AutoScaling Groups) demonstrating the various methods of configurating/customizing:
+Configuration in this directory creates an AWS EKS cluster with various Self Managed Node Groups (AutoScaling Groups) demonstrating the various methods of configuring/customizing:
 
 - A default, "out of the box" self managed node group as supplied by the `self-managed-node-group` sub-module
 - A Bottlerocket self managed node group that demonstrates many of the configuration/customizations offered by the `self-manged-node-group` sub-module for the Bottlerocket OS
