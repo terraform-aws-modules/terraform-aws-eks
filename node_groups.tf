@@ -286,7 +286,7 @@ module "self_managed_node_group" {
 
   # Autoscaling Group
   name            = try(each.value.name, each.key)
-  use_name_prefix = try(each.value.use_name_prefix, var.self_managed_node_group_defaults.use_name_prefix, false)
+  use_name_prefix = try(each.value.use_name_prefix, var.self_managed_node_group_defaults.use_name_prefix, true)
 
   launch_template_name    = try(each.value.launch_template_name, each.key)
   launch_template_version = try(each.value.launch_template_version, var.self_managed_node_group_defaults.launch_template_version, null)

@@ -53,31 +53,15 @@ module "eks" {
   }
 
   self_managed_node_groups = {
-    one = {
-      name = "spot-1"
+    spot = {
+      create_launch_template = true
+      launch_template_name   = "spot"
 
-      public_ip    = true
-      max_size     = 5
-      desired_size = 2
-
-      use_mixed_instances_policy = true
-      mixed_instances_policy = {
-        instances_distribution = {
-          on_demand_base_capacity                  = 0
-          on_demand_percentage_above_base_capacity = 10
-          spot_allocation_strategy                 = "capacity-optimized"
+      instance_market_options = {
+        market_type = "spot"
+        spot_options = {
+          block_duration_minutes = 60
         }
-
-        override = [
-          {
-            instance_type     = "m5.large"
-            weighted_capacity = "1"
-          },
-          {
-            instance_type     = "m6i.large"
-            weighted_capacity = "2"
-          },
-        ]
       }
 
       pre_bootstrap_user_data = <<-EOT

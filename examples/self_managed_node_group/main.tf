@@ -125,7 +125,6 @@ module "eks" {
       launch_template_name            = "self-managed-ex"
       launch_template_use_name_prefix = true
       description                     = "Self managed node group example launch template"
-      launch_template_default_version = true
 
       ebs_optimized           = true
       vpc_security_group_ids  = [aws_security_group.additional.id]

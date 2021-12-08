@@ -60,7 +60,58 @@ module "eks" {
 
       propogate_tags = [{
         key                 = "aws-node-termination-handler/managed"
-        value               = ""
+        value               = true
+        propagate_at_launch = true
+      }]
+    }
+
+    mixed_instance = {
+      create_launch_template = true
+      launch_template_name   = "mixed-instance"
+
+      use_mixed_instances_policy = true
+      mixed_instances_policy = {
+        instances_distribution = {
+          on_demand_base_capacity                  = 0
+          on_demand_percentage_above_base_capacity = 10
+          spot_allocation_strategy                 = "capacity-optimized"
+        }
+
+        override = [
+          {
+            instance_type     = "m5.large"
+            weighted_capacity = "1"
+          },
+          {
+            instance_type     = "m6i.large"
+            weighted_capacity = "2"
+          },
+        ]
+      }
+
+      propogate_tags = [{
+        key                 = "aws-node-termination-handler/managed"
+        value               = true
+        propagate_at_launch = true
+      }]
+    }
+
+    spot = {
+      create_launch_template = true
+      launch_template_name   = "spot"
+
+      instance_market_options = {
+        market_type = "spot"
+        spot_options = {
+          block_duration_minutes = 60
+        }
+      }
+
+      bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+
+      propogate_tags = [{
+        key                 = "aws-node-termination-handler/managed"
+        value               = true
         propagate_at_launch = true
       }]
     }
