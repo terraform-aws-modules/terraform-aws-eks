@@ -11,14 +11,14 @@ Please consult the `examples` directory for reference example configurations. If
   - [AWS EKS Managed Node Group](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html), `eks_managed_node_groups`, was previously referred to as simply node group, `node_groups`
   - [Self Managed Node Group Group](https://docs.aws.amazon.com/eks/latest/userguide/worker.html), `self_managed_node_groups`, was previously referred to as worker group, `worker_groups`
   - [AWS Fargate Profile](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html), `fargate_profiles`, remains unchanged in terms of naming and terminology
-- The three different node group types supported by AWS and the module have been refactored into standalone sub-modules that are both used by the root `eks` module as well as available for indiviudal, standalone consumption if desired.
+- The three different node group types supported by AWS and the module have been refactored into standalone sub-modules that are both used by the root `eks` module as well as available for individual, standalone consumption if desired.
   - The previous `node_groups` sub-module is now named `eks-managed-node-group` and provisions a single AWS EKS Managed Node Group per sub-module definition (previous version utilized `for_each` to create 0 or more node groups)
     - Additional changes for the `eks-managed-node-group` sub-module over the previous `node_groups` module include:
       - Variable name changes defined in section `Variable and output changes` below
       - Support for nearly full control of the IAM role created, or provide the ARN of an existing IAM role, has been added
       - Support for nearly full control of the security group created, or provide the ID of an existing security group, has been added
       - User data has been revamped and all user data logic moved to the `_user_data` internal sub-module; the local `userdata.sh.tpl` has been removed entirely
-  - The previous `fargate` sub-module is now named `fargate-profile` and provisions a single AWS EKS Fargate Profile per sub-module definition (previous version utilized `for_eadch` to create 0 or more profiles)
+  - The previous `fargate` sub-module is now named `fargate-profile` and provisions a single AWS EKS Fargate Profile per sub-module definition (previous version utilized `for_each` to create 0 or more profiles)
     - Additional changes for the `fargate-profile` sub-module over the previous `fargate` module include:
       - Variable name changes defined in section `Variable and output changes` below
       - Support for nearly full control of the IAM role created, or provide the ARN of an existing IAM role, has been added
@@ -26,7 +26,7 @@ Please consult the `examples` directory for reference example configurations. If
   - A sub-module for `self-managed-node-group` has been created and provisions a single self managed node group (autoscaling group) per sub-module definition
     - Additional changes for the `self-managed-node-group` sub-module over the previous `node_groups` variable include:
       - The underlying autoscaling group and launch template have been updated to more closely match that of the [`terraform-aws-autoscaling`](https://github.com/terraform-aws-modules/terraform-aws-autoscaling) module and the features it offers
-      - The previous iteration used a count over a list of node group definitons which was prone to disruptive updates; this is now replaced with a map/for_each to align with that of the EKS managed node group and Fargate profile behaviors/style
+      - The previous iteration used a count over a list of node group definitions which was prone to disruptive updates; this is now replaced with a map/for_each to align with that of the EKS managed node group and Fargate profile behaviors/style
 - The user data configuration supported across the module has been completely revamped. A new `_user_data` internal sub-module has been created to consolidate all user data configuration in one location which provides better support for testability (via the [`examples/user_data`](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/user_data) example). The new sub-module supports nearly all possible combinations including the ability to allow users to provide their own user data template which will be rendered by the module. See the `examples/user_data` example project for the full plethora of example configuration possibilities and more details on the logic of the design can be found in the [`modules/_user_data`](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/_user_data_) directory.
 
 ## Additional changes
@@ -35,7 +35,7 @@ Please consult the `examples` directory for reference example configurations. If
 
 - Support for AWS EKS Addons has been added
 - Support for AWS EKS Cluster Identity Provider Configuration has been added
-- AWS Terraform provider minimum required version has been updated to 3.64 to support the changes made and additional resoruces supported
+- AWS Terraform provider minimum required version has been updated to 3.64 to support the changes made and additional resources supported
 - An example `user_data` project has been added to aid in demonstrating, testing, and validating the various methods of configuring user data with the `_user_data` sub-module as well as the root `eks` module
 - Template for rendering the aws-auth configmap output - `aws_auth_cm.tpl`
 - Template for Bottlerocket OS user data bootstrapping - `bottlerocket_user_data.tpl`
@@ -47,15 +47,15 @@ Please consult the `examples` directory for reference example configurations. If
 - The previous `managed_node_groups` example has been renamed to `self_managed_node_group`
 - The previously hardcoded EKS OIDC root CA thumbprint value and variable has been replaced with a `tls_certificate` data source that refers to the cluster OIDC issuer url. Thumbprint values should remain unchanged however
 - Individual cluster security group resources have been replaced with a single security group resource that takes a map of rules as input. The default ingress/egress rules have had their scope reduced in order to provide the bare minimum of access to permit successful cluster creation and allow users to opt in to any additional network access as needed for a better security posture. This means the `0.0.0.0/0` egress rule has been removed, instead TCP/443 and TCP/10250 egress rules to the node group security group are used instead
-- The Linux/bash user data template has been updated to include the bareminimum necessary for bootstrapping AWS EKS Optimized AMI derivative nodes with provisions for providing additional user data and configurations; was named `userdata.sh.tpl` and is now named `linux_user_data.tpl`
+- The Linux/bash user data template has been updated to include the bare minimum necessary for bootstrapping AWS EKS Optimized AMI derivative nodes with provisions for providing additional user data and configurations; was named `userdata.sh.tpl` and is now named `linux_user_data.tpl`
 - The Windows user data template has been renamed from `userdata_windows.tpl` to `windows_user_data.tpl`
 
 ### Removed
 
-- Miscellaneous documents on how to configure Kubernetes cluster internals have been removed. Docuemntation related to how to configure the AWS EKS Cluster and its supported infrastructure resources provided by the module are supported, while cluster internal configuration is out of scope for this project
+- Miscellaneous documents on how to configure Kubernetes cluster internals have been removed. Documentation related to how to configure the AWS EKS Cluster and its supported infrastructure resources provided by the module are supported, while cluster internal configuration is out of scope for this project
 - The previous `bottlerocket` example has been removed in favor of demonstrating the use and configuration of Bottlerocket nodes via the respective `eks_managed_node_group` and `self_managed_node_group` examples
 - The previous `launch_template` and `launch_templates_with_managed_node_groups` examples have been removed; only launch templates are now supported (default) and launch configuration support has been removed
-- The previous `secrets_encryption` example has been removed; the functionality has been demonstrated in several of the new examples rendering this standlone example redundant
+- The previous `secrets_encryption` example has been removed; the functionality has been demonstrated in several of the new examples rendering this standalone example redundant
 - The additional, custom IAM role policy for the cluster role has been removed. The permissions are either now provided in the attached managed AWS permission policies used or are no longer required
 - The `kubeconfig.tpl` template; kubeconfig management is no longer supported under this module
 - The HTTP Terraform provider (forked copy) dependency has been removed

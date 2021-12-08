@@ -15,7 +15,7 @@ At a high level, AWS EKS users have two methods for launching nodes within this 
 
 When using an EKS managed node group, users have 2 primary routes for interacting with the bootstrap user data:
 
-1. If the EKS managed node group does **NOT** utilize a custom AMI, then users can elect to supply additional user data that is prepended before the EKS managed node group bootstrap user data. You can read more about this process from the [AWS supplied documentation](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-user-data)
+1. If the EKS managed node group does **NOT** utilize a custom AMI, then users can elect to supply additional user data that is pre-pended before the EKS managed node group bootstrap user data. You can read more about this process from the [AWS supplied documentation](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-user-data)
 
     - Users can use the following variables to facilitate this process:
 
