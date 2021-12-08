@@ -72,8 +72,6 @@ The rough flow of logic that is encapsulated within the `_user_data` internal mo
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/terraform-aws-modules/terraform-aws-eks/master/.github/images/user_data.svg" alt="User Data" width="60%">
-  <!-- TODO - Delete this line below before merging -->
-  <img src="../../.github/images/user_data.svg" alt="User Data" width="60%">
 </p>
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

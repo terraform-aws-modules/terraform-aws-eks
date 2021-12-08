@@ -556,8 +556,6 @@ The security groups created by this module are depicted in the image shown below
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/terraform-aws-modules/terraform-aws-eks/master/.github/images/security_groups.svg" alt="Security Groups" width="100%">
-  <!-- TODO - Delete this line below before merging -->
-  <img src=".github/images/security_groups.svg" alt="Security Groups" width="100%">
 </p>
 
 ## Notes
