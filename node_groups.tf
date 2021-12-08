@@ -121,7 +121,7 @@ resource "aws_security_group" "node" {
 }
 
 resource "aws_security_group_rule" "node" {
-  for_each = { for k, v in merge(local.node_security_group_rules, var.node_additional_security_group_rules) : k => v if local.create_node_sg }
+  for_each = { for k, v in merge(local.node_security_group_rules, var.node_security_group_additional_rules) : k => v if local.create_node_sg }
 
   # Required
   security_group_id = aws_security_group.node[0].id

@@ -243,19 +243,19 @@ variable "subnet_ids" {
 }
 
 variable "min_size" {
-  description = "Minimum number of worker nodes"
+  description = "Minimum number of instances/nodes"
   type        = number
   default     = 0
 }
 
 variable "max_size" {
-  description = "Maximum number of worker nodes"
+  description = "Maximum number of instances/nodes"
   type        = number
   default     = 3
 }
 
 variable "desired_size" {
-  description = "Desired number of worker nodes"
+  description = "Desired number of instances/nodes"
   type        = number
   default     = 1
 }
@@ -291,7 +291,7 @@ variable "capacity_type" {
 }
 
 variable "disk_size" {
-  description = "Disk size in GiB for worker nodes. Defaults to `20`"
+  description = "Disk size in GiB for nodes. Defaults to `20`"
   type        = number
   default     = null
 }

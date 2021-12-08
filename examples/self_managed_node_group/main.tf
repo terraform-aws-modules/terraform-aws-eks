@@ -108,28 +108,17 @@ module "eks" {
         echo "you are free little kubelet!"
       EOT
 
-      capacity_type        = "SPOT"
-      disk_size            = 256
-      force_update_version = true
-      instance_type        = "m6i.large"
-      labels = {
-        GithubRepo = "terraform-aws-eks"
-        GithubOrg  = "terraform-aws-modules"
-      }
-
-      update_config = {
-        max_unavailable_percentage = 50 # or set `max_unavailable`
-      }
+      disk_size     = 256
+      instance_type = "m6i.large"
 
       create_launch_template          = true
       launch_template_name            = "self-managed-ex"
       launch_template_use_name_prefix = true
       description                     = "Self managed node group example launch template"
 
-      ebs_optimized           = true
-      vpc_security_group_ids  = [aws_security_group.additional.id]
-      disable_api_termination = false
-      enable_monitoring       = true
+      ebs_optimized          = true
+      vpc_security_group_ids = [aws_security_group.additional.id]
+      enable_monitoring      = true
 
       block_device_mappings = {
         xvda = {

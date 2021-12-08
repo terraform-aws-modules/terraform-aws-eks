@@ -487,7 +487,7 @@ variable "security_group_use_name_prefix" {
 variable "security_group_description" {
   description = "Description for the security group created"
   type        = string
-  default     = "EKS worker security group"
+  default     = "EKS self-managed node group security group"
 }
 
 variable "vpc_id" {

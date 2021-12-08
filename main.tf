@@ -119,7 +119,7 @@ resource "aws_security_group" "cluster" {
 }
 
 resource "aws_security_group_rule" "cluster" {
-  for_each = local.create_cluster_sg ? merge(local.cluster_security_group_rules, var.cluster_additional_security_group_rules) : {}
+  for_each = local.create_cluster_sg ? merge(local.cluster_security_group_rules, var.cluster_security_group_additional_rules) : {}
 
   # Required
   security_group_id = aws_security_group.cluster[0].id
@@ -199,24 +199,7 @@ resource "aws_iam_role" "this" {
   permissions_boundary  = var.iam_role_permissions_boundary
   force_detach_policies = true
 
-  inline_policy {
-    name   = local.iam_role_name
-    policy = data.aws_iam_policy_document.additional[0].json
-  }
-
   tags = merge(var.tags, var.iam_role_tags)
-}
-
-data "aws_iam_policy_document" "additional" {
-  count = var.create && var.create_iam_role ? 1 : 0
-
-  # Deny permissions to logs:CreateLogGroup since its created through Terraform
-  # in this module, and it causes issues during cleanup/deletion
-  statement {
-    effect    = "Deny"
-    actions   = ["logs:CreateLogGroup"]
-    resources = ["*"]
-  }
 }
 
 # Policies attached ref https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group

@@ -100,11 +100,9 @@ module "eks" {
       create_launch_template = true
       launch_template_name   = "spot"
 
+      instance_type = "m5.large"
       instance_market_options = {
         market_type = "spot"
-        spot_options = {
-          block_duration_minutes = 60
-        }
       }
 
       bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"

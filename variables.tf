@@ -151,7 +151,7 @@ variable "cluster_security_group_description" {
   default     = "EKS cluster security group"
 }
 
-variable "cluster_additional_security_group_rules" {
+variable "cluster_security_group_additional_rules" {
   description = "List of additional security group rules to add to the cluster security group created"
   type        = map(any)
   default     = {}
@@ -197,7 +197,7 @@ variable "node_security_group_description" {
   default     = "EKS node shared security group"
 }
 
-variable "node_additional_security_group_rules" {
+variable "node_security_group_additional_rules" {
   description = "List of additional security group rules to add to the node security group created"
   type        = map(any)
   default     = {}

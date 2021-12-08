@@ -148,7 +148,7 @@ module "self_managed_node_group" {
 | <a name="input_protect_from_scale_in"></a> [protect\_from\_scale\_in](#input\_protect\_from\_scale\_in) | Allows setting instance protection. The autoscaling group will not select instances with this setting for termination during scale in events. | `bool` | `false` | no |
 | <a name="input_ram_disk_id"></a> [ram\_disk\_id](#input\_ram\_disk\_id) | The ID of the ram disk | `string` | `null` | no |
 | <a name="input_schedules"></a> [schedules](#input\_schedules) | Map of autoscaling group schedule to create | `map(any)` | `{}` | no |
-| <a name="input_security_group_description"></a> [security\_group\_description](#input\_security\_group\_description) | Description for the security group created | `string` | `"EKS worker security group"` | no |
+| <a name="input_security_group_description"></a> [security\_group\_description](#input\_security\_group\_description) | Description for the security group created | `string` | `"EKS self-managed node group security group"` | no |
 | <a name="input_security_group_name"></a> [security\_group\_name](#input\_security\_group\_name) | Name to use on security group created | `string` | `null` | no |
 | <a name="input_security_group_rules"></a> [security\_group\_rules](#input\_security\_group\_rules) | List of security group rules to add to the security group created | `any` | `{}` | no |
 | <a name="input_security_group_tags"></a> [security\_group\_tags](#input\_security\_group\_tags) | A map of additional tags to add to the security group created | `map(string)` | `{}` | no |

@@ -235,7 +235,7 @@ resource "aws_launch_template" "this" {
   }
 
   # Prevent premature access of security group roles and policies by pods that
-  # require permissions on create/destroy that depend on workers.
+  # require permissions on create/destroy that depend on nodes
   depends_on = [
     aws_security_group_rule.this,
     aws_iam_role_policy_attachment.this,
