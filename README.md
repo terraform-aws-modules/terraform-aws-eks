@@ -585,7 +585,7 @@ You have to interact with the cluster from within the VPC that it is associated 
 
 <h4>How can I stop Terraform from removing the EKS tags from my VPC and subnets?</h4>
 
-You need to add the tags to the VPC and subnets yourself. See the [basic example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/basic).
+You need to add the tags to the Terraform definition of the VPC and subnets yourself. See the [basic example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/basic).
 
 An alternative is to use the aws provider's [`ignore_tags` variable](https://www.terraform.io/docs/providers/aws/#ignore_tags-configuration-block). However this can also cause terraform to display a perpetual difference.
 
