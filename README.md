@@ -468,7 +468,7 @@ See the [`examples/complete/` example](https://github.com/terraform-aws-modules/
 
 ### Default configurations
 
-Each node group type (EKS managed node group, self managed node group, Fargate profile) provides a default configuration setting that allows users to provide their own default configurations instead of the modules default configurations. This allows users to set a common set of defaults for their node groups and still maintain the ability to override these settings within the specific node group definition. The order of precedence for each node group type roughly follows (from highest precedence, to least):
+Each node group type (EKS managed node group, self managed node group, or Fargate profile) provides a default configuration setting that allows users to provide their own default configuration instead of the module's default configuration. This allows users to set a common set of defaults for their node groups and still maintain the ability to override these settings within the specific node group definition. The order of precedence for each node group type roughly follows (from highest to least precedence):
 - Node group individual configuration
   - Node group family default configuration
     - Module default configuration
