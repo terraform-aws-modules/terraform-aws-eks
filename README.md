@@ -627,7 +627,7 @@ Windows based nodes require an additional cluster role (`eks:kube-proxy-windows`
 
 As of Kubernetes 1.16, kubelet restricts which labels with names in the `kubernetes.io` namespace can be applied to nodes. Labels such as `kubernetes.io/lifecycle=spot` are no longer allowed; instead use `node.kubernetes.io/lifecycle=spot`
 
-Reference the `--node-labels` argument for your version of Kubernetes for the allowed prefixes. [Documentation for 1.16](https://v1-16.docs.kubernetes.io/docs/reference/command-line-tools-reference/kubelet/)
+See your Kubernetes version's documentation for  the `--node-labels` kubelet flag for the allowed prefixes. [Documentation for 1.16](https://v1-16.docs.kubernetes.io/docs/reference/command-line-tools-reference/kubelet/)
 
 </details>
 
