@@ -621,7 +621,7 @@ You can also use a third-party tool like Gruntwork's kubergrunt. See the [`eks d
 
 To enable Windows support for your EKS cluster, you should apply some configs manually. See the [Enabling Windows Support (Windows/MacOS/Linux)](https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support).
 
-Windows based nodes require additional cluster role (`eks:kube-proxy-windows`).
+Windows based nodes require an additional cluster role (`eks:kube-proxy-windows`).
 
 <h4>Worker nodes with labels do not join a 1.16+ cluster</h4>
 
