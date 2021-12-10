@@ -617,6 +617,7 @@ If you are using the cluster autoscaler:
 
 You can also use a third-party tool like Gruntwork's kubergrunt. See the [`eks deploy`](https://github.com/gruntwork-io/kubergrunt#deploy) subcommand.
 
+Alternatively, use a managed node group instead.
 <h4>How can I use Windows workers?</h4>
 
 To enable Windows support for your EKS cluster, you should apply some configuration manually. See the [Enabling Windows Support (Windows/MacOS/Linux)](https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support).
