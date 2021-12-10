@@ -52,7 +52,7 @@ locals {
   asg_tag_list = flatten([
     for name, info in var.node_groups : [
       [
-        for tag in lookup(try(local.node_groups_expanded[name], {}), "asg_tags", []) : {
+        for tag in lookup(try(var.node_groups[name], {}), "asg_tags", {}) : {
           group_name = name
           key        = tag.key
           propagate  = try(tag.propagate_at_launch, false)
