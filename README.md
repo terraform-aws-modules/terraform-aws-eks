@@ -342,7 +342,7 @@ Users are free to mix and match the different node group types that meet their n
 - AWS EKS Cluster with one or more Fargate profiles
 - AWS EKS Cluster with one or more AWS EKS Managed Node Groups, one or more Self Managed Node Groups, one or more Fargate profiles
 
-It is also possible to have the various node groups of each family configured differently, as well as externally defined (outside of the root `eks` module definition) node groups using the provided sub-modules attached to the cluster created - there are no restrictions on the the various different possibilities provided by the module.
+It is also possible to configure the various node groups of each family differently. Node groups may also be defined outside of the root `eks` module definition by using the provided sub-modules. There are no restrictions on the the various different possibilities provided by the module.
 
 ```hcl
   self_managed_node_group_defaults = {
