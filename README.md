@@ -597,7 +597,7 @@ If you are not using autoscaling and want to control the number of nodes via ter
 
 <h4>Why are nodes not recreated when the `launch_template` is recreated?</h4>
 
-By default the ASG is not configured to be recreated when the launch configuration or template changes; you will need to use a process to drain and cycle the nodes.
+By default the ASG for a self-managed node group is not configured to be recreated when the launch configuration or template changes; you will need to use a process to drain and cycle the nodes.
 
 If you are NOT using the cluster autoscaler:
 

@@ -2,6 +2,7 @@ repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     rev: v1.57.0
 =======
     rev: v1.58.0
@@ -9,6 +10,9 @@ repos:
 =======
     rev: v1.59.0
 >>>>>>> fb3eb35 (chore: remove karpenter, back to instance refresh and node termination handler)
+=======
+    rev: v1.60.0
+>>>>>>> 5195f78 (chore: update docs for new default)
     hooks:
       - id: terraform_fmt
       - id: terraform_validate
