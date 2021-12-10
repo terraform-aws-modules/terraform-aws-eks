@@ -615,7 +615,7 @@ If you are using the cluster autoscaler:
 - Repeat until all old nodes are drained
 - Cluster autoscaler will terminate the old nodes after 10-60 minutes automatically
 
-You can also use a 3rd party tool like Gruntwork's kubergrunt. See the [`eks deploy`](https://github.com/gruntwork-io/kubergrunt#deploy) subcommand.
+You can also use a third-party tool like Gruntwork's kubergrunt. See the [`eks deploy`](https://github.com/gruntwork-io/kubergrunt#deploy) subcommand.
 
 <h4>How can I use Windows workers?</h4>
 
