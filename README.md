@@ -625,7 +625,7 @@ Windows based nodes require an additional cluster role (`eks:kube-proxy-windows`
 
 <h4>Worker nodes with labels do not join a 1.16+ cluster</h4>
 
-Kubelet restricts the allowed list of labels in the `kubernetes.io` namespace that can be applied to nodes starting in 1.16. Older configurations used labels such as `kubernetes.io/lifecycle=spot` which is no longer allowed; instead, use `node.kubernetes.io/lifecycle=spot`
+As of Kubernetes 1.16, kubelet restricts which labels with names in the `kubernetes.io` namespace can be applied to nodes. Labels such as `kubernetes.io/lifecycle=spot` are no longer allowed; instead use `node.kubernetes.io/lifecycle=spot`
 
 Reference the `--node-labels` argument for your version of Kubernetes for the allowed prefixes. [Documentation for 1.16](https://v1-16.docs.kubernetes.io/docs/reference/command-line-tools-reference/kubelet/)
 
