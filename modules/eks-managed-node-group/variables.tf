@@ -73,9 +73,9 @@ variable "user_data_template_path" {
 ################################################################################
 
 variable "create_launch_template" {
-  description = "Determines whether to create a launch template or not. By default, EKS will use its own default launch template"
+  description = "Determines whether to create a launch template or not. If set to `false`, EKS will use its own default launch template"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "launch_template_name" {
