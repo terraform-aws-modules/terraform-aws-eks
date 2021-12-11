@@ -104,7 +104,6 @@ module "eks" {
     disk_size              = 50
     instance_types         = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
     vpc_security_group_ids = [aws_security_group.additional.id]
-    create_launch_template = true
   }
 
   eks_managed_node_groups = {
@@ -176,7 +175,7 @@ module "eks" {
 
 ℹ️ Only the pertinent attributes are shown for brevity
 
-1. By default, the `eks-managed-node-group` sub-module will use the default configurations provided by AWS EKS Managed Node Groups; EKS MNG will provide its own launch template and utilize the latest AWS EKS Optimized AMI (Linux) for the given Kubernetes version:
+1. AWS EKS Managed Node Group can provide its own launch template and utilize the latest AWS EKS Optimized AMI (Linux) for the given Kubernetes version:
 
 ```hcl
   eks_managed_node_groups = {
@@ -200,8 +199,6 @@ module "eks" {
 ```hcl
   eks_managed_node_groups = {
     extend_config = {
-      create_launch_template = true
-
       # This is supplied to the AWS EKS Optimized AMI
       # bootstrap script https://github.com/awslabs/amazon-eks-ami/blob/master/files/bootstrap.sh
       bootstrap_extra_args = "--container-runtime containerd --kubelet-extra-args '--max-pods=20'"
@@ -221,12 +218,8 @@ module "eks" {
 ```hcl
   eks_managed_node_groups = {
     bottlerocket_extend_config = {
-      create_launch_template = true
-
       ami_type = "BOTTLEROCKET_x86_64"
       platform = "bottlerocket"
-
-      create_launch_template = true
 
       # this will get added to what AWS provides
       bootstrap_extra_args = <<-EOT
@@ -243,8 +236,6 @@ module "eks" {
 ```hcl
   eks_managed_node_groups = {
     custom_ami = {
-      create_launch_template = true
-
       ami_id = "ami-0caf35bc73450c396"
 
       # By default, EKS managed node groups will not append bootstrap script;
@@ -275,8 +266,6 @@ module "eks" {
     bottlerocket_custom_ami = {
       ami_id   = "ami-0ff61e0bcfc81dc94"
       platform = "bottlerocket"
-
-      create_launch_template = true
 
       # use module user data template to bootstrap
       enable_bootstrap_user_data = true
@@ -400,7 +389,6 @@ It is also possible to configure the various node groups of each family differen
     disk_size              = 50
     instance_types         = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
     vpc_security_group_ids = [aws_security_group.additional.id]
-    create_launch_template = true
   }
 
   eks_managed_node_groups = {
@@ -485,7 +473,6 @@ For example, the following creates 4 AWS EKS Managed Node Groups:
     ami_type               = "AL2_x86_64"
     disk_size              = 50
     instance_types         = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
-    create_launch_template = true
   }
 
   eks_managed_node_groups = {

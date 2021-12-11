@@ -3,6 +3,7 @@ repos:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     rev: v1.57.0
 =======
     rev: v1.58.0
@@ -13,6 +14,9 @@ repos:
 =======
     rev: v1.60.0
 >>>>>>> 5195f78 (chore: update docs for new default)
+=======
+    rev: v1.61.0
+>>>>>>> 7664f78 (fix: update usage of launch template creation and references)
     hooks:
       - id: terraform_fmt
       - id: terraform_validate

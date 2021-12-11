@@ -54,9 +54,6 @@ module "eks" {
 
   self_managed_node_groups = {
     spot = {
-      create_launch_template = true
-      launch_template_name   = "spot"
-
       instance_type = "m5.large"
       instance_market_options = {
         market_type = "spot"
@@ -84,7 +81,6 @@ module "eks" {
     disk_size              = 50
     instance_types         = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
     vpc_security_group_ids = [aws_security_group.additional.id]
-    create_launch_template = true
   }
 
   eks_managed_node_groups = {
@@ -176,16 +172,14 @@ module "self_managed_node_group" {
   cluster_endpoint    = module.eks.cluster_endpoint
   cluster_auth_base64 = module.eks.cluster_certificate_authority_data
 
+  instance_type = "m5.large"
+
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
   vpc_security_group_ids = [
     module.eks.cluster_primary_security_group_id,
     module.eks.cluster_security_group_id,
   ]
-
-  create_launch_template = true
-  launch_template_name   = "separate-self-mng"
-  instance_type          = "m5.large"
 
   tags = merge(local.tags, { Separate = "self-managed-node-group" })
 }

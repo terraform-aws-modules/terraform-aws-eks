@@ -221,11 +221,11 @@ module "eks_managed_node_group" {
   user_data_template_path    = try(each.value.user_data_template_path, var.eks_managed_node_group_defaults.user_data_template_path, "")
 
   # Launch Template
-  create_launch_template          = try(each.value.create_launch_template, var.eks_managed_node_group_defaults.create_launch_template, false)
-  launch_template_name            = try(each.value.launch_template_name, var.eks_managed_node_group_defaults.launch_template_name, "")
+  create_launch_template          = try(each.value.create_launch_template, var.eks_managed_node_group_defaults.create_launch_template, true)
+  launch_template_name            = try(each.value.launch_template_name, each.key)
   launch_template_use_name_prefix = try(each.value.launch_template_use_name_prefix, var.eks_managed_node_group_defaults.launch_template_use_name_prefix, true)
   launch_template_version         = try(each.value.launch_template_version, var.eks_managed_node_group_defaults.launch_template_version, null)
-  description                     = try(each.value.description, var.eks_managed_node_group_defaults.description, "Custom launch template for ${try(each.value.name, each.key)} EKS managed node group")
+  launch_template_description     = try(each.value.launch_template_description, var.eks_managed_node_group_defaults.launch_template_description, "Custom launch template for ${try(each.value.name, each.key)} EKS managed node group")
 
   ebs_optimized                          = try(each.value.ebs_optimized, var.eks_managed_node_group_defaults.ebs_optimized, null)
   key_name                               = try(each.value.key_name, var.eks_managed_node_group_defaults.key_name, null)
@@ -288,10 +288,8 @@ module "self_managed_node_group" {
   name            = try(each.value.name, each.key)
   use_name_prefix = try(each.value.use_name_prefix, var.self_managed_node_group_defaults.use_name_prefix, true)
 
-  launch_template_name    = try(each.value.launch_template_name, each.key)
-  launch_template_version = try(each.value.launch_template_version, var.self_managed_node_group_defaults.launch_template_version, null)
-  availability_zones      = try(each.value.availability_zones, var.self_managed_node_group_defaults.availability_zones, null)
-  subnet_ids              = try(each.value.subnet_ids, var.self_managed_node_group_defaults.subnet_ids, var.subnet_ids)
+  availability_zones = try(each.value.availability_zones, var.self_managed_node_group_defaults.availability_zones, null)
+  subnet_ids         = try(each.value.subnet_ids, var.self_managed_node_group_defaults.subnet_ids, var.subnet_ids)
 
   min_size                  = try(each.value.min_size, var.self_managed_node_group_defaults.min_size, 0)
   max_size                  = try(each.value.max_size, var.self_managed_node_group_defaults.max_size, 3)
@@ -337,8 +335,10 @@ module "self_managed_node_group" {
   user_data_template_path  = try(each.value.user_data_template_path, var.self_managed_node_group_defaults.user_data_template_path, "")
 
   # Launch Template
-  create_launch_template = try(each.value.create_launch_template, var.self_managed_node_group_defaults.create_launch_template, true)
-  description            = try(each.value.description, var.self_managed_node_group_defaults.description, "Custom launch template for ${try(each.value.name, each.key)} self managed node group")
+  create_launch_template      = try(each.value.create_launch_template, var.self_managed_node_group_defaults.create_launch_template, true)
+  launch_template_name        = try(each.value.launch_template_name, each.key)
+  launch_template_version     = try(each.value.launch_template_version, var.self_managed_node_group_defaults.launch_template_version, null)
+  launch_template_description = try(each.value.launch_template_description, var.self_managed_node_group_defaults.launch_template_description, "Custom launch template for ${try(each.value.name, each.key)} self managed node group")
 
   ebs_optimized   = try(each.value.ebs_optimized, var.self_managed_node_group_defaults.ebs_optimized, null)
   ami_id          = try(each.value.ami_id, var.self_managed_node_group_defaults.ami_id, "")

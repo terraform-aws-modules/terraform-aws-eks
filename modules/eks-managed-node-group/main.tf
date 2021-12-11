@@ -35,7 +35,7 @@ resource "aws_launch_template" "this" {
 
   name        = var.launch_template_use_name_prefix ? null : local.launch_template_name_int
   name_prefix = var.launch_template_use_name_prefix ? "${local.launch_template_name_int}-" : null
-  description = var.description
+  description = var.launch_template_description
 
   ebs_optimized = var.ebs_optimized
   image_id      = var.ami_id

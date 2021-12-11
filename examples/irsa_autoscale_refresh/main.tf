@@ -43,9 +43,7 @@ module "eks" {
       max_size     = 5
       desired_size = 1
 
-      instance_type          = "m5.large"
-      create_launch_template = true
-      launch_template_name   = "refresh"
+      instance_type = "m5.large"
 
       instance_refresh = {
         strategy = "Rolling"
@@ -66,9 +64,6 @@ module "eks" {
     }
 
     mixed_instance = {
-      create_launch_template = true
-      launch_template_name   = "mixed-instance"
-
       use_mixed_instances_policy = true
       mixed_instances_policy = {
         instances_distribution = {
@@ -97,9 +92,6 @@ module "eks" {
     }
 
     spot = {
-      create_launch_template = true
-      launch_template_name   = "spot"
-
       instance_type = "m5.large"
       instance_market_options = {
         market_type = "spot"
