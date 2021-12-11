@@ -553,7 +553,11 @@ The security groups created by this module are depicted in the image shown below
 
 <h4>Why are nodes not being registered?</h4>
 
-Often an issue caused by a networking or endpoint mis-configuration. At least one of the cluster public or private endpoints must be enabled to access the cluster to work. If you require a public endpoint, setting up both (public and private) and restricting the public endpoint via setting `cluster_endpoint_public_access_cidrs` is recommended. More info regarding communication with an endpoint is available [here](https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html).
+Often an issue caused by one of two reasons:
+1. Networking or endpoint mis-configuration.
+2. Permissions (IAM/RBAC)
+
+At least one of the cluster public or private endpoints must be enabled to access the cluster to work. If you require a public endpoint, setting up both (public and private) and restricting the public endpoint via setting `cluster_endpoint_public_access_cidrs` is recommended. More info regarding communication with an endpoint is available [here](https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html).
 
 Nodes need to be able to contact the EKS cluster endpoint. By default, the module only creates a public endpoint. To access the endpoint, the nodes need outgoing internet access:
 
