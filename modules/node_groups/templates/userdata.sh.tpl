@@ -29,6 +29,10 @@ KUBELET_EXTRA_ARGS='--node-labels=eks.amazonaws.com/nodegroup-image=${ami_id},ek
 ${pre_userdata}
 %{ if length(ami_id) > 0 && ami_is_eks_optimized ~}
 
+# The bootstrap.sh script doesn't allow to pass service ipv4 cidr as an argument.
+# Therefore the environment variable SERVICE_IPV4_CIDR is exported to be used by the script.
+export SERVICE_IPV4_CIDR=${cluster_service_ipv4_cidr}
+
 # Call bootstrap for EKS optimised custom AMI
 /etc/eks/bootstrap.sh ${cluster_name} --apiserver-endpoint "$${API_SERVER_URL}" --b64-cluster-ca "$${B64_CLUSTER_CA}" --kubelet-extra-args "$${KUBELET_EXTRA_ARGS}"
 %{ endif ~}

@@ -6,6 +6,7 @@ locals {
   cluster_name                      = coalescelist(aws_eks_cluster.this[*].name, [""])[0]
   cluster_endpoint                  = coalescelist(aws_eks_cluster.this[*].endpoint, [""])[0]
   cluster_auth_base64               = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
+  cluster_service_ipv4_cidr         = coalescelist(aws_eks_cluster.this[*].kubernetes_network_config[0].service_ipv4_cidr, [""])[0]
   cluster_oidc_issuer_url           = flatten(concat(aws_eks_cluster.this[*].identity[*].oidc[0].issuer, [""]))[0]
   cluster_primary_security_group_id = coalescelist(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, [""])[0]
 

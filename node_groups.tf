@@ -3,9 +3,10 @@ module "node_groups" {
 
   create_eks = var.create_eks
 
-  cluster_name        = local.cluster_name
-  cluster_endpoint    = local.cluster_endpoint
-  cluster_auth_base64 = local.cluster_auth_base64
+  cluster_name              = local.cluster_name
+  cluster_endpoint          = local.cluster_endpoint
+  cluster_auth_base64       = local.cluster_auth_base64
+  cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
 
   default_iam_role_arn                 = coalescelist(aws_iam_role.workers[*].arn, [""])[0]
   ebs_optimized_not_supported          = local.ebs_optimized_not_supported
