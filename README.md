@@ -643,43 +643,23 @@ Full contributing [guidelines are covered here](https://github.com/terraform-aws
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
-<<<<<<< HEAD
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.64 |
 | <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 2.2 |
-=======
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.56 |
-| <a name="requirement_cloudinit"></a> [cloudinit](#requirement\_cloudinit) | >= 2.0 |
-| <a name="requirement_http"></a> [http](#requirement\_http) | >= 2.4.1 |
-| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 1.11.1 |
-| <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.4 |
->>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-<<<<<<< HEAD
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.64 |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | >= 2.2 |
-=======
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.56 |
-| <a name="provider_http"></a> [http](#provider\_http) | >= 2.4.1 |
-| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | >= 1.11.1 |
-| <a name="provider_local"></a> [local](#provider\_local) | >= 1.4 |
->>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-<<<<<<< HEAD
 | <a name="module_eks_managed_node_group"></a> [eks\_managed\_node\_group](#module\_eks\_managed\_node\_group) | ./modules/eks-managed-node-group | n/a |
 | <a name="module_fargate_profile"></a> [fargate\_profile](#module\_fargate\_profile) | ./modules/fargate-profile | n/a |
 | <a name="module_self_managed_node_group"></a> [self\_managed\_node\_group](#module\_self\_managed\_node\_group) | ./modules/self-managed-node-group | n/a |
-=======
-| <a name="module_fargate"></a> [fargate](#module\_fargate) | ./modules/fargate | n/a |
-| <a name="module_node_groups"></a> [node\_groups](#module\_node\_groups) | ./modules/node_groups | n/a |
->>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
 
 ## Resources
 
