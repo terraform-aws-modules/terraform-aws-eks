@@ -1,22 +1,6 @@
 repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    rev: v1.57.0
-=======
-    rev: v1.58.0
->>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
-=======
-    rev: v1.59.0
->>>>>>> fb3eb35 (chore: remove karpenter, back to instance refresh and node termination handler)
-=======
-    rev: v1.60.0
->>>>>>> 5195f78 (chore: update docs for new default)
-=======
-    rev: v1.61.0
->>>>>>> 7664f78 (fix: update usage of launch template creation and references)
+    rev: v1.62.0
     hooks:
       - id: terraform_fmt
       - id: terraform_validate
@@ -33,11 +17,7 @@ repos:
           - '--args=--only=terraform_documented_variables'
           - '--args=--only=terraform_typed_variables'
           - '--args=--only=terraform_module_pinned_source'
-<<<<<<< HEAD
           - '--args=--only=terraform_naming_convention'
-=======
-          # - '--args=--only=terraform_naming_convention'
->>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
           - '--args=--only=terraform_required_version'
           - '--args=--only=terraform_required_providers'
           - '--args=--only=terraform_standard_module_structure'

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e90c877 (chore(release): version 17.24.0 [skip ci])
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -16,6 +20,11 @@ All notable changes to this project will be documented in this file.
 * Add ability to define custom timeout for fargate profiles ([#1614](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1614)) ([b7539dc](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/b7539dc220f6b5fe199d67569b6f3619ec00fdf0))
 * Removed ng_depends_on variable and related hack ([#1672](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1672)) ([56e93d7](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/56e93d77de58f311f1d1d7051f40bf77e7b03524))
 
+<<<<<<< HEAD
+=======
+>>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
+=======
+>>>>>>> e90c877 (chore(release): version 17.24.0 [skip ci])
 <a name="v17.23.0"></a>
 ## [v17.23.0] - 2021-11-02
 FEATURES:

@@ -24,64 +24,24 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
-<<<<<<< HEAD
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.64 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0 |
-<<<<<<< HEAD:examples/karpenter/README.md
-=======
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.56 |
-| <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.0 |
-| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 1.11.1 |
-| <a name="requirement_local"></a> [local](#requirement\_local) | >= 1.4 |
-| <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.1 |
->>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
-=======
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
->>>>>>> fb3eb35 (chore: remove karpenter, back to instance refresh and node termination handler):examples/irsa_autoscale_refresh/README.md
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-<<<<<<< HEAD
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.64 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0 |
-<<<<<<< HEAD:examples/karpenter/README.md
-<<<<<<< HEAD:examples/custom/README.md
-<<<<<<< HEAD:examples/instance_refresh/README.md
-=======
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.56 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | >= 2.1 |
->>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
-=======
-| <a name="provider_null"></a> [null](#provider\_null) | n/a |
->>>>>>> bc35987 (chore: updating custom example):examples/custom/README.md
-=======
->>>>>>> 84f3af3 (chore: ugh, just work already):examples/karpenter/README.md
-=======
 | <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
->>>>>>> fb3eb35 (chore: remove karpenter, back to instance refresh and node termination handler):examples/irsa_autoscale_refresh/README.md
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-<<<<<<< HEAD:examples/karpenter/README.md
-<<<<<<< HEAD:examples/instance_refresh/README.md
-<<<<<<< HEAD
 | <a name="module_aws_node_termination_handler_role"></a> [aws\_node\_termination\_handler\_role](#module\_aws\_node\_termination\_handler\_role) | terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc | ~> 4.0 |
 | <a name="module_aws_node_termination_handler_sqs"></a> [aws\_node\_termination\_handler\_sqs](#module\_aws\_node\_termination\_handler\_sqs) | terraform-aws-modules/sqs/aws | ~> 3.0 |
-=======
-| <a name="module_aws_node_termination_handler_role"></a> [aws\_node\_termination\_handler\_role](#module\_aws\_node\_termination\_handler\_role) | terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc | 4.1.0 |
-| <a name="module_aws_node_termination_handler_sqs"></a> [aws\_node\_termination\_handler\_sqs](#module\_aws\_node\_termination\_handler\_sqs) | terraform-aws-modules/sqs/aws | ~> 3.0.0 |
->>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
-=======
->>>>>>> bc35987 (chore: updating custom example):examples/custom/README.md
-=======
-| <a name="module_aws_node_termination_handler_role"></a> [aws\_node\_termination\_handler\_role](#module\_aws\_node\_termination\_handler\_role) | terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc | ~> 4.0 |
-| <a name="module_aws_node_termination_handler_sqs"></a> [aws\_node\_termination\_handler\_sqs](#module\_aws\_node\_termination\_handler\_sqs) | terraform-aws-modules/sqs/aws | ~> 3.0 |
->>>>>>> fb3eb35 (chore: remove karpenter, back to instance refresh and node termination handler):examples/irsa_autoscale_refresh/README.md
 | <a name="module_eks"></a> [eks](#module\_eks) | ../.. | n/a |
 | <a name="module_iam_assumable_role_cluster_autoscaler"></a> [iam\_assumable\_role\_cluster\_autoscaler](#module\_iam\_assumable\_role\_cluster\_autoscaler) | terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc | ~> 4.0 |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.0 |

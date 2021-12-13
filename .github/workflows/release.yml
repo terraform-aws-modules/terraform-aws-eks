@@ -10,8 +10,8 @@ on:
 <<<<<<< HEAD
       - '**/*.tpl'
 =======
-      - '**/*.py'
 >>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
+      - '**/*.py'
       - '**/*.tf'
 
 jobs:

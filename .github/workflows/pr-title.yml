@@ -20,6 +20,10 @@ jobs:
         with:
           # Configure which types are allowed.
           # Default: https://github.com/commitizen/conventional-commit-types
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8d33a46 (chore: Updated allowed types for PR title (#1716))
           types:
             - fix
             - feat
@@ -27,6 +31,18 @@ jobs:
             - ci
             - chore
             - BREAKING CHANGE
+<<<<<<< HEAD
+=======
+          types: |
+            fix
+            feat
+            docs
+            ci
+            chore
+            BREAKING CHANGE
+>>>>>>> 3002be5 (chore: Added action to validate PR title (#1715))
+=======
+>>>>>>> 8d33a46 (chore: Updated allowed types for PR title (#1716))
           # Configure that a scope must always be provided.
           requireScope: false
           # Configure additional validation for the subject based on a regex.

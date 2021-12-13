@@ -7,10 +7,9 @@ terraform {
 <<<<<<< HEAD
       version = ">= 3.64"
     }
-<<<<<<< HEAD
-    http = {
-      source  = "terraform-aws-modules/http"
-      version = ">= 2.4.1"
+    null = {
+      source  = "hashicorp/null"
+      version = ">= 3.0"
 =======
       version = ">= 3.56"
     }
@@ -26,11 +25,6 @@ terraform {
       source  = "hashicorp/random"
       version = ">= 2.1"
 >>>>>>> b876ff9 (fix: update CI/CD process to enable auto-release workflow (#1698))
-=======
-    null = {
-      source  = "hashicorp/null"
-      version = ">= 3.0"
->>>>>>> e831206 (feat: add additional resources, outputs for aws-auth configmap)
     }
   }
 }
