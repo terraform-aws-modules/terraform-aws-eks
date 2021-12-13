@@ -25,6 +25,7 @@ module "eks" {
 
   cluster_name                    = local.name
   cluster_version                 = local.cluster_version
+  cluster_service_ipv4_cidr       = "172.16.0.0/16"
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 

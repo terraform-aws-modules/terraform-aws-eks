@@ -212,8 +212,9 @@ module "eks_managed_node_group" {
 
   # User data
   platform                   = try(each.value.platform, var.eks_managed_node_group_defaults.platform, "linux")
-  cluster_endpoint           = try(aws_eks_cluster.this[0].endpoint, var.eks_managed_node_group_defaults.cluster_endpoint, "")
-  cluster_auth_base64        = try(aws_eks_cluster.this[0].certificate_authority[0].data, var.eks_managed_node_group_defaults.cluster_auth_base64, "")
+  cluster_endpoint           = try(aws_eks_cluster.this[0].endpoint, "")
+  cluster_auth_base64        = try(aws_eks_cluster.this[0].certificate_authority[0].data, "")
+  cluster_service_ipv4_cidr  = var.cluster_service_ipv4_cidr
   enable_bootstrap_user_data = try(each.value.enable_bootstrap_user_data, var.eks_managed_node_group_defaults.enable_bootstrap_user_data, false)
   pre_bootstrap_user_data    = try(each.value.pre_bootstrap_user_data, var.eks_managed_node_group_defaults.pre_bootstrap_user_data, "")
   post_bootstrap_user_data   = try(each.value.post_bootstrap_user_data, var.eks_managed_node_group_defaults.post_bootstrap_user_data, "")
@@ -327,8 +328,8 @@ module "self_managed_node_group" {
 
   # User data
   platform                 = try(each.value.platform, var.self_managed_node_group_defaults.platform, "linux")
-  cluster_endpoint         = try(aws_eks_cluster.this[0].endpoint, var.self_managed_node_group_defaults.cluster_endpoint, "")
-  cluster_auth_base64      = try(aws_eks_cluster.this[0].certificate_authority[0].data, var.self_managed_node_group_defaults.cluster_auth_base64, "")
+  cluster_endpoint         = try(aws_eks_cluster.this[0].endpoint, "")
+  cluster_auth_base64      = try(aws_eks_cluster.this[0].certificate_authority[0].data, "")
   pre_bootstrap_user_data  = try(each.value.pre_bootstrap_user_data, var.self_managed_node_group_defaults.pre_bootstrap_user_data, "")
   post_bootstrap_user_data = try(each.value.post_bootstrap_user_data, var.self_managed_node_group_defaults.post_bootstrap_user_data, "")
   bootstrap_extra_args     = try(each.value.bootstrap_extra_args, var.self_managed_node_group_defaults.bootstrap_extra_args, "")
