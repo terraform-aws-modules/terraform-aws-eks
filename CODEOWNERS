@@ -1,0 +1,5 @@
+# The SRE team will review new request in this repo.
+* @GetTerminus/SRE
+
+# Admins must review new changes to this specific policy.
+CODEOWNERS @GetTerminus/all-repos-admins @GetTerminus/SRE
