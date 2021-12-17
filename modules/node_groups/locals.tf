@@ -15,12 +15,17 @@ locals {
       create_launch_template               = false
       bootstrap_env                        = {}
       kubelet_extra_args                   = var.workers_group_defaults["kubelet_extra_args"]
+      root_block_device_name               = var.workers_group_defaults["root_block_device_name"]
       disk_size                            = var.workers_group_defaults["root_volume_size"]
       disk_type                            = var.workers_group_defaults["root_volume_type"]
       disk_iops                            = var.workers_group_defaults["root_iops"]
       disk_throughput                      = var.workers_group_defaults["root_volume_throughput"]
       disk_encrypted                       = var.workers_group_defaults["root_encrypted"]
       disk_kms_key_id                      = var.workers_group_defaults["root_kms_key_id"]
+      delete_on_termination                = true
+      additional_ebs_volumes               = []
+      additional_instance_store_volumes    = []
+      instance_store_virtual_name          = var.workers_group_defaults["instance_store_virtual_name"]
       enable_monitoring                    = var.workers_group_defaults["enable_monitoring"]
       eni_delete                           = var.workers_group_defaults["eni_delete"]
       public_ip                            = var.workers_group_defaults["public_ip"]

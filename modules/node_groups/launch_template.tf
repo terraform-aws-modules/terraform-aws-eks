@@ -38,7 +38,7 @@ resource "aws_launch_template" "workers" {
   update_default_version = lookup(each.value, "update_default_version", true)
 
   block_device_mappings {
-    device_name = "/dev/xvda"
+    device_name = lookup(each.value, "root_block_device_name", null)
 
     ebs {
       volume_size           = lookup(each.value, "disk_size", null)
@@ -47,7 +47,97 @@ resource "aws_launch_template" "workers" {
       throughput            = lookup(each.value, "disk_throughput", null)
       encrypted             = lookup(each.value, "disk_encrypted", null)
       kms_key_id            = lookup(each.value, "disk_kms_key_id", null)
-      delete_on_termination = true
+      delete_on_termination = lookup(each.value, "delete_on_termination", true)
+    }
+  }
+
+  dynamic "block_device_mappings" {
+    for_each = lookup(each.value, "additional_ebs_volumes", null)
+    content {
+      device_name = block_device_mappings.value.block_device_name
+
+      ebs {
+        volume_size = lookup(
+          block_device_mappings.value,
+          "disk_size",
+          lookup(
+            each.value,
+            "disk_size",
+            null,
+          ),
+        )
+        volume_type = lookup(
+          block_device_mappings.value,
+          "disk_type",
+          lookup(
+            each.value,
+            "disk_type",
+            null,
+          ),
+        )
+        iops = lookup(
+          block_device_mappings.value,
+          "disk_iops",
+          lookup(
+            each.value,
+            "disk_iops",
+            null,
+          ),
+        )
+        throughput = lookup(
+          block_device_mappings.value,
+          "disk_throughput",
+          lookup(
+            each.value,
+            "disk_throughput",
+            null,
+          ),
+        )
+        encrypted = lookup(
+          block_device_mappings.value,
+          "disk_encrypted",
+          lookup(
+            each.value,
+            "disk_encrypted",
+            null,
+          ),
+        )
+        kms_key_id = lookup(
+          block_device_mappings.value,
+          "disk_kms_key_id",
+          lookup(
+            each.value,
+            "disk_kms_key_id",
+            null,
+          ),
+        )
+        snapshot_id = lookup(
+          block_device_mappings.value,
+          "snapshot_id",
+          null,
+        )
+        delete_on_termination = lookup(
+          block_device_mappings.value,
+          "delete_on_termination",
+          true,
+        )
+      }
+    }
+  }
+
+  dynamic "block_device_mappings" {
+    for_each = lookup(each.value, "additional_instance_store_volumes", null)
+    content {
+      device_name  = block_device_mappings.value.block_device_name
+      virtual_name = lookup(
+        block_device_mappings.value,
+        "virtual_name",
+        lookup(
+          each.value,
+          "instance_store_virtual_name",
+          null,
+        ),
+      )
     }
   }
 

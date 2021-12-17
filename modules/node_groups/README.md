@@ -29,6 +29,10 @@ The role ARN specified in `var.default_iam_role_arn` will be used by default. In
 | disk\_type | Workers' disk type. Require `create_launch_template` to be `true`| string | Provider default behavior |
 | disk\_throughput | Workers' disk throughput. Require `create_launch_template` to be `true` and `disk_type` to be `gp3`| number | Provider default behavior |
 | disk\_iops | Workers' disk IOPS. Require `create_launch_template` to be `true` and `disk_type` to be `gp3`| number | Provider default behavior |
+| delete\_on\_termination | Whether the volume should be destroyed on instance termination | bool | true |
+| additional\_ebs\_volumes | A list of additional volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: `block_device_name` (required), `disk_size`, `disk_type`, `disk_iops`, `disk_throughput`, `disk_encrypted`, `disk_kms_key_id` (only on launch-template), `delete_on_termination`, `snapshot_id`. Optional values are grabbed from root volume | list(map) | [] |
+| additional\_instance\_store\_volumes | A list of additional instance store (local disk) volumes to be attached to the instances on this Auto Scaling group. Each volume should be an object with the following: `block_device_name` (required), `virtual_name` | list(map) | [] |
+| instance\_store\_virtual\_name | `virtual_name` of the instance store volume | sring | `ephemeral0` |
 | ebs\_optimized | Enables/disables EBS optimization. Require `create_launch_template` to be `true` | bool | `true` if defined `instance\_types` are not present in `var.ebs\_optimized\_not\_supported` |
 | enable_monitoring | Enables/disables detailed monitoring. Require `create_launch_template` to be `true`| bool | `true` |
 | eni_delete | Delete the Elastic Network Interface (ENI) on termination (if set to false you will have to manually delete before destroying) | bool | `true` |
