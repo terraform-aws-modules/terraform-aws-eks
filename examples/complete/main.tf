@@ -14,6 +14,11 @@ locals {
 
 module "eks" {
   source = "../.."
+  
+  # If creating multiple clusters using an aliased provider is necessary. 
+  providers = {
+    kubernetes = kubernetes.cluster2
+  }
 
   cluster_name    = local.name
   cluster_version = local.cluster_version
@@ -195,6 +200,12 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
   token                  = data.aws_eks_cluster_auth.cluster.token
 }
+
+# Providing an alias for creating multiple clusters
+provider "kubernetes" {
+  alias = "cluster2"
+}
+
 
 ################################################################################
 # Additional security groups for workers
