@@ -7,6 +7,7 @@ on:
       - main
       - master
     paths:
+      - '**/*.tpl'
       - '**/*.py'
       - '**/*.tf'
 
