@@ -10,6 +10,7 @@ on:
       - '**/*.tpl'
       - '**/*.py'
       - '**/*.tf'
+      - '.github/workflows/release.yml'
 
 jobs:
   release:
@@ -29,5 +30,6 @@ jobs:
           extra_plugins: |
             @semantic-release/changelog@6.0.0
             @semantic-release/git@10.0.0
+            conventional-changelog-conventionalcommits@4.6.3
         env:
           GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_TOKEN }}
