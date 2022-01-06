@@ -44,6 +44,17 @@ module "eks" {
     resources        = ["secrets"]
   }]
 
+  cluster_security_group_additional_rules = {
+    admin_access = {
+      description = "Admin ingress to Kubernetes API"
+      cidr_blocks = ["10.97.0.0/30"]
+      protocol    = "tcp"
+      from_port   = 443
+      to_port     = 443
+      type        = "ingress"
+    }
+  }
+
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
