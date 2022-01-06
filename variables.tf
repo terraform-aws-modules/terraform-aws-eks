@@ -199,7 +199,7 @@ variable "node_security_group_description" {
 
 variable "node_security_group_additional_rules" {
   description = "List of additional security group rules to add to the node security group created"
-  type        = map(any)
+  type        = any
   default     = {}
 }
 
