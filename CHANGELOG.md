@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.0.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.0.2...v18.0.3) (2022-01-06)
+
+
+### Bug Fixes
+
+* Remove trailing hyphen from cluster security group and iam role name prefix ([#1745](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1745)) ([7089c71](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/7089c71e64dbae281435629e19d647ae6952f9ac))
+
 ### [18.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.0.1...v18.0.2) (2022-01-06)
 
 
