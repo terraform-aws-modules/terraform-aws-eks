@@ -28,6 +28,8 @@ Please consult the `examples` directory for reference example configurations. If
       - The underlying autoscaling group and launch template have been updated to more closely match that of the [`terraform-aws-autoscaling`](https://github.com/terraform-aws-modules/terraform-aws-autoscaling) module and the features it offers
       - The previous iteration used a count over a list of node group definitions which was prone to disruptive updates; this is now replaced with a map/for_each to align with that of the EKS managed node group and Fargate profile behaviors/style
 - The user data configuration supported across the module has been completely revamped. A new `_user_data` internal sub-module has been created to consolidate all user data configuration in one location which provides better support for testability (via the [`examples/user_data`](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/user_data) example). The new sub-module supports nearly all possible combinations including the ability to allow users to provide their own user data template which will be rendered by the module. See the `examples/user_data` example project for the full plethora of example configuration possibilities and more details on the logic of the design can be found in the [`modules/_user_data`](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/_user_data_) directory.
+- The `aws_eks_cluster` resource has been removed and replaced with the `aws_eks_cluster_role_policy_attachment` resource. This change is to align with the [AWS EKS API changes](https://docs.aws.amazon.com/eks/latest/APIReference/API_CreateCluster.html) and [AWS EKS documentation](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html)
+- Resource name changes may cause issues with existing resources. For example, security groups and IAM roles cannot be renamed, they must be recreated. Recreation of these resources may also trigger a recreation of the cluster. To use the legacy (< 18.x) resource naming convention, set `prefix_separator` to "".
 
 ## Additional changes
 
@@ -166,6 +168,7 @@ Please consult the `examples` directory for reference example configurations. If
     - `cluster_addons`
     - `cluster_identity_providers`
     - `fargate_profile_defaults`
+    - `prefix_separator` added to support legacy behavior of not having a prefix separator
     - EKS Managed Node Group sub-module (was `node_groups`)
       - `platform`
       - `enable_bootstrap_user_data`
