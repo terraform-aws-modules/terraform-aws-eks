@@ -119,7 +119,7 @@ resource "aws_security_group" "cluster" {
 }
 
 resource "aws_security_group_rule" "cluster" {
-  for_each = local.create_cluster_sg ? merge(local.cluster_security_group_rules, var.cluster_security_group_additional_rules) : {}
+  for_each = { for k, v in merge(local.cluster_security_group_rules, var.cluster_security_group_additional_rules) : k => v if local.create_cluster_sg }
 
   # Required
   security_group_id = aws_security_group.cluster[0].id
