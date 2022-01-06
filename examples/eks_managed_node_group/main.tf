@@ -173,6 +173,10 @@ module "eks" {
         }
       ]
 
+      remote_access = {
+        ec2_ssh_key = "my-ssh-key"
+      }
+
       update_config = {
         max_unavailable_percentage = 50 # or set `max_unavailable`
       }
