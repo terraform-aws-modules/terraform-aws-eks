@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.0.1...v18.0.2) (2022-01-06)
+
+
+### Bug Fixes
+
+* Change variable "node_security_group_additional_rules" from type map(any) to any ([#1747](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1747)) ([8921827](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/89218279d4439110439ca4cb8ac94575ab92b042))
+
 ### [18.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.0.0...v18.0.1) (2022-01-06)
 
 
