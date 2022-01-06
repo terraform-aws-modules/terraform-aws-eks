@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.0.0...v18.0.1) (2022-01-06)
+
+
+### Bug Fixes
+
+* Correct conditional map for cluster security group additional rules ([#1738](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1738)) ([a2c7caa](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/a2c7caac9f01ef167994d8b62afb5f997d0fac66))
+
 ## [18.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.24.0...v18.0.0) (2022-01-05)
 
 
