@@ -106,7 +106,7 @@ resource "aws_security_group" "node" {
   count = local.create_node_sg ? 1 : 0
 
   name        = var.node_security_group_use_name_prefix ? null : local.node_sg_name
-  name_prefix = var.node_security_group_use_name_prefix ? "${local.node_sg_name}-" : null
+  name_prefix = var.node_security_group_use_name_prefix ? "${local.node_sg_name}${var.prefix_separator}" : null
   description = var.node_security_group_description
   vpc_id      = var.vpc_id
 
