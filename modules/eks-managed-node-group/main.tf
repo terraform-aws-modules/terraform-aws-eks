@@ -295,10 +295,10 @@ resource "aws_eks_node_group" "this" {
   }
 
   dynamic "remote_access" {
-    for_each = var.remote_access
+    for_each = length(var.remote_access) > 0 ? [var.remote_access] : []
     content {
-      ec2_ssh_key               = lookup(remote_access.value, "ec2_ssh_key", null)
-      source_security_group_ids = lookup(remote_access.value, "source_security_group_ids", [])
+      ec2_ssh_key               = try(remote_access.value.ec2_ssh_key, null)
+      source_security_group_ids = try(remote_access.value.source_security_group_ids, [])
     }
   }
 
