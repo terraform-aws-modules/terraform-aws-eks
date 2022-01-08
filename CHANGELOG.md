@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.0.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.0.4...v18.0.5) (2022-01-08)
+
+
+### Bug Fixes
+
+* Use the prefix_seperator var for node sg prefix ([#1751](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1751)) ([62879dd](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/62879dd81a69ba010f19ba9ece8392e1730b53e0))
+
 ### [18.0.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.0.3...v18.0.4) (2022-01-07)
 
 
