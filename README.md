@@ -175,11 +175,14 @@ module "eks" {
 
 ℹ️ Only the pertinent attributes are shown for brevity
 
-1. AWS EKS Managed Node Group can provide its own launch template and utilize the latest AWS EKS Optimized AMI (Linux) for the given Kubernetes version:
+1. AWS EKS Managed Node Group can provide its own launch template and utilize the latest AWS EKS Optimized AMI (Linux) for the given Kubernetes version. By default, the module creates a launch template to ensure tags are propagated to instances, etc., so we need to disable it to use the default template provided by the AWS EKS managed node group service:
 
 ```hcl
   eks_managed_node_groups = {
-    default = {}
+    default = {
+      create_launch_template = false
+      launch_template_name   = ""
+    }
   }
 ```
 
@@ -188,6 +191,9 @@ module "eks" {
 ```hcl
   eks_managed_node_groups = {
     bottlerocket_default = {
+      create_launch_template = false
+      launch_template_name   = ""
+
       ami_type = "BOTTLEROCKET_x86_64"
       platform = "bottlerocket"
     }
