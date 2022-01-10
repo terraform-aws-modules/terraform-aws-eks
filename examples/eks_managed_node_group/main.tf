@@ -68,10 +68,25 @@ module "eks" {
 
   eks_managed_node_groups = {
     # Default node group - as provided by AWS EKS
-    default_node_group = {}
+    default_node_group = {
+      # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
+      # so we need to disable it to use the default template provided by the AWS EKS managed node group service
+      create_launch_template = false
+      launch_template_name   = ""
+
+      # Remote access cannot be specified with a launch template
+      remote_access = {
+        ec2_ssh_key = aws_key_pair.this.key_name
+      }
+    }
 
     # Default node group - as provided by AWS EKS using Bottlerocket
     bottlerocket_default = {
+      # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
+      # so we need to disable it to use the default template provided by the AWS EKS managed node group service
+      create_launch_template = false
+      launch_template_name   = ""
+
       ami_type = "BOTTLEROCKET_x86_64"
       platform = "bottlerocket"
     }
@@ -122,20 +137,23 @@ module "eks" {
 
     # Use a custom AMI
     custom_ami = {
+      ami_type = "AL2_ARM_64"
       # Current default AMI used by managed node groups - pseudo "custom"
-      ami_id = "ami-0caf35bc73450c396"
+      ami_id = "ami-01dc0aa438e3214c2" # ARM
 
       # This will ensure the boostrap user data is used to join the node
       # By default, EKS managed node groups will not append bootstrap script;
       # this adds it back in using the default template provided by the module
       # Note: this assumes the AMI provided is an EKS optimized AMI derivative
       enable_bootstrap_user_data = true
+
+      instance_types = ["t4g.medium"]
     }
 
     # Complete
     complete = {
       name            = "complete-eks-mng"
-      use_name_prefix = false
+      use_name_prefix = true
 
       subnet_ids = module.vpc.private_subnets
 
@@ -172,10 +190,6 @@ module "eks" {
           effect = "NO_SCHEDULE"
         }
       ]
-
-      remote_access = {
-        ec2_ssh_key = "my-ssh-key"
-      }
 
       update_config = {
         max_unavailable_percentage = 50 # or set `max_unavailable`
@@ -475,6 +489,7 @@ resource "aws_launch_template" "external" {
     resource_type = "instance"
 
     tags = {
+      Name      = "external_lt"
       CustomTag = "Instance custom tag"
     }
   }
@@ -502,4 +517,15 @@ resource "aws_launch_template" "external" {
   lifecycle {
     create_before_destroy = true
   }
+}
+
+resource "tls_private_key" "this" {
+  algorithm = "RSA"
+}
+
+resource "aws_key_pair" "this" {
+  key_name_prefix = local.name
+  public_key      = tls_private_key.this.public_key_openssh
+
+  tags = local.tags
 }
