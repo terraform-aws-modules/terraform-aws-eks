@@ -68,10 +68,18 @@ module "eks" {
 
   eks_managed_node_groups = {
     # Default node group - as provided by AWS EKS
-    default_node_group = {}
+    default_node_group = {
+      # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
+      # so we need to disable it to use the default template provided by the AWS EKS managed node group service
+      create_launch_template = false
+    }
 
     # Default node group - as provided by AWS EKS using Bottlerocket
     bottlerocket_default = {
+      # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
+      # so we need to disable it to use the default template provided by the AWS EKS managed node group service
+      create_launch_template = false
+
       ami_type = "BOTTLEROCKET_x86_64"
       platform = "bottlerocket"
     }
@@ -130,6 +138,8 @@ module "eks" {
       # this adds it back in using the default template provided by the module
       # Note: this assumes the AMI provided is an EKS optimized AMI derivative
       enable_bootstrap_user_data = true
+
+      instance_types = ["t4g.medium"]
     }
 
     # Complete
