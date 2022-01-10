@@ -181,6 +181,7 @@ module "eks" {
   eks_managed_node_groups = {
     default = {
       create_launch_template = false
+      launch_template_name   = ""
     }
   }
 ```
@@ -191,6 +192,7 @@ module "eks" {
   eks_managed_node_groups = {
     bottlerocket_default = {
       create_launch_template = false
+      launch_template_name   = ""
 
       ami_type = "BOTTLEROCKET_x86_64"
       platform = "bottlerocket"
