@@ -25,7 +25,7 @@ module "eks" {
 
   cluster_name                    = local.name
   cluster_version                 = local.cluster_version
-  cluster_service_ipv4_cidr       = "172.16.0.0/16"
+  cluster_ip_family               = "ipv6"
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
@@ -130,6 +130,8 @@ module "eks" {
       # this adds it back in using the default template provided by the module
       # Note: this assumes the AMI provided is an EKS optimized AMI derivative
       enable_bootstrap_user_data = true
+
+      instance_types = ["t4g.medium"]
     }
 
     # Complete
@@ -322,6 +324,14 @@ module "vpc" {
   azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
   public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+
+  enable_ipv6                     = true
+  assign_ipv6_address_on_creation = true
+
+  private_subnet_assign_ipv6_address_on_creation = false
+
+  public_subnet_ipv6_prefixes  = [0, 1, 2]
+  private_subnet_ipv6_prefixes = [3, 4, 5]
 
   enable_nat_gateway   = true
   single_nat_gateway   = true
