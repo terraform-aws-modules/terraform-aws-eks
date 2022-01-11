@@ -298,7 +298,7 @@ resource "aws_eks_node_group" "this" {
     for_each = length(var.remote_access) > 0 ? [var.remote_access] : []
     content {
       ec2_ssh_key               = try(remote_access.value.ec2_ssh_key, null)
-      source_security_group_ids = try(remote_access.value.source_security_group_ids, [])
+      source_security_group_ids = try(split(",", remote_access.value.source_security_group_ids), [])
     }
   }
 
