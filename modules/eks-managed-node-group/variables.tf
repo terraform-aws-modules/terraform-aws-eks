@@ -334,7 +334,7 @@ variable "launch_template_version" {
 
 variable "remote_access" {
   description = "Configuration block with remote access settings"
-  type        = map(string)
+  type        = any
   default     = {}
 }
 

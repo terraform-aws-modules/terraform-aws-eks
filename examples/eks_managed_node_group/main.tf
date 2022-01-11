@@ -270,7 +270,6 @@ module "eks" {
   tags = local.tags
 }
 
-
 # References to resources that do not exist yet when creating a cluster will cause a plan failure due to https://github.com/hashicorp/terraform/issues/4149
 # There are two options users can take
 # 1. Create the dependent resources before the cluster => `terraform apply --target <your policy or your security group> and then `terraform apply`
@@ -280,7 +279,7 @@ resource "aws_iam_role_policy_attachment" "additional" {
   for_each = module.eks.eks_managed_node_groups
 
   policy_arn = aws_iam_policy.node_additional.arn
-  role       = each.value.iam_role_arn
+  role       = each.value.iam_role_name
 }
 
 ################################################################################
