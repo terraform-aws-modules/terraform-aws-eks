@@ -18,6 +18,39 @@ Terraform module which creates AWS EKS (Kubernetes) resources
 - Support for providing maps of node groups/Fargate profiles to the cluster module definition or use separate node group/Fargate profile sub-modules
 - Provisions to provide node group/Fargate profile "default" settings - useful for when creating multiple node groups/Fargate profiles where you want to set a common set of configurations once, and then individual control only select features
 
+### ℹ️ `Error: Invalid for_each argument ...`
+
+Users may encounter an error such as `Error: Invalid for_each argument - The "for_each" value depends on resource attributes that cannot be determined until apply, so Terraform cannot predict how many instances will be created. To work around this, use the -target argument to first apply ...`
+
+This error is due to an upstream issue with [Terraform core](https://github.com/hashicorp/terraform/issues/4149). There are two potential options you can take to help mitigate this issue:
+
+1. Create the dependent resources before the cluster  => `terraform apply -target <your policy or your security group>` and then `terraform apply` for the cluster (or other similar means to just ensure the referenced resources exist before creating the cluster)
+  - Note: this is the route users will have to take for adding additonal security groups to nodes since there isn't a separate "security group attachment" resource
+2. For addtional IAM policies, users can attach the policies outside of the cluster definition as demonstrated below
+
+```hcl
+resource "aws_iam_role_policy_attachment" "additional" {
+  for_each = module.eks.eks_managed_node_groups
+  # you could also do the following or any comibination:
+  # for_each = merge(
+  #   module.eks.eks_managed_node_groups,
+  #   module.eks.self_managed_node_group,
+  #   module.eks.fargate_profile,
+  # )
+
+  #            This policy does not have to exist at the time of cluster creation. Terraform can
+  #            deduce the proper order of its creation to avoid errors during creation
+  policy_arn = aws_iam_policy.node_additional.arn
+  role       = each.value.iam_role_name
+}
+```
+
+The tl;dr for this issue is that the Terraform resource passed into the modules map definition *must* be known before you can apply the EKS module. The variables this potentially affects are:
+
+- `cluster_security_group_additional_rules` (i.e. - referencing an external security group resource in a rule)
+- `node_security_group_additional_rules` (i.e. - referencing an external security group resource in a rule)
+- `iam_role_additional_policies` (i.e. - referencing an external policy resource)
+
 ## Usage
 
 ```hcl

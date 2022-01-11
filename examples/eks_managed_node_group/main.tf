@@ -76,7 +76,8 @@ module "eks" {
 
       # Remote access cannot be specified with a launch template
       remote_access = {
-        ec2_ssh_key = aws_key_pair.this.key_name
+        ec2_ssh_key               = aws_key_pair.this.key_name
+        source_security_group_ids = [aws_security_group.remote_access.id]
       }
     }
 
@@ -267,6 +268,18 @@ module "eks" {
   }
 
   tags = local.tags
+}
+
+# References to resources that do not exist yet when creating a cluster will cause a plan failure due to https://github.com/hashicorp/terraform/issues/4149
+# There are two options users can take
+# 1. Create the dependent resources before the cluster => `terraform apply -target <your policy or your security group> and then `terraform apply`
+#   Note: this is the route users will have to take for adding additonal security groups to nodes since there isn't a separate "security group attachment" resource
+# 2. For addtional IAM policies, users can attach the policies outside of the cluster definition as demonstrated below
+resource "aws_iam_role_policy_attachment" "additional" {
+  for_each = module.eks.eks_managed_node_groups
+
+  policy_arn = aws_iam_policy.node_additional.arn
+  role       = each.value.iam_role_name
 }
 
 ################################################################################
@@ -526,6 +539,50 @@ resource "tls_private_key" "this" {
 resource "aws_key_pair" "this" {
   key_name_prefix = local.name
   public_key      = tls_private_key.this.public_key_openssh
+
+  tags = local.tags
+}
+
+resource "aws_security_group" "remote_access" {
+  name_prefix = "${local.name}-remote-access"
+  description = "Allow remote SSH access"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description = "SSH access"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/8"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = local.tags
+}
+
+resource "aws_iam_policy" "node_additional" {
+  name        = "${local.name}-additional"
+  description = "Example usage of node additional policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ec2:Describe*",
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
 
   tags = local.tags
 }
