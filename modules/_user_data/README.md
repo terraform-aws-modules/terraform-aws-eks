@@ -21,7 +21,6 @@ When using an EKS managed node group, users have 2 primary routes for interactin
 
       ```hcl
       pre_bootstrap_user_data = "..."
-      bootstrap_extra_args    = "..."
       ```
 
 2. If the EKS managed node group does utilize a custom AMI, then per the [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami), users will need to supply the necessary bootstrap configuration via user data to ensure that the node is configured to register with the cluster when launched. There are two routes that users can utilize to facilitate this bootstrapping process:

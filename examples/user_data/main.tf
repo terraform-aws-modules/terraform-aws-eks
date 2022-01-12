@@ -19,14 +19,7 @@ module "eks_mng_linux_additional" {
   source = "../../modules/_user_data"
 
   pre_bootstrap_user_data = <<-EOT
-  echo "foo"
-  export FOO=bar
-  EOT
-
-  bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-
-  post_bootstrap_user_data = <<-EOT
-  echo "All done"
+  export CONTAINER_RUNTIME="containerd"
   EOT
 }
 
@@ -41,11 +34,11 @@ module "eks_mng_linux_custom_ami" {
   enable_bootstrap_user_data = true
 
   pre_bootstrap_user_data = <<-EOT
-  echo "foo"
-  export FOO=bar
+  export CONTAINER_RUNTIME="containerd"
+  export USE_MAX_PODS=false
   EOT
 
-  bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+  bootstrap_extra_args = "--container-runtime containerd --kubelet-extra-args '--max-pods=20 --instance-type t3a.large'"
 
   post_bootstrap_user_data = <<-EOT
   echo "All done"

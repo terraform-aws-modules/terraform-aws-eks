@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.0.6](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.0.5...v18.0.6) (2022-01-11)
+
+
+### Bug Fixes
+
+* Correct remote access variable for security groups and add example for additional IAM policies ([#1766](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1766)) ([f54bd30](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f54bd3047ba18179766641e347fe9f4fa60ff11b))
+
 ### [18.0.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.0.4...v18.0.5) (2022-01-08)
 
 
