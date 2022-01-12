@@ -28,7 +28,7 @@ locals {
           cluster_endpoint    = var.cluster_endpoint
           cluster_auth_base64 = var.cluster_auth_base64
           # Optional - is appended if using EKS managed node group without custom AMI
-          # cluster_service_ipv4_cidr = var.cluster_service_ipv4_cidr # Not supported yet: https://github.com/bottlerocket-os/bottlerocket/issues/1866
+          # cluster_service_ipv4_cidr = var.cluster_service_ipv4_cidr # Bottlerocket pulls this automatically https://github.com/bottlerocket-os/bottlerocket/issues/1866
           bootstrap_extra_args = var.bootstrap_extra_args
         }
       )) : ""
