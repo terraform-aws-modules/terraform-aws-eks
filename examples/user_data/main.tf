@@ -19,14 +19,7 @@ module "eks_mng_linux_additional" {
   source = "../../modules/_user_data"
 
   pre_bootstrap_user_data = <<-EOT
-  echo "foo"
-  export FOO=bar
-  EOT
-
-  bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-
-  post_bootstrap_user_data = <<-EOT
-  echo "All done"
+  export CONTAINER_RUNTIME="containerd"
   EOT
 }
 
