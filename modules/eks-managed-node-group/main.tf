@@ -183,6 +183,7 @@ resource "aws_launch_template" "this" {
       http_tokens                 = lookup(metadata_options.value, "http_tokens", null)
       http_put_response_hop_limit = lookup(metadata_options.value, "http_put_response_hop_limit", null)
       http_protocol_ipv6          = lookup(metadata_options.value, "http_protocol_ipv6", null)
+      instance_metadata_tags      = lookup(metadata_options.value, "instance_metadata_tags", null)
     }
   }
 
