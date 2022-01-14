@@ -389,8 +389,11 @@ resource "aws_security_group_rule" "this" {
 ################################################################################
 
 locals {
-  iam_role_name     = coalesce(var.iam_role_name, "${var.name}-eks-node-group")
-  policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
+  iam_role_name = coalesce(var.iam_role_name, "${var.name}-eks-node-group")
+
+  iam_role_policy_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
+
+  cni_policy = var.cluster_ip_family == "ipv6" ? "${local.iam_role_policy_prefix}/AmazonEKS_CNI_IPv6_Policy" : "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
@@ -425,9 +428,9 @@ resource "aws_iam_role" "this" {
 # Policies attached ref https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
 resource "aws_iam_role_policy_attachment" "this" {
   for_each = var.create && var.create_iam_role ? toset(compact(distinct(concat([
-    "${local.policy_arn_prefix}/AmazonEKSWorkerNodePolicy",
-    "${local.policy_arn_prefix}/AmazonEC2ContainerRegistryReadOnly",
-    "${local.policy_arn_prefix}/AmazonEKS_CNI_Policy",
+    "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy",
+    "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly",
+    var.iam_role_attach_cni_policy ? local.cni_policy : "",
   ], var.iam_role_additional_policies)))) : toset([])
 
   policy_arn = each.value

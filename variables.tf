@@ -176,6 +176,16 @@ variable "cluster_security_group_tags" {
 }
 
 ################################################################################
+# EKS IPV6 CNI Policy
+################################################################################
+
+variable "create_cni_ipv6_iam_policy" {
+  description = "Determines whether to create an [`AmazonEKS_CNI_IPv6_Policy`](https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html#cni-iam-role-create-ipv6-policy)"
+  type        = bool
+  default     = false
+}
+
+################################################################################
 # Node Security Group
 ################################################################################
 
