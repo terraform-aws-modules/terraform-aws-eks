@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.1.0...v18.2.0) (2022-01-14)
+
+
+### Features
+
+* Add `instance_metadata_tags` attribute to launch templates ([#1781](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1781)) ([85bb1a0](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/85bb1a00b6111845141a8c07a9459bbd160d7ed3))
+
 ## [18.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.0.6...v18.1.0) (2022-01-14)
 
 
