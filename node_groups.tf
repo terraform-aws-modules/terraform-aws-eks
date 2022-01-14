@@ -116,53 +116,32 @@ locals {
       self        = true
     }
     egress_https = {
-      description = "Egress all HTTPS to internet"
-      protocol    = "tcp"
-      from_port   = 443
-      to_port     = 443
-      type        = "egress"
-      cidr_blocks = ["0.0.0.0/0", ]
-    }
-    egress_https_ipv6 = { for k, v in {
       description      = "Egress all HTTPS to internet"
       protocol         = "tcp"
       from_port        = 443
       to_port          = 443
       type             = "egress"
-      ipv6_cidr_blocks = ["::/0"]
-    } : k => v if var.cluster_ip_family == "ipv6" }
-    egress_ntp_tcp = {
-      description = "Egress NTP/TCP to internet"
-      protocol    = "tcp"
-      from_port   = 123
-      to_port     = 123
-      type        = "egress"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_blocks      = ["0.0.0.0/0"]
+      ipv6_cidr_blocks = var.cluster_ip_family == "ipv6" ? ["::/0"] : null
     }
-    egress_ntp_tcp_ipv6 = { for k, v in {
+    egress_ntp_tcp = {
       description      = "Egress NTP/TCP to internet"
       protocol         = "tcp"
       from_port        = 123
       to_port          = 123
       type             = "egress"
-      ipv6_cidr_blocks = ["::/0"]
-    } : k => v if var.cluster_ip_family == "ipv6" }
-    egress_ntp_udp = {
-      description = "Egress NTP/UDP to internet"
-      protocol    = "udp"
-      from_port   = 123
-      to_port     = 123
-      type        = "egress"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_blocks      = ["0.0.0.0/0"]
+      ipv6_cidr_blocks = var.cluster_ip_family == "ipv6" ? ["::/0"] : null
     }
-    egress_ntp_udp_ipv6 = { for k, v in {
+    egress_ntp_udp = {
       description      = "Egress NTP/UDP to internet"
       protocol         = "udp"
       from_port        = 123
       to_port          = 123
       type             = "egress"
-      ipv6_cidr_blocks = ["::/0"]
-    } : k => v if var.cluster_ip_family == "ipv6" }
+      cidr_blocks      = ["0.0.0.0/0"]
+      ipv6_cidr_blocks = var.cluster_ip_family == "ipv6" ? ["::/0"] : null
+    }
   }
 }
 
@@ -232,7 +211,7 @@ module "fargate_profile" {
   iam_role_description          = try(each.value.iam_role_description, var.fargate_profile_defaults.iam_role_description, "Fargate profile IAM role")
   iam_role_permissions_boundary = try(each.value.iam_role_permissions_boundary, var.fargate_profile_defaults.iam_role_permissions_boundary, null)
   iam_role_tags                 = try(each.value.iam_role_tags, var.fargate_profile_defaults.iam_role_tags, {})
-  iam_role_attach_cni_policy    = try(each.value.iam_role_attach_cni_policy, var.fargate_profile_defaults.iam_role_attach_cni_policy, false)
+  iam_role_attach_cni_policy    = try(each.value.iam_role_attach_cni_policy, var.fargate_profile_defaults.iam_role_attach_cni_policy, true)
   iam_role_additional_policies  = try(each.value.iam_role_additional_policies, var.fargate_profile_defaults.iam_role_additional_policies, [])
 
   tags = merge(var.tags, try(each.value.tags, var.fargate_profile_defaults.tags, {}))

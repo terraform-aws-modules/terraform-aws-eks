@@ -569,7 +569,7 @@ variable "iam_role_permissions_boundary" {
 variable "iam_role_attach_cni_policy" {
   description = "Whether to attach the `AmazonEKS_CNI_Policy`/`AmazonEKS_CNI_IPv6_Policy` IAM policy to the IAM IAM role. WARNING: If set `false` the permissions must be assigned to the `aws-node` DaemonSet pods via another method or nodes will not be able to join the cluster"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "iam_role_additional_policies" {
