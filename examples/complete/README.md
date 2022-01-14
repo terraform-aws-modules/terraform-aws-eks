@@ -34,14 +34,14 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.64 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.72 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.64 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.72 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
 
 ## Modules
