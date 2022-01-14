@@ -81,8 +81,16 @@ locals {
       from_port   = 443
       to_port     = 443
       type        = "egress"
-      cidr_blocks = ["0.0.0.0/0"]
+      cidr_blocks = ["0.0.0.0/0", ]
     }
+    egress_https_ipv6 = { for k, v in {
+      description      = "Egress all HTTPS to internet"
+      protocol         = "tcp"
+      from_port        = 443
+      to_port          = 443
+      type             = "egress"
+      ipv6_cidr_blocks = ["::/0"]
+    } : k => v if var.cluster_ip_family == "ipv6" }
     egress_ntp_tcp = {
       description = "Egress NTP/TCP to internet"
       protocol    = "tcp"
@@ -91,6 +99,14 @@ locals {
       type        = "egress"
       cidr_blocks = ["0.0.0.0/0"]
     }
+    egress_ntp_tcp_ipv6 = { for k, v in {
+      description      = "Egress NTP/TCP to internet"
+      protocol         = "tcp"
+      from_port        = 123
+      to_port          = 123
+      type             = "egress"
+      ipv6_cidr_blocks = ["::/0"]
+    } : k => v if var.cluster_ip_family == "ipv6" }
     egress_ntp_udp = {
       description = "Egress NTP/UDP to internet"
       protocol    = "udp"
@@ -99,6 +115,14 @@ locals {
       type        = "egress"
       cidr_blocks = ["0.0.0.0/0"]
     }
+    egress_ntp_udp_ipv6 = { for k, v in {
+      description      = "Egress NTP/UDP to internet"
+      protocol         = "udp"
+      from_port        = 123
+      to_port          = 123
+      type             = "egress"
+      ipv6_cidr_blocks = ["::/0"]
+    } : k => v if var.cluster_ip_family == "ipv6" }
   }
 }
 

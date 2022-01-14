@@ -352,8 +352,7 @@ module "vpc" {
 
   enable_ipv6                     = true
   assign_ipv6_address_on_creation = true
-
-  private_subnet_assign_ipv6_address_on_creation = false
+  create_egress_only_igw          = true
 
   public_subnet_ipv6_prefixes  = [0, 1, 2]
   private_subnet_ipv6_prefixes = [3, 4, 5]
