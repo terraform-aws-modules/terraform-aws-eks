@@ -1,5 +1,7 @@
 data "aws_partition" "current" {}
 
+data "aws_caller_identity" "current" {}
+
 data "aws_ami" "eks_default" {
   count = var.create ? 1 : 0
 
@@ -494,6 +496,8 @@ locals {
   iam_role_name = coalesce(var.iam_role_name, "${var.name}-node-group")
 
   iam_role_policy_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
+
+  cni_policy = var.cluster_ip_family == "ipv6" ? "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/AmazonEKS_CNI_IPv6_Policy" : "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
@@ -529,7 +533,7 @@ resource "aws_iam_role_policy_attachment" "this" {
   for_each = var.create && var.create_iam_instance_profile ? toset(compact(distinct(concat([
     "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy",
     "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly",
-    var.iam_role_attach_cni_policy ? "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy" : "",
+    var.iam_role_attach_cni_policy ? local.cni_policy : "",
   ], var.iam_role_additional_policies)))) : toset([])
 
   policy_arn = each.value
