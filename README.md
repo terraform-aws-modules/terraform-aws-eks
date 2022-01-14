@@ -586,7 +586,7 @@ The security groups created by this module are depicted in the image shown below
 
 ## Notes
 
-- Setting `instance_refresh_enabled = true` will recreate your worker nodes without draining them first. It is recommended to install [aws-node-termination-handler](https://github.com/aws/aws-node-termination-handler) for proper node draining. See the [instance_refresh](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/instance_refresh) example provided.
+- Setting `instance_refresh_enabled = true` will recreate your worker nodes without draining them first. It is recommended to install [aws-node-termination-handler](https://github.com/aws/aws-node-termination-handler) for proper node draining. See the [instance_refresh](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/irsa_autoscale_refresh) example provided.
 
 <details><summary><b>Frequently Asked Questions</b></summary><br>
 
@@ -667,9 +667,9 @@ See your Kubernetes version's documentation for  the `--node-labels` kubelet fla
 - [Complete](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/complete): EKS Cluster using all available node group types in various combinations demonstrating many of the supported features and configurations
 - [EKS Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_managed_node_group): EKS Cluster using EKS managed node groups
 - [Fargate Profile](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/fargate_profile): EKS cluster using [Fargate Profiles](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html)
-- [IRSA, Node Autoscaler, Instance Refresh](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/irsa_autoscale_instance_refresh): EKS Cluster using self-managed node group demonstrating how to enable/utilize instance refresh configuration along with node termination handler
+- [IRSA, Node Autoscaler, Instance Refresh](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/irsa_autoscale_refresh): EKS Cluster using self-managed node group demonstrating how to enable/utilize instance refresh configuration along with node termination handler
 - [Self Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/self_managed_node_group): EKS Cluster using self-managed node groups
-- [User Data](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/self_managed_node_group): Various supported methods of providing necessary bootstrap scripts and configuration settings via user data
+- [User Data](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/user_data): Various supported methods of providing necessary bootstrap scripts and configuration settings via user data
 
 ## Contributing
 
