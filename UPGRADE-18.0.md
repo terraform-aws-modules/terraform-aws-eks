@@ -552,8 +552,6 @@ module "cluster_after" {
 }
 ```
 
-## Upgrade Use Case Examples
-
 ### Attaching an IAM role policy to a Fargate profile
 
 #### Before 17.x
