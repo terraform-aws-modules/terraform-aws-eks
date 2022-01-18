@@ -551,3 +551,36 @@ module "cluster_after" {
   }
 }
 ```
+
+### Attaching an IAM role policy to a Fargate profile
+
+#### Before 17.x
+
+```hcl
+resource "aws_iam_role_policy_attachment" "default" {
+  role       = module.eks.fargate_iam_role_name
+  policy_arn = aws_iam_policy.default.arn
+}
+```
+
+#### After 18.x
+
+```hcl
+# Attach the policy to an "example" Fargate profile
+resource "aws_iam_role_policy_attachment" "default" {
+  role       = module.eks.fargate_profiles["example"].iam_role_name
+  policy_arn = aws_iam_policy.default.arn
+}
+```
+
+Or:
+
+```hcl
+# Attach the policy to all Fargate profiles
+resource "aws_iam_role_policy_attachment" "default" {
+  for_each = module.eks.fargate_profiles
+
+  role       = each.value.iam_role_name
+  policy_arn = aws_iam_policy.default.arn
+}
+```
