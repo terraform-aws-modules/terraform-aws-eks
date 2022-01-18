@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.2.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.2.0...v18.2.1) (2022-01-18)
+
+
+### Bug Fixes
+
+* Change `instance_metadata_tags` to default to `null`/`disabled` due to tag key pattern conflict ([#1788](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1788)) ([8e4dfa2](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/8e4dfa2be5c60e98a9b20a8ae716c5c446fe935c))
+
 ## [18.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.1.0...v18.2.0) (2022-01-14)
 
 
