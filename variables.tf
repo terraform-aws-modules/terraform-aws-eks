@@ -68,6 +68,12 @@ variable "cluster_endpoint_public_access_cidrs" {
   default     = ["0.0.0.0/0"]
 }
 
+variable "cluster_ip_family" {
+  description = "The IP family used to assign Kubernetes pod and service addresses. Valid values are `ipv4` (default) and `ipv6`. You can only specify an IP family when you create a cluster, changing this value will force a new cluster to be created"
+  type        = string
+  default     = null
+}
+
 variable "cluster_service_ipv4_cidr" {
   description = "The CIDR block to assign Kubernetes service IP addresses from. If you don't specify a block, Kubernetes assigns addresses from either the 10.100.0.0/16 or 172.20.0.0/16 CIDR blocks"
   type        = string
@@ -167,6 +173,16 @@ variable "cluster_security_group_tags" {
   description = "A map of additional tags to add to the cluster security group created"
   type        = map(string)
   default     = {}
+}
+
+################################################################################
+# EKS IPV6 CNI Policy
+################################################################################
+
+variable "create_cni_ipv6_iam_policy" {
+  description = "Determines whether to create an [`AmazonEKS_CNI_IPv6_Policy`](https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html#cni-iam-role-create-ipv6-policy)"
+  type        = bool
+  default     = false
 }
 
 ################################################################################

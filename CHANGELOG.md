@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.2.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.2.0...v18.2.1) (2022-01-18)
+
+
+### Bug Fixes
+
+* Change `instance_metadata_tags` to default to `null`/`disabled` due to tag key pattern conflict ([#1788](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1788)) ([8e4dfa2](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/8e4dfa2be5c60e98a9b20a8ae716c5c446fe935c))
+
+## [18.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.1.0...v18.2.0) (2022-01-14)
+
+
+### Features
+
+* Add `instance_metadata_tags` attribute to launch templates ([#1781](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1781)) ([85bb1a0](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/85bb1a00b6111845141a8c07a9459bbd160d7ed3))
+
+## [18.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.0.6...v18.1.0) (2022-01-14)
+
+
+### Features
+
+* Add support for networking `ip_family` which enables support for IPV6 ([#1759](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1759)) ([314192e](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/314192e2ebc5faaf5f027a7d868cd36c4844aee1))
+
 ### [18.0.6](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.0.5...v18.0.6) (2022-01-11)
 
 
