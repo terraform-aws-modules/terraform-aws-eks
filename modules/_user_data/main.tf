@@ -1,59 +1,42 @@
 
 locals {
-  int_linux_default_user_data = var.create && var.platform == "linux" && (var.enable_bootstrap_user_data || var.user_data_template_path != "") ? base64encode(templatefile(
-    coalesce(var.user_data_template_path, "${path.module}/../../templates/linux_user_data.tpl"),
-    {
-      # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
-      enable_bootstrap_user_data = var.enable_bootstrap_user_data
-      # Required to bootstrap node
-      cluster_name        = var.cluster_name
-      cluster_endpoint    = var.cluster_endpoint
-      cluster_auth_base64 = var.cluster_auth_base64
-      # Optional
-      cluster_service_ipv4_cidr = var.cluster_service_ipv4_cidr != null ? var.cluster_service_ipv4_cidr : ""
-      bootstrap_extra_args      = var.bootstrap_extra_args
-      pre_bootstrap_user_data   = var.pre_bootstrap_user_data
-      post_bootstrap_user_data  = var.post_bootstrap_user_data
-    }
-  )) : ""
-  platform = {
-    bottlerocket = {
-      user_data = var.create && var.platform == "bottlerocket" && (var.enable_bootstrap_user_data || var.user_data_template_path != "" || var.bootstrap_extra_args != "") ? base64encode(templatefile(
-        coalesce(var.user_data_template_path, "${path.module}/../../templates/bottlerocket_user_data.tpl"),
-        {
-          # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
-          enable_bootstrap_user_data = var.enable_bootstrap_user_data
-          # Required to bootstrap node
-          cluster_name        = var.cluster_name
-          cluster_endpoint    = var.cluster_endpoint
-          cluster_auth_base64 = var.cluster_auth_base64
-          # Optional - is appended if using EKS managed node group without custom AMI
-          # cluster_service_ipv4_cidr = var.cluster_service_ipv4_cidr # Bottlerocket pulls this automatically https://github.com/bottlerocket-os/bottlerocket/issues/1866
-          bootstrap_extra_args = var.bootstrap_extra_args
-        }
-      )) : ""
-    }
-    linux = {
-      user_data = try(data.cloudinit_config.linux_eks_managed_node_group[0].rendered, local.int_linux_default_user_data)
+  merge_user_data = var.is_eks_managed_node_group && length(var.ami_id) == 0 && var.platform == "linux"
 
-    }
-    windows = {
-      user_data = var.create && var.platform == "windows" && var.enable_bootstrap_user_data ? base64encode(templatefile(
-        coalesce(var.user_data_template_path, "${path.module}/../../templates/windows_user_data.tpl"),
-        {
-          # Required to bootstrap node
-          cluster_name        = var.cluster_name
-          cluster_endpoint    = var.cluster_endpoint
-          cluster_auth_base64 = var.cluster_auth_base64
-          # Optional - is appended if using EKS managed node group without custom AMI
-          # cluster_service_ipv4_cidr = var.cluster_service_ipv4_cidr # Not supported yet: https://github.com/awslabs/amazon-eks-ami/issues/805
-          bootstrap_extra_args     = var.bootstrap_extra_args
-          pre_bootstrap_user_data  = var.pre_bootstrap_user_data
-          post_bootstrap_user_data = var.post_bootstrap_user_data
-        }
-      )) : ""
-    }
+  user_data_env = merge(var.bootstrap_extra_args != null ? { BOOTSTRAP_EXTRA_ARGS = var.bootstrap_extra_args } : {}, var.user_data_env, {
+    CLUSTER_NAME   = var.cluster_name
+    API_SERVER_URL = var.cluster_endpoint
+    B64_CLUSTER_CA = var.cluster_auth_base64
+  }, var.cluster_service_ipv4_cidr != null ? { SERVICE_IPV4_CIDR = var.cluster_service_ipv4_cidr } : {})
+
+  template_args = {
+    cluster_name               = var.cluster_name
+    cluster_endpoint           = var.cluster_endpoint
+    cluster_auth_base64        = var.cluster_auth_base64
+    cluster_service_ipv4_cidr  = var.cluster_service_ipv4_cidr != null ? var.cluster_service_ipv4_cidr : ""
+    platform                   = var.platform
+    is_eks_managed_node_group  = var.is_eks_managed_node_group
+    merge_user_data            = local.merge_user_data
+    enable_bootstrap_user_data = (var.enable_bootstrap_user_data || length(var.ami_id) == 0) && !local.merge_user_data
+    pre_bootstrap_user_data    = var.pre_bootstrap_user_data
+    post_bootstrap_user_data   = var.post_bootstrap_user_data
+    bootstrap_extra_args       = var.bootstrap_extra_args
+    user_data_env              = local.user_data_env
   }
+
+  default_template_paths = {
+    "bottlerocket" = "${path.module}/../../templates/bottlerocket_user_data.tpl"
+    "linux"        = "${path.module}/../../templates/linux_user_data.tpl"
+    "windows"      = "${path.module}/../../templates/windows_user_data.tpl"
+    "linuxmerge"   = "${path.module}/../../templates/linux_mng_merge_user_data.tpl"
+  }
+
+  default_template_path = local.merge_user_data ? local.default_template_paths.linuxmerge : lookup(local.default_template_paths, var.platform, "")
+
+  template_path = coalesce(var.user_data_template_path, local.default_template_path)
+
+  raw_user_data = var.create && length(local.template_path) > 0 ? templatefile(local.template_path, local.template_args) : ""
+
+  user_data = try(data.cloudinit_config.merge_user_data[0].rendered, base64encode(local.raw_user_data))
 }
 
 # https://github.com/aws/containers-roadmap/issues/596#issuecomment-675097667
@@ -63,8 +46,8 @@ locals {
 # this merging will NOT happen and you are responsible for nodes joining the cluster.
 # See docs for more details -> https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-user-data
 
-data "cloudinit_config" "linux_eks_managed_node_group" {
-  count = var.create && var.platform == "linux" && var.is_eks_managed_node_group && !var.enable_bootstrap_user_data && var.pre_bootstrap_user_data != "" && var.user_data_template_path == "" ? 1 : 0
+data "cloudinit_config" "merge_user_data" {
+  count = var.create && local.merge_user_data ? 1 : 0
 
   base64_encode = true
   gzip          = false
@@ -73,6 +56,6 @@ data "cloudinit_config" "linux_eks_managed_node_group" {
   # Prepend to existing user data suppled by AWS EKS
   part {
     content_type = "text/x-shellscript"
-    content      = var.pre_bootstrap_user_data
+    content      = local.raw_user_data
   }
 }

@@ -9,14 +9,24 @@ output "eks_mng_linux_additional" {
   value       = base64decode(module.eks_mng_linux_additional.user_data)
 }
 
+output "eks_mng_linux_additional_custom_template" {
+  description = "Base64 decoded user data rendered for the provided inputs"
+  value       = base64decode(module.eks_mng_linux_additional_custom_template.user_data)
+}
+
 output "eks_mng_linux_custom_ami" {
   description = "Base64 decoded user data rendered for the provided inputs"
   value       = base64decode(module.eks_mng_linux_custom_ami.user_data)
 }
 
-output "eks_mng_linux_custom_template" {
+output "eks_mng_linux_custom_ami_custom_join" {
   description = "Base64 decoded user data rendered for the provided inputs"
-  value       = base64decode(module.eks_mng_linux_custom_template.user_data)
+  value       = base64decode(module.eks_mng_linux_custom_ami_custom_join.user_data)
+}
+
+output "eks_mng_linux_custom_ami_custom_template" {
+  description = "Base64 decoded user data rendered for the provided inputs"
+  value       = base64decode(module.eks_mng_linux_custom_ami_custom_template.user_data)
 }
 
 # EKS managed node group - bottlerocket
@@ -49,6 +59,11 @@ output "self_mng_linux_no_op" {
 output "self_mng_linux_bootstrap" {
   description = "Base64 decoded user data rendered for the provided inputs"
   value       = base64decode(module.self_mng_linux_bootstrap.user_data)
+}
+
+output "self_mng_linux_custom_join" {
+  description = "Base64 decoded user data rendered for the provided inputs"
+  value       = base64decode(module.self_mng_linux_custom_join.user_data)
 }
 
 output "self_mng_linux_custom_template" {

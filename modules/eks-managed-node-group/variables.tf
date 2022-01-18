@@ -21,7 +21,7 @@ variable "platform" {
 ################################################################################
 
 variable "enable_bootstrap_user_data" {
-  description = "Determines whether the bootstrap configurations are populated within the user data template"
+  description = "Determines whether the bootstrap configurations are populated within the user data template. Not used when `ami_id` == `\"\"`"
   type        = bool
   default     = false
 }
@@ -51,19 +51,19 @@ variable "cluster_service_ipv4_cidr" {
 }
 
 variable "pre_bootstrap_user_data" {
-  description = "User data that is injected into the user data script ahead of the EKS bootstrap script. Not used when `platform` = `bottlerocket`"
+  description = "User data that is injected into the user data script ahead of the EKS bootstrap script. Not used in the default template when `platform` == `bottlerocket`"
   type        = string
   default     = ""
 }
 
 variable "post_bootstrap_user_data" {
-  description = "User data that is appended to the user data script after of the EKS bootstrap script. Not used when `platform` = `bottlerocket`"
+  description = "User data that is appended to the user data script after of the EKS bootstrap script. Not used in the default template when user data is being merged or `platform` == `bottlerocket`"
   type        = string
   default     = ""
 }
 
 variable "bootstrap_extra_args" {
-  description = "Additional arguments passed to the bootstrap script. When `platform` = `bottlerocket`; these are additional [settings](https://github.com/bottlerocket-os/bottlerocket#settings) that are provided to the Bottlerocket user data"
+  description = "Additional arguments passed to the bootstrap script. When `platform` == `linux` prefer adding env variables to `user_data_env` for consistency with merged user data. When `platform` == `bottlerocket`; these are additional [settings](https://github.com/bottlerocket-os/bottlerocket#settings) in TOML that are provided to the Bottlerocket user data"
   type        = string
   default     = ""
 }
@@ -72,6 +72,12 @@ variable "user_data_template_path" {
   description = "Path to a local, custom user data template file to use when rendering user data"
   type        = string
   default     = ""
+}
+
+variable "user_data_env" {
+  description = "Map of environment variables to export as part of the user data. When user data is being merged these are also persisted and made available in the bootstrap script. Not used when `platform` == `bottlerocket`"
+  type        = map(string)
+  default     = {}
 }
 
 ################################################################################
@@ -85,7 +91,7 @@ variable "create_launch_template" {
 }
 
 variable "launch_template_name" {
-  description = "Launch template name - either to be created (`var.create_launch_template` = `true`) or existing (`var.create_launch_template` = `false`)"
+  description = "Launch template name - either to be created (`var.create_launch_template` == `true`) or existing (`var.create_launch_template` == `false`)"
   type        = string
   default     = ""
 }

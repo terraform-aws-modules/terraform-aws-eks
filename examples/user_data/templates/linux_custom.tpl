@@ -1,10 +1,11 @@
 #!/bin/bash
-set -ex
-
-${pre_bootstrap_user_data ~}
-
+set -e
 # Custom user data template provided for rendering
-B64_CLUSTER_CA=${cluster_auth_base64}
-API_SERVER_URL=${cluster_endpoint}
-/etc/eks/bootstrap.sh ${cluster_name} ${bootstrap_extra_args} --b64-cluster-ca $B64_CLUSTER_CA --apiserver-endpoint $API_SERVER_URL
+%{ for k, v in user_data_env ~}
+export ${k}="${v}"
+%{ endfor ~}
+${pre_bootstrap_user_data ~}
+%{ if enable_bootstrap_user_data ~}
+/etc/eks/bootstrap.sh "$${CLUSTER_NAME}" --b64-cluster-ca "$${B64_CLUSTER_CA}" --apiserver-endpoint "$${API_SERVER_URL}" $${BOOTSTRAP_EXTRA_ARGS}
+%{ endif ~}
 ${post_bootstrap_user_data ~}
