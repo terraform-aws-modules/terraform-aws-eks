@@ -96,6 +96,12 @@ variable "name" {
   default     = ""
 }
 
+variable "prefix_separator" {
+  description = "The separator to use between the prefix and the generated timestamp for resource names"
+  type        = string
+  default     = "-"
+}
+
 variable "subnet_ids" {
   description = "A list of subnet IDs for the EKS Fargate Profile"
   type        = list(string)

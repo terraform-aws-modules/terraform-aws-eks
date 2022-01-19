@@ -272,6 +272,12 @@ variable "name" {
   default     = ""
 }
 
+variable "prefix_separator" {
+  description = "The separator to use between the prefix and the generated timestamp for resource names"
+  type        = string
+  default     = "-"
+}
+
 variable "use_name_prefix" {
   description = "Determines whether to use `name` as is or create a unique name beginning with the `name` as the prefix"
   type        = bool
