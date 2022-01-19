@@ -214,7 +214,8 @@ module "fargate_profile" {
   iam_role_attach_cni_policy    = try(each.value.iam_role_attach_cni_policy, var.fargate_profile_defaults.iam_role_attach_cni_policy, true)
   iam_role_additional_policies  = try(each.value.iam_role_additional_policies, var.fargate_profile_defaults.iam_role_additional_policies, [])
 
-  tags = merge(var.tags, try(each.value.tags, var.fargate_profile_defaults.tags, {}))
+  tags             = merge(var.tags, try(each.value.tags, var.fargate_profile_defaults.tags, {}))
+  prefix_separator = var.prefix_separator
 }
 
 ################################################################################
@@ -318,7 +319,8 @@ module "eks_managed_node_group" {
   security_group_rules           = try(each.value.security_group_rules, var.eks_managed_node_group_defaults.security_group_rules, {})
   security_group_tags            = try(each.value.security_group_tags, var.eks_managed_node_group_defaults.security_group_tags, {})
 
-  tags = merge(var.tags, try(each.value.tags, var.eks_managed_node_group_defaults.tags, {}))
+  tags             = merge(var.tags, try(each.value.tags, var.eks_managed_node_group_defaults.tags, {}))
+  prefix_separator = var.prefix_separator
 }
 
 ################################################################################
@@ -440,6 +442,7 @@ module "self_managed_node_group" {
   security_group_rules           = try(each.value.security_group_rules, var.self_managed_node_group_defaults.security_group_rules, {})
   security_group_tags            = try(each.value.security_group_tags, var.self_managed_node_group_defaults.security_group_tags, {})
 
-  tags           = merge(var.tags, try(each.value.tags, var.self_managed_node_group_defaults.tags, {}))
-  propagate_tags = try(each.value.propagate_tags, var.self_managed_node_group_defaults.propagate_tags, [])
+  tags             = merge(var.tags, try(each.value.tags, var.self_managed_node_group_defaults.tags, {}))
+  propagate_tags   = try(each.value.propagate_tags, var.self_managed_node_group_defaults.propagate_tags, [])
+  prefix_separator = var.prefix_separator
 }
