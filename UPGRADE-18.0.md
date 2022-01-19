@@ -584,3 +584,22 @@ resource "aws_iam_role_policy_attachment" "default" {
   policy_arn = aws_iam_policy.default.arn
 }
 ```
+### Reusing existing Cluster IAM Role
+
+If you allowed the module to create your Cluster IAM Role
+and want to reuse it moving forward you must
+migrate it into the state.
+
+#### Pre-Upgrade
+
+```hcl
+terraform state mv 'module.eks.aws_iam_role.cluster[0]' 'module.eks.aws_iam_role.this[0]'
+```
+
+```hcl
+  prefix_separator         = ""
+  create_iam_role          = true
+  iam_role_use_name_prefix = false
+  iam_role_name            = "EXISTING ROLE NAME"
+  iam_role_arn             = "EXISTING ROLE ARN"
+```
