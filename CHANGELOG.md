@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.2.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.2.1...v18.2.2) (2022-01-22)
+
+
+### Bug Fixes
+
+* Attributes in timeouts are erroneously reversed ([#1804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1804)) ([f8fe584](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f8fe584d5b50cc4009ac6c34e3bbb33a4e282f2e))
+
 ### [18.2.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.2.0...v18.2.1) (2022-01-18)
 
 
