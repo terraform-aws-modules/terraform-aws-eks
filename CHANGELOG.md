@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.2.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.2.2...v18.2.3) (2022-01-24)
+
+
+### Bug Fixes
+
+* Add missing `mixed_instances_policy` parameter to the root module ([#1808](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1808)) ([4af77f2](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/4af77f244a558ec66db6561488a5d8cd0c0f1aed))
+
 ### [18.2.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.2.1...v18.2.2) (2022-01-22)
 
 
