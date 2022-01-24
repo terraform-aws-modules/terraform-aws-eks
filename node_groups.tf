@@ -367,6 +367,7 @@ module "self_managed_node_group" {
   initial_lifecycle_hooks    = try(each.value.initial_lifecycle_hooks, var.self_managed_node_group_defaults.initial_lifecycle_hooks, [])
   instance_refresh           = try(each.value.instance_refresh, var.self_managed_node_group_defaults.instance_refresh, null)
   use_mixed_instances_policy = try(each.value.use_mixed_instances_policy, var.self_managed_node_group_defaults.use_mixed_instances_policy, false)
+  mixed_instances_policy     = try(each.value.mixed_instances_policy, var.self_managed_node_group_defaults.mixed_instances_policy, null)
   warm_pool                  = try(each.value.warm_pool, var.self_managed_node_group_defaults.warm_pool, null)
 
   create_schedule = try(each.value.create_schedule, var.self_managed_node_group_defaults.create_schedule, false)
