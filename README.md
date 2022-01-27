@@ -578,6 +578,44 @@ Module provided default templates can be found under the [templates directory](h
   - Each node group (EKS Managed Node Group and Self Managed Node Group) by default creates its own security group. By default, this security group does not contain any additional security group rules. It is merely an "empty container" that offers users the ability to opt into any addition inbound our outbound rules as necessary
   - Users also have the option to supply their own, and/or additional, externally created security group(s) to the node group as well via the `vpc_security_group_ids` variable
 
+See the example snippet below which adds additional security group rules to the cluster security group as well as the shared node security group (for node-to-node access). Users can use this extensibility to open up network access as they see fit using the security groups provided by the module:
+
+```hcl
+  ...
+  # Extend cluster security group rules
+  cluster_security_group_additional_rules = {
+    egress_nodes_ephemeral_ports_tcp = {
+      description                = "To node 1025-65535"
+      protocol                   = "tcp"
+      from_port                  = 1025
+      to_port                    = 65535
+      type                       = "egress"
+      source_node_security_group = true
+    }
+  }
+
+  # Extend node-to-node security group rules
+  node_security_group_additional_rules = {
+    ingress_self_all = {
+      description = "Node to node all ports/protocols"
+      protocol    = "-1"
+      from_port   = 0
+      to_port     = 0
+      type        = "ingress"
+      self        = true
+    }
+    egress_all = {
+      description      = "Node all egress"
+      protocol         = "-1"
+      from_port        = 0
+      to_port          = 0
+      type             = "egress"
+      cidr_blocks      = ["0.0.0.0/0"]
+      ipv6_cidr_blocks = ["::/0"]
+    }
+  }
+  ...
+```
 The security groups created by this module are depicted in the image shown below along with their default inbound/outbound rules:
 
 <p align="center">
