@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.2.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.2.4...v18.2.5) (2022-02-01)
+
+
+### Bug Fixes
+
+* Correct issue where custom launch template is not used when EKS managed node group is used externally ([#1824](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1824)) ([e16b3c4](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e16b3c4cbd5f139d54467965f690e79f8e68b76b))
+
 ### [18.2.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.2.3...v18.2.4) (2022-01-30)
 
 
