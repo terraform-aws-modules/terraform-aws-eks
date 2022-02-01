@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.2.6](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.2.5...v18.2.6) (2022-02-01)
+
+
+### Bug Fixes
+
+* Wrong rolearn in aws_auth_configmap_yaml ([#1820](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1820)) ([776009d](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/776009d74b16e97974534668ca01a950d660166a))
+
 ### [18.2.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.2.4...v18.2.5) (2022-02-01)
 
 

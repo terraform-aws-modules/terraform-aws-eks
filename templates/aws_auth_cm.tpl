@@ -27,7 +27,7 @@ data:
         - system:bootstrappers
         - system:nodes
 %{ endfor ~}
-%{ for role in fargate_profile_arns ~}
+%{ for role in fargate_profile_pod_execution_role_arns ~}
     - rolearn: ${role}
       username: system:node:{{SessionName}}
       groups:
