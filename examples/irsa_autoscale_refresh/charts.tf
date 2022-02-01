@@ -1,3 +1,9 @@
+provider "kubernetes" {
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  token                  = data.aws_eks_cluster_auth.cluster.token
+}
+
 provider "helm" {
   kubernetes {
     host                   = module.eks.cluster_endpoint
@@ -26,8 +32,13 @@ resource "helm_release" "cluster_autoscaler" {
   }
 
   set {
+    name  = "rbac.serviceAccount.create"
+    value = "false"
+  }
+
+  set {
     name  = "rbac.serviceAccount.name"
-    value = "cluster-autoscaler-aws"
+    value = module.iam_assumable_role_cluster_autoscaler.service_account_name
   }
 
   set {
@@ -58,17 +69,17 @@ resource "helm_release" "cluster_autoscaler" {
 }
 
 module "iam_assumable_role_cluster_autoscaler" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version = "~> 4.0"
+  source = "../../modules/irsa"
 
-  create_role      = true
-  role_name_prefix = "cluster-autoscaler"
-  role_description = "IRSA role for cluster autoscaler"
+  name         = "cluster-autoscaler"
+  cluster_name = module.eks.cluster_id
 
-  provider_url                   = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
-  role_policy_arns               = [aws_iam_policy.cluster_autoscaler.arn]
-  oidc_fully_qualified_subjects  = ["system:serviceaccount:kube-system:cluster-autoscaler-aws"]
-  oidc_fully_qualified_audiences = ["sts.amazonaws.com"]
+  iam_role_description         = "IRSA role for cluster autoscaler"
+  iam_role_additional_policies = [aws_iam_policy.cluster_autoscaler.arn]
+
+  # System namespace
+  create_namespace = false
+  namespace_name   = "kube-system"
 
   tags = local.tags
 }
@@ -136,8 +147,13 @@ resource "helm_release" "aws_node_termination_handler" {
   }
 
   set {
-    name  = "serviceAccount.name"
-    value = "aws-node-termination-handler"
+    name  = "rbac.serviceAccount.create"
+    value = "false"
+  }
+
+  set {
+    name  = "rbac.serviceAccount.name"
+    value = module.aws_node_termination_handler_role.service_account_name
   }
 
   set {
@@ -173,17 +189,17 @@ resource "helm_release" "aws_node_termination_handler" {
 }
 
 module "aws_node_termination_handler_role" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version = "~> 4.0"
+  source = "../../modules/irsa"
 
-  create_role      = true
-  role_name_prefix = "node-termination-handler"
-  role_description = "IRSA role for node termination handler"
+  name         = "node-termination-handler"
+  cluster_name = module.eks.cluster_id
 
-  provider_url                   = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
-  role_policy_arns               = [aws_iam_policy.aws_node_termination_handler.arn]
-  oidc_fully_qualified_subjects  = ["system:serviceaccount:kube-system:aws-node-termination-handler"]
-  oidc_fully_qualified_audiences = ["sts.amazonaws.com"]
+  iam_role_description         = "IRSA role for node termination handler"
+  iam_role_additional_policies = [aws_iam_policy.aws_node_termination_handler.arn]
+
+  # System namespace
+  create_namespace = false
+  namespace_name   = "kube-system"
 
   tags = local.tags
 }
