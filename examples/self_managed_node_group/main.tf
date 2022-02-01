@@ -163,12 +163,12 @@ module "eks" {
       bootstrap_extra_args = "--kubelet-extra-args '--max-pods=110'"
 
       pre_bootstrap_user_data = <<-EOT
-        export CONTAINER_RUNTIME="containerd"
-        export USE_MAX_PODS=false
+      export CONTAINER_RUNTIME="containerd"
+      export USE_MAX_PODS=false
       EOT
 
       post_bootstrap_user_data = <<-EOT
-        echo "you are free little kubelet!"
+      echo "you are free little kubelet!"
       EOT
 
       disk_size     = 256

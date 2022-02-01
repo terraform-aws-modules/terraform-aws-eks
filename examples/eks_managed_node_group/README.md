@@ -35,8 +35,6 @@ When using the default AMI provided by the EKS Managed Node Group service (i.e. 
     # Source extra environment variables in bootstrap script
     sed -i '/^set -o errexit/a\\nsource /etc/profile.d/bootstrap.sh' /etc/eks/bootstrap.sh
     EOT
-
-    instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
   }
   ...
 ```

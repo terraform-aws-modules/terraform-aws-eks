@@ -193,8 +193,6 @@ module "eks" {
       # Source extra environment variables in bootstrap script
       sed -i '/^set -o errexit/a\\nsource /etc/profile.d/bootstrap.sh' /etc/eks/bootstrap.sh
       EOT
-
-      instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
     }
 
     # Complete
@@ -213,12 +211,12 @@ module "eks" {
       bootstrap_extra_args       = "--container-runtime containerd --kubelet-extra-args '--max-pods=20'"
 
       pre_bootstrap_user_data = <<-EOT
-        export CONTAINER_RUNTIME="containerd"
-        export USE_MAX_PODS=false
+      export CONTAINER_RUNTIME="containerd"
+      export USE_MAX_PODS=false
       EOT
 
       post_bootstrap_user_data = <<-EOT
-        echo "you are free little kubelet!"
+      echo "you are free little kubelet!"
       EOT
 
       capacity_type        = "SPOT"

@@ -30,7 +30,7 @@ module "user_data" {
 ################################################################################
 
 locals {
-  use_custom_launch_template = var.launch_template_name != ""
+  use_custom_launch_template = var.create_launch_template || var.launch_template_name != ""
   launch_template_name_int   = coalesce(var.launch_template_name, "${var.name}-eks-node-group")
 }
 
