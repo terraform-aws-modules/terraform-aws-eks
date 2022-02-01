@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.2.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.2.3...v18.2.4) (2022-01-30)
+
+
+### Bug Fixes
+
+* add missing `launch_template_use_name_prefix` parameter to the root module ([#1818](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1818)) ([d6888b5](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/d6888b5eb6748a065063b0679f228f9fbbf93284))
+
 ### [18.2.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.2.2...v18.2.3) (2022-01-24)
 
 
