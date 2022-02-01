@@ -94,7 +94,7 @@ module "eks" {
       name = "bottlerocket-self-mng"
 
       platform      = "bottlerocket"
-      ami_id        = data.aws_ami.bottlerocket_ami.id
+      ami_id        = data.aws_ami.eks_default_bottlerocket.id
       instance_type = "m5.large"
       desired_size  = 2
       key_name      = aws_key_pair.this.key_name
@@ -159,7 +159,7 @@ module "eks" {
       max_size     = 7
       desired_size = 1
 
-      ami_id               = "ami-0caf35bc73450c396"
+      ami_id               = data.aws_ami.eks_default.id
       bootstrap_extra_args = "--kubelet-extra-args '--max-pods=110'"
 
       pre_bootstrap_user_data = <<-EOT
@@ -374,14 +374,24 @@ resource "aws_kms_key" "eks" {
   tags = local.tags
 }
 
-data "aws_ami" "bottlerocket_ami" {
+data "aws_ami" "eks_default" {
+  filter {
+    name   = "name"
+    values = ["amazon-eks-node-${local.cluster_version}-v*"]
+  }
+
   most_recent = true
   owners      = ["amazon"]
+}
 
+data "aws_ami" "eks_default_bottlerocket" {
   filter {
     name   = "name"
     values = ["bottlerocket-aws-k8s-${local.cluster_version}-x86_64-*"]
   }
+
+  most_recent = true
+  owners      = ["amazon"]
 }
 
 resource "tls_private_key" "this" {
