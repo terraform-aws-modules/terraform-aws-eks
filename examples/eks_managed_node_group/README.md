@@ -12,6 +12,33 @@ Configuration in this directory creates an AWS EKS cluster with various EKS Mana
 
 See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) for further details.
 
+## Container Runtime & User Data
+
+When using the default AMI provided by the EKS Managed Node Group service (i.e. - not specifying a value for `ami_id`), users should be aware of the limitations of configuring the node bootstrap process via user data. Due to not having direct access to the bootrap.sh script invocation and therefore its configuration flags (this is provide by the EKS Managed Node Group service in the node user data), a work around for ensuring the appropriate configuration settings is shown below. The following example shows how to inject configuration variables ahead of the merged user data provided by the EKS Managed Node Group service as well as how to enable the containerd runtime using this approach. More details can be found [here](https://github.com/awslabs/amazon-eks-ami/issues/844).
+
+```hcl
+  ...
+  # Demo of containerd usage when not specifying a custom AMI ID
+  # (merged into user data before EKS MNG provided user data)
+  containerd = {
+    name = "containerd"
+
+    # See issue https://github.com/awslabs/amazon-eks-ami/issues/844
+    pre_bootstrap_user_data = <<-EOT
+    #!/bin/bash
+    set -ex
+    cat <<-EOF > /etc/profile.d/bootstrap.sh
+    export CONTAINER_RUNTIME="containerd"
+    export USE_MAX_PODS=false
+    export KUBELET_EXTRA_ARGS="--max-pods=110"
+    EOF
+    # Source extra environment variables in bootstrap script
+    sed -i '/^set -o errexit/a\\nsource /etc/profile.d/bootstrap.sh' /etc/eks/bootstrap.sh
+    EOT
+  }
+  ...
+```
+
 ## Usage
 
 To run this example you need to execute:
@@ -63,6 +90,9 @@ Note that this example may create resources which cost money. Run `terraform des
 | [aws_security_group.remote_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [null_resource.patch](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [tls_private_key.this](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
+| [aws_ami.eks_default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
+| [aws_ami.eks_default_arm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
+| [aws_ami.eks_default_bottlerocket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_eks_cluster_auth.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
 | [aws_iam_policy_document.ebs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |

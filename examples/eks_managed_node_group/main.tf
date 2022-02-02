@@ -133,7 +133,7 @@ module "eks" {
     # Custom AMI, using module provided bootstrap data
     bottlerocket_custom = {
       # Current bottlerocket AMI
-      ami_id   = "ami-0ff61e0bcfc81dc94"
+      ami_id   = data.aws_ami.eks_default_bottlerocket.image_id
       platform = "bottlerocket"
 
       # use module user data template to boostrap
@@ -165,7 +165,7 @@ module "eks" {
     custom_ami = {
       ami_type = "AL2_ARM_64"
       # Current default AMI used by managed node groups - pseudo "custom"
-      ami_id = "ami-01dc0aa438e3214c2" # ARM
+      ami_id = data.aws_ami.eks_default_arm.image_id
 
       # This will ensure the boostrap user data is used to join the node
       # By default, EKS managed node groups will not append bootstrap script;
@@ -174,6 +174,25 @@ module "eks" {
       enable_bootstrap_user_data = true
 
       instance_types = ["t4g.medium"]
+    }
+
+    # Demo of containerd usage when not specifying a custom AMI ID
+    # (merged into user data before EKS MNG provided user data)
+    containerd = {
+      name = "containerd"
+
+      # See issue https://github.com/awslabs/amazon-eks-ami/issues/844
+      pre_bootstrap_user_data = <<-EOT
+      #!/bin/bash
+      set -ex
+      cat <<-EOF > /etc/profile.d/bootstrap.sh
+      export CONTAINER_RUNTIME="containerd"
+      export USE_MAX_PODS=false
+      export KUBELET_EXTRA_ARGS="--max-pods=110"
+      EOF
+      # Source extra environment variables in bootstrap script
+      sed -i '/^set -o errexit/a\\nsource /etc/profile.d/bootstrap.sh' /etc/eks/bootstrap.sh
+      EOT
     }
 
     # Complete
@@ -187,23 +206,23 @@ module "eks" {
       max_size     = 7
       desired_size = 1
 
-      ami_id                     = "ami-0caf35bc73450c396"
+      ami_id                     = data.aws_ami.eks_default.image_id
       enable_bootstrap_user_data = true
       bootstrap_extra_args       = "--container-runtime containerd --kubelet-extra-args '--max-pods=20'"
 
       pre_bootstrap_user_data = <<-EOT
-        export CONTAINER_RUNTIME="containerd"
-        export USE_MAX_PODS=false
+      export CONTAINER_RUNTIME="containerd"
+      export USE_MAX_PODS=false
       EOT
 
       post_bootstrap_user_data = <<-EOT
-        echo "you are free little kubelet!"
+      echo "you are free little kubelet!"
       EOT
 
       capacity_type        = "SPOT"
       disk_size            = 256
       force_update_version = true
-      instance_types       = ["m6i.large", "m5.large", "m5n.large", "m5zn.large", "m3.large", "m4.large"]
+      instance_types       = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
       labels = {
         GithubRepo = "terraform-aws-eks"
         GithubOrg  = "terraform-aws-modules"
@@ -618,4 +637,34 @@ resource "aws_iam_policy" "node_additional" {
   })
 
   tags = local.tags
+}
+
+data "aws_ami" "eks_default" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["amazon-eks-node-${local.cluster_version}-v*"]
+  }
+}
+
+data "aws_ami" "eks_default_arm" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["amazon-eks-arm64-node-${local.cluster_version}-v*"]
+  }
+}
+
+data "aws_ami" "eks_default_bottlerocket" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["bottlerocket-aws-k8s-${local.cluster_version}-x86_64-*"]
+  }
 }
