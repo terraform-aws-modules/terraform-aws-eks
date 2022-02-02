@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.2.7](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.2.6...v18.2.7) (2022-02-02)
+
+
+### Bug Fixes
+
+* Don't tag self managed node security group with kubernetes.io/cluster tag ([#1774](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1774)) ([a638e4a](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/a638e4a754c15ab230cfb0e91de026e038ca4e26))
+
 ### [18.2.6](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.2.5...v18.2.6) (2022-02-01)
 
 
