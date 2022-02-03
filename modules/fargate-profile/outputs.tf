@@ -35,3 +35,8 @@ output "fargate_profile_status" {
   description = "Status of the EKS Fargate Profile"
   value       = try(aws_eks_fargate_profile.this[0].status, "")
 }
+
+output "fargate_profile_pod_execution_role_arn" {
+  description = "Amazon Resource Name (ARN) of the EKS Fargate Profile Pod execution role ARN"
+  value       = try(aws_eks_fargate_profile.this[0].pod_execution_role_arn, "")
+}

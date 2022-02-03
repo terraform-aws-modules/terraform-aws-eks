@@ -368,6 +368,7 @@ module "self_managed_node_group" {
   initial_lifecycle_hooks    = try(each.value.initial_lifecycle_hooks, var.self_managed_node_group_defaults.initial_lifecycle_hooks, [])
   instance_refresh           = try(each.value.instance_refresh, var.self_managed_node_group_defaults.instance_refresh, null)
   use_mixed_instances_policy = try(each.value.use_mixed_instances_policy, var.self_managed_node_group_defaults.use_mixed_instances_policy, false)
+  mixed_instances_policy     = try(each.value.mixed_instances_policy, var.self_managed_node_group_defaults.mixed_instances_policy, null)
   warm_pool                  = try(each.value.warm_pool, var.self_managed_node_group_defaults.warm_pool, null)
 
   create_schedule = try(each.value.create_schedule, var.self_managed_node_group_defaults.create_schedule, false)
@@ -385,10 +386,11 @@ module "self_managed_node_group" {
   user_data_template_path  = try(each.value.user_data_template_path, var.self_managed_node_group_defaults.user_data_template_path, "")
 
   # Launch Template
-  create_launch_template      = try(each.value.create_launch_template, var.self_managed_node_group_defaults.create_launch_template, true)
-  launch_template_name        = try(each.value.launch_template_name, each.key)
-  launch_template_version     = try(each.value.launch_template_version, var.self_managed_node_group_defaults.launch_template_version, null)
-  launch_template_description = try(each.value.launch_template_description, var.self_managed_node_group_defaults.launch_template_description, "Custom launch template for ${try(each.value.name, each.key)} self managed node group")
+  create_launch_template          = try(each.value.create_launch_template, var.self_managed_node_group_defaults.create_launch_template, true)
+  launch_template_name            = try(each.value.launch_template_name, each.key)
+  launch_template_use_name_prefix = try(each.value.launch_template_use_name_prefix, var.self_managed_node_group_defaults.launch_template_use_name_prefix, true)
+  launch_template_version         = try(each.value.launch_template_version, var.self_managed_node_group_defaults.launch_template_version, null)
+  launch_template_description     = try(each.value.launch_template_description, var.self_managed_node_group_defaults.launch_template_description, "Custom launch template for ${try(each.value.name, each.key)} self managed node group")
 
   ebs_optimized   = try(each.value.ebs_optimized, var.self_managed_node_group_defaults.ebs_optimized, null)
   ami_id          = try(each.value.ami_id, var.self_managed_node_group_defaults.ami_id, "")

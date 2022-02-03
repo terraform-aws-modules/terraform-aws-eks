@@ -30,8 +30,14 @@ module "user_data" {
 ################################################################################
 
 locals {
-  use_custom_launch_template = var.launch_template_name != ""
-  launch_template_name_int   = coalesce(var.launch_template_name, "${var.name}-eks-node-group")
+  # There are 4 scenarios here that have to be considered for `use_custom_launch_template`:
+  # 1. `var.create_launch_template = false && var.launch_template_name == ""` => EKS MNG will use its own default LT
+  # 2. `var.create_launch_template = false && var.launch_template_name == "something"` => User provided custom LT will be used
+  # 3. `var.create_launch_template = true && var.launch_template_name == ""` => Custom LT will be used, module will provide a default name
+  # 4. `var.create_launch_template = true && var.launch_template_name == "something"` => Custom LT will be used, LT name is provided by user
+  use_custom_launch_template = var.create_launch_template || var.launch_template_name != ""
+
+  launch_template_name_int = coalesce(var.launch_template_name, "${var.name}-eks-node-group")
 }
 
 resource "aws_launch_template" "this" {

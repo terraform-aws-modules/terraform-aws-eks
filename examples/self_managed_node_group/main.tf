@@ -48,6 +48,39 @@ module "eks" {
 
   enable_irsa = true
 
+  # Extend cluster security group rules
+  cluster_security_group_additional_rules = {
+    egress_nodes_ephemeral_ports_tcp = {
+      description                = "To node 1025-65535"
+      protocol                   = "tcp"
+      from_port                  = 1025
+      to_port                    = 65535
+      type                       = "egress"
+      source_node_security_group = true
+    }
+  }
+
+  # Extend node-to-node security group rules
+  node_security_group_additional_rules = {
+    ingress_self_all = {
+      description = "Node to node all ports/protocols"
+      protocol    = "-1"
+      from_port   = 0
+      to_port     = 0
+      type        = "ingress"
+      self        = true
+    }
+    egress_all = {
+      description      = "Node all egress"
+      protocol         = "-1"
+      from_port        = 0
+      to_port          = 0
+      type             = "egress"
+      cidr_blocks      = ["0.0.0.0/0"]
+      ipv6_cidr_blocks = ["::/0"]
+    }
+  }
+
   self_managed_node_group_defaults = {
     disk_size = 50
   }
@@ -61,7 +94,7 @@ module "eks" {
       name = "bottlerocket-self-mng"
 
       platform      = "bottlerocket"
-      ami_id        = data.aws_ami.bottlerocket_ami.id
+      ami_id        = data.aws_ami.eks_default_bottlerocket.id
       instance_type = "m5.large"
       desired_size  = 2
       key_name      = aws_key_pair.this.key_name
@@ -85,6 +118,36 @@ module "eks" {
       EOT
     }
 
+    mixed = {
+      name = "mixed"
+
+      min_size     = 1
+      max_size     = 5
+      desired_size = 2
+
+      bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+
+      use_mixed_instances_policy = true
+      mixed_instances_policy = {
+        instances_distribution = {
+          on_demand_base_capacity                  = 0
+          on_demand_percentage_above_base_capacity = 20
+          spot_allocation_strategy                 = "capacity-optimized"
+        }
+
+        override = [
+          {
+            instance_type     = "m5.large"
+            weighted_capacity = "1"
+          },
+          {
+            instance_type     = "m6i.large"
+            weighted_capacity = "2"
+          },
+        ]
+      }
+    }
+
     # Complete
     complete = {
       name            = "complete-self-mng"
@@ -96,16 +159,16 @@ module "eks" {
       max_size     = 7
       desired_size = 1
 
-      ami_id               = "ami-0caf35bc73450c396"
+      ami_id               = data.aws_ami.eks_default.id
       bootstrap_extra_args = "--kubelet-extra-args '--max-pods=110'"
 
       pre_bootstrap_user_data = <<-EOT
-        export CONTAINER_RUNTIME="containerd"
-        export USE_MAX_PODS=false
+      export CONTAINER_RUNTIME="containerd"
+      export USE_MAX_PODS=false
       EOT
 
       post_bootstrap_user_data = <<-EOT
-        echo "you are free little kubelet!"
+      echo "you are free little kubelet!"
       EOT
 
       disk_size     = 256
@@ -311,7 +374,17 @@ resource "aws_kms_key" "eks" {
   tags = local.tags
 }
 
-data "aws_ami" "bottlerocket_ami" {
+data "aws_ami" "eks_default" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["amazon-eks-node-${local.cluster_version}-v*"]
+  }
+}
+
+data "aws_ami" "eks_default_bottlerocket" {
   most_recent = true
   owners      = ["amazon"]
 

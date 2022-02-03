@@ -43,8 +43,8 @@ resource "aws_eks_cluster" "this" {
 
   timeouts {
     create = lookup(var.cluster_timeouts, "create", null)
-    delete = lookup(var.cluster_timeouts, "update", null)
-    update = lookup(var.cluster_timeouts, "delete", null)
+    update = lookup(var.cluster_timeouts, "update", null)
+    delete = lookup(var.cluster_timeouts, "delete", null)
   }
 
   depends_on = [
