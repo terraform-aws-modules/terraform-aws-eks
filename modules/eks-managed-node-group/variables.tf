@@ -408,6 +408,12 @@ variable "security_group_tags" {
   default     = {}
 }
 
+variable "launch_template_ignore_changes" {
+  description = "A list of additional ignore_changes to add to the launch template created"
+  type        = list(string)
+  default     = []
+}
+
 ################################################################################
 # IAM Role
 ################################################################################
