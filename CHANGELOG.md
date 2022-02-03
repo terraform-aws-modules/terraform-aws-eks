@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.2.7...v18.3.0) (2022-02-03)
+
+
+### Features
+
+* Add launch_template_tags variable for additional launch template tags ([#1835](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1835)) ([9186def](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/9186defcf6ef72502131cffb8b781e1591d2139e))
+
 ### [18.2.7](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.2.6...v18.2.7) (2022-02-02)
 
 
