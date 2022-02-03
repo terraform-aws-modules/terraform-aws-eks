@@ -238,6 +238,12 @@ variable "placement" {
   default     = null
 }
 
+variable "launch_template_tags" {
+  description = "A map of additional tags to add to the tag_specifications of launch template created"
+  type        = map(string)
+  default     = {}
+}
+
 ################################################################################
 # EKS Managed Node Group
 ################################################################################

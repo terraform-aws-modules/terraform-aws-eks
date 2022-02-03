@@ -273,6 +273,7 @@ module "eks_managed_node_group" {
   launch_template_use_name_prefix = try(each.value.launch_template_use_name_prefix, var.eks_managed_node_group_defaults.launch_template_use_name_prefix, true)
   launch_template_version         = try(each.value.launch_template_version, var.eks_managed_node_group_defaults.launch_template_version, null)
   launch_template_description     = try(each.value.launch_template_description, var.eks_managed_node_group_defaults.launch_template_description, "Custom launch template for ${try(each.value.name, each.key)} EKS managed node group")
+  launch_template_tags            = try(each.value.launch_template_tags, var.eks_managed_node_group_defaults.launch_template_tags, {})
 
   ebs_optimized                          = try(each.value.ebs_optimized, var.eks_managed_node_group_defaults.ebs_optimized, null)
   key_name                               = try(each.value.key_name, var.eks_managed_node_group_defaults.key_name, null)
@@ -390,6 +391,7 @@ module "self_managed_node_group" {
   launch_template_use_name_prefix = try(each.value.launch_template_use_name_prefix, var.self_managed_node_group_defaults.launch_template_use_name_prefix, true)
   launch_template_version         = try(each.value.launch_template_version, var.self_managed_node_group_defaults.launch_template_version, null)
   launch_template_description     = try(each.value.launch_template_description, var.self_managed_node_group_defaults.launch_template_description, "Custom launch template for ${try(each.value.name, each.key)} self managed node group")
+  launch_template_tags            = try(each.value.launch_template_tags, var.self_managed_node_group_defaults.launch_template_tags, {})
 
   ebs_optimized   = try(each.value.ebs_optimized, var.self_managed_node_group_defaults.ebs_optimized, null)
   ami_id          = try(each.value.ami_id, var.self_managed_node_group_defaults.ami_id, "")
