@@ -408,6 +408,12 @@ variable "security_group_tags" {
   default     = {}
 }
 
+variable "launch_template_tag_specifications_tags" {
+  description = "A map of additional tags to add to the tag_specifications of launch template created"
+  type        = map(string)
+  default     = {}
+}
+
 ################################################################################
 # IAM Role
 ################################################################################
