@@ -296,6 +296,7 @@ module "eks_managed_node_group" {
   enable_monitoring                  = try(each.value.enable_monitoring, var.eks_managed_node_group_defaults.enable_monitoring, true)
   network_interfaces                 = try(each.value.network_interfaces, var.eks_managed_node_group_defaults.network_interfaces, [])
   placement                          = try(each.value.placement, var.eks_managed_node_group_defaults.placement, null)
+  launch_template_tags               = try(each.value.launch_template_tags, var.eks_managed_node_group_defaults.launch_template_tags, null)
 
   # IAM role
   create_iam_role               = try(each.value.create_iam_role, var.eks_managed_node_group_defaults.create_iam_role, true)
@@ -418,6 +419,7 @@ module "self_managed_node_group" {
   enable_monitoring                  = try(each.value.enable_monitoring, var.self_managed_node_group_defaults.enable_monitoring, true)
   network_interfaces                 = try(each.value.network_interfaces, var.self_managed_node_group_defaults.network_interfaces, [])
   placement                          = try(each.value.placement, var.self_managed_node_group_defaults.placement, null)
+  launch_template_tags               = try(each.value.launch_template_tags, var.self_managed_node_group_defaults.launch_template_tags, null)
 
   # IAM role
   create_iam_instance_profile   = try(each.value.create_iam_instance_profile, var.self_managed_node_group_defaults.create_iam_instance_profile, true)
