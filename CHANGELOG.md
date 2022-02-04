@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.3.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.3.0...v18.3.1) (2022-02-04)
+
+
+### Bug Fixes
+
+* The `block_duration_minutes` attribute under launch template `spot_options` is not a required ([#1847](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1847)) ([ccc4747](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ccc4747122b29ac35975e3c89edaa6ee28a86e4a))
+
 ## [18.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.2.7...v18.3.0) (2022-02-03)
 
 
