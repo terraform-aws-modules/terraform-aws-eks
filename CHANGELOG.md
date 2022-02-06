@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.4.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.3.1...v18.4.0) (2022-02-06)
+
+
+### Features
+
+* enable IRSA by default ([#1849](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1849)) ([21c3802](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/21c3802dea52bf51ab99c322fcfdce554086a794))
+
 ### [18.3.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.3.0...v18.3.1) (2022-02-04)
 
 
