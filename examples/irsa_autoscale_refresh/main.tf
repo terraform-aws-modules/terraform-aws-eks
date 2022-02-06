@@ -35,8 +35,6 @@ module "eks" {
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
-  enable_irsa = true
-
   # Self Managed Node Group(s)
   self_managed_node_groups = {
     refresh = {
