@@ -158,7 +158,7 @@ resource "aws_launch_template" "this" {
       dynamic "spot_options" {
         for_each = lookup(instance_market_options.value, "spot_options", null) != null ? [instance_market_options.value.spot_options] : []
         content {
-          block_duration_minutes         = spot_options.value.block_duration_minutes
+          block_duration_minutes         = lookup(spot_options.value, block_duration_minutes, null)
           instance_interruption_behavior = lookup(spot_options.value, "instance_interruption_behavior", null)
           max_price                      = lookup(spot_options.value, "max_price", null)
           spot_instance_type             = lookup(spot_options.value, "spot_instance_type", null)

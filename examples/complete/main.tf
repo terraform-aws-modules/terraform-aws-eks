@@ -192,6 +192,10 @@ module "eks_managed_node_group" {
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
+  vpc_security_group_ids = [
+    module.eks.cluster_primary_security_group_id,
+    module.eks.cluster_security_group_id,
+  ]
 
   tags = merge(local.tags, { Separate = "eks-managed-node-group" })
 }
