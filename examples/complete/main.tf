@@ -44,8 +44,6 @@ module "eks" {
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
-  enable_irsa = true
-
   # Extend cluster security group rules
   cluster_security_group_additional_rules = {
     egress_nodes_ephemeral_ports_tcp = {
