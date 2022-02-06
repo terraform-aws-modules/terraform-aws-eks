@@ -238,7 +238,7 @@ variable "node_security_group_tags" {
 variable "enable_irsa" {
   description = "Determines whether to create an OpenID Connect Provider for EKS to enable IRSA"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "openid_connect_audiences" {
