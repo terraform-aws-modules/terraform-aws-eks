@@ -331,6 +331,8 @@ module "self_managed_node_group" {
 
   for_each = { for k, v in var.self_managed_node_groups : k => v if var.create }
 
+  create = try(each.value.create, true)
+
   cluster_name      = aws_eks_cluster.this[0].name
   cluster_ip_family = var.cluster_ip_family
 
