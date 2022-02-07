@@ -234,6 +234,16 @@ resource "aws_eks_addon" "this" {
     ]
   }
 
+  # Note: if an addon needs to be provisioned ahead of a node group users will
+  # need to create the addon outside of this module until a 2nd addon resource is added
+  # to the module (here) that is not dependent on node groups
+  # Or if addon management improves, this dependency can be removed https://github.com/aws/containers-roadmap/issues/1389
+  depends_on = [
+    module.fargate_profile,
+    module.eks_managed_node_group,
+    module.self_managed_node_group,
+  ]
+
   tags = var.tags
 }
 
