@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.4.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.4.0...v18.4.1) (2022-02-07)
+
+
+### Bug Fixes
+
+* Add node group dependency for EKS addons resource creation ([#1840](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1840)) ([2515e0e](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/2515e0e561509d026fd0d4725ab0bd864e7340f9))
+
 ## [18.4.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.3.1...v18.4.0) (2022-02-06)
 
 
