@@ -270,7 +270,6 @@ resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_spot" {
   event_pattern = jsonencode({
     "source" : ["aws.ec2"],
     "detail-type" : ["EC2 Spot Instance Interruption Warning"]
-    "resources" : [for group in module.eks.self_managed_node_groups : group.autoscaling_group_arn]
   })
 }
 
