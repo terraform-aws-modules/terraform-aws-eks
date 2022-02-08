@@ -194,6 +194,8 @@ module "fargate_profile" {
 
   for_each = { for k, v in var.fargate_profiles : k => v if var.create }
 
+  create = try(each.value.create, true)
+
   # Fargate Profile
   cluster_name      = aws_eks_cluster.this[0].name
   cluster_ip_family = var.cluster_ip_family
@@ -225,6 +227,8 @@ module "eks_managed_node_group" {
   source = "./modules/eks-managed-node-group"
 
   for_each = { for k, v in var.eks_managed_node_groups : k => v if var.create }
+
+  create = try(each.value.create, true)
 
   cluster_name              = aws_eks_cluster.this[0].name
   cluster_version           = try(each.value.cluster_version, var.eks_managed_node_group_defaults.cluster_version, var.cluster_version)
@@ -330,6 +334,8 @@ module "self_managed_node_group" {
   source = "./modules/self-managed-node-group"
 
   for_each = { for k, v in var.self_managed_node_groups : k => v if var.create }
+
+  create = try(each.value.create, true)
 
   cluster_name      = aws_eks_cluster.this[0].name
   cluster_ip_family = var.cluster_ip_family
