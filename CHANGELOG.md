@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.4.1...v18.5.0) (2022-02-08)
+
+
+### Features
+
+* Allow conditional creation of node groups to be set within node group definitions ([#1848](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1848)) ([665f468](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/665f468c1f4839836b1cb5fa5f18ebba17696288))
+
 ### [18.4.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.4.0...v18.4.1) (2022-02-07)
 
 
