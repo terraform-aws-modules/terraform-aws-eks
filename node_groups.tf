@@ -281,7 +281,7 @@ module "eks_managed_node_group" {
 
   ebs_optimized                          = try(each.value.ebs_optimized, var.eks_managed_node_group_defaults.ebs_optimized, null)
   key_name                               = try(each.value.key_name, var.eks_managed_node_group_defaults.key_name, null)
-  vpc_security_group_ids                 = compact(concat([try(aws_security_group.node[0].id, "")], try(each.value.vpc_security_group_ids, var.eks_managed_node_group_defaults.vpc_security_group_ids, [])))
+  vpc_security_group_ids                 = compact(concat([local.node_security_group_id], try(each.value.vpc_security_group_ids, var.eks_managed_node_group_defaults.vpc_security_group_ids, [])))
   launch_template_default_version        = try(each.value.launch_template_default_version, var.eks_managed_node_group_defaults.launch_template_default_version, null)
   update_launch_template_default_version = try(each.value.update_launch_template_default_version, var.eks_managed_node_group_defaults.update_launch_template_default_version, true)
   disable_api_termination                = try(each.value.disable_api_termination, var.eks_managed_node_group_defaults.disable_api_termination, null)
@@ -405,7 +405,7 @@ module "self_managed_node_group" {
   instance_type   = try(each.value.instance_type, var.self_managed_node_group_defaults.instance_type, "m6i.large")
   key_name        = try(each.value.key_name, var.self_managed_node_group_defaults.key_name, null)
 
-  vpc_security_group_ids                 = compact(concat([try(aws_security_group.node[0].id, "")], try(each.value.vpc_security_group_ids, var.self_managed_node_group_defaults.vpc_security_group_ids, [])))
+  vpc_security_group_ids                 = compact(concat([local.node_security_group_id], try(each.value.vpc_security_group_ids, var.self_managed_node_group_defaults.vpc_security_group_ids, [])))
   cluster_security_group_id              = local.cluster_security_group_id
   launch_template_default_version        = try(each.value.launch_template_default_version, var.self_managed_node_group_defaults.launch_template_default_version, null)
   update_launch_template_default_version = try(each.value.update_launch_template_default_version, var.self_managed_node_group_defaults.update_launch_template_default_version, true)

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.5.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.5.0...v18.5.1) (2022-02-09)
+
+
+### Bug Fixes
+
+* Use existing node security group when one is provided ([#1861](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1861)) ([c821ba7](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c821ba78ca924273d17e9c3b15eae05dd7fb9c94))
+
 ## [18.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.4.1...v18.5.0) (2022-02-08)
 
 
