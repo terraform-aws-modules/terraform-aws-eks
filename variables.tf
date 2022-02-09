@@ -164,7 +164,7 @@ variable "cluster_security_group_description" {
 }
 
 variable "cluster_security_group_additional_rules" {
-  description = "List of additional security group rules to add to the cluster security group created"
+  description = "List of additional security group rules to add to the cluster security group created. Set `source_node_security_group = true` inside rules to set the `node_security_group` as source"
   type        = any
   default     = {}
 }
@@ -220,7 +220,7 @@ variable "node_security_group_description" {
 }
 
 variable "node_security_group_additional_rules" {
-  description = "List of additional security group rules to add to the node security group created"
+  description = "List of additional security group rules to add to the node security group created. Set `source_cluster_security_group = true` inside rules to set the `cluster_security_group` as source"
   type        = any
   default     = {}
 }
