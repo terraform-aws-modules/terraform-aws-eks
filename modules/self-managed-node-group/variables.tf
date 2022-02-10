@@ -23,7 +23,7 @@ variable "platform" {
 variable "cluster_name" {
   description = "Name of associated EKS cluster"
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "cluster_endpoint" {
