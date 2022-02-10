@@ -446,12 +446,6 @@ variable "delete_timeout" {
   default     = null
 }
 
-variable "propagate_tags" {
-  description = "A list of tag blocks. Each element should have keys named `key`, `value`"
-  type        = map(string)
-  default     = {}
-}
-
 ################################################################################
 # Autoscaling group schedule
 ################################################################################

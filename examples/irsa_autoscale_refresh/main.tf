@@ -54,11 +54,7 @@ module "eks" {
         triggers = ["tag"]
       }
 
-      propogate_tags = [{
-        key                 = "aws-node-termination-handler/managed"
-        value               = true
-        propagate_at_launch = true
-      }]
+      tags = { "aws-node-termination-handler/managed" = "true" }
     }
 
     mixed_instance = {
@@ -82,11 +78,7 @@ module "eks" {
         ]
       }
 
-      propogate_tags = [{
-        key                 = "aws-node-termination-handler/managed"
-        value               = true
-        propagate_at_launch = true
-      }]
+      tags = { "aws-node-termination-handler/managed" = "true" }
     }
 
     spot = {
@@ -96,12 +88,7 @@ module "eks" {
       }
 
       bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-
-      propogate_tags = [{
-        key                 = "aws-node-termination-handler/managed"
-        value               = true
-        propagate_at_launch = true
-      }]
+      tags                 = { "aws-node-termination-handler/managed" = "true" }
     }
   }
 

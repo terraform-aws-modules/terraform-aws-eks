@@ -255,15 +255,6 @@ locals {
   launch_template_name = try(aws_launch_template.this[0].name, var.launch_template_name)
   # Change order to allow users to set version priority before using defaults
   launch_template_version = coalesce(var.launch_template_version, try(aws_launch_template.this[0].default_version, "$Default"))
-
-  asg_tags = merge(
-    {
-      "Name"                                      = var.name
-      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
-      "k8s.io/cluster/${var.cluster_name}"        = "owned"
-    },
-    var.propagate_tags,
-  )
 }
 
 resource "aws_autoscaling_group" "this" {
@@ -388,7 +379,15 @@ resource "aws_autoscaling_group" "this" {
   }
 
   dynamic "tag" {
-    for_each = local.asg_tags
+    for_each = merge(
+      {
+        "Name"                                      = var.name
+        "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+        "k8s.io/cluster/${var.cluster_name}"        = "owned"
+      },
+      var.tags,
+    )
+
     content {
       key                 = tag.key
       value               = tag.value
