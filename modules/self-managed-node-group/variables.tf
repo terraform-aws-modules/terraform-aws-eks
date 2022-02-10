@@ -447,9 +447,9 @@ variable "delete_timeout" {
 }
 
 variable "propagate_tags" {
-  description = "A list of tag blocks. Each element should have keys named `key`, `value`, and `propagate_at_launch`"
-  type        = list(map(string))
-  default     = []
+  description = "A list of tag blocks. Each element should have keys named `key`, `value`"
+  type        = map(string)
+  default     = {}
 }
 
 ################################################################################
