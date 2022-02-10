@@ -247,6 +247,12 @@ variable "openid_connect_audiences" {
   default     = []
 }
 
+variable "custom_oidc_thumbprints" {
+  description = "Additional list of server certificate thumbprints for the OpenID Connect (OIDC) identity provider's server certificate(s)"
+  type        = list(string)
+  default     = []
+}
+
 ################################################################################
 # Cluster IAM Role
 ################################################################################
