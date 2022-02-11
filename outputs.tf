@@ -74,6 +74,11 @@ output "node_security_group_id" {
 # IRSA
 ################################################################################
 
+output "oidc_provider" {
+  description = "The OpenID Connect identity provider (issuer URL without leading `https://`)"
+  value       = try(replace(aws_eks_cluster.this[0].identity[0].oidc[0].issuer, "https://", ""), "")
+}
+
 output "oidc_provider_arn" {
   description = "The ARN of the OIDC Provider if `enable_irsa = true`"
   value       = try(aws_iam_openid_connect_provider.oidc_provider[0].arn, "")
