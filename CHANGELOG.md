@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.7.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.7.0...v18.7.1) (2022-02-15)
+
+
+### Bug Fixes
+
+* Add missing quotes to block_duration_minutes ([#1881](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1881)) ([8bc6488](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/8bc6488d559d603b539bc1a9c4eb8c57c529b25e))
+
 ## [18.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.6.1...v18.7.0) (2022-02-15)
 
 
