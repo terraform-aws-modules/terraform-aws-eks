@@ -378,6 +378,23 @@ resource "aws_autoscaling_group" "this" {
     }
   }
 
+  dynamic "tag" {
+    for_each = merge(
+      {
+        "Name"                                      = var.name
+        "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+        "k8s.io/cluster/${var.cluster_name}"        = "owned"
+      },
+      var.tags,
+    )
+
+    content {
+      key                 = tag.key
+      value               = tag.value
+      propagate_at_launch = true
+    }
+  }
+
   timeouts {
     delete = var.delete_timeout
   }
@@ -388,34 +405,6 @@ resource "aws_autoscaling_group" "this" {
       desired_capacity
     ]
   }
-
-  tags = concat(
-    [
-      {
-        key                 = "Name"
-        value               = var.name
-        propagate_at_launch = true
-      },
-      {
-        key                 = "kubernetes.io/cluster/${var.cluster_name}"
-        value               = "owned"
-        propagate_at_launch = true
-      },
-      {
-        key                 = "k8s.io/cluster/${var.cluster_name}"
-        value               = "owned"
-        propagate_at_launch = true
-      },
-    ],
-    var.propagate_tags,
-    [for k, v in var.tags :
-      {
-        key                 = k
-        value               = v
-        propagate_at_launch = true
-      }
-    ]
-  )
 }
 
 ################################################################################
