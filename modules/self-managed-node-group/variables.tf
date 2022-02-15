@@ -23,7 +23,7 @@ variable "platform" {
 variable "cluster_name" {
   description = "Name of associated EKS cluster"
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "cluster_endpoint" {
@@ -444,12 +444,6 @@ variable "delete_timeout" {
   description = "Delete timeout to wait for destroying autoscaling group"
   type        = string
   default     = null
-}
-
-variable "propagate_tags" {
-  description = "A list of tag blocks. Each element should have keys named `key`, `value`, and `propagate_at_launch`"
-  type        = list(map(string))
-  default     = []
 }
 
 ################################################################################
