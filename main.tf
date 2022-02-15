@@ -156,7 +156,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
   count = var.create && var.enable_irsa ? 1 : 0
 
   client_id_list  = distinct(compact(concat(["sts.${data.aws_partition.current.dns_suffix}"], var.openid_connect_audiences)))
-  thumbprint_list = [data.tls_certificate.this[0].certificates[0].sha1_fingerprint]
+  thumbprint_list = concat([data.tls_certificate.this[0].certificates[0].sha1_fingerprint], var.custom_oidc_thumbprints)
   url             = aws_eks_cluster.this[0].identity[0].oidc[0].issuer
 
   tags = merge(
