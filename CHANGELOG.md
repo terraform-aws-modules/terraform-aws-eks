@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.6.1...v18.7.0) (2022-02-15)
+
+
+### Features
+
+* Add variable to provide additional OIDC thumbprints ([#1865](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1865)) ([3fc9f2d](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/3fc9f2d69c32a2536aaee45adbe0c3449d7fc986))
+
 ### [18.6.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.6.0...v18.6.1) (2022-02-15)
 
 
