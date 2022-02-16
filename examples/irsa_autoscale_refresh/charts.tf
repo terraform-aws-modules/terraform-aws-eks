@@ -32,7 +32,7 @@ resource "helm_release" "cluster_autoscaler" {
 
   set {
     name  = "rbac.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.irsa_cluster_autoscaler.iam_role_arn
+    value = module.cluster_autoscaler_irsa.iam_role_arn
     type  = "string"
   }
 
@@ -57,7 +57,7 @@ resource "helm_release" "cluster_autoscaler" {
   ]
 }
 
-module "irsa_cluster_autoscaler" {
+module "cluster_autoscaler_irsa" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "~> 4.12"
 
@@ -103,7 +103,7 @@ resource "helm_release" "aws_node_termination_handler" {
 
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.irsa_node_termination_handler.iam_role_arn
+    value = module.node_termination_handler_irsa.iam_role_arn
     type  = "string"
   }
 
@@ -133,7 +133,7 @@ resource "helm_release" "aws_node_termination_handler" {
   ]
 }
 
-module "irsa_node_termination_handler" {
+module "node_termination_handler_irsa" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
   version = "~> 4.12"
 
