@@ -68,7 +68,7 @@ module "cluster_autoscaler_irsa" {
   cluster_autoscaler_cluster_ids   = [module.eks.cluster_id]
 
   oidc_providers = {
-    ex = {
+    main = {
       provider_arn               = module.eks.oidc_provider_arn
       namespace_service_accounts = ["kube-system:cluster-autoscaler-aws"]
     }
@@ -144,7 +144,7 @@ module "node_termination_handler_irsa" {
   node_termination_handler_sqs_queue_arns = [module.aws_node_termination_handler_sqs.sqs_queue_arn]
 
   oidc_providers = {
-    ex = {
+    main = {
       provider_arn               = module.eks.oidc_provider_arn
       namespace_service_accounts = ["kube-system:aws-node-termination-handler"]
     }
