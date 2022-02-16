@@ -31,4 +31,3 @@ To generate changelog, Pull Requests or Commits must have semantic and must foll
 - `chore:` for chores stuff
 
 The `chore` prefix skipped during changelog generation. It can be used for `chore: update changelog` commit message by example.
-
