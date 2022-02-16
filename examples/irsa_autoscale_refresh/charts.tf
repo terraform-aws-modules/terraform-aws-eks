@@ -32,7 +32,7 @@ resource "helm_release" "cluster_autoscaler" {
 
   set {
     name  = "rbac.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.iam_assumable_role_cluster_autoscaler.iam_role_arn
+    value = module.cluster_autoscaler_irsa.iam_role_arn
     type  = "string"
   }
 
@@ -57,63 +57,24 @@ resource "helm_release" "cluster_autoscaler" {
   ]
 }
 
-module "iam_assumable_role_cluster_autoscaler" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version = "~> 4.0"
+module "cluster_autoscaler_irsa" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "~> 4.12"
 
-  create_role      = true
   role_name_prefix = "cluster-autoscaler"
   role_description = "IRSA role for cluster autoscaler"
 
-  provider_url                   = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
-  role_policy_arns               = [aws_iam_policy.cluster_autoscaler.arn]
-  oidc_fully_qualified_subjects  = ["system:serviceaccount:kube-system:cluster-autoscaler-aws"]
-  oidc_fully_qualified_audiences = ["sts.amazonaws.com"]
+  attach_cluster_autoscaler_policy = true
+  cluster_autoscaler_cluster_ids   = [module.eks.cluster_id]
 
-  tags = local.tags
-}
-
-resource "aws_iam_policy" "cluster_autoscaler" {
-  name   = "KarpenterControllerPolicy-refresh"
-  policy = data.aws_iam_policy_document.cluster_autoscaler.json
-
-  tags = local.tags
-}
-
-data "aws_iam_policy_document" "cluster_autoscaler" {
-  statement {
-    sid = "clusterAutoscalerAll"
-    actions = [
-      "autoscaling:DescribeAutoScalingGroups",
-      "autoscaling:DescribeAutoScalingInstances",
-      "autoscaling:DescribeLaunchConfigurations",
-      "autoscaling:DescribeTags",
-      "ec2:DescribeLaunchTemplateVersions",
-    ]
-    resources = ["*"]
-  }
-
-  statement {
-    sid = "clusterAutoscalerOwn"
-    actions = [
-      "autoscaling:SetDesiredCapacity",
-      "autoscaling:TerminateInstanceInAutoScalingGroup",
-      "autoscaling:UpdateAutoScalingGroup",
-    ]
-    resources = ["*"]
-
-    condition {
-      test     = "StringEquals"
-      variable = "autoscaling:ResourceTag/k8s.io/cluster-autoscaler/${module.eks.cluster_id}"
-      values   = ["owned"]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "autoscaling:ResourceTag/k8s.io/cluster-autoscaler/enabled"
-      values   = ["true"]
+  oidc_providers = {
+    main = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:cluster-autoscaler-aws"]
     }
   }
+
+  tags = local.tags
 }
 
 ################################################################################
@@ -142,7 +103,7 @@ resource "helm_release" "aws_node_termination_handler" {
 
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.aws_node_termination_handler_role.iam_role_arn
+    value = module.node_termination_handler_irsa.iam_role_arn
     type  = "string"
   }
 
@@ -172,51 +133,24 @@ resource "helm_release" "aws_node_termination_handler" {
   ]
 }
 
-module "aws_node_termination_handler_role" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version = "~> 4.0"
+module "node_termination_handler_irsa" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "~> 4.12"
 
-  create_role      = true
   role_name_prefix = "node-termination-handler"
   role_description = "IRSA role for node termination handler"
 
-  provider_url                   = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
-  role_policy_arns               = [aws_iam_policy.aws_node_termination_handler.arn]
-  oidc_fully_qualified_subjects  = ["system:serviceaccount:kube-system:aws-node-termination-handler"]
-  oidc_fully_qualified_audiences = ["sts.amazonaws.com"]
+  attach_node_termination_handler_policy  = true
+  node_termination_handler_sqs_queue_arns = [module.aws_node_termination_handler_sqs.sqs_queue_arn]
+
+  oidc_providers = {
+    main = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:aws-node-termination-handler"]
+    }
+  }
 
   tags = local.tags
-}
-
-resource "aws_iam_policy" "aws_node_termination_handler" {
-  name   = "${local.name}-aws-node-termination-handler"
-  policy = data.aws_iam_policy_document.aws_node_termination_handler.json
-
-  tags = local.tags
-}
-
-data "aws_iam_policy_document" "aws_node_termination_handler" {
-  statement {
-    actions = [
-      "ec2:DescribeInstances",
-      "autoscaling:DescribeAutoScalingInstances",
-      "autoscaling:DescribeTags",
-    ]
-    resources = ["*"]
-  }
-
-  statement {
-    actions   = ["autoscaling:CompleteLifecycleAction"]
-    resources = [for group in module.eks.self_managed_node_groups : group.autoscaling_group_arn]
-  }
-
-  statement {
-    actions = [
-      "sqs:DeleteMessage",
-      "sqs:ReceiveMessage"
-    ]
-    resources = [module.aws_node_termination_handler_sqs.sqs_queue_arn]
-  }
 }
 
 module "aws_node_termination_handler_sqs" {
