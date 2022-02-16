@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.7.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.7.1...v18.7.2) (2022-02-16)
+
+
+### Bug Fixes
+
+* Update examples to show integration and usage of new IRSA submodule ([#1882](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1882)) ([8de02b9](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/8de02b9ff4690d1bbefb86d3441662b16abb03dd))
+
 ### [18.7.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.7.0...v18.7.1) (2022-02-15)
 
 
