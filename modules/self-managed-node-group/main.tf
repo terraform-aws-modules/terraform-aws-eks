@@ -57,7 +57,7 @@ resource "aws_launch_template" "this" {
   key_name      = var.key_name
   user_data     = module.user_data.user_data
 
-  vpc_security_group_ids = compact(concat([try(aws_security_group.this[0].id, "")], var.vpc_security_group_ids))
+  vpc_security_group_ids = length(var.network_interfaces) == 0 ? compact(concat([try(aws_security_group.this[0].id, "")], var.vpc_security_group_ids)) : []
 
   default_version                      = var.launch_template_default_version
   update_default_version               = var.update_launch_template_default_version
@@ -207,7 +207,8 @@ resource "aws_launch_template" "this" {
       ipv6_address_count           = lookup(network_interfaces.value, "ipv6_address_count", null)
       network_interface_id         = lookup(network_interfaces.value, "network_interface_id", null)
       private_ip_address           = lookup(network_interfaces.value, "private_ip_address", null)
-      security_groups              = lookup(network_interfaces.value, "security_groups", null) != null ? network_interfaces.value.security_groups : []
+      security_groups              = compact(concat([try(aws_security_group.this[0].id, "")], var.vpc_security_group_ids, lookup(network_interfaces.value, "security_groups", null) != null ? network_interfaces.value.security_groups : [] ))
+      interface_type               = lookup(network_interfaces.value, "interface_type", null)
       subnet_id                    = lookup(network_interfaces.value, "subnet_id", null)
     }
   }
