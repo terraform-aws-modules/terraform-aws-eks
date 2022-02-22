@@ -54,7 +54,7 @@ resource "aws_iam_policy" "cni_ipv6_policy" {
 
 locals {
   node_sg_name   = coalesce(var.node_security_group_name, "${var.cluster_name}-node")
-  create_node_sg = var.create && var.create_node_security_group
+  create_node_sg = var.create_nodegroups && var.create_node_security_group
 
   node_security_group_id = local.create_node_sg ? aws_security_group.node[0].id : var.node_security_group_id
 
@@ -192,12 +192,12 @@ resource "aws_security_group_rule" "node" {
 module "fargate_profile" {
   source = "./modules/fargate-profile"
 
-  for_each = { for k, v in var.fargate_profiles : k => v if var.create }
+  for_each = { for k, v in var.fargate_profiles : k => v if var.create_nodegroups }
 
   create = try(each.value.create, true)
 
   # Fargate Profile
-  cluster_name      = aws_eks_cluster.this[0].name
+  cluster_name      = try(aws_eks_cluster.this[0].name, var.cluster_name)
   cluster_ip_family = var.cluster_ip_family
   name              = try(each.value.name, each.key)
   subnet_ids        = try(each.value.subnet_ids, var.fargate_profile_defaults.subnet_ids, var.subnet_ids)
@@ -226,11 +226,11 @@ module "fargate_profile" {
 module "eks_managed_node_group" {
   source = "./modules/eks-managed-node-group"
 
-  for_each = { for k, v in var.eks_managed_node_groups : k => v if var.create }
+  for_each = { for k, v in var.eks_managed_node_groups : k => v if var.create_nodegroups }
 
   create = try(each.value.create, true)
 
-  cluster_name              = aws_eks_cluster.this[0].name
+  cluster_name              = try(aws_eks_cluster.this[0].name, var.cluster_name)
   cluster_version           = try(each.value.cluster_version, var.eks_managed_node_group_defaults.cluster_version, var.cluster_version)
   cluster_security_group_id = local.cluster_security_group_id
   cluster_ip_family         = var.cluster_ip_family
@@ -262,8 +262,8 @@ module "eks_managed_node_group" {
 
   # User data
   platform                   = try(each.value.platform, var.eks_managed_node_group_defaults.platform, "linux")
-  cluster_endpoint           = try(aws_eks_cluster.this[0].endpoint, "")
-  cluster_auth_base64        = try(aws_eks_cluster.this[0].certificate_authority[0].data, "")
+  cluster_endpoint           = try(aws_eks_cluster.this[0].endpoint, var.cluster_endpoint, "")
+  cluster_auth_base64        = try(aws_eks_cluster.this[0].certificate_authority[0].data, var.cluster_auth_base64, "")
   cluster_service_ipv4_cidr  = var.cluster_service_ipv4_cidr
   enable_bootstrap_user_data = try(each.value.enable_bootstrap_user_data, var.eks_managed_node_group_defaults.enable_bootstrap_user_data, false)
   pre_bootstrap_user_data    = try(each.value.pre_bootstrap_user_data, var.eks_managed_node_group_defaults.pre_bootstrap_user_data, "")
@@ -333,11 +333,11 @@ module "eks_managed_node_group" {
 module "self_managed_node_group" {
   source = "./modules/self-managed-node-group"
 
-  for_each = { for k, v in var.self_managed_node_groups : k => v if var.create }
+  for_each = { for k, v in var.self_managed_node_groups : k => v if var.create_nodegroups }
 
   create = try(each.value.create, true)
 
-  cluster_name      = aws_eks_cluster.this[0].name
+  cluster_name      = try(aws_eks_cluster.this[0].name, var.cluster_name)
   cluster_ip_family = var.cluster_ip_family
 
   # Autoscaling Group
@@ -384,8 +384,8 @@ module "self_managed_node_group" {
 
   # User data
   platform                 = try(each.value.platform, var.self_managed_node_group_defaults.platform, "linux")
-  cluster_endpoint         = try(aws_eks_cluster.this[0].endpoint, "")
-  cluster_auth_base64      = try(aws_eks_cluster.this[0].certificate_authority[0].data, "")
+  cluster_endpoint         = try(aws_eks_cluster.this[0].endpoint, var.cluster_endpoint, "")
+  cluster_auth_base64      = try(aws_eks_cluster.this[0].certificate_authority[0].data, var.cluster_auth_base64, "")
   pre_bootstrap_user_data  = try(each.value.pre_bootstrap_user_data, var.self_managed_node_group_defaults.pre_bootstrap_user_data, "")
   post_bootstrap_user_data = try(each.value.post_bootstrap_user_data, var.self_managed_node_group_defaults.post_bootstrap_user_data, "")
   bootstrap_extra_args     = try(each.value.bootstrap_extra_args, var.self_managed_node_group_defaults.bootstrap_extra_args, "")

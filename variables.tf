@@ -4,6 +4,12 @@ variable "create" {
   default     = true
 }
 
+variable "create_nodegroups" {
+  description = "Controls if EKS NodeGroups should be created"
+  type        = bool
+  default     = true
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
@@ -22,6 +28,18 @@ variable "prefix_separator" {
 
 variable "cluster_name" {
   description = "Name of the EKS cluster"
+  type        = string
+  default     = ""
+}
+
+variable "cluster_endpoint" {
+  description = "The endpoint for your EKS Kubernetes API."
+  type        = string
+  default     = ""
+}
+
+variable "cluster_auth_base64" {
+  description = "The base64 encoded certificate data required to communicate with your cluster."
   type        = string
   default     = ""
 }
