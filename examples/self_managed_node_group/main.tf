@@ -195,6 +195,12 @@ module "eks" {
         }
       }
 
+      capacity_reservation_specification = { # only works with capacity_type=ON_DEMAND
+        capacity_reservation_target = {
+          capacity_reservation_id = aws_ec2_capacity_reservation.targeted.id
+        }
+      }
+
       metadata_options = {
         http_endpoint               = "enabled"
         http_tokens                 = "required"
@@ -461,4 +467,12 @@ data "aws_iam_policy_document" "ebs" {
       values   = ["true"]
     }
   }
+}
+
+resource "aws_ec2_capacity_reservation" "targeted" {
+  instance_type           = "t2.micro"
+  instance_platform       = "Linux/UNIX"
+  availability_zone       = "eu-west-1a"
+  instance_count          = 1
+  instance_match_criteria = "targeted"
 }
