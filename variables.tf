@@ -181,6 +181,12 @@ variable "cluster_security_group_tags" {
   default     = {}
 }
 
+variable "include_cluster_security_group" {
+  description = "Determines if cluster security group should be included in node launch templates"
+  type        = bool
+  default     = false
+}
+
 ################################################################################
 # EKS IPV6 CNI Policy
 ################################################################################
