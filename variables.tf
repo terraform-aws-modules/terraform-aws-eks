@@ -89,6 +89,12 @@ variable "cluster_encryption_config" {
   default = []
 }
 
+variable "attach_cluster_encryption_policy" {
+  description = "Indicates whether or not to attach an additional policy for the cluster IAM role to utilize the encryption key provided"
+  type        = bool
+  default     = true
+}
+
 variable "cluster_tags" {
   description = "A map of additional tags to add to the cluster"
   type        = map(string)
