@@ -170,6 +170,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 ################################################################################
 
 locals {
+  create_iam_role   = var.create && var.create_iam_role
   iam_role_name     = coalesce(var.iam_role_name, "${var.cluster_name}-cluster")
   policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
 
@@ -193,7 +194,7 @@ data "aws_iam_policy_document" "assume_role_policy" {
 }
 
 resource "aws_iam_role" "this" {
-  count = var.create && var.create_iam_role ? 1 : 0
+  count = local.create_iam_role ? 1 : 0
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}${var.prefix_separator}" : null
@@ -209,7 +210,7 @@ resource "aws_iam_role" "this" {
 
 # Policies attached ref https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
 resource "aws_iam_role_policy_attachment" "this" {
-  for_each = var.create && var.create_iam_role ? toset(compact(distinct(concat([
+  for_each = local.create_iam_role ? toset(compact(distinct(concat([
     "${local.policy_arn_prefix}/AmazonEKSClusterPolicy",
     "${local.policy_arn_prefix}/AmazonEKSVPCResourceController",
   ], var.iam_role_additional_policies)))) : toset([])
@@ -220,14 +221,14 @@ resource "aws_iam_role_policy_attachment" "this" {
 
 # Using separate attachment due to `The "for_each" value depends on resource attributes that cannot be determined until apply`
 resource "aws_iam_role_policy_attachment" "cluster_encryption" {
-  count = var.create && var.attach_cluster_encryption_policy && length(var.cluster_encryption_config) > 0 ? 1 : 0
+  count = local.create_iam_role && var.attach_cluster_encryption_policy && length(var.cluster_encryption_config) > 0 ? 1 : 0
 
   policy_arn = aws_iam_policy.cluster_encryption[0].arn
   role       = aws_iam_role.this[0].name
 }
 
 resource "aws_iam_policy" "cluster_encryption" {
-  count = var.create && var.attach_cluster_encryption_policy && length(var.cluster_encryption_config) > 0 ? 1 : 0
+  count = local.create_iam_role && var.attach_cluster_encryption_policy && length(var.cluster_encryption_config) > 0 ? 1 : 0
 
   name_prefix = "${local.iam_role_name}-ClusterEncryption-"
   description = "Cluster encryption policy to allow cluster role to utilize CMK provided"
