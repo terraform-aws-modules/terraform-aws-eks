@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.8.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.8.0...v18.8.1) (2022-03-02)
+
+
+### Bug Fixes
+
+* Ensure that cluster encryption policy resources are only relevant when creating the IAM role ([#1917](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1917)) ([0fefca7](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/0fefca76f2258cee565359e36a4851978602f36d))
+
 ## [18.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.7.3...v18.8.0) (2022-03-02)
 
 
