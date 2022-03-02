@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.7.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.7.2...v18.7.3) (2022-03-02)
+
+
+### Bug Fixes
+
+* Add support for overriding DNS suffix for cluster IAM role service principal endpoint ([#1905](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1905)) ([9af0c24](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/9af0c2495a1fe7a02411ac436f48f6d9ca8b359f))
+
 ### [18.7.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.7.1...v18.7.2) (2022-02-16)
 
 
