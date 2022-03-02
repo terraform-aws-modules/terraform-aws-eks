@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.7.3...v18.8.0) (2022-03-02)
+
+
+### Features
+
+* Add additional IAM policy to allow cluster role to use KMS key provided for cluster encryption ([#1915](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1915)) ([7644952](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/7644952131a466ca22ba5b3e62cd988e01eff716))
+
 ### [18.7.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.7.2...v18.7.3) (2022-03-02)
 
 
