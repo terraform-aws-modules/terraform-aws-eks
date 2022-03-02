@@ -30,9 +30,9 @@ resource "aws_eks_cluster" "this" {
 
     content {
       provider {
-        key_arn = encryption_config.value["provider_key_arn"]
+        key_arn = encryption_config.value.provider_key_arn
       }
-      resources = encryption_config.value["resources"]
+      resources = encryption_config.value.resources
     }
   }
 
@@ -216,6 +216,40 @@ resource "aws_iam_role_policy_attachment" "this" {
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name
+}
+
+# Using separate attachment due to `The "for_each" value depends on resource attributes that cannot be determined until apply`
+resource "aws_iam_role_policy_attachment" "cluster_encryption" {
+  count = var.create && var.attach_cluster_encryption_policy && length(var.cluster_encryption_config) > 0 ? 1 : 0
+
+  policy_arn = aws_iam_policy.cluster_encryption[0].arn
+  role       = aws_iam_role.this[0].name
+}
+
+resource "aws_iam_policy" "cluster_encryption" {
+  count = var.create && var.attach_cluster_encryption_policy && length(var.cluster_encryption_config) > 0 ? 1 : 0
+
+  name_prefix = "${local.iam_role_name}-ClusterEncryption-"
+  description = "Cluster encryption policy to allow cluster role to utilize CMK provided"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ListGrants",
+          "kms:DescribeKey",
+        ]
+        Effect = "Allow"
+        # TODO - does cluster_encryption_config need to be a list?!
+        Resource = [for config in var.cluster_encryption_config : config.provider_key_arn]
+      },
+    ]
+  })
+
+  tags = var.tags
 }
 
 ################################################################################
