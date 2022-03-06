@@ -4,7 +4,6 @@ ARG GO_VERSION="1.17.6" \
     TERRAFORM_VERSION="latest" \
     TERRAFORM_DOCS_VERSION="v0.16.0" \
     TFLINT_VERSION="v0.34.1" \
-    TERRATEST_VERSION="v0.13.13" \
     KUBERNETES_VERSION="1.21.2"
 
 ENV GOROOT=/usr/local/go \
@@ -39,10 +38,6 @@ RUN curl -sSLo ./terraform-docs.tar.gz https://github.com/terraform-docs/terrafo
 RUN curl -sSL "$(curl -s https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" > tflint.zip \
  && unzip -qq tflint.zip tflint -d /usr/bin/ \
  && rm tflint.zip 2> /dev/null
-
-# Terratest
-RUN curl -sSL -o /usr/local/bin/terratest_log_parser "https://github.com/gruntwork-io/terratest/releases/download/${TERRATEST_VERSION}/terratest_log_parser_linux_amd64" \
- && chmod +x /usr/local/bin/terratest_log_parser
 
 # Pre-Commit
 RUN pip3 install -q --no-cache-dir pre-commit
