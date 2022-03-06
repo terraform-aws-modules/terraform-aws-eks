@@ -1,0 +1,12 @@
+{
+    "name": "terraform-aws-eks",
+    "build": { "dockerfile": "Dockerfile" },
+    "extensions": [
+        "hashicorp.terraform",
+        "golang.Go"
+    ],
+    "mounts": [
+        "source=${localEnv:HOME}/.aws,target=/root/.aws,type=bind",
+        "source=${localEnv:HOME}/.cache/pre-commit,target=/root/.cache/pre-commit,type=bind",
+    ]
+}
