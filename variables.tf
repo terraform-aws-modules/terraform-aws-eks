@@ -325,6 +325,36 @@ variable "iam_role_tags" {
   default     = {}
 }
 
+variable "cluster_encryption_policy_use_name_prefix" {
+  description = "Determines whether cluster encryption policy name (`cluster_encryption_policy_name`) is used as a prefix"
+  type        = string
+  default     = true
+}
+
+variable "cluster_encryption_policy_name" {
+  description = "Name to use on cluster encryption policy created"
+  type        = string
+  default     = null
+}
+
+variable "cluster_encryption_policy_description" {
+  description = "Description of the cluster encryption policy created"
+  type        = string
+  default     = "Cluster encryption policy to allow cluster role to utilize CMK provided"
+}
+
+variable "cluster_encryption_policy_path" {
+  description = "Cluster encryption policy path"
+  type        = string
+  default     = null
+}
+
+variable "cluster_encryption_policy_tags" {
+  description = "A map of additional tags to add to the cluster encryption policy created"
+  type        = map(string)
+  default     = {}
+}
+
 ################################################################################
 # EKS Addons
 ################################################################################
