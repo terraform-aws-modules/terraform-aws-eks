@@ -196,6 +196,8 @@ module "fargate_profile" {
 
   create = try(each.value.create, true)
 
+  prefix_separator = try(each.value.prefix_separator, var.eks_managed_node_group_defaults.prefix_separator, "-")
+
   # Fargate Profile
   cluster_name      = aws_eks_cluster.this[0].name
   cluster_ip_family = var.cluster_ip_family
@@ -236,8 +238,9 @@ module "eks_managed_node_group" {
   cluster_ip_family         = var.cluster_ip_family
 
   # EKS Managed Node Group
-  name            = try(each.value.name, each.key)
-  use_name_prefix = try(each.value.use_name_prefix, var.eks_managed_node_group_defaults.use_name_prefix, true)
+  name             = try(each.value.name, each.key)
+  use_name_prefix  = try(each.value.use_name_prefix, var.eks_managed_node_group_defaults.use_name_prefix, true)
+  prefix_separator = try(each.value.prefix_separator, var.eks_managed_node_group_defaults.prefix_separator, "-")
 
   subnet_ids = try(each.value.subnet_ids, var.eks_managed_node_group_defaults.subnet_ids, var.subnet_ids)
 
@@ -341,8 +344,9 @@ module "self_managed_node_group" {
   cluster_ip_family = var.cluster_ip_family
 
   # Autoscaling Group
-  name            = try(each.value.name, each.key)
-  use_name_prefix = try(each.value.use_name_prefix, var.self_managed_node_group_defaults.use_name_prefix, true)
+  name             = try(each.value.name, each.key)
+  use_name_prefix  = try(each.value.use_name_prefix, var.self_managed_node_group_defaults.use_name_prefix, true)
+  prefix_separator = try(each.value.prefix_separator, var.eks_managed_node_group_defaults.prefix_separator, "-")
 
   availability_zones = try(each.value.availability_zones, var.self_managed_node_group_defaults.availability_zones, null)
   subnet_ids         = try(each.value.subnet_ids, var.self_managed_node_group_defaults.subnet_ids, var.subnet_ids)
