@@ -10,6 +10,12 @@ variable "tags" {
   default     = {}
 }
 
+variable "prefix_separator" {
+  description = "The separator to use between the prefix and the generated timestamp for resource names"
+  type        = string
+  default     = "-"
+}
+
 variable "platform" {
   description = "Identifies if the OS platform is `bottlerocket`, `linux`, or `windows` based"
   type        = string
