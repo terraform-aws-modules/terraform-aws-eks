@@ -44,7 +44,7 @@ resource "aws_launch_template" "this" {
   count = var.create && var.create_launch_template ? 1 : 0
 
   name        = var.launch_template_use_name_prefix ? null : local.launch_template_name_int
-  name_prefix = var.launch_template_use_name_prefix ? "${local.launch_template_name_int}-" : null
+  name_prefix = var.launch_template_use_name_prefix ? "${local.launch_template_name_int}${var.prefix_separator}" : null
   description = var.launch_template_description
 
   ebs_optimized = var.ebs_optimized
@@ -282,7 +282,7 @@ resource "aws_eks_node_group" "this" {
 
   # Optional
   node_group_name        = var.use_name_prefix ? null : var.name
-  node_group_name_prefix = var.use_name_prefix ? "${var.name}-" : null
+  node_group_name_prefix = var.use_name_prefix ? "${var.name}${var.prefix_separator}" : null
 
   # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
   ami_type        = var.ami_id != "" ? null : var.ami_type
