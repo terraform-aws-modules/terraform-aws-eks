@@ -13,7 +13,7 @@ resource "aws_eks_cluster" "this" {
   enabled_cluster_log_types = var.cluster_enabled_log_types
 
   vpc_config {
-    security_group_ids      = distinct(concat(var.cluster_additional_security_group_ids, [local.cluster_security_group_id]))
+    security_group_ids      = var.cluster_additional_security_group_ids    
     subnet_ids              = var.subnet_ids
     endpoint_private_access = var.cluster_endpoint_private_access
     endpoint_public_access  = var.cluster_endpoint_public_access
@@ -140,6 +140,29 @@ resource "aws_security_group_rule" "cluster" {
     try(each.value.source_node_security_group, false) ? local.node_security_group_id : null
   )
 }
+
+resource "aws_security_group_rule" "cluster_existing" {
+  for_each = { for k, v in var.cluster_security_group_additional_rules : k => v if !local.create_cluster_sg }
+
+  # Required
+  security_group_id = var.cluster_security_group_id
+  protocol          = each.value.protocol
+  from_port         = each.value.from_port
+  to_port           = each.value.to_port
+  type              = each.value.type
+
+  # Optional
+  description      = try(each.value.description, null)
+  cidr_blocks      = try(each.value.cidr_blocks, null)
+  ipv6_cidr_blocks = try(each.value.ipv6_cidr_blocks, null)
+  prefix_list_ids  = try(each.value.prefix_list_ids, [])
+  self             = try(each.value.self, null)
+  source_security_group_id = try(
+    each.value.source_security_group_id,
+    try(each.value.source_node_security_group, false) ? local.node_security_group_id : null
+  )
+}
+
 
 ################################################################################
 # IRSA
