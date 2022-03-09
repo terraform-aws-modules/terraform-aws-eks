@@ -174,6 +174,8 @@ locals {
   iam_role_name     = coalesce(var.iam_role_name, "${var.cluster_name}-cluster")
   policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
 
+  cluster_encryption_policy_name = coalesce(var.cluster_encryption_policy_name, "${local.iam_role_name}-ClusterEncryption")
+
   # TODO - hopefully this can be removed once the AWS endpoint is named properly in China
   # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1904
   dns_suffix = coalesce(var.cluster_iam_role_dns_suffix, data.aws_partition.current.dns_suffix)
@@ -230,8 +232,10 @@ resource "aws_iam_role_policy_attachment" "cluster_encryption" {
 resource "aws_iam_policy" "cluster_encryption" {
   count = local.create_iam_role && var.attach_cluster_encryption_policy && length(var.cluster_encryption_config) > 0 ? 1 : 0
 
-  name_prefix = "${local.iam_role_name}-ClusterEncryption-"
-  description = "Cluster encryption policy to allow cluster role to utilize CMK provided"
+  name        = var.cluster_encryption_policy_use_name_prefix ? null : local.cluster_encryption_policy_name
+  name_prefix = var.cluster_encryption_policy_use_name_prefix ? local.cluster_encryption_policy_name : null
+  description = var.cluster_encryption_policy_description
+  path        = var.cluster_encryption_policy_path
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -243,14 +247,13 @@ resource "aws_iam_policy" "cluster_encryption" {
           "kms:ListGrants",
           "kms:DescribeKey",
         ]
-        Effect = "Allow"
-        # TODO - does cluster_encryption_config need to be a list?!
+        Effect   = "Allow"
         Resource = [for config in var.cluster_encryption_config : config.provider_key_arn]
       },
     ]
   })
 
-  tags = var.tags
+  tags = merge(var.tags, var.cluster_encryption_policy_tags)
 }
 
 ################################################################################
