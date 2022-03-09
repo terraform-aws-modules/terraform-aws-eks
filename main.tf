@@ -13,7 +13,7 @@ resource "aws_eks_cluster" "this" {
   enabled_cluster_log_types = var.cluster_enabled_log_types
 
   vpc_config {
-    security_group_ids      = distinct(concat(var.cluster_additional_security_group_ids, [local.cluster_security_group_id]))
+    security_group_ids      = distinct(concat(var.cluster_additional_security_group_ids, local.cluster_security_group_id))
     subnet_ids              = var.subnet_ids
     endpoint_private_access = var.cluster_endpoint_private_access
     endpoint_public_access  = var.cluster_endpoint_public_access
@@ -74,7 +74,7 @@ locals {
   cluster_sg_name   = coalesce(var.cluster_security_group_name, "${var.cluster_name}-cluster")
   create_cluster_sg = var.create && var.create_cluster_security_group
 
-  cluster_security_group_id = local.create_cluster_sg ? aws_security_group.cluster[0].id : var.cluster_security_group_id
+  cluster_security_group_id = local.create_cluster_sg ? [aws_security_group.cluster[0].id] : (var.cluster_security_group_id == "" ? [] : [var.cluster_security_group_id])
 
   cluster_security_group_rules = {
     ingress_nodes_443 = {
