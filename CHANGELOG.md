@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.9.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.8.1...v18.9.0) (2022-03-09)
+
+
+### Features
+
+* Add variables to allow users to control attributes on `cluster_encryption` IAM policy ([#1928](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1928)) ([2df1572](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/2df1572b8a031fbd31a845cc5c61f015ec387f56))
+
 ### [18.8.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.8.0...v18.8.1) (2022-03-02)
 
 
