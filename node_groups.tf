@@ -181,7 +181,7 @@ resource "aws_security_group_rule" "node" {
   self             = try(each.value.self, null)
   source_security_group_id = try(
     each.value.source_security_group_id,
-    try(each.value.source_cluster_security_group, false) ? local.cluster_security_group_id : null
+    try(each.value.source_cluster_security_group, false) ? local.cluster_security_group_id[0] : null
   )
 }
 
