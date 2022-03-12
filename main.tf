@@ -1,11 +1,15 @@
 data "aws_partition" "current" {}
 
+locals {
+  create = var.create && var.putin_khuylo
+}
+
 ################################################################################
 # Cluster
 ################################################################################
 
 resource "aws_eks_cluster" "this" {
-  count = var.create ? 1 : 0
+  count = local.create ? 1 : 0
 
   name                      = var.cluster_name
   role_arn                  = try(aws_iam_role.this[0].arn, var.iam_role_arn)
@@ -56,7 +60,7 @@ resource "aws_eks_cluster" "this" {
 }
 
 resource "aws_cloudwatch_log_group" "this" {
-  count = var.create && var.create_cloudwatch_log_group ? 1 : 0
+  count = local.create && var.create_cloudwatch_log_group ? 1 : 0
 
   name              = "/aws/eks/${var.cluster_name}/cluster"
   retention_in_days = var.cloudwatch_log_group_retention_in_days
@@ -72,7 +76,7 @@ resource "aws_cloudwatch_log_group" "this" {
 
 locals {
   cluster_sg_name   = coalesce(var.cluster_security_group_name, "${var.cluster_name}-cluster")
-  create_cluster_sg = var.create && var.create_cluster_security_group
+  create_cluster_sg = local.create && var.create_cluster_security_group
 
   cluster_security_group_id = local.create_cluster_sg ? aws_security_group.cluster[0].id : var.cluster_security_group_id
 
@@ -147,13 +151,13 @@ resource "aws_security_group_rule" "cluster" {
 ################################################################################
 
 data "tls_certificate" "this" {
-  count = var.create && var.enable_irsa ? 1 : 0
+  count = local.create && var.enable_irsa ? 1 : 0
 
   url = aws_eks_cluster.this[0].identity[0].oidc[0].issuer
 }
 
 resource "aws_iam_openid_connect_provider" "oidc_provider" {
-  count = var.create && var.enable_irsa ? 1 : 0
+  count = local.create && var.enable_irsa ? 1 : 0
 
   client_id_list  = distinct(compact(concat(["sts.${data.aws_partition.current.dns_suffix}"], var.openid_connect_audiences)))
   thumbprint_list = concat([data.tls_certificate.this[0].certificates[0].sha1_fingerprint], var.custom_oidc_thumbprints)
@@ -170,7 +174,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 ################################################################################
 
 locals {
-  create_iam_role   = var.create && var.create_iam_role
+  create_iam_role   = local.create && var.create_iam_role
   iam_role_name     = coalesce(var.iam_role_name, "${var.cluster_name}-cluster")
   policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
 
@@ -182,7 +186,7 @@ locals {
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
-  count = var.create && var.create_iam_role ? 1 : 0
+  count = local.create && var.create_iam_role ? 1 : 0
 
   statement {
     sid     = "EKSClusterAssumeRole"
@@ -261,7 +265,7 @@ resource "aws_iam_policy" "cluster_encryption" {
 ################################################################################
 
 resource "aws_eks_addon" "this" {
-  for_each = { for k, v in var.cluster_addons : k => v if var.create }
+  for_each = { for k, v in var.cluster_addons : k => v if local.create }
 
   cluster_name = aws_eks_cluster.this[0].name
   addon_name   = try(each.value.name, each.key)
@@ -291,7 +295,7 @@ resource "aws_eks_addon" "this" {
 ################################################################################
 
 resource "aws_eks_identity_provider_config" "this" {
-  for_each = { for k, v in var.cluster_identity_providers : k => v if var.create }
+  for_each = { for k, v in var.cluster_identity_providers : k => v if local.create }
 
   cluster_name = aws_eks_cluster.this[0].name
 
