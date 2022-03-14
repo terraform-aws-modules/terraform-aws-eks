@@ -38,5 +38,5 @@ output "fargate_profile_status" {
 
 output "fargate_profile_pod_execution_role_arn" {
   description = "Amazon Resource Name (ARN) of the EKS Fargate Profile Pod execution role ARN"
-  value       = try(aws_eks_fargate_profile.this[0].pod_execution_role_arn, "")
+  value       = try(var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn, "")
 }
