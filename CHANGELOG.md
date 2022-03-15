@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.10.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.10.0...v18.10.1) (2022-03-15)
+
+
+### Bug Fixes
+
+* Compact result of cluster security group to avoid disruptive updates when no security groups are supplied ([#1934](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1934)) ([5935670](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/5935670503bba3405b53e49ddd88a6451f534d4a))
+
 ## [18.10.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.9.0...v18.10.0) (2022-03-12)
 
 
