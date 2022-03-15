@@ -27,13 +27,13 @@ Users may encounter an error such as `Error: Invalid for_each argument - The "fo
 This error is due to an upstream issue with [Terraform core](https://github.com/hashicorp/terraform/issues/4149). There are two potential options you can take to help mitigate this issue:
 
 1. Create the dependent resources before the cluster  => `terraform apply -target <your policy or your security group>` and then `terraform apply` for the cluster (or other similar means to just ensure the referenced resources exist before creating the cluster)
-  - Note: this is the route users will have to take for adding additonal security groups to nodes since there isn't a separate "security group attachment" resource
-2. For addtional IAM policies, users can attach the policies outside of the cluster definition as demonstrated below
+  - Note: this is the route users will have to take for adding additional security groups to nodes since there isn't a separate "security group attachment" resource
+2. For additional IAM policies, users can attach the policies outside of the cluster definition as demonstrated below
 
 ```hcl
 resource "aws_iam_role_policy_attachment" "additional" {
   for_each = module.eks.eks_managed_node_groups
-  # you could also do the following or any comibination:
+  # you could also do the following or any combination:
   # for_each = merge(
   #   module.eks.eks_managed_node_groups,
   #   module.eks.self_managed_node_group,
