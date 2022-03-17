@@ -124,7 +124,7 @@ output "iam_role_unique_id" {
 
 output "iam_instance_profile_arn" {
   description = "ARN assigned by AWS to the instance profile"
-  value       = try(aws_iam_instance_profile.this[0].arn, "")
+  value       = try(aws_iam_instance_profile.this[0].arn, var.iam_instance_profile_arn)
 }
 
 output "iam_instance_profile_id" {

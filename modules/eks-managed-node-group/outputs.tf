@@ -66,7 +66,7 @@ output "iam_role_name" {
 
 output "iam_role_arn" {
   description = "The Amazon Resource Name (ARN) specifying the IAM role"
-  value       = try(aws_iam_role.this[0].arn, "")
+  value       = try(aws_iam_role.this[0].arn, var.iam_role_arn)
 }
 
 output "iam_role_unique_id" {
