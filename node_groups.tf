@@ -339,6 +339,7 @@ module "self_managed_node_group" {
 
   cluster_name      = aws_eks_cluster.this[0].name
   cluster_ip_family = var.cluster_ip_family
+  prefix_separator  = try(each.value.prefix_separator, var.prefix_separator)
 
   # Autoscaling Group
   name            = try(each.value.name, each.key)
