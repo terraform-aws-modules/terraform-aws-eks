@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.10.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.10.1...v18.10.2) (2022-03-17)
+
+
+### Bug Fixes
+
+* Sub-modules output the correct eks worker iam arn when workers utilize custom iam role ([#1912](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1912)) ([06a3469](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/06a3469d203fc4344d5f94564762432b5cfd2043))
+
 ### [18.10.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.10.0...v18.10.1) (2022-03-15)
 
 
