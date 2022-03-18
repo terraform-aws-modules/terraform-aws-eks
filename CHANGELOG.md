@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.11.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.10.2...v18.11.0) (2022-03-18)
+
+
+### Features
+
+* Allow users to specify default launch template name in node groups ([#1946](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1946)) ([a9d2cc8](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/a9d2cc8246128fc7f426f0b4596c6799ecf94d8a))
+
 ### [18.10.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.10.1...v18.10.2) (2022-03-17)
 
 
