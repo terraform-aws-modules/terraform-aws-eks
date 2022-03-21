@@ -107,6 +107,10 @@ module "eks" {
   }
 
   # EKS Managed Node Group(s)
+
+  # Extend list of configured security groups on nodes to include the AWS-created cluster security group
+  include_cluster_security_group = true
+
   eks_managed_node_group_defaults = {
     ami_type               = "AL2_x86_64"
     disk_size              = 50
