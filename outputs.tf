@@ -153,6 +153,11 @@ output "eks_managed_node_groups" {
   value       = module.eks_managed_node_group
 }
 
+output "eks_managed_node_groups_autoscaling_group_names" {
+  description = "List of the autoscaling group names created by EKS managed node groups"
+  value       = flatten([for group in module.eks_managed_node_group : group.node_group_autoscaling_group_names])
+}
+
 ################################################################################
 # Self Managed Node Group
 ################################################################################
@@ -160,6 +165,11 @@ output "eks_managed_node_groups" {
 output "self_managed_node_groups" {
   description = "Map of attribute maps for all self managed node groups created"
   value       = module.self_managed_node_group
+}
+
+output "self_managed_node_groups_autoscaling_group_names" {
+  description = "List of the autoscaling group names created by self-managed node groups"
+  value       = [for group in module.self_managed_node_group : group.autoscaling_group_name]
 }
 
 ################################################################################
