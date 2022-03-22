@@ -108,10 +108,12 @@ module "eks" {
 
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
-    ami_type               = "AL2_x86_64"
-    disk_size              = 50
-    instance_types         = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
-    vpc_security_group_ids = [aws_security_group.additional.id]
+    ami_type       = "AL2_x86_64"
+    disk_size      = 50
+    instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
+
+    attach_cluster_primary_security_group = true
+    vpc_security_group_ids                = [aws_security_group.additional.id]
   }
 
   eks_managed_node_groups = {
@@ -188,10 +190,10 @@ module "eks_managed_node_group" {
   cluster_name    = module.eks.cluster_id
   cluster_version = local.cluster_version
 
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
+  vpc_id                            = module.vpc.vpc_id
+  subnet_ids                        = module.vpc.private_subnets
+  cluster_primary_security_group_id = module.eks.cluster_primary_security_group_id
   vpc_security_group_ids = [
-    module.eks.cluster_primary_security_group_id,
     module.eks.cluster_security_group_id,
   ]
 

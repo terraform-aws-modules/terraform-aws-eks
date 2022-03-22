@@ -658,6 +658,7 @@ Module provided default templates can be found under the [templates directory](h
     - Users have the ability to opt out of the security group creation and instead provide their own externally created security group if so desired
     - The security group that is created is designed to handle the bare minimum communication necessary between the control plane and the nodes, as well as any external egress to allow the cluster to successfully launch without error
   - Users also have the option to supply additional, externally created security groups to the cluster as well via the `cluster_additional_security_group_ids` variable
+  - Lastly, users are able to opt in to attaching the primary security group automatically created by the EKS service by setting `attach_cluster_primary_security_group` = `true` from the root module for the respective node group (or set it within the node group defaults). This security group is not managed by the module; it is created by the EKS service. It permits all traffic within the domain of the security group as well as all egress traffic to the internet.
 
 - Node Group Security Group(s)
   - Each node group (EKS Managed Node Group and Self Managed Node Group) by default creates its own security group. By default, this security group does not contain any additional security group rules. It is merely an "empty container" that offers users the ability to opt into any addition inbound our outbound rules as necessary
