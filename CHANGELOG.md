@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.12.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.11.0...v18.12.0) (2022-03-22)
+
+
+### Features
+
+* Add outputs for autoscaling group names created to aid in autoscaling group tagging ([#1953](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1953)) ([8b03b7b](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/8b03b7b85ef80db5de766827ef65b700317c68e6))
+
 ## [18.11.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.10.2...v18.11.0) (2022-03-18)
 
 
