@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.13.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.12.0...v18.13.0) (2022-03-23)
+
+
+### Features
+
+* Allow users to selectively attach the EKS created cluster primary security group to nodes ([#1952](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1952)) ([e21db83](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e21db83d8ff3cd1d3f49acc611931e8917d0b6f8))
+
 ## [18.12.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.11.0...v18.12.0) (2022-03-22)
 
 
