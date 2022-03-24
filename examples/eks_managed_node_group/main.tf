@@ -568,11 +568,6 @@ resource "aws_launch_template" "external" {
     enabled = true
   }
 
-  network_interfaces {
-    associate_public_ip_address = false
-    delete_on_termination       = true
-  }
-
   # if you want to use a custom AMI
   # image_id      = var.ami_id
 
