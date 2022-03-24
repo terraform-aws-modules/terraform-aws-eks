@@ -27,6 +27,11 @@ output "cluster_oidc_issuer_url" {
   value       = try(aws_eks_cluster.this[0].identity[0].oidc[0].issuer, "")
 }
 
+output "cluster_version" {
+  description = "The Kubernetes version for the cluster"
+  value       = try(aws_eks_cluster.this[0].version, "")
+}
+
 output "cluster_platform_version" {
   description = "Platform version for the cluster"
   value       = try(aws_eks_cluster.this[0].platform_version, "")

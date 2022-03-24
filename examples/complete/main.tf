@@ -3,9 +3,8 @@ provider "aws" {
 }
 
 locals {
-  name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.21"
-  region          = "eu-west-1"
+  name   = "ex-${replace(basename(path.cwd), "_", "-")}"
+  region = "eu-west-1"
 
   tags = {
     Example    = local.name
@@ -22,7 +21,6 @@ module "eks" {
   source = "../.."
 
   cluster_name                    = local.name
-  cluster_version                 = local.cluster_version
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
@@ -188,7 +186,7 @@ module "eks_managed_node_group" {
 
   name            = "separate-eks-mng"
   cluster_name    = module.eks.cluster_id
-  cluster_version = local.cluster_version
+  cluster_version = module.eks.cluster_version
 
   vpc_id                            = module.vpc.vpc_id
   subnet_ids                        = module.vpc.private_subnets
@@ -205,7 +203,7 @@ module "self_managed_node_group" {
 
   name                = "separate-self-mng"
   cluster_name        = module.eks.cluster_id
-  cluster_version     = local.cluster_version
+  cluster_version     = module.eks.cluster_version
   cluster_endpoint    = module.eks.cluster_endpoint
   cluster_auth_base64 = module.eks.cluster_certificate_authority_data
 
