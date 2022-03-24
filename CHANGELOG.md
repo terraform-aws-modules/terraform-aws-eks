@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.14.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.14.0...v18.14.1) (2022-03-24)
+
+
+### Bug Fixes
+
+* Default to cluster version for EKS and self managed node groups when a `cluster_version` is not specified ([#1963](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1963)) ([fd3a3e9](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/fd3a3e9a96d9a8fa9b22446e2ac8c36cdf68c5fc))
+
 ## [18.14.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.13.0...v18.14.0) (2022-03-24)
 
 
