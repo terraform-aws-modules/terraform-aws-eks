@@ -211,7 +211,7 @@ variable "ami_id" {
 }
 
 variable "cluster_version" {
-  description = "Kubernetes cluster version - used to lookup default AMI ID if one is not provided"
+  description = "Kubernetes cluster version - used to lookup default AMI ID if one is not provided. Defaults to the EKS cluster version."
   type        = string
   default     = null
 }

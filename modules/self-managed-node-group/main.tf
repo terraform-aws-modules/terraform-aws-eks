@@ -2,12 +2,15 @@ data "aws_partition" "current" {}
 
 data "aws_caller_identity" "current" {}
 
+data "aws_eks_cluster" "cluster" {
+  name = var.cluster_name
+}
 data "aws_ami" "eks_default" {
   count = var.create ? 1 : 0
 
   filter {
     name   = "name"
-    values = ["amazon-eks-node-${var.cluster_version}-v*"]
+    values = ["amazon-eks-node-${var.cluster_version != null ? var.cluster_version : data.aws_eks_cluster.cluster.version}-v*"]
   }
 
   most_recent = true
