@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.14.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.13.0...v18.14.0) (2022-03-24)
+
+
+### Features
+
+* Add tags to EKS created cluster security group to match rest of module tagging scheme ([#1957](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1957)) ([9371a29](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/9371a2943b13cc2d9ceb34aef14ec2ccee1cb721))
+
 ## [18.13.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.12.0...v18.13.0) (2022-03-23)
 
 
