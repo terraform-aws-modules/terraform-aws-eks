@@ -20,7 +20,7 @@ Terraform module which creates AWS EKS (Kubernetes) resources
 - Support for providing maps of node groups/Fargate profiles to the cluster module definition or use separate node group/Fargate profile sub-modules
 - Provisions to provide node group/Fargate profile "default" settings - useful for when creating multiple node groups/Fargate profiles where you want to set a common set of configurations once, and then individual control only select features
 
-## Documentation
+## [Documentation](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs)
 
 - [Frequently Asked Questions](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md)
 - [Module Design](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/module_design.md)
@@ -31,14 +31,32 @@ Terraform module which creates AWS EKS (Kubernetes) resources
   - [Upgrade to v17.x](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/UPGRADE-17.0.md)
   - [Upgrade to v18.x](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/UPGRADE-18.0.md)
 
+### [IRSA Sub-Module](https://github.com/terraform-aws-modules/terraform-aws-iam/tree/master/modules/iam-role-for-service-accounts-eks)
+
+An IAM role for service accounts (IRSA) sub-module has been created to make deploying common addons/controllers easier. Instead of users having to create a custom IAM role with the necessary federated role assumption required for IRSA plus find and craft the associated policy required for the addon/controller, users can create the IRSA role and policy with a few lines of code. See the [`terraform-aws-iam/examples/iam-role-for-service-accounts`](https://github.com/terraform-aws-modules/terraform-aws-iam/blob/master/examples/iam-role-for-service-accounts-eks/main.tf) directory for examples on how to use the IRSA sub-module in conjunction with this (`terraform-aws-eks`) module.
+
+Some of the addon/controller policies that are currently supported include:
+
+- [Cluster Autoscaler](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md)
+- [External DNS](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md#iam-policy)
+- [EBS CSI Driver](https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/docs/example-iam-policy.json)
+- [VPC CNI](https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html)
+- [Node Termination Hanlder](https://github.com/aws/aws-node-termination-handler#5-create-an-iam-role-for-the-pods)
+- [Karpenter](https://github.com/aws/karpenter/blob/main/website/content/en/preview/getting-started/cloudformation.yaml)
+- [Load Balancer Controller](https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/docs/install/iam_policy.json)
+
+See [terraform-aws-iam/modules/iam-role-for-service-accounts](https://github.com/terraform-aws-modules/terraform-aws-iam/tree/master/modules/iam-role-for-service-accounts-eks) for current list of supported addon/controller policies as more are added to the project.
+
 ## Usage
 
 ```hcl
 module "eks" {
-  source = "terraform-aws-modules/eks/aws"
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 18.0"
 
-  cluster_name                    = "my-cluster"
-  cluster_version                 = "1.21"
+  cluster_name    = "my-cluster"
+  cluster_version = "1.21"
+
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
@@ -64,14 +82,14 @@ module "eks" {
   self_managed_node_group_defaults = {
     instance_type                          = "m6i.large"
     update_launch_template_default_version = true
-    iam_role_additional_policies           = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    iam_role_additional_policies = [
+      "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    ]
   }
 
   self_managed_node_groups = {
     one = {
-      name = "spot-1"
-
-      public_ip    = true
+      name         = "mixed-1"
       max_size     = 5
       desired_size = 2
 
@@ -94,29 +112,13 @@ module "eks" {
           },
         ]
       }
-
-      pre_bootstrap_user_data = <<-EOT
-      echo "foo"
-      export FOO=bar
-      EOT
-
-      bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-
-      post_bootstrap_user_data = <<-EOT
-      cd /tmp
-      sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-      sudo systemctl enable amazon-ssm-agent
-      sudo systemctl start amazon-ssm-agent
-      EOT
     }
   }
 
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
-    ami_type               = "AL2_x86_64"
-    disk_size              = 50
-    instance_types         = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
-    vpc_security_group_ids = [aws_security_group.additional.id]
+    disk_size      = 50
+    instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
   }
 
   eks_managed_node_groups = {
@@ -128,21 +130,6 @@ module "eks" {
 
       instance_types = ["t3.large"]
       capacity_type  = "SPOT"
-      labels = {
-        Environment = "test"
-        GithubRepo  = "terraform-aws-eks"
-        GithubOrg   = "terraform-aws-modules"
-      }
-      taints = {
-        dedicated = {
-          key    = "dedicated"
-          value  = "gpuGroup"
-          effect = "NO_SCHEDULE"
-        }
-      }
-      tags = {
-        ExtraTag = "example"
-      }
     }
   }
 
@@ -152,24 +139,9 @@ module "eks" {
       name = "default"
       selectors = [
         {
-          namespace = "kube-system"
-          labels = {
-            k8s-app = "kube-dns"
-          }
-        },
-        {
           namespace = "default"
         }
       ]
-
-      tags = {
-        Owner = "test"
-      }
-
-      timeouts = {
-        create = "20m"
-        delete = "20m"
-      }
     }
   }
 
