@@ -4,22 +4,6 @@ Terraform module which creates AWS EKS (Kubernetes) resources
 
 [![SWUbanner](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 
-## Available Features
-
-- AWS EKS Cluster
-- AWS EKS Cluster Addons
-- AWS EKS Identity Provider Configuration
-- All [node types](https://docs.aws.amazon.com/eks/latest/userguide/eks-compute.html) are supported:
-  - [EKS Managed Node Group](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html)
-  - [Self Managed Node Group](https://docs.aws.amazon.com/eks/latest/userguide/worker.html)
-  - [Fargate Profile](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html)
-- Support for custom AMI, custom launch template, and custom user data
-- Support for Amazon Linux 2 EKS Optimized AMI and Bottlerocket nodes
-  - Windows based node support is limited to a default user data template that is provided due to the lack of Windows support and manual steps required to provision Windows based EKS nodes
-- Support for module created security group, bring your own security groups, as well as adding additional security group rules to the module created security group(s)
-- Support for providing maps of node groups/Fargate profiles to the cluster module definition or use separate node group/Fargate profile sub-modules
-- Provisions to provide node group/Fargate profile "default" settings - useful for when creating multiple node groups/Fargate profiles where you want to set a common set of configurations once, and then individual control only select features
-
 ## [Documentation](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs)
 
 - [Frequently Asked Questions](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md)
@@ -31,7 +15,28 @@ Terraform module which creates AWS EKS (Kubernetes) resources
   - [Upgrade to v17.x](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/UPGRADE-17.0.md)
   - [Upgrade to v18.x](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/UPGRADE-18.0.md)
 
-### [IRSA Sub-Module](https://github.com/terraform-aws-modules/terraform-aws-iam/tree/master/modules/iam-role-for-service-accounts-eks)
+### External Documentation
+
+Please note that we strive to provide a comprehensive suite of documentation for __*configuring and utilizing the module(s)*__ defined here, and that documentation regarding EKS (including EKS managed node group, self managed node group, and Fargate profile) and/or Kubernetes features, usage, etc. are better left up to their respective sources:
+- [AWS EKS Documentation](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
+- [Kubernetes Documentation](https://kubernetes.io/docs/home/)
+
+## Available Features
+
+- AWS EKS Cluster Addons
+- AWS EKS Identity Provider Configuration
+- All [node types](https://docs.aws.amazon.com/eks/latest/userguide/eks-compute.html) are supported:
+  - [EKS Managed Node Group](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html)
+  - [Self Managed Node Group](https://docs.aws.amazon.com/eks/latest/userguide/worker.html)
+  - [Fargate Profile](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html)
+- Support for custom AMI, custom launch template, and custom user data including custom user data template
+- Support for Amazon Linux 2 EKS Optimized AMI and Bottlerocket nodes
+  - Windows based node support is limited to a default user data template that is provided due to the lack of Windows support and manual steps required to provision Windows based EKS nodes
+- Support for module created security group, bring your own security groups, as well as adding additional security group rules to the module created security group(s)
+- Support for creating node groups/profiles separate from the cluster through the use of sub-modules (same as what is used by root module)
+- Support for node group/profile "default" settings - useful for when creating multiple node groups/Fargate profiles where you want to set a common set of configurations once, and then individually control only select features on certain node groups/profiles
+
+### [IRSA Terraform Module](https://github.com/terraform-aws-modules/terraform-aws-iam/tree/master/modules/iam-role-for-service-accounts-eks)
 
 An IAM role for service accounts (IRSA) sub-module has been created to make deploying common addons/controllers easier. Instead of users having to create a custom IAM role with the necessary federated role assumption required for IRSA plus find and craft the associated policy required for the addon/controller, users can create the IRSA role and policy with a few lines of code. See the [`terraform-aws-iam/examples/iam-role-for-service-accounts`](https://github.com/terraform-aws-modules/terraform-aws-iam/blob/master/examples/iam-role-for-service-accounts-eks/main.tf) directory for examples on how to use the IRSA sub-module in conjunction with this (`terraform-aws-eks`) module.
 
