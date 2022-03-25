@@ -568,10 +568,11 @@ resource "aws_launch_template" "external" {
     enabled = true
   }
 
-  network_interfaces {
-    associate_public_ip_address = false
-    delete_on_termination       = true
-  }
+  # Disabling due to https://github.com/hashicorp/terraform-provider-aws/issues/23766
+  # network_interfaces {
+  #   associate_public_ip_address = false
+  #   delete_on_termination       = true
+  # }
 
   # if you want to use a custom AMI
   # image_id      = var.ami_id
