@@ -2,6 +2,8 @@ data "aws_partition" "current" {}
 
 data "aws_caller_identity" "current" {}
 
+data "aws_default_tags" "current" {}
+
 data "aws_ami" "eks_default" {
   count = var.create ? 1 : 0
 
@@ -42,6 +44,8 @@ module "user_data" {
 
 locals {
   launch_template_name_int = coalesce(var.launch_template_name, "${var.name}-node-group")
+
+  launch_template_default_tags = try(var.launch_template_use_default_tags, false) ? merge(data.aws_default_tags.current.tags, var.tags) : var.tags
 }
 
 resource "aws_launch_template" "this" {
@@ -229,7 +233,7 @@ resource "aws_launch_template" "this" {
     for_each = toset(["instance", "volume", "network-interface"])
     content {
       resource_type = tag_specifications.key
-      tags          = merge(var.tags, { Name = var.name }, var.launch_template_tags)
+      tags          = merge(local.launch_template_default_tags, { Name = var.name }, var.launch_template_tags)
     }
   }
 
@@ -255,6 +259,8 @@ locals {
   launch_template_name = try(aws_launch_template.this[0].name, var.launch_template_name)
   # Change order to allow users to set version priority before using defaults
   launch_template_version = coalesce(var.launch_template_version, try(aws_launch_template.this[0].default_version, "$Default"))
+
+  asg_default_tags = try(var.asg_use_default_tags, false) ? merge(data.aws_default_tags.current.tags, var.tags) : var.tags
 }
 
 resource "aws_autoscaling_group" "this" {
@@ -385,7 +391,7 @@ resource "aws_autoscaling_group" "this" {
         "kubernetes.io/cluster/${var.cluster_name}" = "owned"
         "k8s.io/cluster/${var.cluster_name}"        = "owned"
       },
-      var.tags,
+      local.asg_default_tags,
     )
 
     content {

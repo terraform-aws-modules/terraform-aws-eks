@@ -2,6 +2,8 @@ data "aws_partition" "current" {}
 
 data "aws_caller_identity" "current" {}
 
+data "aws_default_tags" "current" {}
+
 ################################################################################
 # User Data
 ################################################################################
@@ -38,6 +40,8 @@ locals {
   use_custom_launch_template = var.create_launch_template || var.launch_template_name != ""
 
   launch_template_name_int = coalesce(var.launch_template_name, "${var.name}-eks-node-group")
+
+  launch_template_default_tags = try(var.launch_template_use_default_tags, false) ? merge(data.aws_default_tags.current.tags, var.tags) : var.tags
 }
 
 resource "aws_launch_template" "this" {
@@ -238,7 +242,7 @@ resource "aws_launch_template" "this" {
     for_each = toset(["instance", "volume", "network-interface"])
     content {
       resource_type = tag_specifications.key
-      tags          = merge(var.tags, { Name = var.name }, var.launch_template_tags)
+      tags          = merge(local.launch_template_default_tags, { Name = var.name }, var.launch_template_tags)
     }
   }
 

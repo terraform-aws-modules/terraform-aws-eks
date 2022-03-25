@@ -1,5 +1,11 @@
 provider "aws" {
   region = local.region
+
+  default_tags {
+    tags = {
+      ExampleDefaultTag = "ExampleDefaultValue"
+    }
+  }
 }
 
 locals {
@@ -111,6 +117,7 @@ module "eks" {
     instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
 
     attach_cluster_primary_security_group = true
+    launch_template_use_default_tags      = true
     vpc_security_group_ids                = [aws_security_group.additional.id]
   }
 
@@ -215,6 +222,8 @@ module "self_managed_node_group" {
     module.eks.cluster_primary_security_group_id,
     module.eks.cluster_security_group_id,
   ]
+
+  asg_use_default_tags = true
 
   tags = merge(local.tags, { Separate = "self-managed-node-group" })
 }

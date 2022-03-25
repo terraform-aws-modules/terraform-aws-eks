@@ -272,12 +272,13 @@ module "eks_managed_node_group" {
   user_data_template_path    = try(each.value.user_data_template_path, var.eks_managed_node_group_defaults.user_data_template_path, "")
 
   # Launch Template
-  create_launch_template          = try(each.value.create_launch_template, var.eks_managed_node_group_defaults.create_launch_template, true)
-  launch_template_name            = try(each.value.launch_template_name, var.eks_managed_node_group_defaults.launch_template_name, each.key)
-  launch_template_use_name_prefix = try(each.value.launch_template_use_name_prefix, var.eks_managed_node_group_defaults.launch_template_use_name_prefix, true)
-  launch_template_version         = try(each.value.launch_template_version, var.eks_managed_node_group_defaults.launch_template_version, null)
-  launch_template_description     = try(each.value.launch_template_description, var.eks_managed_node_group_defaults.launch_template_description, "Custom launch template for ${try(each.value.name, each.key)} EKS managed node group")
-  launch_template_tags            = try(each.value.launch_template_tags, var.eks_managed_node_group_defaults.launch_template_tags, {})
+  create_launch_template           = try(each.value.create_launch_template, var.eks_managed_node_group_defaults.create_launch_template, true)
+  launch_template_name             = try(each.value.launch_template_name, var.eks_managed_node_group_defaults.launch_template_name, each.key)
+  launch_template_use_name_prefix  = try(each.value.launch_template_use_name_prefix, var.eks_managed_node_group_defaults.launch_template_use_name_prefix, true)
+  launch_template_version          = try(each.value.launch_template_version, var.eks_managed_node_group_defaults.launch_template_version, null)
+  launch_template_description      = try(each.value.launch_template_description, var.eks_managed_node_group_defaults.launch_template_description, "Custom launch template for ${try(each.value.name, each.key)} EKS managed node group")
+  launch_template_tags             = try(each.value.launch_template_tags, var.eks_managed_node_group_defaults.launch_template_tags, {})
+  launch_template_use_default_tags = try(each.value.launch_template_use_default_tags, var.eks_managed_node_group_defaults.launch_template_use_default_tags, true)
 
   ebs_optimized                          = try(each.value.ebs_optimized, var.eks_managed_node_group_defaults.ebs_optimized, null)
   key_name                               = try(each.value.key_name, var.eks_managed_node_group_defaults.key_name, null)
@@ -381,7 +382,8 @@ module "self_managed_node_group" {
   create_schedule = try(each.value.create_schedule, var.self_managed_node_group_defaults.create_schedule, false)
   schedules       = try(each.value.schedules, var.self_managed_node_group_defaults.schedules, null)
 
-  delete_timeout = try(each.value.delete_timeout, var.self_managed_node_group_defaults.delete_timeout, null)
+  delete_timeout       = try(each.value.delete_timeout, var.self_managed_node_group_defaults.delete_timeout, null)
+  asg_use_default_tags = try(each.value.asg_use_default_tags, var.self_managed_node_group_defaults.asg_use_default_tags, false)
 
   # User data
   platform                 = try(each.value.platform, var.self_managed_node_group_defaults.platform, "linux")
@@ -393,12 +395,13 @@ module "self_managed_node_group" {
   user_data_template_path  = try(each.value.user_data_template_path, var.self_managed_node_group_defaults.user_data_template_path, "")
 
   # Launch Template
-  create_launch_template          = try(each.value.create_launch_template, var.self_managed_node_group_defaults.create_launch_template, true)
-  launch_template_name            = try(each.value.launch_template_name, var.self_managed_node_group_defaults.launch_template_name, each.key)
-  launch_template_use_name_prefix = try(each.value.launch_template_use_name_prefix, var.self_managed_node_group_defaults.launch_template_use_name_prefix, true)
-  launch_template_version         = try(each.value.launch_template_version, var.self_managed_node_group_defaults.launch_template_version, null)
-  launch_template_description     = try(each.value.launch_template_description, var.self_managed_node_group_defaults.launch_template_description, "Custom launch template for ${try(each.value.name, each.key)} self managed node group")
-  launch_template_tags            = try(each.value.launch_template_tags, var.self_managed_node_group_defaults.launch_template_tags, {})
+  create_launch_template           = try(each.value.create_launch_template, var.self_managed_node_group_defaults.create_launch_template, true)
+  launch_template_name             = try(each.value.launch_template_name, var.self_managed_node_group_defaults.launch_template_name, each.key)
+  launch_template_use_name_prefix  = try(each.value.launch_template_use_name_prefix, var.self_managed_node_group_defaults.launch_template_use_name_prefix, true)
+  launch_template_version          = try(each.value.launch_template_version, var.self_managed_node_group_defaults.launch_template_version, null)
+  launch_template_description      = try(each.value.launch_template_description, var.self_managed_node_group_defaults.launch_template_description, "Custom launch template for ${try(each.value.name, each.key)} self managed node group")
+  launch_template_tags             = try(each.value.launch_template_tags, var.self_managed_node_group_defaults.launch_template_tags, {})
+  launch_template_use_default_tags = try(each.value.launch_template_use_default_tags, var.eks_managed_node_group_defaults.launch_template_use_default_tags, true)
 
   ebs_optimized   = try(each.value.ebs_optimized, var.self_managed_node_group_defaults.ebs_optimized, null)
   ami_id          = try(each.value.ami_id, var.self_managed_node_group_defaults.ami_id, "")

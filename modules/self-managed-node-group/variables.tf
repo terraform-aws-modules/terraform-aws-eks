@@ -262,6 +262,12 @@ variable "launch_template_tags" {
   default     = {}
 }
 
+variable "launch_template_use_default_tags" {
+  description = "Enables/disables the use of provider default tags in the tag_specifications of launch template created"
+  type        = bool
+  default     = false
+}
+
 ################################################################################
 # Autoscaling group
 ################################################################################
@@ -450,6 +456,12 @@ variable "delete_timeout" {
   description = "Delete timeout to wait for destroying autoscaling group"
   type        = string
   default     = null
+}
+
+variable "asg_use_default_tags" {
+  description = "Enables/disables the use of provider default tags for the Auto Scaling group"
+  type        = bool
+  default     = false
 }
 
 ################################################################################
