@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.15.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.14.1...v18.15.0) (2022-03-25)
+
+
+### Features
+
+* Update TLS provider and remove unnecessary cloud init version requirements ([#1966](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1966)) ([0269d38](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/0269d38fcae2b1ca566427159d33910fe96299a7))
+
 ### [18.14.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.14.0...v18.14.1) (2022-03-24)
 
 
