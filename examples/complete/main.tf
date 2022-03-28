@@ -202,6 +202,8 @@ module "eks_managed_node_group" {
     module.eks.cluster_security_group_id,
   ]
 
+  launch_template_use_default_tags = true
+
   tags = merge(local.tags, { Separate = "eks-managed-node-group" })
 }
 
@@ -223,7 +225,7 @@ module "self_managed_node_group" {
     module.eks.cluster_security_group_id,
   ]
 
-  asg_use_default_tags = true
+  use_default_tags = true
 
   tags = merge(local.tags, { Separate = "self-managed-node-group" })
 }
