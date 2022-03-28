@@ -381,7 +381,8 @@ module "self_managed_node_group" {
   create_schedule = try(each.value.create_schedule, var.self_managed_node_group_defaults.create_schedule, false)
   schedules       = try(each.value.schedules, var.self_managed_node_group_defaults.schedules, null)
 
-  delete_timeout = try(each.value.delete_timeout, var.self_managed_node_group_defaults.delete_timeout, null)
+  delete_timeout   = try(each.value.delete_timeout, var.self_managed_node_group_defaults.delete_timeout, null)
+  use_default_tags = try(each.value.use_default_tags, var.self_managed_node_group_defaults.use_default_tags, false)
 
   # User data
   platform                 = try(each.value.platform, var.self_managed_node_group_defaults.platform, "linux")
