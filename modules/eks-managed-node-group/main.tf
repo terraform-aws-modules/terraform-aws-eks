@@ -41,7 +41,7 @@ locals {
 
   launch_template_name_int = coalesce(var.launch_template_name, "${var.name}-eks-node-group")
 
-  launch_template_default_tags = try(var.launch_template_use_default_tags, false) ? merge(data.aws_default_tags.current.tags, var.tags) : var.tags
+  launch_template_default_tags = var.launch_template_use_default_tags ? merge(data.aws_default_tags.current.tags, var.tags) : var.tags
 }
 
 resource "aws_launch_template" "this" {

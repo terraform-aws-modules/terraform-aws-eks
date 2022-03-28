@@ -251,7 +251,7 @@ variable "launch_template_tags" {
 }
 
 variable "launch_template_use_default_tags" {
-  description = "Enables/disables the use of provider default tags in the tag_specifications of launch template created"
+  description = "Enables/disables the use of provider default tags in the tag_specifications of the launch template created"
   type        = bool
   default     = false
 }

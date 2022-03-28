@@ -45,7 +45,7 @@ module "user_data" {
 locals {
   launch_template_name_int = coalesce(var.launch_template_name, "${var.name}-node-group")
 
-  launch_template_default_tags = try(var.launch_template_use_default_tags, false) ? merge(data.aws_default_tags.current.tags, var.tags) : var.tags
+  launch_template_default_tags = var.launch_template_use_default_tags ? merge(data.aws_default_tags.current.tags, var.tags) : var.tags
 }
 
 resource "aws_launch_template" "this" {
@@ -260,7 +260,7 @@ locals {
   # Change order to allow users to set version priority before using defaults
   launch_template_version = coalesce(var.launch_template_version, try(aws_launch_template.this[0].default_version, "$Default"))
 
-  asg_default_tags = try(var.asg_use_default_tags, false) ? merge(data.aws_default_tags.current.tags, var.tags) : var.tags
+  asg_default_tags = var.use_default_tags ? merge(data.aws_default_tags.current.tags, var.tags) : var.tags
 }
 
 resource "aws_autoscaling_group" "this" {
