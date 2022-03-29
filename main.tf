@@ -227,7 +227,7 @@ resource "aws_iam_role" "this" {
   dynamic "inline_policy" {
     for_each = var.create_cloudwatch_log_group ? [1] : []
     content {
-      name = var.iam_role_use_name_prefix ? null : local.iam_role_name
+      name = local.iam_role_name
 
       policy = jsonencode({
         Version = "2012-10-17"
