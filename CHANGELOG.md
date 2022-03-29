@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.16.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.15.0...v18.16.0) (2022-03-29)
+
+
+### Features
+
+* Support default_tags in aws_autoscaling_group ([#1973](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1973)) ([7a9458a](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/7a9458af52ddf1f6180324e845b1e8a26fd5c1f5))
+
 ## [18.15.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.14.1...v18.15.0) (2022-03-25)
 
 
