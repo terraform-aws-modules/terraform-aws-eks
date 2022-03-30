@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.17.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.16.0...v18.17.0) (2022-03-30)
+
+
+### Features
+
+* Add back in CloudWatch log group create deny policy to cluster IAM role ([#1974](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1974)) ([98e137f](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/98e137fad990d51a31d86e908ea593e933fc22a9))
+
 ## [18.16.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.15.0...v18.16.0) (2022-03-29)
 
 
