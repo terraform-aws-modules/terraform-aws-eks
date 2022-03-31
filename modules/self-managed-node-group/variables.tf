@@ -452,6 +452,12 @@ variable "delete_timeout" {
   default     = null
 }
 
+variable "use_default_tags" {
+  description = "Enables/disables the use of provider default tags in the tag_specifications of the Auto Scaling group"
+  type        = bool
+  default     = false
+}
+
 ################################################################################
 # Autoscaling group schedule
 ################################################################################

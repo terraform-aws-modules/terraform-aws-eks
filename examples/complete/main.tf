@@ -1,5 +1,11 @@
 provider "aws" {
   region = local.region
+
+  default_tags {
+    tags = {
+      ExampleDefaultTag = "ExampleDefaultValue"
+    }
+  }
 }
 
 locals {
@@ -215,6 +221,8 @@ module "self_managed_node_group" {
     module.eks.cluster_primary_security_group_id,
     module.eks.cluster_security_group_id,
   ]
+
+  use_default_tags = true
 
   tags = merge(local.tags, { Separate = "self-managed-node-group" })
 }

@@ -2,6 +2,8 @@ data "aws_partition" "current" {}
 
 data "aws_caller_identity" "current" {}
 
+data "aws_default_tags" "current" {}
+
 data "aws_ami" "eks_default" {
   count = var.create ? 1 : 0
 
@@ -385,7 +387,7 @@ resource "aws_autoscaling_group" "this" {
         "kubernetes.io/cluster/${var.cluster_name}" = "owned"
         "k8s.io/cluster/${var.cluster_name}"        = "owned"
       },
-      var.tags,
+      var.use_default_tags ? merge(data.aws_default_tags.current.tags, var.tags) : var.tags
     )
 
     content {
