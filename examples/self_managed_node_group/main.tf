@@ -202,6 +202,12 @@ module "eks" {
         instance_metadata_tags      = "disabled"
       }
 
+      capacity_reservation_specification = {
+        capacity_reservation_target = {
+          capacity_reservation_id = aws_ec2_capacity_reservation.targeted.id
+        }
+      }
+
       create_iam_role          = true
       iam_role_name            = "self-managed-node-group-complete-example"
       iam_role_use_name_prefix = false
@@ -405,6 +411,14 @@ resource "aws_kms_key" "ebs" {
   description             = "Customer managed key to encrypt self managed node group volumes"
   deletion_window_in_days = 7
   policy                  = data.aws_iam_policy_document.ebs.json
+}
+
+resource "aws_ec2_capacity_reservation" "targeted" {
+  instance_type           = "m6i.large"
+  instance_platform       = "Linux/UNIX"
+  availability_zone       = "${local.region}a"
+  instance_count          = 1
+  instance_match_criteria = "targeted"
 }
 
 # This policy is required for the KMS key used for EKS root volumes, so the cluster is allowed to enc/dec/attach encrypted EBS volumes
