@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.17.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.17.0...v18.17.1) (2022-04-02)
+
+
+### Bug Fixes
+
+* Correct `capacity_reservation_target` within launch templates of both EKS and self managed node groups ([#1979](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1979)) ([381144e](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/381144e3bb604b3086ceea537a6052a6179ce5b3))
+
 ## [18.17.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.16.0...v18.17.0) (2022-03-30)
 
 
