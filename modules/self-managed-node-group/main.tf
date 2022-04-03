@@ -44,6 +44,8 @@ module "user_data" {
 
 locals {
   launch_template_name_int = coalesce(var.launch_template_name, "${var.name}-node-group")
+
+  security_group_ids = compact(concat([try(aws_security_group.this[0].id, ""), var.cluster_primary_security_group_id], var.vpc_security_group_ids))
 }
 
 resource "aws_launch_template" "this" {
@@ -59,7 +61,7 @@ resource "aws_launch_template" "this" {
   key_name      = var.key_name
   user_data     = module.user_data.user_data
 
-  vpc_security_group_ids = compact(concat([try(aws_security_group.this[0].id, ""), var.cluster_primary_security_group_id], var.vpc_security_group_ids))
+  vpc_security_group_ids = length(var.network_interfaces) > 0 ? [] : local.security_group_ids
 
   default_version                      = var.launch_template_default_version
   update_default_version               = var.update_launch_template_default_version
@@ -203,13 +205,14 @@ resource "aws_launch_template" "this" {
       delete_on_termination        = lookup(network_interfaces.value, "delete_on_termination", null)
       description                  = lookup(network_interfaces.value, "description", null)
       device_index                 = lookup(network_interfaces.value, "device_index", null)
-      ipv4_addresses               = lookup(network_interfaces.value, "ipv4_addresses", null) != null ? network_interfaces.value.ipv4_addresses : []
+      interface_type               = lookup(network_interfaces.value, "interface_type", null)
+      ipv4_addresses               = try(network_interfaces.value.ipv4_addresses, [])
       ipv4_address_count           = lookup(network_interfaces.value, "ipv4_address_count", null)
-      ipv6_addresses               = lookup(network_interfaces.value, "ipv6_addresses", null) != null ? network_interfaces.value.ipv6_addresses : []
+      ipv6_addresses               = try(network_interfaces.value.ipv6_addresses, [])
       ipv6_address_count           = lookup(network_interfaces.value, "ipv6_address_count", null)
       network_interface_id         = lookup(network_interfaces.value, "network_interface_id", null)
       private_ip_address           = lookup(network_interfaces.value, "private_ip_address", null)
-      security_groups              = lookup(network_interfaces.value, "security_groups", null) != null ? network_interfaces.value.security_groups : []
+      security_groups              = compact(concat(try(network_interfaces.value.security_groups, []), local.security_group_ids))
       subnet_id                    = lookup(network_interfaces.value, "subnet_id", null)
     }
   }
