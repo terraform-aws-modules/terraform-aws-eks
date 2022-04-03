@@ -146,6 +146,37 @@ module "eks" {
       }
     }
 
+    efa = {
+      min_size     = 1
+      max_size     = 2
+      desired_size = 1
+
+      # aws ec2 describe-instance-types --region eu-west-1 --filters Name=network-info.efa-supported,Values=true --query "InstanceTypes[*].[InstanceType]" --output text | sort
+      instance_type = "c5n.9xlarge"
+
+      post_bootstrap_user_data = <<-EOT
+
+      # Install EFA
+      curl -O https://efa-installer.amazonaws.com/aws-efa-installer-latest.tar.gz
+      tar -xf aws-efa-installer-latest.tar.gz && cd aws-efa-installer
+      ./efa_installer.sh -y --minimal
+      fi_info -p efa -t FI_EP_RDM
+
+      # Disable ptrace
+      sysctl -w kernel.yama.ptrace_scope=0
+      EOT
+
+      network_interfaces = [
+        {
+          description                 = "EFA interface example"
+          delete_on_termination       = true
+          device_index                = 0
+          associate_public_ip_address = false
+          interface_type              = "efa"
+        }
+      ]
+    }
+
     # Complete
     complete = {
       name            = "complete-self-mng"
@@ -200,6 +231,12 @@ module "eks" {
         http_tokens                 = "required"
         http_put_response_hop_limit = 2
         instance_metadata_tags      = "disabled"
+      }
+
+      capacity_reservation_specification = {
+        capacity_reservation_target = {
+          capacity_reservation_id = aws_ec2_capacity_reservation.targeted.id
+        }
       }
 
       create_iam_role          = true
@@ -405,6 +442,14 @@ resource "aws_kms_key" "ebs" {
   description             = "Customer managed key to encrypt self managed node group volumes"
   deletion_window_in_days = 7
   policy                  = data.aws_iam_policy_document.ebs.json
+}
+
+resource "aws_ec2_capacity_reservation" "targeted" {
+  instance_type           = "m6i.large"
+  instance_platform       = "Linux/UNIX"
+  availability_zone       = "${local.region}a"
+  instance_count          = 1
+  instance_match_criteria = "targeted"
 }
 
 # This policy is required for the KMS key used for EKS root volumes, so the cluster is allowed to enc/dec/attach encrypted EBS volumes
