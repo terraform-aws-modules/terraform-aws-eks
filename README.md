@@ -4,63 +4,64 @@ Terraform module which creates AWS EKS (Kubernetes) resources
 
 [![SWUbanner](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 
+## [Documentation](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs)
+
+- [Frequently Asked Questions](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md)
+- [Compute Resources](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/compute_resources.md)
+- [IRSA Integration](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/irsa-integration.md)
+- [User Data](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/user_data.md)
+- [Network Connectivity](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/network_connectivity.md)
+- Upgrade Guides
+  - [Upgrade to v17.x](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/UPGRADE-17.0.md)
+  - [Upgrade to v18.x](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/UPGRADE-18.0.md)
+
+### External Documentation
+
+Please note that we strive to provide a comprehensive suite of documentation for __*configuring and utilizing the module(s)*__ defined here, and that documentation regarding EKS (including EKS managed node group, self managed node group, and Fargate profile) and/or Kubernetes features, usage, etc. are better left up to their respective sources:
+- [AWS EKS Documentation](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
+- [Kubernetes Documentation](https://kubernetes.io/docs/home/)
+
 ## Available Features
 
-- AWS EKS Cluster
 - AWS EKS Cluster Addons
 - AWS EKS Identity Provider Configuration
 - All [node types](https://docs.aws.amazon.com/eks/latest/userguide/eks-compute.html) are supported:
   - [EKS Managed Node Group](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html)
   - [Self Managed Node Group](https://docs.aws.amazon.com/eks/latest/userguide/worker.html)
   - [Fargate Profile](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html)
-- Support for custom AMI, custom launch template, and custom user data
+- Support for custom AMI, custom launch template, and custom user data including custom user data template
 - Support for Amazon Linux 2 EKS Optimized AMI and Bottlerocket nodes
   - Windows based node support is limited to a default user data template that is provided due to the lack of Windows support and manual steps required to provision Windows based EKS nodes
 - Support for module created security group, bring your own security groups, as well as adding additional security group rules to the module created security group(s)
-- Support for providing maps of node groups/Fargate profiles to the cluster module definition or use separate node group/Fargate profile sub-modules
-- Provisions to provide node group/Fargate profile "default" settings - useful for when creating multiple node groups/Fargate profiles where you want to set a common set of configurations once, and then individual control only select features
+- Support for creating node groups/profiles separate from the cluster through the use of sub-modules (same as what is used by root module)
+- Support for node group/profile "default" settings - useful for when creating multiple node groups/Fargate profiles where you want to set a common set of configurations once, and then individually control only select features on certain node groups/profiles
 
-### ℹ️ `Error: Invalid for_each argument ...`
+### [IRSA Terraform Module](https://github.com/terraform-aws-modules/terraform-aws-iam/tree/master/modules/iam-role-for-service-accounts-eks)
 
-Users may encounter an error such as `Error: Invalid for_each argument - The "for_each" value depends on resource attributes that cannot be determined until apply, so Terraform cannot predict how many instances will be created. To work around this, use the -target argument to first apply ...`
+An IAM role for service accounts (IRSA) sub-module has been created to make deploying common addons/controllers easier. Instead of users having to create a custom IAM role with the necessary federated role assumption required for IRSA plus find and craft the associated policy required for the addon/controller, users can create the IRSA role and policy with a few lines of code. See the [`terraform-aws-iam/examples/iam-role-for-service-accounts`](https://github.com/terraform-aws-modules/terraform-aws-iam/blob/master/examples/iam-role-for-service-accounts-eks/main.tf) directory for examples on how to use the IRSA sub-module in conjunction with this (`terraform-aws-eks`) module.
 
-This error is due to an upstream issue with [Terraform core](https://github.com/hashicorp/terraform/issues/4149). There are two potential options you can take to help mitigate this issue:
+Some of the addon/controller policies that are currently supported include:
 
-1. Create the dependent resources before the cluster  => `terraform apply -target <your policy or your security group>` and then `terraform apply` for the cluster (or other similar means to just ensure the referenced resources exist before creating the cluster)
-  - Note: this is the route users will have to take for adding additional security groups to nodes since there isn't a separate "security group attachment" resource
-2. For additional IAM policies, users can attach the policies outside of the cluster definition as demonstrated below
+- [Cluster Autoscaler](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md)
+- [External DNS](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md#iam-policy)
+- [EBS CSI Driver](https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/docs/example-iam-policy.json)
+- [VPC CNI](https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html)
+- [Node Termination Handler](https://github.com/aws/aws-node-termination-handler#5-create-an-iam-role-for-the-pods)
+- [Karpenter](https://github.com/aws/karpenter/blob/main/website/content/en/preview/getting-started/cloudformation.yaml)
+- [Load Balancer Controller](https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/docs/install/iam_policy.json)
 
-```hcl
-resource "aws_iam_role_policy_attachment" "additional" {
-  for_each = module.eks.eks_managed_node_groups
-  # you could also do the following or any combination:
-  # for_each = merge(
-  #   module.eks.eks_managed_node_groups,
-  #   module.eks.self_managed_node_group,
-  #   module.eks.fargate_profile,
-  # )
-
-  #            This policy does not have to exist at the time of cluster creation. Terraform can
-  #            deduce the proper order of its creation to avoid errors during creation
-  policy_arn = aws_iam_policy.node_additional.arn
-  role       = each.value.iam_role_name
-}
-```
-
-The tl;dr for this issue is that the Terraform resource passed into the modules map definition *must* be known before you can apply the EKS module. The variables this potentially affects are:
-
-- `cluster_security_group_additional_rules` (i.e. - referencing an external security group resource in a rule)
-- `node_security_group_additional_rules` (i.e. - referencing an external security group resource in a rule)
-- `iam_role_additional_policies` (i.e. - referencing an external policy resource)
+See [terraform-aws-iam/modules/iam-role-for-service-accounts](https://github.com/terraform-aws-modules/terraform-aws-iam/tree/master/modules/iam-role-for-service-accounts-eks) for current list of supported addon/controller policies as more are added to the project.
 
 ## Usage
 
 ```hcl
 module "eks" {
-  source = "terraform-aws-modules/eks/aws"
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 18.0"
 
-  cluster_name                    = "my-cluster"
-  cluster_version                 = "1.21"
+  cluster_name    = "my-cluster"
+  cluster_version = "1.21"
+
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
@@ -86,14 +87,14 @@ module "eks" {
   self_managed_node_group_defaults = {
     instance_type                          = "m6i.large"
     update_launch_template_default_version = true
-    iam_role_additional_policies           = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    iam_role_additional_policies = [
+      "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    ]
   }
 
   self_managed_node_groups = {
     one = {
-      name = "spot-1"
-
-      public_ip    = true
+      name         = "mixed-1"
       max_size     = 5
       desired_size = 2
 
@@ -116,29 +117,13 @@ module "eks" {
           },
         ]
       }
-
-      pre_bootstrap_user_data = <<-EOT
-      echo "foo"
-      export FOO=bar
-      EOT
-
-      bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-
-      post_bootstrap_user_data = <<-EOT
-      cd /tmp
-      sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-      sudo systemctl enable amazon-ssm-agent
-      sudo systemctl start amazon-ssm-agent
-      EOT
     }
   }
 
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
-    ami_type               = "AL2_x86_64"
-    disk_size              = 50
-    instance_types         = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
-    vpc_security_group_ids = [aws_security_group.additional.id]
+    disk_size      = 50
+    instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
   }
 
   eks_managed_node_groups = {
@@ -150,21 +135,6 @@ module "eks" {
 
       instance_types = ["t3.large"]
       capacity_type  = "SPOT"
-      labels = {
-        Environment = "test"
-        GithubRepo  = "terraform-aws-eks"
-        GithubOrg   = "terraform-aws-modules"
-      }
-      taints = {
-        dedicated = {
-          key    = "dedicated"
-          value  = "gpuGroup"
-          effect = "NO_SCHEDULE"
-        }
-      }
-      tags = {
-        ExtraTag = "example"
-      }
     }
   }
 
@@ -174,24 +144,9 @@ module "eks" {
       name = "default"
       selectors = [
         {
-          namespace = "kube-system"
-          labels = {
-            k8s-app = "kube-dns"
-          }
-        },
-        {
           namespace = "default"
         }
       ]
-
-      tags = {
-        Owner = "test"
-      }
-
-      timeouts = {
-        create = "20m"
-        delete = "20m"
-      }
     }
   }
 
@@ -201,590 +156,6 @@ module "eks" {
   }
 }
 ```
-
-### IRSA Integration
-
-An [IAM role for service accounts](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html) module has been created to work in conjunction with the EKS module. The [`iam-role-for-service-accounts`](https://github.com/terraform-aws-modules/terraform-aws-iam/tree/master/modules/iam-role-for-service-accounts-eks) module has a set of pre-defined IAM policies for common addons/controllers/custom resources to allow users to quickly enable common integrations. Check [`policy.tf`](https://github.com/terraform-aws-modules/terraform-aws-iam/blob/master/modules/iam-role-for-service-accounts-eks/policies.tf) for a list of the policies currently supported. A example of this integration is shown below, and more can be found in the [`iam-role-for-service-accounts`](https://github.com/terraform-aws-modules/terraform-aws-iam/blob/master/examples/iam-role-for-service-accounts-eks/main.tf) example directory:
-
-```hcl
-module "eks" {
-  source  = "terraform-aws-modules/eks/aws"
-
-  cluster_name    = "example"
-  cluster_version = "1.21"
-
-  cluster_addons = {
-    vpc-cni = {
-      resolve_conflicts        = "OVERWRITE"
-      service_account_role_arn = module.vpc_cni_irsa.iam_role_arn
-    }
-  }
-
-  vpc_id     = "vpc-1234556abcdef"
-  subnet_ids = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
-
-  eks_managed_node_group_defaults = {
-    # We are using the IRSA created below for permissions
-    # This is a better practice as well so that the nodes do not have the permission,
-    # only the VPC CNI addon will have the permission
-    iam_role_attach_cni_policy = false
-  }
-
-  eks_managed_node_groups = {
-    default = {}
-  }
-
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
-}
-
-module "vpc_cni_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-
-  role_name             = "vpc_cni"
-  attach_vpc_cni_policy = true
-  vpc_cni_enable_ipv4   = true
-
-  oidc_providers = {
-    main = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["kube-system:aws-node"]
-    }
-  }
-
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
-}
-
-module "karpenter_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-
-  role_name                          = "karpenter_controller"
-  attach_karpenter_controller_policy = true
-
-  karpenter_controller_cluster_id         = module.eks.cluster_id
-  karpenter_controller_node_iam_role_arns = [
-    module.eks.eks_managed_node_groups["default"].iam_role_arn
-  ]
-
-  oidc_providers = {
-    main = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["karpenter:karpenter"]
-    }
-  }
-
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
-}
-```
-
-## Node Group Configuration
-
-⚠️ The configurations shown below are referenced from within the root EKS module; there will be slight differences in the default values provided when compared to the underlying sub-modules (`eks-managed-node-group`, `self-managed-node-group`, and `fargate-profile`).
-
-### EKS Managed Node Groups
-
-ℹ️ Only the pertinent attributes are shown for brevity
-
-1. AWS EKS Managed Node Group can provide its own launch template and utilize the latest AWS EKS Optimized AMI (Linux) for the given Kubernetes version. By default, the module creates a launch template to ensure tags are propagated to instances, etc., so we need to disable it to use the default template provided by the AWS EKS managed node group service:
-
-```hcl
-  eks_managed_node_groups = {
-    default = {
-      create_launch_template = false
-      launch_template_name   = ""
-    }
-  }
-```
-
-2. AWS EKS Managed Node Group also offers native, default support for Bottlerocket OS by simply specifying the AMI type:
-
-```hcl
-  eks_managed_node_groups = {
-    bottlerocket_default = {
-      create_launch_template = false
-      launch_template_name   = ""
-
-      ami_type = "BOTTLEROCKET_x86_64"
-      platform = "bottlerocket"
-    }
-  }
-```
-
-3. AWS EKS Managed Node Groups allow you to extend configurations by providing your own launch template and user data that is merged with what the service provides. For example, to provide additional user data before the nodes are bootstrapped as well as supply additional arguments to the bootstrap script:
-
-```hcl
-  eks_managed_node_groups = {
-    extend_config = {
-      # This is supplied to the AWS EKS Optimized AMI
-      # bootstrap script https://github.com/awslabs/amazon-eks-ami/blob/master/files/bootstrap.sh
-      bootstrap_extra_args = "--container-runtime containerd --kubelet-extra-args '--max-pods=20'"
-
-      # This user data will be injected prior to the user data provided by the
-      # AWS EKS Managed Node Group service (contains the actually bootstrap configuration)
-      pre_bootstrap_user_data = <<-EOT
-        export CONTAINER_RUNTIME="containerd"
-        export USE_MAX_PODS=false
-      EOT
-    }
-  }
-```
-
-4. The same configurations extension is offered when utilizing Bottlerocket OS AMIs, but the user data is slightly different. Bottlerocket OS uses a TOML user data file and you can provide additional configuration settings via the `bootstrap_extra_args` variable which gets merged into what is provided by the AWS EKS Managed Node Service:
-
-```hcl
-  eks_managed_node_groups = {
-    bottlerocket_extend_config = {
-      ami_type = "BOTTLEROCKET_x86_64"
-      platform = "bottlerocket"
-
-      # this will get added to what AWS provides
-      bootstrap_extra_args = <<-EOT
-      # extra args added
-      [settings.kernel]
-      lockdown = "integrity"
-      EOT
-    }
-  }
-```
-
-5. Users can also utilize a custom AMI, but doing so means that AWS EKS Managed Node Group will NOT inject the necessary bootstrap script and configurations into the user data supplied to the launch template. When using a custom AMI, users must also opt in to bootstrapping the nodes  via user data and either use the module default user data template or provide your own user data template file:
-
-```hcl
-  eks_managed_node_groups = {
-    custom_ami = {
-      ami_id = "ami-0caf35bc73450c396"
-
-      # By default, EKS managed node groups will not append bootstrap script;
-      # this adds it back in using the default template provided by the module
-      # Note: this assumes the AMI provided is an EKS optimized AMI derivative
-      enable_bootstrap_user_data = true
-
-      bootstrap_extra_args = "--container-runtime containerd --kubelet-extra-args '--max-pods=20'"
-
-      pre_bootstrap_user_data = <<-EOT
-        export CONTAINER_RUNTIME="containerd"
-        export USE_MAX_PODS=false
-      EOT
-
-      # Because we have full control over the user data supplied, we can also run additional
-      # scripts/configuration changes after the bootstrap script has been run
-      post_bootstrap_user_data = <<-EOT
-        echo "you are free little kubelet!"
-      EOT
-    }
-  }
-```
-
-6. Similarly, for Bottlerocket there is similar support:
-
-```hcl
-  eks_managed_node_groups = {
-    bottlerocket_custom_ami = {
-      ami_id   = "ami-0ff61e0bcfc81dc94"
-      platform = "bottlerocket"
-
-      # use module user data template to bootstrap
-      enable_bootstrap_user_data = true
-      # this will get added to the template
-      bootstrap_extra_args = <<-EOT
-      # extra args added
-      [settings.kernel]
-      lockdown = "integrity"
-
-      [settings.kubernetes.node-labels]
-      "label1" = "foo"
-      "label2" = "bar"
-
-      [settings.kubernetes.node-taints]
-      "dedicated" = "experimental:PreferNoSchedule"
-      "special" = "true:NoSchedule"
-      EOT
-    }
-  }
-```
-
-See the [`examples/eks_managed_node_group/` example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_managed_node_group) for a working example of these configurations.
-
-### Self Managed Node Groups
-
-ℹ️ Only the pertinent attributes are shown for brevity
-
-1. By default, the `self-managed-node-group` sub-module will use the latest AWS EKS Optimized AMI (Linux) for the given Kubernetes version:
-
-```hcl
-  cluster_version = "1.21"
-
-  # This self managed node group will use the latest AWS EKS Optimized AMI for Kubernetes 1.21
-  self_managed_node_groups = {
-    default = {}
-  }
-```
-
-2. To use Bottlerocket, specify the `platform` as `bottlerocket` and supply the Bottlerocket AMI. The module provided user data for Bottlerocket will be used to bootstrap the nodes created:
-
-```hcl
-  cluster_version = "1.21"
-
-  self_managed_node_groups = {
-    bottlerocket = {
-      platform = "bottlerocket"
-      ami_id   = data.aws_ami.bottlerocket_ami.id
-    }
-  }
-```
-
-### Fargate Profiles
-
-Fargate profiles are rather straightforward. Simply supply the necessary information for the desired profile(s). See the [`examples/fargate_profile/` example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/fargate_profile) for a working example of the various configurations.
-
-### Mixed Node Groups
-
-ℹ️ Only the pertinent attributes are shown for brevity
-
-Users are free to mix and match the different node group types that meet their needs. For example, the following are just an example of the different possibilities:
-- AWS EKS Cluster with one or more AWS EKS Managed Node Groups
-- AWS EKS Cluster with one or more Self Managed Node Groups
-- AWS EKS Cluster with one or more Fargate profiles
-- AWS EKS Cluster with one or more AWS EKS Managed Node Groups, one or more Self Managed Node Groups, one or more Fargate profiles
-
-It is also possible to configure the various node groups of each family differently. Node groups may also be defined outside of the root `eks` module definition by using the provided sub-modules. There are no restrictions on the the various different possibilities provided by the module.
-
-```hcl
-  self_managed_node_group_defaults = {
-    vpc_security_group_ids       = [aws_security_group.additional.id]
-    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
-  }
-
-  self_managed_node_groups = {
-    one = {
-      name = "spot-1"
-
-      public_ip    = true
-      max_size     = 5
-      desired_size = 2
-
-      use_mixed_instances_policy = true
-      mixed_instances_policy = {
-        instances_distribution = {
-          on_demand_base_capacity                  = 0
-          on_demand_percentage_above_base_capacity = 10
-          spot_allocation_strategy                 = "capacity-optimized"
-        }
-
-        override = [
-          {
-            instance_type     = "m5.large"
-            weighted_capacity = "1"
-          },
-          {
-            instance_type     = "m6i.large"
-            weighted_capacity = "2"
-          },
-        ]
-      }
-
-      pre_bootstrap_user_data = <<-EOT
-      echo "foo"
-      export FOO=bar
-      EOT
-
-      bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-
-      post_bootstrap_user_data = <<-EOT
-      cd /tmp
-      sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-      sudo systemctl enable amazon-ssm-agent
-      sudo systemctl start amazon-ssm-agent
-      EOT
-    }
-  }
-
-  # EKS Managed Node Group(s)
-  eks_managed_node_group_defaults = {
-    ami_type               = "AL2_x86_64"
-    disk_size              = 50
-    instance_types         = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
-    vpc_security_group_ids = [aws_security_group.additional.id]
-  }
-
-  eks_managed_node_groups = {
-    blue = {}
-    green = {
-      min_size     = 1
-      max_size     = 10
-      desired_size = 1
-
-      instance_types = ["t3.large"]
-      capacity_type  = "SPOT"
-      labels = {
-        Environment = "test"
-        GithubRepo  = "terraform-aws-eks"
-        GithubOrg   = "terraform-aws-modules"
-      }
-
-      taints = {
-        dedicated = {
-          key    = "dedicated"
-          value  = "gpuGroup"
-          effect = "NO_SCHEDULE"
-        }
-      }
-
-      update_config = {
-        max_unavailable_percentage = 50 # or set `max_unavailable`
-      }
-
-      tags = {
-        ExtraTag = "example"
-      }
-    }
-  }
-
-  # Fargate Profile(s)
-  fargate_profiles = {
-    default = {
-      name = "default"
-      selectors = [
-        {
-          namespace = "kube-system"
-          labels = {
-            k8s-app = "kube-dns"
-          }
-        },
-        {
-          namespace = "default"
-        }
-      ]
-
-      tags = {
-        Owner = "test"
-      }
-
-      timeouts = {
-        create = "20m"
-        delete = "20m"
-      }
-    }
-  }
-```
-
-See the [`examples/complete/` example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/complete) for a working example of these configurations.
-
-### Default configurations
-
-Each node group type (EKS managed node group, self managed node group, or Fargate profile) provides a default configuration setting that allows users to provide their own default configuration instead of the module's default configuration. This allows users to set a common set of defaults for their node groups and still maintain the ability to override these settings within the specific node group definition. The order of precedence for each node group type roughly follows (from highest to least precedence):
-- Node group individual configuration
-  - Node group family default configuration
-    - Module default configuration
-
-These are provided via the following variables for the respective node group family:
-- `eks_managed_node_group_defaults`
-- `self_managed_node_group_defaults`
-- `fargate_profile_defaults`
-
-For example, the following creates 4 AWS EKS Managed Node Groups:
-
-```hcl
-  eks_managed_node_group_defaults = {
-    ami_type               = "AL2_x86_64"
-    disk_size              = 50
-    instance_types         = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
-  }
-
-  eks_managed_node_groups = {
-    # Uses defaults provided by module with the default settings above overriding the module defaults
-    default = {}
-
-    # This further overrides the instance types used
-    compute = {
-      instance_types = ["c5.large", "c6i.large", "c6d.large"]
-    }
-
-    # This further overrides the instance types and disk size used
-    persistent = {
-      disk_size = 1024
-      instance_types = ["r5.xlarge", "r6i.xlarge", "r5b.xlarge"]
-    }
-
-    # This overrides the OS used
-    bottlerocket = {
-      ami_type = "BOTTLEROCKET_x86_64"
-      platform = "bottlerocket"
-    }
-  }
-```
-
-## Module Design Considerations
-
-### General Notes
-
-While the module is designed to be flexible and support as many use cases and configurations as possible, there is a limit to what first class support can be provided without over-burdening the complexity of the module. Below are a list of general notes on the design intent captured by this module which hopefully explains some of the decisions that are, or will be made, in terms of what is added/supported natively by the module:
-
-- Despite the addition of Windows Subsystem for Linux (WSL for short), containerization technology is very much a suite of Linux constructs and therefore Linux is the primary OS supported by this module. In addition, due to the first class support provided by AWS, Bottlerocket OS and Fargate Profiles are also very much fully supported by this module. This module does not make any attempt to NOT support Windows, as in preventing the usage of Windows based nodes, however it is up to users to put in additional effort in order to operate Windows based nodes when using the module. User can refer to the [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html) for further details. What this means is:
-  - AWS EKS Managed Node Groups default to `linux` as the `platform`, but `bottlerocket` is also supported by AWS (`windows` is not supported by AWS EKS Managed Node groups)
-  - AWS Self Managed Node Groups also default to `linux` and the default AMI used is the latest AMI for the selected Kubernetes version. If you wish to use a different OS or AMI then you will need to opt in to the necessary configurations to ensure the correct AMI is used in conjunction with the necessary user data to ensure the nodes are launched and joined to your cluster successfully.
-- AWS EKS Managed Node groups are currently the preferred route over Self Managed Node Groups for compute nodes. Both operate very similarly - both are backed by autoscaling groups and launch templates deployed and visible within your account. However, AWS EKS Managed Node groups provide a better user experience and offer a more "managed service" experience and therefore has precedence over Self Managed Node Groups. That said, there are currently inherent limitations as AWS continues to rollout additional feature support similar to the level of customization you can achieve with Self Managed Node Groups. When requesting added feature support for AWS EKS Managed Node groups, please ensure you have verified that the feature(s) are 1) supported by AWS and 2) supported by the Terraform AWS provider before submitting a feature request.
-- Due to the plethora of tooling and different manners of configuring your cluster, cluster configuration is intentionally left out of the module in order to simplify the module for a broader user base. Previous module versions provided support for managing the aws-auth configmap via the Kubernetes Terraform provider using the now deprecated aws-iam-authenticator; these are no longer included in the module. This module strictly focuses on the infrastructure resources to provision an EKS cluster as well as any supporting AWS resources. How the internals of the cluster are configured and managed is up to users and is outside the scope of this module. There is an output attribute, `aws_auth_configmap_yaml`, that has been provided that can be useful to help bridge this transition. Please see the various examples provided where this attribute is used to ensure that self managed node groups or external node groups have their IAM roles appropriately mapped to the aws-auth configmap. How users elect to manage the aws-auth configmap is left up to their choosing.
-
-### User Data & Bootstrapping
-
-There are a multitude of different possible configurations for how module users require their user data to be configured. In order to better support the various combinations from simple, out of the box support provided by the module to full customization of the user data using a template provided by users - the user data has been abstracted out to its own module. Users can see the various methods of using and providing user data through the [user data examples](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/user_data) as well more detailed information on the design and possible configurations via the [user data module itself](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/_user_data)
-
-In general (tl;dr):
-- AWS EKS Managed Node Groups
-  - `linux` platform (default) -> user data is pre-pended to the AWS provided bootstrap user data (bash/shell script) when using the AWS EKS provided AMI, otherwise users need to opt in via `enable_bootstrap_user_data` and use the module provided user data template or provide their own user data template to bootstrap nodes to join the cluster
-  - `bottlerocket` platform -> user data is merged with the AWS provided bootstrap user data (TOML file) when using the AWS EKS provided AMI, otherwise users need to opt in via `enable_bootstrap_user_data` and use the module provided user data template or provide their own user data template to bootstrap nodes to join the cluster
-- Self Managed Node Groups
-  - `linux` platform (default) -> the user data template (bash/shell script) provided by the module is used as the default; users are able to provide their own user data template
-  - `bottlerocket` platform -> the user data template (TOML file) provided by the module is used as the default; users are able to provide their own user data template
-  - `windows` platform -> the user data template (powershell/PS1 script) provided by the module is used as the default; users are able to provide their own user data template
-
-Module provided default templates can be found under the [templates directory](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/templates)
-
-### Security Groups
-
-- Cluster Security Group
-  - This module by default creates a cluster security group ("additional" security group when viewed from the console) in addition to the default security group created by the AWS EKS service. This "additional" security group allows users to customize inbound and outbound rules via the module as they see fit
-    - The default inbound/outbound rules provided by the module are derived from the [AWS minimum recommendations](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html) in addition to NTP and HTTPS public internet egress rules (without, these show up in VPC flow logs as rejects - they are used for clock sync and downloading necessary packages/updates)
-    - The minimum inbound/outbound rules are provided for cluster and node creation to succeed without errors, but users will most likely need to add the necessary port and protocol for node-to-node communication (this is user specific based on how nodes are configured to communicate across the cluster)
-    - Users have the ability to opt out of the security group creation and instead provide their own externally created security group if so desired
-    - The security group that is created is designed to handle the bare minimum communication necessary between the control plane and the nodes, as well as any external egress to allow the cluster to successfully launch without error
-  - Users also have the option to supply additional, externally created security groups to the cluster as well via the `cluster_additional_security_group_ids` variable
-  - Lastly, users are able to opt in to attaching the primary security group automatically created by the EKS service by setting `attach_cluster_primary_security_group` = `true` from the root module for the respective node group (or set it within the node group defaults). This security group is not managed by the module; it is created by the EKS service. It permits all traffic within the domain of the security group as well as all egress traffic to the internet.
-
-- Node Group Security Group(s)
-  - Each node group (EKS Managed Node Group and Self Managed Node Group) by default creates its own security group. By default, this security group does not contain any additional security group rules. It is merely an "empty container" that offers users the ability to opt into any addition inbound our outbound rules as necessary
-  - Users also have the option to supply their own, and/or additional, externally created security group(s) to the node group as well via the `vpc_security_group_ids` variable
-
-See the example snippet below which adds additional security group rules to the cluster security group as well as the shared node security group (for node-to-node access). Users can use this extensibility to open up network access as they see fit using the security groups provided by the module:
-
-```hcl
-  ...
-  # Extend cluster security group rules
-  cluster_security_group_additional_rules = {
-    egress_nodes_ephemeral_ports_tcp = {
-      description                = "To node 1025-65535"
-      protocol                   = "tcp"
-      from_port                  = 1025
-      to_port                    = 65535
-      type                       = "egress"
-      source_node_security_group = true
-    }
-  }
-
-  # Extend node-to-node security group rules
-  node_security_group_additional_rules = {
-    ingress_self_all = {
-      description = "Node to node all ports/protocols"
-      protocol    = "-1"
-      from_port   = 0
-      to_port     = 0
-      type        = "ingress"
-      self        = true
-    }
-    egress_all = {
-      description      = "Node all egress"
-      protocol         = "-1"
-      from_port        = 0
-      to_port          = 0
-      type             = "egress"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = ["::/0"]
-    }
-  }
-  ...
-```
-The security groups created by this module are depicted in the image shown below along with their default inbound/outbound rules:
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/terraform-aws-modules/terraform-aws-eks/master/.github/images/security_groups.svg" alt="Security Groups" width="100%">
-</p>
-
-## Notes
-
-- Setting `instance_refresh_enabled = true` will recreate your worker nodes without draining them first. It is recommended to install [aws-node-termination-handler](https://github.com/aws/aws-node-termination-handler) for proper node draining. See the [instance_refresh](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/irsa_autoscale_refresh) example provided.
-
-<details><summary><b>Frequently Asked Questions</b></summary><br>
-
-<h4>Why are nodes not being registered?</h4>
-
-Often an issue caused by one of two reasons:
-1. Networking or endpoint mis-configuration.
-2. Permissions (IAM/RBAC)
-
-At least one of the cluster public or private endpoints must be enabled to access the cluster to work. If you require a public endpoint, setting up both (public and private) and restricting the public endpoint via setting `cluster_endpoint_public_access_cidrs` is recommended. More info regarding communication with an endpoint is available [here](https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html).
-
-Nodes need to be able to contact the EKS cluster endpoint. By default, the module only creates a public endpoint. To access the endpoint, the nodes need outgoing internet access:
-
-- Nodes in private subnets: via a NAT gateway or instance along with the appropriate routing rules
-- Nodes in public subnets: ensure that nodes are launched with public IPs is enabled (either through the module here or your subnet setting defaults)
-
-<strong>Important: If you apply only the public endpoint and configure the `cluster_endpoint_public_access_cidrs` to restrict access, know that EKS nodes will also use the public endpoint and you must allow access to the endpoint. If not, then your nodes will fail to work correctly.</strong>
-
-Cluster private endpoint can also be enabled by setting `cluster_endpoint_private_access = true` on this module. Node communication to the endpoint stays within the VPC. Ensure that VPC DNS resolution and hostnames are also enabled for your VPC when the private endpoint is enabled.
-
-Nodes need to be able to connect to other AWS services plus pull down container images from container registries (ECR). If for some reason you cannot enable public internet access for nodes you can add VPC endpoints to the relevant services: EC2 API, ECR API, ECR DKR and S3.
-
-<h4>How can I work with the cluster if I disable the public endpoint?</h4>
-
-You have to interact with the cluster from within the VPC that it is associated with; either through a VPN connection, a bastion EC2 instance, etc.
-
-<h4>How can I stop Terraform from removing the EKS tags from my VPC and subnets?</h4>
-
-You need to add the tags to the Terraform definition of the VPC and subnets yourself. See the [basic example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/basic).
-
-An alternative is to use the aws provider's [`ignore_tags` variable](https://www.terraform.io/docs/providers/aws/#ignore_tags-configuration-block). However this can also cause terraform to display a perpetual difference.
-
-<h4>Why are there no changes when a node group's desired count is modified?</h4>
-
-The module is configured to ignore this value. Unfortunately, Terraform does not support variables within the `lifecycle` block. The setting is ignored to allow the cluster autoscaler to work correctly so that `terraform apply` does not accidentally remove running workers. You can change the desired count via the CLI or console if you're not using the cluster autoscaler.
-
-If you are not using autoscaling and want to control the number of nodes via terraform, set the `min_size` and `max_size` for node groups. Before changing those values, you must satisfy AWS `desired_size` constraints (which must be between new min/max values).
-
-<h4>Why are nodes not recreated when the `launch_template` is recreated?</h4>
-
-By default the ASG for a self-managed node group is not configured to be recreated when the launch configuration or template changes; you will need to use a process to drain and cycle the nodes.
-
-If you are NOT using the cluster autoscaler:
-
-- Add a new instance
-- Drain an old node `kubectl drain --force --ignore-daemonsets --delete-local-data ip-xxxxxxx.eu-west-1.compute.internal`
-- Wait for pods to be Running
-- Terminate the old node instance. ASG will start a new instance
-- Repeat the drain and delete process until all old nodes are replaced
-
-If you are using the cluster autoscaler:
-
-- Drain an old node `kubectl drain --force --ignore-daemonsets --delete-local-data ip-xxxxxxx.eu-west-1.compute.internal`
-- Wait for pods to be Running
-- Cluster autoscaler will create new nodes when required
-- Repeat until all old nodes are drained
-- Cluster autoscaler will terminate the old nodes after 10-60 minutes automatically
-
-You can also use a third-party tool like Gruntwork's kubergrunt. See the [`eks deploy`](https://github.com/gruntwork-io/kubergrunt#deploy) subcommand.
-
-Alternatively, use a managed node group instead.
-<h4>How can I use Windows workers?</h4>
-
-To enable Windows support for your EKS cluster, you should apply some configuration manually. See the [Enabling Windows Support (Windows/MacOS/Linux)](https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support).
-
-Windows based nodes require an additional cluster role (`eks:kube-proxy-windows`).
-
-<h4>Worker nodes with labels do not join a 1.16+ cluster</h4>
-
-As of Kubernetes 1.16, kubelet restricts which labels with names in the `kubernetes.io` namespace can be applied to nodes. Labels such as `kubernetes.io/lifecycle=spot` are no longer allowed; instead use `node.kubernetes.io/lifecycle=spot`
-
-See your Kubernetes version's documentation for  the `--node-labels` kubelet flag for the allowed prefixes. [Documentation for 1.16](https://v1-16.docs.kubernetes.io/docs/reference/command-line-tools-reference/kubelet/)
-
-</details>
 
 ## Examples
 
@@ -797,8 +168,10 @@ See your Kubernetes version's documentation for  the `--node-labels` kubelet fla
 
 ## Contributing
 
-Report issues/questions/feature requests via [issues](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/new)
-Full contributing [guidelines are covered here](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/.github/CONTRIBUTING.md)
+We are grateful to the community for contributing bugfixes and improvements! Please see below to learn how you can take part.
+
+- [Code of Conduct](https://github.com/terraform-aws-modules/.github/blob/master/CODE_OF_CONDUCT.md)
+- [Contributing Guide](https://github.com/terraform-aws-modules/.github/blob/master/CONTRIBUTING.md)
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
