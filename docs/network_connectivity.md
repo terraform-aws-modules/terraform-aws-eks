@@ -1,6 +1,14 @@
 # Network Connectivity
 
-### Security Groups
+## Cluster Endpoint
+
+### Public Endpoint w/ Restricted CIDRs
+
+When restricting the clusters public endpoint to only the CIDRs specified by users, it is recommended that you also enable the private endpoint, or ensure that the CIDR blocks that you specify include the addresses that nodes and Fargate pods (if you use them) access the public endpoint from.
+
+Please refer to the [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html) for further information
+
+## Security Groups
 
 - Cluster Security Group
   - This module by default creates a cluster security group ("additional" security group when viewed from the console) in addition to the default security group created by the AWS EKS service. This "additional" security group allows users to customize inbound and outbound rules via the module as they see fit
