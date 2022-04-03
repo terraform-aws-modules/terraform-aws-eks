@@ -2,7 +2,7 @@
 
 Please consult the `examples` directory for reference example configurations. If you find a bug, please open an issue with supporting configuration to reproduce.
 
-Note: please see https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1744 where users have shared their steps/information for their individual configurations. Due to the numerous configuration possibilities, it is difficult to capture specific steps that will work for all and this has been a very helpful issue for others to share they were able to upgrade.
+Note: please see https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1744 where users have shared the steps/changes that have worked for their configurations to upgrade. Due to the numerous configuration possibilities, it is difficult to capture specific steps that will work for all; this has proven to be a useful thread to share collective information from the broader community regarding v18.x upgrades.
 
 ## List of backwards incompatible changes
 
