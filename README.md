@@ -168,8 +168,10 @@ module "eks" {
 
 ## Contributing
 
-Report issues/questions/feature requests via [issues](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/new)
-Full contributing [guidelines are covered here](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/.github/CONTRIBUTING.md)
+We are grateful to the community for contributing bugfixes and improvements! Please see below to learn how you can take part.
+
+- [Code of Conduct](https://github.com/terraform-aws-modules/.github/blob/master/CODE_OF_CONDUCT.md)
+- [Contributing Guide](https://github.com/terraform-aws-modules/.github/blob/master/CONTRIBUTING.md)
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
