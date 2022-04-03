@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.18.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.17.1...v18.18.0) (2022-04-03)
+
+
+### Features
+
+* Add support for allowing EFA network interfaces ([#1980](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1980)) ([523144e](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/523144e1d7d4f64ccf30656078fd10d7cd63a444))
+
 ### [18.17.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.17.0...v18.17.1) (2022-04-02)
 
 
