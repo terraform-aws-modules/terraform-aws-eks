@@ -45,7 +45,7 @@ Some of the addon/controller policies that are currently supported include:
 - [External DNS](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md#iam-policy)
 - [EBS CSI Driver](https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/docs/example-iam-policy.json)
 - [VPC CNI](https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html)
-- [Node Termination Hanlder](https://github.com/aws/aws-node-termination-handler#5-create-an-iam-role-for-the-pods)
+- [Node Termination Handler](https://github.com/aws/aws-node-termination-handler#5-create-an-iam-role-for-the-pods)
 - [Karpenter](https://github.com/aws/karpenter/blob/main/website/content/en/preview/getting-started/cloudformation.yaml)
 - [Load Balancer Controller](https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/docs/install/iam_policy.json)
 

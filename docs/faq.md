@@ -11,7 +11,7 @@
 TL;DR - https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1901
 
 - Users can roll their own equivalent of `kubectl patch ...` using the [`null_resource`](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/9a99689cc13147f4afc426b34ba009875a28614e/examples/complete/main.tf#L301-L336)
-- There is a module that was created to fill this gap that provides a Kuberenetes based approach to provision: https://github.com/aidanmelen/terraform-aws-eks-auth
+- There is a module that was created to fill this gap that provides a Kubernetes based approach to provision: https://github.com/aidanmelen/terraform-aws-eks-auth
 - Ideally, one of the following issues are resolved upstream for a more native experience for users:
   - https://github.com/aws/containers-roadmap/issues/185
   - https://github.com/hashicorp/terraform-provider-kubernetes/issues/723
