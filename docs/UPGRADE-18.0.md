@@ -2,6 +2,8 @@
 
 Please consult the `examples` directory for reference example configurations. If you find a bug, please open an issue with supporting configuration to reproduce.
 
+Note: please see https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1744 where users have shared their steps/information for their individual configurations. Due to the numerous configuration possibilities, it is difficult to capture specific steps that will work for all and this has been a very helpful issue for others to share they were able to upgrade.
+
 ## List of backwards incompatible changes
 
 - Launch configuration support has been removed and only launch template is supported going forward. AWS is no longer adding new features back into launch configuration and their docs state [`We strongly recommend that you do not use launch configurations. They do not provide full functionality for Amazon EC2 Auto Scaling or Amazon EC2. We provide information about launch configurations for customers who have not yet migrated from launch configurations to launch templates.`](https://docs.aws.amazon.com/autoscaling/ec2/userguide/LaunchConfiguration.html)
