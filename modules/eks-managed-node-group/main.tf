@@ -372,6 +372,12 @@ resource "aws_security_group" "this" {
     { "Name" = local.security_group_name },
     var.security_group_tags
   )
+
+  # https://github.com/hashicorp/terraform-provider-aws/issues/2445
+  # https://github.com/hashicorp/terraform-provider-aws/issues/9692
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_security_group_rule" "this" {
