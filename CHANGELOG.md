@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.19.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.18.0...v18.19.0) (2022-04-04)
+
+
+### Features
+
+* Add `create_before_destroy` lifecycle hook to security groups created ([#1985](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1985)) ([6db89f8](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/6db89f8f20a58ae5cfbab5541ff7e499ddf971b8))
+
 ## [18.18.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.17.1...v18.18.0) (2022-04-03)
 
 
