@@ -129,6 +129,10 @@ resource "aws_security_group" "cluster" {
     { "Name" = local.cluster_sg_name },
     var.cluster_security_group_tags
   )
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_security_group_rule" "cluster" {
