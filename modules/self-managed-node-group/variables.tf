@@ -4,6 +4,12 @@ variable "create" {
   default     = true
 }
 
+variable "legacy_names" {
+  description = "Determines whether to use legacy naming conventions and prefixes from v17 or not"
+  type        = bool
+  default     = false
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)

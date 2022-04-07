@@ -120,7 +120,7 @@ resource "aws_security_group" "cluster" {
   count = local.create_cluster_sg ? 1 : 0
 
   name        = var.cluster_security_group_use_name_prefix ? null : local.cluster_sg_name
-  name_prefix = var.cluster_security_group_use_name_prefix ? "${local.cluster_sg_name}${var.prefix_separator}" : null
+  name_prefix = var.legacy_names ? var.cluster_name : var.cluster_security_group_use_name_prefix ? "${local.cluster_sg_name}${var.prefix_separator}" : null
   description = var.cluster_security_group_description
   vpc_id      = var.vpc_id
 
@@ -215,7 +215,7 @@ resource "aws_iam_role" "this" {
   count = local.create_iam_role ? 1 : 0
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
-  name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}${var.prefix_separator}" : null
+  name_prefix = var.legacy_names ? var.cluster_name : var.iam_role_use_name_prefix ? "${local.iam_role_name}${var.prefix_separator}" : null
   path        = var.iam_role_path
   description = var.iam_role_description
 

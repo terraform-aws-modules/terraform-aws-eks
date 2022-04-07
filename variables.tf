@@ -16,6 +16,12 @@ variable "prefix_separator" {
   default     = "-"
 }
 
+variable "legacy_names" {
+  description = "Determines whether to use legacy naming conventions and prefixes from v17 or not"
+  type        = bool
+  default     = false
+}
+
 ################################################################################
 # Cluster
 ################################################################################

@@ -149,7 +149,7 @@ resource "aws_security_group" "node" {
   count = local.create_node_sg ? 1 : 0
 
   name        = var.node_security_group_use_name_prefix ? null : local.node_sg_name
-  name_prefix = var.node_security_group_use_name_prefix ? "${local.node_sg_name}${var.prefix_separator}" : null
+  name_prefix = var.legacy_names ? var.cluster_name : var.node_security_group_use_name_prefix ? "${local.node_sg_name}${var.prefix_separator}" : null
   description = var.node_security_group_description
   vpc_id      = var.vpc_id
 
@@ -344,6 +344,7 @@ module "self_managed_node_group" {
 
   cluster_name      = aws_eks_cluster.this[0].name
   cluster_ip_family = var.cluster_ip_family
+  legacy_names      = var.legacy_names
 
   # Autoscaling Group
   name            = try(each.value.name, each.key)
