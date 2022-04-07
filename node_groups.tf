@@ -161,6 +161,10 @@ resource "aws_security_group" "node" {
     },
     var.node_security_group_tags
   )
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_security_group_rule" "node" {
