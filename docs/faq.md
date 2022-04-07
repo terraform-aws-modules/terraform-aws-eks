@@ -52,8 +52,6 @@ TL;DR - Terraform resource passed into the modules map definition _must_ be know
 - `node_security_group_additional_rules` (i.e. - referencing an external security group resource in a rule)
 - `iam_role_additional_policies` (i.e. - referencing an external policy resource)
 
-- Setting `instance_refresh_enabled = true` will recreate your worker nodes without draining them first. It is recommended to install [aws-node-termination-handler](https://github.com/aws/aws-node-termination-handler) for proper node draining. See the [instance_refresh](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/irsa_autoscale_refresh) example provided.
-
 ### Why are nodes not being registered?
 
 Nodes not being able to register with the EKS control plane is generally due to networking mis-configurations.
