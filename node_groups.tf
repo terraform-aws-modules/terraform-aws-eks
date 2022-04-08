@@ -153,14 +153,14 @@ resource "aws_security_group" "node" {
   description = var.node_security_group_description
   vpc_id      = var.vpc_id
 
-  tags = merge(
+  tags = node_security_group_automatic_tag ? merge(
     var.tags,
     {
       "Name"                                      = local.node_sg_name
       "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     },
     var.node_security_group_tags
-  )
+  ) : var.node_security_group_tags
 
   lifecycle {
     create_before_destroy = true

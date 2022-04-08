@@ -49,6 +49,7 @@ module "eks" {
   subnet_ids = module.vpc.private_subnets
 
   # Extend cluster security group rules
+  # You typically want to include this
   cluster_security_group_additional_rules = {
     egress_nodes_ephemeral_ports_tcp = {
       description                = "To node 1025-65535"
@@ -61,6 +62,7 @@ module "eks" {
   }
 
   # Extend node-to-node security group rules
+  # You typically want to include this
   node_security_group_additional_rules = {
     ingress_self_all = {
       description = "Node to node all ports/protocols"
@@ -79,6 +81,9 @@ module "eks" {
       cidr_blocks      = ["0.0.0.0/0"]
       ipv6_cidr_blocks = ["::/0"]
     }
+
+    # set this to false if using nginx ingress, otherwise nginx will not ensure a load balancer
+    node_security_group_automatic_tag = true
   }
 
   # Self Managed Node Group(s)
@@ -113,10 +118,19 @@ module "eks" {
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
-    disk_size      = 50
+    disk_size      = 50  # Note: if using the managed group, this seems to have no effect, default is 20 Gi
     instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
 
     attach_cluster_primary_security_group = true
+
+    # this is critical for kube2iam to work without IMDSv2, ie otherwise
+    # the instance does NOT have access to http://169.254.169.254/latest/meta-data/
+    metadata_options = {
+      http_endpoint               = "enabled"
+      http_tokens                 = "optional"  #defaults to "required" if metadata_options not set
+      http_put_response_hop_limit = 2
+    }
+
     vpc_security_group_ids                = [aws_security_group.additional.id]
   }
 
