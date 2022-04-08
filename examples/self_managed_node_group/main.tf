@@ -41,12 +41,9 @@ module "eks" {
   cluster_endpoint_public_access  = true
 
   cluster_addons = {
-    # Note: launching a new cluster where the module manages the aws-auth configmap
-    # and tries to manage the CoreDNS will fail due to order of deploy. Managed CoreDNS addon
-    # after aws-auth has been updated with node IAM roles
-    # coredns = {
-    #   resolve_conflicts = "OVERWRITE"
-    # }
+    coredns = {
+      resolve_conflicts = "OVERWRITE"
+    }
     kube-proxy = {}
     vpc-cni = {
       resolve_conflicts = "OVERWRITE"
