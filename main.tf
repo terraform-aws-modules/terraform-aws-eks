@@ -370,10 +370,8 @@ locals {
   ))
 }
 
-resource "kubernetes_config_map_v1_data" "aws_auth" {
-  count = var.create && var.manage_aws_auth_configmap ? 1 : 0
-
-  force = true
+resource "kubernetes_config_map" "aws_auth" {
+  count = var.create && var.create_aws_auth_configmap ? 1 : 0
 
   metadata {
     name      = "aws-auth"
@@ -417,4 +415,63 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
     mapUsers    = yamlencode(var.aws_auth_users)
     mapAccounts = yamlencode(var.aws_auth_accounts)
   }
+
+  lifecycle {
+    # We are ignoring the data here since we will manage it with the resource below
+    # This is only intended to be used in scenarios where the configmap does not exist
+    ignore_changes = [data]
+  }
+}
+
+resource "kubernetes_config_map_v1_data" "aws_auth" {
+  count = var.create && var.manage_aws_auth_configmap ? 1 : 0
+
+  force = false
+
+  metadata {
+    name      = "aws-auth"
+    namespace = "kube-system"
+  }
+
+  data = {
+    mapRoles = yamlencode(concat(
+      [for role_arn in local.node_iam_role_arns_non_windows : {
+        rolearn  = role_arn
+        username = "system:node:{{EC2PrivateDNSName}}"
+        groups = [
+          "system:bootstrappers",
+          "system:nodes",
+        ]
+        }
+      ],
+      [for role_arn in local.node_iam_role_arns_windows : {
+        rolearn  = role_arn
+        username = "system:node:{{EC2PrivateDNSName}}"
+        groups = [
+          "eks:kube-proxy-windows",
+          "system:bootstrappers",
+          "system:nodes",
+        ]
+        }
+      ],
+      # Fargate profile
+      [for role_arn in local.fargate_profile_pod_execution_role_arns : {
+        rolearn  = role_arn
+        username = "system:node:{{SessionName}}"
+        groups = [
+          "system:bootstrappers",
+          "system:nodes",
+          "system:node-proxier",
+        ]
+        }
+      ],
+      var.aws_auth_roles
+    ))
+    mapUsers    = yamlencode(var.aws_auth_users)
+    mapAccounts = yamlencode(var.aws_auth_accounts)
+  }
+
+  depends_on = [
+    kubernetes_config_map.aws_auth,
+  ]
 }
