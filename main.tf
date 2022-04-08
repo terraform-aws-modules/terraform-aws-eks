@@ -347,3 +347,74 @@ resource "aws_eks_identity_provider_config" "this" {
 
   tags = var.tags
 }
+
+################################################################################
+# aws-auth configmap
+################################################################################
+
+locals {
+  node_iam_role_arns_non_windows = compact(concat(
+    [for group in module.eks_managed_node_group : group.iam_role_arn],
+    [for group in module.self_managed_node_group : group.iam_role_arn if group.platform != "windows"],
+    var.aws_auth_node_iam_role_arns_non_windows,
+  ))
+
+  node_iam_role_arns_windows = compact(concat(
+    [for group in module.self_managed_node_group : group.iam_role_arn if group.platform == "windows"],
+    var.aws_auth_node_iam_role_arns_windows,
+  ))
+
+  fargate_profile_pod_execution_role_arns = compact(concat(
+    [for group in module.fargate_profile : group.fargate_profile_pod_execution_role_arn],
+    var.aws_auth_fargate_profile_pod_execution_role_arns,
+  ))
+}
+
+resource "kubernetes_config_map_v1_data" "aws_auth" {
+  count = var.create && var.manage_aws_auth_configmap ? 1 : 0
+
+  force = true
+
+  metadata {
+    name      = "aws-auth"
+    namespace = "kube-system"
+  }
+
+  data = {
+    mapRoles = yamlencode(concat(
+      [for role_arn in local.node_iam_role_arns_non_windows : {
+        rolearn  = role_arn
+        username = "system:node:{{EC2PrivateDNSName}}"
+        groups = [
+          "system:bootstrappers",
+          "system:nodes",
+        ]
+        }
+      ],
+      [for role_arn in local.node_iam_role_arns_windows : {
+        rolearn  = role_arn
+        username = "system:node:{{EC2PrivateDNSName}}"
+        groups = [
+          "eks:kube-proxy-windows",
+          "system:bootstrappers",
+          "system:nodes",
+        ]
+        }
+      ],
+      # Fargate profile
+      [for role_arn in local.fargate_profile_pod_execution_role_arns : {
+        rolearn  = role_arn
+        username = "system:node:{{SessionName}}"
+        groups = [
+          "system:bootstrappers",
+          "system:nodes",
+          "system:node-proxier",
+        ]
+        }
+      ],
+      var.aws_auth_roles
+    ))
+    mapUsers    = yamlencode(var.aws_auth_users)
+    mapAccounts = yamlencode(var.aws_auth_accounts)
+  }
+}
