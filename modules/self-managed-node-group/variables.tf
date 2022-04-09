@@ -556,7 +556,7 @@ variable "iam_role_name" {
 
 variable "iam_role_use_name_prefix" {
   description = "Determines whether cluster IAM role name (`iam_role_name`) is used as a prefix"
-  type        = string
+  type        = bool
   default     = true
 }
 
