@@ -182,7 +182,7 @@ output "self_managed_node_groups_autoscaling_group_names" {
 ################################################################################
 
 output "aws_auth_configmap_yaml" {
-  description = "Formatted yaml output for base aws-auth configmap containing roles used in cluster node groups/fargate profiles"
+  description = "[DEPRECATED - use `var.manage_aws_auth_configmap`] Formatted yaml output for base aws-auth configmap containing roles used in cluster node groups/fargate profiles"
   value = templatefile("${path.module}/templates/aws_auth_cm.tpl",
     {
       eks_managed_role_arns                   = [for group in module.eks_managed_node_group : group.iam_role_arn]

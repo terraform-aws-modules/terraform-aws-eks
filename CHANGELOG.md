@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.20.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.20.0...v18.20.1) (2022-04-09)
+
+
+### Bug Fixes
+
+* iam_role_user_name_prefix type as an bool ([#2000](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2000)) ([c576aad](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c576aadce968d09f3295fc06f0766cc9e2a35e29))
+
+## [18.20.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.19.0...v18.20.0) (2022-04-09)
+
+
+### Features
+
+* Add support for managing `aws-auth` configmap using new `kubernetes_config_map_v1_data` resource ([#1999](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1999)) ([da3d54c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/da3d54cde70adfd8b5d2770805b17d526923113e))
+
 ## [18.19.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.18.0...v18.19.0) (2022-04-04)
 
 

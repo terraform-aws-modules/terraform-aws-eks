@@ -4,6 +4,17 @@ Please consult the `examples` directory for reference example configurations. If
 
 Note: please see https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1744 where users have shared the steps/changes that have worked for their configurations to upgrade. Due to the numerous configuration possibilities, it is difficult to capture specific steps that will work for all; this has proven to be a useful thread to share collective information from the broader community regarding v18.x upgrades.
 
+For most users, adding the following to your v17.x configuration will preserve the state of your cluster control plane when upgrading to v18.x:
+
+```hcl
+prefix_separator                   = ""
+iam_role_name                      = $CLUSTER_NAME
+cluster_security_group_name        = $CLUSTER_NAME
+cluster_security_group_description = "EKS cluster security group."
+```
+
+See more information [here](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1744#issuecomment-1027359982)
+
 ## List of backwards incompatible changes
 
 - Launch configuration support has been removed and only launch template is supported going forward. AWS is no longer adding new features back into launch configuration and their docs state [`We strongly recommend that you do not use launch configurations. They do not provide full functionality for Amazon EC2 Auto Scaling or Amazon EC2. We provide information about launch configurations for customers who have not yet migrated from launch configurations to launch templates.`](https://docs.aws.amazon.com/autoscaling/ec2/userguide/LaunchConfiguration.html)
