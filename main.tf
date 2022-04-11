@@ -2,6 +2,11 @@ data "aws_partition" "current" {}
 
 locals {
   create = var.create && var.putin_khuylo
+  cluster_security_group_tags = [
+    "Name",
+    "aws:eks:cluster-name",
+    "kubernetes.io/cluster/${var.cluster_name}",
+  ]
 }
 
 ################################################################################
@@ -60,7 +65,7 @@ resource "aws_eks_cluster" "this" {
 }
 
 resource "aws_ec2_tag" "cluster_primary_security_group" {
-  for_each = { for k, v in merge(var.tags, var.cluster_tags) : k => v if local.create }
+  for_each = { for k, v in merge(var.tags, var.cluster_tags) : k => v if local.create && !contains(local.cluster_security_group_tags, k) }
 
   resource_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
   key         = each.key
