@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.20.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.20.1...v18.20.2) (2022-04-12)
+
+
+### Bug Fixes
+
+* Avoid re-naming the primary security group through a `Name` tag and leave to the EKS service to manage ([#2010](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2010)) ([b5ae5da](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/b5ae5daa39f8380dc21c9ef1daff22242930692e))
+
 ### [18.20.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.20.0...v18.20.1) (2022-04-09)
 
 
