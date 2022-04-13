@@ -307,7 +307,7 @@ data "aws_eks_addon_version" "this" {
 
   addon_name         = try(each.value.name, each.key)
   kubernetes_version = var.cluster_version
-  most_recent        = true
+  most_recent        = lookup(each.value, "most_recent", false)
 }
 
 resource "aws_eks_addon" "this" {
