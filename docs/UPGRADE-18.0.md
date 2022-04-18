@@ -13,6 +13,14 @@ cluster_security_group_name        = $CLUSTER_NAME
 cluster_security_group_description = "EKS cluster security group."
 ```
 
+This configuration assumes that [`create_iam_role`](https://github.com/terraform-aws-modules/terraform-aws-eks#input_create_iam_role) is set to `true`, which is the default value. 
+
+As the location of the Terraform state of the IAM role has been changed from 17.x to 18.x, you'll also have to move the state before running `terraform apply` by calling:
+
+```
+terraform state mv 'module.eks.aws_iam_role.cluster[0]' 'module.eks.aws_iam_role.this[0]'
+```
+
 See more information [here](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1744#issuecomment-1027359982)
 
 ## List of backwards incompatible changes
