@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.20.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.20.2...v18.20.3) (2022-04-20)
+
+
+### Bug Fixes
+
+* Add `compact()` to `aws_auth_configmap_yaml` for when node groups are set to `create = false` ([#2029](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2029)) ([c173ba2](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c173ba2d62d228729fe6c68f713af6dbe15e7233))
+
 ### [18.20.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.20.1...v18.20.2) (2022-04-12)
 
 
