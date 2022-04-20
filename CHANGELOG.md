@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.20.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.20.3...v18.20.4) (2022-04-20)
+
+
+### Bug Fixes
+
+* Correct DNS suffix for OIDC provider ([#2026](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2026)) ([5da692d](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/5da692df67cae313711e94216949d1105da6a87f))
+
 ### [18.20.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.20.2...v18.20.3) (2022-04-20)
 
 
