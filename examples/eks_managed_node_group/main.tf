@@ -114,7 +114,6 @@ module "eks" {
 
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
-    disk_size      = 50
     instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
 
     # We are using the IRSA created below for permissions
@@ -132,6 +131,8 @@ module "eks" {
       # so we need to disable it to use the default template provided by the AWS EKS managed node group service
       create_launch_template = false
       launch_template_name   = ""
+
+      disk_size = 50
 
       # Remote access cannot be specified with a launch template
       remote_access = {
@@ -254,7 +255,6 @@ module "eks" {
       EOT
 
       capacity_type        = "SPOT"
-      disk_size            = 256
       force_update_version = true
       instance_types       = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
       labels = {

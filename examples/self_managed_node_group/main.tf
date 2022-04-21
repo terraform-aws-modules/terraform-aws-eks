@@ -96,7 +96,7 @@ module "eks" {
   }
 
   self_managed_node_group_defaults = {
-    disk_size = 50
+    create_security_group = false
   }
 
   self_managed_node_groups = {
@@ -216,7 +216,6 @@ module "eks" {
       echo "you are free little kubelet!"
       EOT
 
-      disk_size     = 256
       instance_type = "m6i.large"
 
       launch_template_name            = "self-managed-ex"
