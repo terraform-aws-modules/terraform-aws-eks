@@ -404,8 +404,8 @@ resource "aws_kms_key" "ebs" {
   policy                  = data.aws_iam_policy_document.ebs.json
 }
 
-resource "aws_kms_alias" "ebs-eks-nodegroup-volume-ecncryption" {
-  name            = "alias/ebs-eks-nodegroup-volume-ecncryption"
+resource "aws_kms_alias" "${local.name}-cluster-nodegroup-ebs-volume-ecncryption" {
+  name            = "alias/${local.name}-cluster-nodegroup-ebs-volume-ecncryption"
   target_key_id   = aws_kms_key.ebs.arn
 }  
   
