@@ -404,11 +404,11 @@ resource "aws_kms_key" "ebs" {
   policy                  = data.aws_iam_policy_document.ebs.json
 }
 
-resource "aws_kms_alias" "cluster-nodegroup-ebs-volume-ecncryption" {
-  name            = "alias/${local.name}-cluster-nodegroup-ebs-volume-ecncryption"
-  target_key_id   = aws_kms_key.ebs.arn
-}  
-  
+resource "aws_kms_alias" "cluster_nodegroup_ebs_volume_ecncryption" {
+  name          = "alias/${local.name}-cluster-nodegroup-ebs-volume-ecncryption"
+  target_key_id = aws_kms_key.ebs.arn
+}
+
 resource "aws_ec2_capacity_reservation" "targeted" {
   instance_type           = "m6i.large"
   instance_platform       = "Linux/UNIX"
