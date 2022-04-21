@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.20.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.20.4...v18.20.5) (2022-04-21)
+
+
+### Bug Fixes
+
+* Add conditional variable to allow users to opt out of tagging cluster primary security group ([#2034](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2034)) ([51e4182](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/51e418216f210647b69bbd06e569a061c2f0e3c1))
+
 ### [18.20.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.20.3...v18.20.4) (2022-04-20)
 
 
