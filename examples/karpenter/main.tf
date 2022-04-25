@@ -2,10 +2,13 @@ provider "aws" {
   region = local.region
 }
 
+data "aws_partition" "current" {}
+
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
   cluster_version = "1.22"
   region          = "eu-west-1"
+  partition       = data.aws_partition.current.partition
 
   tags = {
     Example    = local.name
@@ -51,7 +54,7 @@ module "eks" {
 
       iam_role_additional_policies = [
         # Required by Karpenter
-        "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        "arn:${local.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
       ]
     }
   }
@@ -98,12 +101,15 @@ provider "kubectl" {
 
 module "karpenter_irsa" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 4.15"
+  version = "~> 4.21.1"
 
   role_name                          = "karpenter-controller-${local.name}"
   attach_karpenter_controller_policy = true
 
   karpenter_controller_cluster_id = module.eks.cluster_id
+  karpenter_controller_ssm_parameter_arns = [
+    "arn:${local.partition}:ssm:*:*:parameter/aws/service/*"
+  ]
   karpenter_controller_node_iam_role_arns = [
     module.eks.eks_managed_node_groups["karpenter"].iam_role_arn
   ]
@@ -128,7 +134,7 @@ resource "helm_release" "karpenter" {
   name       = "karpenter"
   repository = "https://charts.karpenter.sh"
   chart      = "karpenter"
-  version    = "0.8.1"
+  version    = "0.8.2"
 
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
