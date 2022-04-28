@@ -5,6 +5,14 @@ locals {
 }
 
 ################################################################################
+# Defaults
+################################################################################
+locals {
+  prefix_separator                   = var.prefix_separator == null ? "-" : var.prefix_separator
+  cluster_security_group_description = var.cluster_security_group_description == null ? "EKS cluster security group" : var.cluster_security_group_description
+}
+
+################################################################################
 # Cluster
 ################################################################################
 
@@ -123,8 +131,8 @@ resource "aws_security_group" "cluster" {
   count = local.create_cluster_sg ? 1 : 0
 
   name        = var.cluster_security_group_use_name_prefix ? null : local.cluster_sg_name
-  name_prefix = var.cluster_security_group_use_name_prefix ? "${local.cluster_sg_name}${var.prefix_separator}" : null
-  description = var.cluster_security_group_description
+  name_prefix = var.cluster_security_group_use_name_prefix ? "${local.cluster_sg_name}${local.prefix_separator}" : null
+  description = local.cluster_security_group_description
   vpc_id      = var.vpc_id
 
   tags = merge(
@@ -218,7 +226,7 @@ resource "aws_iam_role" "this" {
   count = local.create_iam_role ? 1 : 0
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
-  name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}${var.prefix_separator}" : null
+  name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}${local.prefix_separator}" : null
   path        = var.iam_role_path
   description = var.iam_role_description
 

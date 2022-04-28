@@ -13,7 +13,7 @@ variable "tags" {
 variable "prefix_separator" {
   description = "The separator to use between the prefix and the generated timestamp for resource names"
   type        = string
-  default     = "-"
+  default     = null
 }
 
 ################################################################################
@@ -172,7 +172,7 @@ variable "cluster_security_group_use_name_prefix" {
 variable "cluster_security_group_description" {
   description = "Description of the cluster security group created"
   type        = string
-  default     = "EKS cluster security group"
+  default     = null
 }
 
 variable "cluster_security_group_additional_rules" {
