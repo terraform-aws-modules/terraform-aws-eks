@@ -1,1 +1,0 @@
-yum update -y
