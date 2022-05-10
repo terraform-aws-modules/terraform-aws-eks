@@ -145,3 +145,13 @@ output "platform" {
   description = "Identifies if the OS platform is `bottlerocket`, `linux`, or `windows` based"
   value       = var.platform
 }
+
+output "image_id" {
+  description = "ID of the image"
+  value       = try(data.aws_ami.eks_default[0].image_id, "")
+}
+
+output "user_data" {
+  description = "Base64 encoded user data"
+  value       = try(module.user_data.user_data, "")
+}

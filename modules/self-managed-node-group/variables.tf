@@ -266,6 +266,12 @@ variable "launch_template_tags" {
 # Autoscaling group
 ################################################################################
 
+variable "create_autoscaling_group" {
+  description = "Determines whether to create autoscaling group or not"
+  type        = bool
+  default     = true
+}
+
 variable "name" {
   description = "Name of the Self managed Node Group"
   type        = string
