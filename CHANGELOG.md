@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.21.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.20.5...v18.21.0) (2022-05-12)
+
+
+### Features
+
+* Add `create_autoscaling_group` option and extra outputs ([#2067](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2067)) ([58420b9](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/58420b92a0838aa2e17b156b174893b349083a2b))
+
 ### [18.20.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.20.4...v18.20.5) (2022-04-21)
 
 
