@@ -346,6 +346,8 @@ module "self_managed_node_group" {
   cluster_ip_family = var.cluster_ip_family
 
   # Autoscaling Group
+  create_autoscaling_group = try(each.value.create_autoscaling_group, var.self_managed_node_group_defaults.create_autoscaling_group, true)
+
   name            = try(each.value.name, each.key)
   use_name_prefix = try(each.value.use_name_prefix, var.self_managed_node_group_defaults.use_name_prefix, true)
 
