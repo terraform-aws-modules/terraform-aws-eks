@@ -288,7 +288,7 @@ resource "aws_eks_node_group" "this" {
   node_group_name_prefix = var.use_name_prefix ? "${var.name}-" : null
 
   # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
-  ami_type        = var.ami_id != "" ? null : var.ami_type
+  ami_type        = var.ami_id != "" ? "CUSTOM" : var.ami_type
   release_version = var.ami_id != "" ? null : var.ami_release_version
   version         = var.ami_id != "" ? null : var.cluster_version
 
