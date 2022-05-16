@@ -256,6 +256,7 @@ resource "aws_iam_role" "this" {
 resource "aws_iam_role_policy_attachment" "this" {
   for_each = local.create_iam_role ? toset(compact(distinct(concat([
     "${local.policy_arn_prefix}/AmazonEKSClusterPolicy",
+    "${local.policy_arn_prefix}/AmazonEKSServicePolicy",
     "${local.policy_arn_prefix}/AmazonEKSVPCResourceController",
   ], var.iam_role_additional_policies)))) : toset([])
 
