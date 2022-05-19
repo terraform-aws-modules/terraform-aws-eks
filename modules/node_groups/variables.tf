@@ -14,11 +14,6 @@ variable "default_iam_role_arn" {
   type        = string
 }
 
-variable "workers_group_defaults" {
-  description = "Workers group defaults from parent"
-  type        = any
-}
-
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
@@ -39,4 +34,10 @@ variable "force_update_version" {
   type        = bool
   default     = false
 
+}
+
+variable "is_default" {
+  description = "is the default eks cluster"
+  type        = bool
+  default     = true
 }

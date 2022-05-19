@@ -142,18 +142,6 @@ variable "kube_proxy_resolve_conflicts" {
   default     = "NONE"
 }
 
-variable "worker_groups" {
-  description = "A list of maps defining worker group configurations to be defined using AWS Launch Configurations. See workers_group_defaults for valid keys."
-  type        = any
-  default     = []
-}
-
-variable "workers_group_defaults" {
-  description = "Override default values for target groups. See workers_group_defaults_defaults in local.tf for valid keys."
-  type        = any
-  default     = {}
-}
-
 variable "worker_groups_launch_template" {
   description = "A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys."
   type        = any
@@ -359,14 +347,15 @@ variable "eks_oidc_root_ca_thumbprint" {
   default     = "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
 }
 
-variable "asg_recreate_on_change" {
-  description = "Recreate the autoscaling group when the Launch Template or Launch Configuration change."
-  type        = bool
-  default     = false  
-}
 variable "force_update_version" {
   description = "force node group to update"
   type        = bool
   default     = false
 
+}
+
+variable "is_default" {
+  description = "is the default eks cluster"
+  type        = bool
+  default     = true
 }
