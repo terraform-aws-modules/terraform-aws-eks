@@ -464,6 +464,12 @@ variable "use_default_tags" {
   default     = false
 }
 
+variable "autoscaling_group_tags" {
+  description = "A map of additional tags to add to the auto_scaling_group created"
+  type        = map(string)
+  default     = {}
+}
+
 ################################################################################
 # Autoscaling group schedule
 ################################################################################
