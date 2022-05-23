@@ -390,13 +390,23 @@ resource "aws_autoscaling_group" "this" {
         "kubernetes.io/cluster/${var.cluster_name}" = "owned"
         "k8s.io/cluster/${var.cluster_name}"        = "owned"
       },
-      var.use_default_tags ? merge(data.aws_default_tags.current.tags, var.autoscaling_group_tags, var.tags) : merge(var.autoscaling_group_tags, var.tags)
+      var.use_default_tags ? merge(data.aws_default_tags.current.tags, var.tags) : var.tags
     )
 
     content {
       key                 = tag.key
       value               = tag.value
       propagate_at_launch = true
+    }
+  }
+
+  dynamic "tag" {
+    for_each = var.autoscaling_group_tags
+
+    content {
+      key                 = tag.key
+      value               = tag.value
+      propagate_at_launch = false
     }
   }
 
