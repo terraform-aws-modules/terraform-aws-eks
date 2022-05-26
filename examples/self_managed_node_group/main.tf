@@ -101,7 +101,7 @@ module "eks" {
     # enable discovery of autoscaling groups by cluster-autoscaler
     autoscaling_group_tags = {
       "k8s.io/cluster-autoscaler/enabled" : true,
-      "k8s.io/cluster-autoscaler/${local.name}" : true,
+      "k8s.io/cluster-autoscaler/${local.name}" : "owned",
     }
   }
 
