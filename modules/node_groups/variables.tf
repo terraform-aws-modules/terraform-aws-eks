@@ -41,3 +41,22 @@ variable "is_default" {
   type        = bool
   default     = true
 }
+
+variable "create_timeout" {
+  description = "creation time limit"
+  type        = string
+  default     = "60m"
+
+}
+variable "update_timeout" {
+  description = "update time limit"
+  type        = string
+  default     = "3h"
+
+}
+variable "delete_timeout" {
+  description = "deletion time limit"
+  type        = string
+  default     = "60m"
+
+}

@@ -45,5 +45,9 @@ resource "aws_eks_node_group" "workers" {
   }
 
   depends_on = [aws_launch_template.workers]
-
+  timeouts {
+    create = var.create_timeout
+    update = var.update_timeout
+    delete = var.delete_timeout
+  }
 }

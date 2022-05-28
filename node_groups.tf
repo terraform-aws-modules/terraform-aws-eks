@@ -26,4 +26,7 @@ module "node_groups" {
   node_groups          = var.node_groups
   force_update_version = var.force_update_version
   is_default           = var.is_default
+  create_timeout       = var.node_groups_create_timeout
+  update_timeout       = var.node_groups_update_timeout
+  delete_timeout       = var.node_groups_delete_timeout
 }

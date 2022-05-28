@@ -359,3 +359,22 @@ variable "is_default" {
   type        = bool
   default     = true
 }
+
+variable "node_groups_create_timeout" {
+  description = "creation time limit"
+  type        = string
+  default     = "60m"
+
+}
+variable "node_groups_update_timeout" {
+  description = "update time limit"
+  type        = string
+  default     = "3h"
+
+}
+variable "node_groups_delete_timeout" {
+  description = "deletion time limit"
+  type        = string
+  default     = "60m"
+
+}
