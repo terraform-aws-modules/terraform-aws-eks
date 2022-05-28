@@ -76,8 +76,6 @@ Note: Windows based node support is limited to a default user data template that
 
 Examples of accessing the attributes of the compute resource(s) created by the root module are shown below. Note - the assumption is that your cluster module definition is named `eks` as in `module "eks" { ... }`:
 
-````hcl
-
 - EKS Managed Node Group attributes
 
 ```hcl
