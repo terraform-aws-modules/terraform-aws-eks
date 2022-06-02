@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.23.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.22.0...v18.23.0) (2022-06-02)
+
+
+### Features
+
+* Add `autoscaling_group_tags` variable to self-managed-node-groups ([#2084](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2084)) ([8584dcb](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/8584dcb2e0c9061828505c36a8ed8eb6ced02053))
+
 ## [18.22.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.21.0...v18.22.0) (2022-06-02)
 
 
