@@ -465,7 +465,7 @@ variable "use_default_tags" {
 }
 
 variable "autoscaling_group_tags" {
-  description = "A map of additional tags to add to the auto_scaling_group created"
+  description = "A map of additional tags to add to the autoscaling group created. Tags are applied to the autoscaling group only and are NOT propagated to instances"
   type        = map(string)
   default     = {}
 }
