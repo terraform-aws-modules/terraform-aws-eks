@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.22.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.21.0...v18.22.0) (2022-06-02)
+
+
+### Features
+
+* Apply `distinct()` on role arns to ensure no duplicated roles in aws-auth configmap ([#2097](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2097)) ([3feb369](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/3feb36927f92fb72ab0cfc25a3ab67465872f4bf))
+
 ## [18.21.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.20.5...v18.21.0) (2022-05-12)
 
 
