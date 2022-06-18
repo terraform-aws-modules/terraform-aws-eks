@@ -15,6 +15,11 @@ module "eks_managed_node_group" {
   vpc_id     = "vpc-1234556abcdef"
   subnet_ids = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
 
+  // The following variables are necessary if you decide to use the module outside of the parent EKS module context.
+  // Without it, the security groups of the nodes are empty and thus won't join the cluster.
+  cluster_primary_security_group_id = module.eks.cluster_primary_security_group_id
+  cluster_security_group_id = module.eks.node_security_group_id
+
   min_size     = 1
   max_size     = 10
   desired_size = 1
