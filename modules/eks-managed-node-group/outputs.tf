@@ -46,6 +46,16 @@ output "node_group_status" {
   value       = try(aws_eks_node_group.this[0].arn, "")
 }
 
+output "node_group_labels" {
+  description = "Map of labels applied to the node group"
+  value       = try(aws_eks_node_group.this[0].labels, {})
+}
+
+output "node_group_taints" {
+  description = "List of objects containing information about taints applied to the node group"
+  value       = try(aws_eks_node_group.this[0].taint, [])
+}
+
 ################################################################################
 # Security Group
 ################################################################################
