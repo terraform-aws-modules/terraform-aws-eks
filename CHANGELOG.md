@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.24.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.23.0...v18.24.0) (2022-06-18)
+
+
+### Features
+
+* Add support for specifying conrol plane subnets separate from those used by node groups (data plane) ([#2113](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2113)) ([ebc91bc](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ebc91bcd37a919a350d872a5b235ccc2a79955a6))
+
 ## [18.23.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.22.0...v18.23.0) (2022-06-02)
 
 
