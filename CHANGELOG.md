@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.24.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.24.0...v18.24.1) (2022-06-19)
+
+
+### Bug Fixes
+
+* Remove `modified_at` from ignored changes on EKS addons ([#2114](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2114)) ([5a5a32e](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/5a5a32ed1241ba3cc64abe37b37bcb5ad52d42c4))
+
 ## [18.24.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.23.0...v18.24.0) (2022-06-18)
 
 
