@@ -8,6 +8,8 @@ provider "aws" {
   }
 }
 
+# The Kubernetes provider is included in this file so the EKS module can complete successfully. Otherwise, it throws an error when 
+# creating `kubernetes_config_map.aws_auth`.
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
