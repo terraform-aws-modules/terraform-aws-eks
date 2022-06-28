@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.25.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.24.1...v18.25.0) (2022-06-28)
+
+
+### Features
+
+* Add support for creating KMS key for cluster secret encryption ([#2121](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2121)) ([75acb09](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/75acb09ec56c5ce8e5f74ebc7bf15468b272db8a))
+
 ### [18.24.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.24.0...v18.24.1) (2022-06-19)
 
 
