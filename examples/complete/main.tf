@@ -52,10 +52,13 @@ module "eks" {
     }
   }
 
+  # Encryption key
+  create_kms_key = true
   cluster_encryption_config = [{
-    provider_key_arn = aws_kms_key.eks.arn
-    resources        = ["secrets"]
+    resources = ["secrets"]
   }]
+  kms_key_deletion_window_in_days = 7
+  enable_kms_key_rotation         = true
 
   vpc_id                   = module.vpc.vpc_id
   subnet_ids               = module.vpc.private_subnets
@@ -369,14 +372,6 @@ resource "aws_security_group" "additional" {
       "192.168.0.0/16",
     ]
   }
-
-  tags = local.tags
-}
-
-resource "aws_kms_key" "eks" {
-  description             = "EKS Secret Encryption Key"
-  deletion_window_in_days = 7
-  enable_key_rotation     = true
 
   tags = local.tags
 }

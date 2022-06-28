@@ -1,7 +1,10 @@
 data "aws_partition" "current" {}
+data "aws_caller_identity" "current" {}
 
 locals {
   create = var.create && var.putin_khuylo
+
+  cluster_role = try(aws_iam_role.this[0].arn, var.iam_role_arn)
 }
 
 ################################################################################
@@ -12,7 +15,7 @@ resource "aws_eks_cluster" "this" {
   count = local.create ? 1 : 0
 
   name                      = var.cluster_name
-  role_arn                  = try(aws_iam_role.this[0].arn, var.iam_role_arn)
+  role_arn                  = local.cluster_role
   version                   = var.cluster_version
   enabled_cluster_log_types = var.cluster_enabled_log_types
 
@@ -34,7 +37,7 @@ resource "aws_eks_cluster" "this" {
 
     content {
       provider {
-        key_arn = encryption_config.value.provider_key_arn
+        key_arn = var.create_kms_key ? module.kms.key_arn : encryption_config.value.provider_key_arn
       }
       resources = encryption_config.value.resources
     }
@@ -76,6 +79,36 @@ resource "aws_cloudwatch_log_group" "this" {
   name              = "/aws/eks/${var.cluster_name}/cluster"
   retention_in_days = var.cloudwatch_log_group_retention_in_days
   kms_key_id        = var.cloudwatch_log_group_kms_key_id
+
+  tags = var.tags
+}
+
+################################################################################
+# KMS Key
+################################################################################
+
+module "kms" {
+  source  = "terraform-aws-modules/kms/aws"
+  version = "1.0.0"
+
+  create = var.create_kms_key
+
+  description             = coalesce(var.kms_key_description, "${var.cluster_name} cluster encryption key")
+  key_usage               = "ENCRYPT_DECRYPT"
+  deletion_window_in_days = var.kms_key_deletion_window_in_days
+  enable_key_rotation     = var.enable_kms_key_rotation
+
+  # Policy
+  enable_default_policy     = var.kms_key_enable_default_policy
+  key_owners                = var.kms_key_owners
+  key_administrators        = coalescelist(var.kms_key_administrators, [data.aws_caller_identity.current.arn])
+  key_users                 = concat([local.cluster_role], var.kms_key_users)
+  key_service_users         = var.kms_key_service_users
+  source_policy_documents   = var.kms_key_source_policy_documents
+  override_policy_documents = var.kms_key_override_policy_documents
+
+  # Aliases
+  aliases = concat(["eks/${var.cluster_name}"], var.kms_key_aliases)
 
   tags = var.tags
 }
@@ -290,7 +323,7 @@ resource "aws_iam_policy" "cluster_encryption" {
           "kms:DescribeKey",
         ]
         Effect   = "Allow"
-        Resource = [for config in var.cluster_encryption_config : config.provider_key_arn]
+        Resource = var.create_kms_key ? [module.kms.key_arn] : [for config in var.cluster_encryption_config : config.provider_key_arn]
       },
     ]
   })
