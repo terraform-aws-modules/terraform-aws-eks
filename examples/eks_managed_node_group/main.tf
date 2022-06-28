@@ -92,6 +92,7 @@ module "eks" {
   }
 
   # Extend node-to-node security group rules
+  node_security_group_ntp_ipv4_cidr_block = ["fd00:ec2::123/128"]
   node_security_group_additional_rules = {
     ingress_self_all = {
       description = "Node to node all ports/protocols"

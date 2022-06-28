@@ -130,8 +130,8 @@ locals {
       from_port        = 123
       to_port          = 123
       type             = "egress"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = var.cluster_ip_family == "ipv6" ? ["::/0"] : null
+      cidr_blocks      = var.node_security_group_ntp_ipv4_cidr_block
+      ipv6_cidr_blocks = var.cluster_ip_family == "ipv6" ? var.node_security_group_ntp_ipv6_cidr_block : null
     }
     egress_ntp_udp = {
       description      = "Egress NTP/UDP to internet"
@@ -139,8 +139,8 @@ locals {
       from_port        = 123
       to_port          = 123
       type             = "egress"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = var.cluster_ip_family == "ipv6" ? ["::/0"] : null
+      cidr_blocks      = var.node_security_group_ntp_ipv4_cidr_block
+      ipv6_cidr_blocks = var.cluster_ip_family == "ipv6" ? var.node_security_group_ntp_ipv6_cidr_block : null
     }
   }
 }
