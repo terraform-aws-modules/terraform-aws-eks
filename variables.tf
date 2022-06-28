@@ -322,6 +322,20 @@ variable "node_security_group_tags" {
   default     = {}
 }
 
+# TODO - at next breaking change, make 169.254.169.123/32 the default
+variable "node_security_group_ntp_ipv4_cidr_block" {
+  description = "IPv4 CIDR block to allow NTP egress. Default is public IP space, but [Amazon Time Sync Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html) can be used as well with `[\"169.254.169.123/32\"]`"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+# TODO - at next breaking change, make fd00:ec2::123/128 the default
+variable "node_security_group_ntp_ipv6_cidr_block" {
+  description = "IPv4 CIDR block to allow NTP egress. Default is public IP space, but [Amazon Time Sync Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html) can be used as well with `[\"fd00:ec2::123/128\"]`"
+  type        = list(string)
+  default     = ["::/0"]
+}
+
 ################################################################################
 # IRSA
 ################################################################################
