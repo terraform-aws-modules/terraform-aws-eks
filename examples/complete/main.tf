@@ -53,12 +53,12 @@ module "eks" {
   }
 
   # Encryption key
-  create_key = true
+  create_kms_key = true
   cluster_encryption_config = [{
     resources = ["secrets"]
   }]
-  key_deletion_window_in_days = 7
-  enable_key_rotation         = true
+  kms_key_deletion_window_in_days = 7
+  enable_kms_key_rotation         = true
 
   vpc_id                   = module.vpc.vpc_id
   subnet_ids               = module.vpc.private_subnets
