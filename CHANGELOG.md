@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.26.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.0...v18.26.1) (2022-06-29)
+
+
+### Bug Fixes
+
+* Update KMS module version which aligns on module version requirements ([#2127](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2127)) ([bc04cd3](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/bc04cd3a0a4286566ea56b20d9314115c6e489ab))
+
 ## [18.26.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.25.0...v18.26.0) (2022-06-28)
 
 
