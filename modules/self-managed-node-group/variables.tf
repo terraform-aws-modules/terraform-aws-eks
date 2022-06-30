@@ -272,7 +272,6 @@ variable "create_autoscaling_group" {
   default     = true
 }
 
-
 variable "name" {
   description = "Name of the Self managed Node Group"
   type        = string
