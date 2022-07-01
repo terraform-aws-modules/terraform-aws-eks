@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.26.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.1...v18.26.2) (2022-07-01)
+
+
+### Bug Fixes
+
+* Correct variable types to improve dynamic check correctness ([#2133](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2133)) ([2d7701c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/2d7701c3b0f2c6dcc10f31fc1f703bfde31b2c5b))
+
 ### [18.26.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.0...v18.26.1) (2022-06-29)
 
 
