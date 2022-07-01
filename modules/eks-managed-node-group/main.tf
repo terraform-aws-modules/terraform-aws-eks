@@ -91,7 +91,7 @@ resource "aws_launch_template" "this" {
   }
 
   dynamic "capacity_reservation_specification" {
-    for_each = var.capacity_reservation_specification != null ? [var.capacity_reservation_specification] : []
+    for_each = length(var.capacity_reservation_specification) > 0 ? [var.capacity_reservation_specification] : []
     content {
       capacity_reservation_preference = lookup(capacity_reservation_specification.value, "capacity_reservation_preference", null)
 
@@ -105,7 +105,7 @@ resource "aws_launch_template" "this" {
   }
 
   dynamic "cpu_options" {
-    for_each = var.cpu_options != null ? [var.cpu_options] : []
+    for_each = length(var.cpu_options) > 0 ? [var.cpu_options] : []
     content {
       core_count       = cpu_options.value.core_count
       threads_per_core = cpu_options.value.threads_per_core
@@ -113,28 +113,28 @@ resource "aws_launch_template" "this" {
   }
 
   dynamic "credit_specification" {
-    for_each = var.credit_specification != null ? [var.credit_specification] : []
+    for_each = length(var.credit_specification) > 0 ? [var.credit_specification] : []
     content {
       cpu_credits = credit_specification.value.cpu_credits
     }
   }
 
   dynamic "elastic_gpu_specifications" {
-    for_each = var.elastic_gpu_specifications != null ? [var.elastic_gpu_specifications] : []
+    for_each = length(var.elastic_gpu_specifications) > 0 ? [var.elastic_gpu_specifications] : []
     content {
       type = elastic_gpu_specifications.value.type
     }
   }
 
   dynamic "elastic_inference_accelerator" {
-    for_each = var.elastic_inference_accelerator != null ? [var.elastic_inference_accelerator] : []
+    for_each = length(var.elastic_inference_accelerator) > 0 ? [var.elastic_inference_accelerator] : []
     content {
       type = elastic_inference_accelerator.value.type
     }
   }
 
   dynamic "enclave_options" {
-    for_each = var.enclave_options != null ? [var.enclave_options] : []
+    for_each = length(var.enclave_options) > 0 ? [var.enclave_options] : []
     content {
       enabled = enclave_options.value.enabled
     }
@@ -160,12 +160,12 @@ resource "aws_launch_template" "this" {
   # }
 
   dynamic "instance_market_options" {
-    for_each = var.instance_market_options != null ? [var.instance_market_options] : []
+    for_each = length(var.instance_market_options) > 0 ? [var.instance_market_options] : []
     content {
       market_type = instance_market_options.value.market_type
 
       dynamic "spot_options" {
-        for_each = lookup(instance_market_options.value, "spot_options", null) != null ? [instance_market_options.value.spot_options] : []
+        for_each = length(lookup(instance_market_options.value, "spot_options", {})) > 0 ? [instance_market_options.value.spot_options] : []
         content {
           block_duration_minutes         = lookup(spot_options.value, "block_duration_minutes", null)
           instance_interruption_behavior = lookup(spot_options.value, "instance_interruption_behavior", null)
@@ -178,14 +178,14 @@ resource "aws_launch_template" "this" {
   }
 
   dynamic "license_specification" {
-    for_each = var.license_specifications != null ? [var.license_specifications] : []
+    for_each = length(var.license_specifications) > 0 ? [var.license_specifications] : []
     content {
       license_configuration_arn = license_specifications.value.license_configuration_arn
     }
   }
 
   dynamic "metadata_options" {
-    for_each = var.metadata_options != null ? [var.metadata_options] : []
+    for_each = length(var.metadata_options) > 0 ? [var.metadata_options] : []
     content {
       http_endpoint               = lookup(metadata_options.value, "http_endpoint", null)
       http_tokens                 = lookup(metadata_options.value, "http_tokens", null)
@@ -225,7 +225,7 @@ resource "aws_launch_template" "this" {
   }
 
   dynamic "placement" {
-    for_each = var.placement != null ? [var.placement] : []
+    for_each = length(var.placement) > 0 ? [var.placement] : []
     content {
       affinity          = lookup(placement.value, "affinity", null)
       availability_zone = lookup(placement.value, "availability_zone", null)
