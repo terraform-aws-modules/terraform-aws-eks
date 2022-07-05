@@ -2,10 +2,10 @@
 
 ## Table of Contents
 
-- [EKS Managed Node Groups](https://github.com/terraform-aws-module/terraform-aws-eks/blob/master/docs/node_groups.md#eks-managed-node-groups)
-- [Self Managed Node Groups](https://github.com/terraform-aws-module/terraform-aws-eks/blob/master/docs/node_groups.md#self-managed-node-groups)
-- [Fargate Profiles](https://github.com/terraform-aws-module/terraform-aws-eks/blob/master/docs/node_groups.md#fargate-profiles)
-- [Default Configurations](https://github.com/terraform-aws-module/terraform-aws-eks/blob/master/docs/node_groups.md#default-configurations)
+- [EKS Managed Node Groups](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/compute_resources.md#eks-managed-node-groups)
+- [Self Managed Node Groups](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/compute_resources.md#self-managed-node-groups)
+- [Fargate Profiles](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/compute_resources.md#fargate-profiles)
+- [Default Configurations](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/compute_resources.md#default-configurations)
 
 ℹ️ Only the pertinent attributes are shown below for brevity
 
