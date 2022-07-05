@@ -13,7 +13,7 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
 
   exec {
-    api_version = "client.authentication.k8s.io/v1alpha1"
+    api_version = "client.authentication.k8s.io/v1beta1"
     command     = "aws"
     # This requires the awscli to be installed locally where Terraform is executed
     args = ["eks", "get-token", "--cluster-name", module.eks.cluster_id]
@@ -52,13 +52,17 @@ module "eks" {
     }
   }
 
+  # Encryption key
+  create_kms_key = true
   cluster_encryption_config = [{
-    provider_key_arn = aws_kms_key.eks.arn
-    resources        = ["secrets"]
+    resources = ["secrets"]
   }]
+  kms_key_deletion_window_in_days = 7
+  enable_kms_key_rotation         = true
 
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
+  vpc_id                   = module.vpc.vpc_id
+  subnet_ids               = module.vpc.private_subnets
+  control_plane_subnet_ids = module.vpc.intra_subnets
 
   # Extend cluster security group rules
   cluster_security_group_additional_rules = {
@@ -73,6 +77,7 @@ module "eks" {
   }
 
   # Extend node-to-node security group rules
+  node_security_group_ntp_ipv4_cidr_block = ["169.254.169.123/32"]
   node_security_group_additional_rules = {
     ingress_self_all = {
       description = "Node to node all ports/protocols"
@@ -331,6 +336,7 @@ module "vpc" {
   azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
   public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  intra_subnets   = ["10.0.7.0/28", "10.0.7.16/28", "10.0.7.32/28"]
 
   enable_nat_gateway   = true
   single_nat_gateway   = true
@@ -367,14 +373,6 @@ resource "aws_security_group" "additional" {
       "192.168.0.0/16",
     ]
   }
-
-  tags = local.tags
-}
-
-resource "aws_kms_key" "eks" {
-  description             = "EKS Secret Encryption Key"
-  deletion_window_in_days = 7
-  enable_key_rotation     = true
 
   tags = local.tags
 }

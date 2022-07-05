@@ -171,49 +171,49 @@ variable "block_device_mappings" {
 variable "capacity_reservation_specification" {
   description = "Targeting for EC2 capacity reservations"
   type        = any
-  default     = null
+  default     = {}
 }
 
 variable "cpu_options" {
   description = "The CPU options for the instance"
   type        = map(string)
-  default     = null
+  default     = {}
 }
 
 variable "credit_specification" {
   description = "Customize the credit specification of the instance"
   type        = map(string)
-  default     = null
+  default     = {}
 }
 
 variable "elastic_gpu_specifications" {
   description = "The elastic GPU to attach to the instance"
   type        = map(string)
-  default     = null
+  default     = {}
 }
 
 variable "elastic_inference_accelerator" {
   description = "Configuration block containing an Elastic Inference Accelerator to attach to the instance"
   type        = map(string)
-  default     = null
+  default     = {}
 }
 
 variable "enclave_options" {
   description = "Enable Nitro Enclaves on launched instances"
   type        = map(string)
-  default     = null
+  default     = {}
 }
 
 variable "instance_market_options" {
   description = "The market (purchasing) option for the instance"
   type        = any
-  default     = null
+  default     = {}
 }
 
 variable "license_specifications" {
   description = "A list of license specifications to associate with"
   type        = map(string)
-  default     = null
+  default     = {}
 }
 
 variable "metadata_options" {
@@ -241,7 +241,7 @@ variable "network_interfaces" {
 variable "placement" {
   description = "The placement of the instance"
   type        = map(string)
-  default     = null
+  default     = {}
 }
 
 variable "launch_template_tags" {

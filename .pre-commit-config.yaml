@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.68.1
+    rev: v1.73.0
     hooks:
       - id: terraform_fmt
       - id: terraform_validate
@@ -23,7 +23,7 @@ repos:
           - '--args=--only=terraform_standard_module_structure'
           - '--args=--only=terraform_workspace_remote'
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.2.0
+    rev: v4.3.0
     hooks:
       - id: check-merge-conflict
       - id: end-of-file-fixer

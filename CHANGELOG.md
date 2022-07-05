@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.26.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.1...v18.26.2) (2022-07-01)
+
+
+### Bug Fixes
+
+* Correct variable types to improve dynamic check correctness ([#2133](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2133)) ([2d7701c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/2d7701c3b0f2c6dcc10f31fc1f703bfde31b2c5b))
+
+### [18.26.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.0...v18.26.1) (2022-06-29)
+
+
+### Bug Fixes
+
+* Update KMS module version which aligns on module version requirements ([#2127](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2127)) ([bc04cd3](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/bc04cd3a0a4286566ea56b20d9314115c6e489ab))
+
+## [18.26.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.25.0...v18.26.0) (2022-06-28)
+
+
+### Features
+
+* Add support for specifiying NTP address to use private Amazon Time Sync Service ([#2125](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2125)) ([4543ab4](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/4543ab454bea80b64381b88a631d955a7cfae247))
+
+## [18.25.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.24.1...v18.25.0) (2022-06-28)
+
+
+### Features
+
+* Add support for creating KMS key for cluster secret encryption ([#2121](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2121)) ([75acb09](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/75acb09ec56c5ce8e5f74ebc7bf15468b272db8a))
+
+### [18.24.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.24.0...v18.24.1) (2022-06-19)
+
+
+### Bug Fixes
+
+* Remove `modified_at` from ignored changes on EKS addons ([#2114](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2114)) ([5a5a32e](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/5a5a32ed1241ba3cc64abe37b37bcb5ad52d42c4))
+
+## [18.24.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.23.0...v18.24.0) (2022-06-18)
+
+
+### Features
+
+* Add support for specifying conrol plane subnets separate from those used by node groups (data plane) ([#2113](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2113)) ([ebc91bc](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ebc91bcd37a919a350d872a5b235ccc2a79955a6))
+
 ## [18.23.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.22.0...v18.23.0) (2022-06-02)
 
 

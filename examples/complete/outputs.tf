@@ -43,6 +43,25 @@ output "cluster_security_group_id" {
 }
 
 ################################################################################
+# KMS Key
+################################################################################
+
+output "kms_key_arn" {
+  description = "The Amazon Resource Name (ARN) of the key"
+  value       = module.eks.kms_key_arn
+}
+
+output "kms_key_id" {
+  description = "The globally unique identifier for the key"
+  value       = module.eks.kms_key_id
+}
+
+output "kms_key_policy" {
+  description = "The IAM resource policy set on the key"
+  value       = module.eks.kms_key_policy
+}
+
+################################################################################
 # Security Group
 ################################################################################
 

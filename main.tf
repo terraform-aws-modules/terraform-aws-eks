@@ -1,7 +1,10 @@
 data "aws_partition" "current" {}
+data "aws_caller_identity" "current" {}
 
 locals {
   create = var.create && var.putin_khuylo
+
+  cluster_role = try(aws_iam_role.this[0].arn, var.iam_role_arn)
 }
 
 ################################################################################
@@ -12,13 +15,13 @@ resource "aws_eks_cluster" "this" {
   count = local.create ? 1 : 0
 
   name                      = var.cluster_name
-  role_arn                  = try(aws_iam_role.this[0].arn, var.iam_role_arn)
+  role_arn                  = local.cluster_role
   version                   = var.cluster_version
   enabled_cluster_log_types = var.cluster_enabled_log_types
 
   vpc_config {
     security_group_ids      = compact(distinct(concat(var.cluster_additional_security_group_ids, [local.cluster_security_group_id])))
-    subnet_ids              = var.subnet_ids
+    subnet_ids              = coalescelist(var.control_plane_subnet_ids, var.subnet_ids)
     endpoint_private_access = var.cluster_endpoint_private_access
     endpoint_public_access  = var.cluster_endpoint_public_access
     public_access_cidrs     = var.cluster_endpoint_public_access_cidrs
@@ -34,7 +37,7 @@ resource "aws_eks_cluster" "this" {
 
     content {
       provider {
-        key_arn = encryption_config.value.provider_key_arn
+        key_arn = var.create_kms_key ? module.kms.key_arn : encryption_config.value.provider_key_arn
       }
       resources = encryption_config.value.resources
     }
@@ -76,6 +79,36 @@ resource "aws_cloudwatch_log_group" "this" {
   name              = "/aws/eks/${var.cluster_name}/cluster"
   retention_in_days = var.cloudwatch_log_group_retention_in_days
   kms_key_id        = var.cloudwatch_log_group_kms_key_id
+
+  tags = var.tags
+}
+
+################################################################################
+# KMS Key
+################################################################################
+
+module "kms" {
+  source  = "terraform-aws-modules/kms/aws"
+  version = "1.0.1" # Note - be mindful of Terraform/provider version compatibility between modules
+
+  create = var.create_kms_key
+
+  description             = coalesce(var.kms_key_description, "${var.cluster_name} cluster encryption key")
+  key_usage               = "ENCRYPT_DECRYPT"
+  deletion_window_in_days = var.kms_key_deletion_window_in_days
+  enable_key_rotation     = var.enable_kms_key_rotation
+
+  # Policy
+  enable_default_policy     = var.kms_key_enable_default_policy
+  key_owners                = var.kms_key_owners
+  key_administrators        = coalescelist(var.kms_key_administrators, [data.aws_caller_identity.current.arn])
+  key_users                 = concat([local.cluster_role], var.kms_key_users)
+  key_service_users         = var.kms_key_service_users
+  source_policy_documents   = var.kms_key_source_policy_documents
+  override_policy_documents = var.kms_key_override_policy_documents
+
+  # Aliases
+  aliases = concat(["eks/${var.cluster_name}"], var.kms_key_aliases)
 
   tags = var.tags
 }
@@ -252,7 +285,7 @@ resource "aws_iam_role" "this" {
   tags = merge(var.tags, var.iam_role_tags)
 }
 
-# Policies attached ref https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
+# Policies attached ref https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html
 resource "aws_iam_role_policy_attachment" "this" {
   for_each = local.create_iam_role ? toset(compact(distinct(concat([
     "${local.policy_arn_prefix}/AmazonEKSClusterPolicy",
@@ -290,7 +323,7 @@ resource "aws_iam_policy" "cluster_encryption" {
           "kms:DescribeKey",
         ]
         Effect   = "Allow"
-        Resource = [for config in var.cluster_encryption_config : config.provider_key_arn]
+        Resource = var.create_kms_key ? [module.kms.key_arn] : [for config in var.cluster_encryption_config : config.provider_key_arn]
       },
     ]
   })
@@ -311,12 +344,6 @@ resource "aws_eks_addon" "this" {
   addon_version            = lookup(each.value, "addon_version", null)
   resolve_conflicts        = lookup(each.value, "resolve_conflicts", null)
   service_account_role_arn = lookup(each.value, "service_account_role_arn", null)
-
-  lifecycle {
-    ignore_changes = [
-      modified_at
-    ]
-  }
 
   depends_on = [
     module.fargate_profile,
