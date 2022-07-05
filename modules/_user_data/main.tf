@@ -1,6 +1,6 @@
 
 locals {
-  int_linux_default_user_data = var.create && var.platform == "linux" && (var.enable_bootstrap_user_data || var.user_data_template_path != "") ? base64encode(templatefile(
+  linux_user_data_template_rendered = templatefile(
     coalesce(var.user_data_template_path, "${path.module}/../../templates/linux_user_data.tpl"),
     {
       # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
@@ -15,7 +15,8 @@ locals {
       pre_bootstrap_user_data   = var.pre_bootstrap_user_data
       post_bootstrap_user_data  = var.post_bootstrap_user_data
     }
-  )) : ""
+  )
+  int_linux_default_user_data = var.create && var.platform == "linux" && (var.enable_bootstrap_user_data || var.user_data_template_path != "") ? base64encode(local.linux_user_data_template_rendered) : ""
   platform = {
     bottlerocket = {
       user_data = var.create && var.platform == "bottlerocket" && (var.enable_bootstrap_user_data || var.user_data_template_path != "" || var.bootstrap_extra_args != "") ? base64encode(templatefile(
@@ -64,7 +65,7 @@ locals {
 # See docs for more details -> https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-user-data
 
 data "cloudinit_config" "linux_eks_managed_node_group" {
-  count = var.create && var.platform == "linux" && var.is_eks_managed_node_group && !var.enable_bootstrap_user_data && var.pre_bootstrap_user_data != "" && var.user_data_template_path == "" ? 1 : 0
+  count = var.create && var.platform == "linux" && var.is_eks_managed_node_group ? 1 : 0
 
   base64_encode = true
   gzip          = false
@@ -73,6 +74,6 @@ data "cloudinit_config" "linux_eks_managed_node_group" {
   # Prepend to existing user data suppled by AWS EKS
   part {
     content_type = "text/x-shellscript"
-    content      = var.pre_bootstrap_user_data
+    content      = local.linux_user_data_template_rendered
   }
 }

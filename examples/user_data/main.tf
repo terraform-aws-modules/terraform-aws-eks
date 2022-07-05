@@ -26,6 +26,9 @@ module "eks_mng_linux_additional" {
 module "eks_mng_linux_custom_ami" {
   source = "../../modules/_user_data"
 
+  # pre_/post_ bootstrap_user_data will be defined in MIME format
+  platform = "linux"
+
   cluster_name              = local.name
   cluster_endpoint          = local.cluster_endpoint
   cluster_auth_base64       = local.cluster_auth_base64
