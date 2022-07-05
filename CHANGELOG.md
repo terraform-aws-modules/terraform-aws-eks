@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.26.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.2...v18.26.3) (2022-07-05)
+
+
+### Bug Fixes
+
+* Correct Fargate profiles additional IAM role policies default type to match variable ([#2143](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2143)) ([c4e6d28](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c4e6d28fc064435f6f05c6c57d7fff8576d9fbba))
+
 ### [18.26.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.1...v18.26.2) (2022-07-01)
 
 
