@@ -14,7 +14,7 @@ See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/man
 
 ## Container Runtime & User Data
 
-When using the default AMI provided by the EKS Managed Node Group service (i.e. - not specifying a value for `ami_id`), users should be aware of the limitations of configuring the node bootstrap process via user data. Due to not having direct access to the bootrap.sh script invocation and therefore its configuration flags (this is provide by the EKS Managed Node Group service in the node user data), a work around for ensuring the appropriate configuration settings is shown below. The following example shows how to inject configuration variables ahead of the merged user data provided by the EKS Managed Node Group service as well as how to enable the containerd runtime using this approach. More details can be found [here](https://github.com/awslabs/amazon-eks-ami/issues/844).
+When using the default AMI provided by the EKS Managed Node Group service (i.e. - not specifying a value for `ami_id`), users should be aware of the limitations of configuring the node bootstrap process via user data. Due to not having direct access to the bootrap.sh script invocation and therefore its configuration flags (this is provided by the EKS Managed Node Group service in the node user data), a workaround for ensuring the appropriate configuration settings is shown below. The following example shows how to inject configuration variables ahead of the merged user data provided by the EKS Managed Node Group service as well as how to enable the containerd runtime using this approach. More details can be found [here](https://github.com/awslabs/amazon-eks-ami/issues/844).
 
 ```hcl
   ...
