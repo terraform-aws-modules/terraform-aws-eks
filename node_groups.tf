@@ -30,7 +30,7 @@ data "aws_iam_policy_document" "cni_ipv6_policy" {
   statement {
     sid       = "CreateTags"
     actions   = ["ec2:CreateTags"]
-    resources = ["arn:${data.aws_partition.current.dns_suffix}:ec2:*:*:network-interface/*"]
+    resources = ["arn:${data.aws_partition.current.partition}:ec2:*:*:network-interface/*"]
   }
 }
 
