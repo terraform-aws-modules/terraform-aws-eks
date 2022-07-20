@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.26.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.4...v18.26.5) (2022-07-20)
+
+
+### Bug Fixes
+
+* Bump kms module to 1.0.2 to fix malformed policy document when not specifying key_owners ([#2163](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2163)) ([0fd1ab1](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/0fd1ab1db9b752e58211428e3c19f62655e5f97d))
+
 ### [18.26.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.3...v18.26.4) (2022-07-20)
 
 
