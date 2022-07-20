@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.26.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.3...v18.26.4) (2022-07-20)
+
+
+### Bug Fixes
+
+* Use partition data source on VPC CNI IPv6 policy ([#2161](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2161)) ([f2d67ff](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f2d67ffa97cc0f9827f75673b1cd263e3a5062b6))
+
 ### [18.26.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.2...v18.26.3) (2022-07-05)
 
 
