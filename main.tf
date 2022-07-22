@@ -91,7 +91,7 @@ module "kms" {
   source  = "terraform-aws-modules/kms/aws"
   version = "1.0.2" # Note - be mindful of Terraform/provider version compatibility between modules
 
-  create = var.create_kms_key
+  create = local.create && var.create_kms_key
 
   description             = coalesce(var.kms_key_description, "${var.cluster_name} cluster encryption key")
   key_usage               = "ENCRYPT_DECRYPT"
