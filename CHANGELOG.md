@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.26.6](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.5...v18.26.6) (2022-07-22)
+
+
+### Bug Fixes
+
+* Pin TLS provider version to 3.x versions only ([#2174](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2174)) ([d990ea8](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/d990ea8aff682315828d7c177a309c71541e023c))
+
 ### [18.26.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.4...v18.26.5) (2022-07-20)
 
 
