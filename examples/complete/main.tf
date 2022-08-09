@@ -196,6 +196,13 @@ module "eks" {
     }
   }
 
+  # OIDC Identity provider
+  cluster_identity_providers = {
+    sts = {
+      client_id = "sts.amazonaws.com"
+    }
+  }
+
   # aws-auth configmap
   manage_aws_auth_configmap = true
 
