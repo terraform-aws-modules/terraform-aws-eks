@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.27.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.27.0...v18.27.1) (2022-08-09)
+
+
+### Bug Fixes
+
+* Remove empty `""` from node group names output when node group creation is disabled ([#2197](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2197)) ([d2f162b](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/d2f162b190596756f1bc9d8f8061e68329c3e5c4))
+
 ## [18.27.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.6...v18.27.0) (2022-08-09)
 
 
