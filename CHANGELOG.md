@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.27.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.6...v18.27.0) (2022-08-09)
+
+
+### Features
+
+* Default to clusters OIDC issuer URL for `aws_eks_identity_provider_config` ([#2190](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2190)) ([93065fa](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/93065fabdf508267b399f677d561f18fd6d7b7f0))
+
 ### [18.26.6](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.5...v18.26.6) (2022-07-22)
 
 
