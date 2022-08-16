@@ -504,7 +504,7 @@ variable "security_group_name" {
 
 variable "security_group_use_name_prefix" {
   description = "Determines whether the security group name (`security_group_name`) is used as a prefix"
-  type        = string
+  type        = bool
   default     = true
 }
 

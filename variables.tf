@@ -244,7 +244,7 @@ variable "cluster_security_group_name" {
 
 variable "cluster_security_group_use_name_prefix" {
   description = "Determines whether cluster security group name (`cluster_security_group_name`) is used as a prefix"
-  type        = string
+  type        = bool
   default     = true
 }
 
@@ -300,7 +300,7 @@ variable "node_security_group_name" {
 
 variable "node_security_group_use_name_prefix" {
   description = "Determines whether node security group name (`node_security_group_name`) is used as a prefix"
-  type        = string
+  type        = bool
   default     = true
 }
 
@@ -426,7 +426,7 @@ variable "iam_role_tags" {
 
 variable "cluster_encryption_policy_use_name_prefix" {
   description = "Determines whether cluster encryption policy name (`cluster_encryption_policy_name`) is used as a prefix"
-  type        = string
+  type        = bool
   default     = true
 }
 
