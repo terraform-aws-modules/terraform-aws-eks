@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.28.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.27.1...v18.28.0) (2022-08-17)
+
+
+### Features
+
+* Add output for launch template name, and correct variable type value ([#2205](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2205)) ([0a52d69](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/0a52d690d54a7c39fd4e0d46db36d200f7ef679e))
+
 ### [18.27.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.27.0...v18.27.1) (2022-08-09)
 
 
