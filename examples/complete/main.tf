@@ -60,6 +60,10 @@ module "eks" {
   kms_key_deletion_window_in_days = 7
   enable_kms_key_rotation         = true
 
+  iam_role_additional_policies = {
+    "additional" = aws_iam_policy.additional.arn
+  }
+
   vpc_id                   = module.vpc.vpc_id
   subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.intra_subnets
@@ -100,8 +104,10 @@ module "eks" {
 
   # Self Managed Node Group(s)
   self_managed_node_group_defaults = {
-    vpc_security_group_ids       = [aws_security_group.additional.id]
-    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    vpc_security_group_ids = [aws_security_group.additional.id]
+    iam_role_additional_policies = {
+      "additional" = aws_iam_policy.additional.arn
+    }
   }
 
   self_managed_node_groups = {
@@ -134,6 +140,9 @@ module "eks" {
 
     attach_cluster_primary_security_group = true
     vpc_security_group_ids                = [aws_security_group.additional.id]
+    iam_role_additional_policies = {
+      "additional" = aws_iam_policy.additional.arn
+    }
   }
 
   eks_managed_node_groups = {
@@ -382,4 +391,21 @@ resource "aws_security_group" "additional" {
   }
 
   tags = local.tags
+}
+
+resource "aws_iam_policy" "additional" {
+  name = "${local.name}-additional"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ec2:Describe*",
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
 }

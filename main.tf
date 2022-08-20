@@ -291,10 +291,14 @@ resource "aws_iam_role" "this" {
 
 # Policies attached ref https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html
 resource "aws_iam_role_policy_attachment" "this" {
-  for_each = local.create_iam_role ? toset(compact(distinct(concat([
-    "${local.policy_arn_prefix}/AmazonEKSClusterPolicy",
-    "${local.policy_arn_prefix}/AmazonEKSVPCResourceController",
-  ], var.iam_role_additional_policies)))) : toset([])
+  for_each = { for k, v in merge(
+    {
+      AmazonEKSClusterPolicy         = "${local.policy_arn_prefix}/AmazonEKSClusterPolicy",
+      AmazonEKSVPCResourceController = "${local.policy_arn_prefix}/AmazonEKSVPCResourceController",
+    }
+    ,
+    var.iam_role_additional_policies
+  ) : k => v if local.create_iam_role }
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name

@@ -1,5 +1,4 @@
 data "aws_partition" "current" {}
-
 data "aws_caller_identity" "current" {}
 
 ################################################################################
@@ -36,10 +35,8 @@ locals {
   # 3. `var.create_launch_template = true && var.launch_template_name == ""` => Custom LT will be used, module will provide a default name
   # 4. `var.create_launch_template = true && var.launch_template_name == "something"` => Custom LT will be used, LT name is provided by user
   use_custom_launch_template = var.create_launch_template || var.launch_template_name != ""
-
-  launch_template_name_int = coalesce(var.launch_template_name, "${var.name}-eks-node-group")
-
-  security_group_ids = compact(concat([try(aws_security_group.this[0].id, ""), var.cluster_primary_security_group_id], var.vpc_security_group_ids))
+  launch_template_name_int   = coalesce(var.launch_template_name, "${var.name}-eks-node-group")
+  security_group_ids         = compact(concat([try(aws_security_group.this[0].id, ""), var.cluster_primary_security_group_id], var.vpc_security_group_ids))
 }
 
 resource "aws_launch_template" "this" {
@@ -407,11 +404,9 @@ resource "aws_security_group_rule" "this" {
 ################################################################################
 
 locals {
-  iam_role_name = coalesce(var.iam_role_name, "${var.name}-eks-node-group")
-
+  iam_role_name          = coalesce(var.iam_role_name, "${var.name}-eks-node-group")
   iam_role_policy_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
-
-  cni_policy = var.cluster_ip_family == "ipv6" ? "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/AmazonEKS_CNI_IPv6_Policy" : "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
+  cni_policy             = var.cluster_ip_family == "ipv6" ? "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/AmazonEKS_CNI_IPv6_Policy" : "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
@@ -445,11 +440,16 @@ resource "aws_iam_role" "this" {
 
 # Policies attached ref https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
 resource "aws_iam_role_policy_attachment" "this" {
-  for_each = var.create && var.create_iam_role ? toset(compact(distinct(concat([
-    "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy",
-    "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly",
-    var.iam_role_attach_cni_policy ? local.cni_policy : "",
-  ], var.iam_role_additional_policies)))) : toset([])
+  for_each = { for k, v in merge(
+    {
+      AmazonEKSWorkerNodePolicy          = "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy"
+      AmazonEC2ContainerRegistryReadOnly = "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly"
+    },
+    {
+      for k, v in { AmazonEKS_CNI_Policy = local.cni_policy } : k => v if var.iam_role_attach_cni_policy
+    },
+    var.iam_role_additional_policies
+  ) : k => v if var.create && var.create_iam_role }
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name
