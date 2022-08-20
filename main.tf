@@ -226,9 +226,9 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 ################################################################################
 
 locals {
-  create_iam_role   = local.create && var.create_iam_role
-  iam_role_name     = coalesce(var.iam_role_name, "${var.cluster_name}-cluster")
-  policy_arn_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
+  create_iam_role        = local.create && var.create_iam_role
+  iam_role_name          = coalesce(var.iam_role_name, "${var.cluster_name}-cluster")
+  iam_role_policy_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
 
   cluster_encryption_policy_name = coalesce(var.cluster_encryption_policy_name, "${local.iam_role_name}-ClusterEncryption")
 
@@ -293,8 +293,8 @@ resource "aws_iam_role" "this" {
 resource "aws_iam_role_policy_attachment" "this" {
   for_each = { for k, v in merge(
     {
-      AmazonEKSClusterPolicy         = "${local.policy_arn_prefix}/AmazonEKSClusterPolicy",
-      AmazonEKSVPCResourceController = "${local.policy_arn_prefix}/AmazonEKSVPCResourceController",
+      AmazonEKSClusterPolicy         = "${local.iam_role_policy_prefix}/AmazonEKSClusterPolicy",
+      AmazonEKSVPCResourceController = "${local.iam_role_policy_prefix}/AmazonEKSVPCResourceController",
     }
     ,
     var.iam_role_additional_policies
