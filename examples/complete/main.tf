@@ -263,7 +263,6 @@ module "eks_managed_node_group" {
   cluster_name    = module.eks.cluster_id
   cluster_version = module.eks.cluster_version
 
-  vpc_id                            = module.vpc.vpc_id
   subnet_ids                        = module.vpc.private_subnets
   cluster_primary_security_group_id = module.eks.cluster_primary_security_group_id
   vpc_security_group_ids = [
@@ -284,7 +283,6 @@ module "self_managed_node_group" {
 
   instance_type = "m5.large"
 
-  vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
   vpc_security_group_ids = [
     module.eks.cluster_primary_security_group_id,

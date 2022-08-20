@@ -96,8 +96,6 @@ module "eks" {
   }
 
   self_managed_node_group_defaults = {
-    create_security_group = false
-
     # enable discovery of autoscaling groups by cluster-autoscaler
     autoscaling_group_tags = {
       "k8s.io/cluster-autoscaler/enabled" : true,
@@ -270,32 +268,6 @@ module "eks" {
       iam_role_additional_policies = [
         "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
       ]
-
-      create_security_group          = true
-      security_group_name            = "self-managed-node-group-complete-example"
-      security_group_use_name_prefix = false
-      security_group_description     = "Self managed node group complete example security group"
-      security_group_rules = {
-        phoneOut = {
-          description = "Hello CloudFlare"
-          protocol    = "udp"
-          from_port   = 53
-          to_port     = 53
-          type        = "egress"
-          cidr_blocks = ["1.1.1.1/32"]
-        }
-        phoneHome = {
-          description                   = "Hello cluster"
-          protocol                      = "udp"
-          from_port                     = 53
-          to_port                       = 53
-          type                          = "egress"
-          source_cluster_security_group = true # bit of reflection lookup
-        }
-      }
-      security_group_tags = {
-        Purpose = "Protector of the kubelet"
-      }
 
       timeouts = {
         create = "80m"

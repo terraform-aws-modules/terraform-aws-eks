@@ -234,10 +234,9 @@ module "eks_managed_node_group" {
 
   create = try(each.value.create, true)
 
-  cluster_name              = aws_eks_cluster.this[0].name
-  cluster_version           = try(each.value.cluster_version, var.eks_managed_node_group_defaults.cluster_version, aws_eks_cluster.this[0].version)
-  cluster_security_group_id = local.cluster_security_group_id
-  cluster_ip_family         = var.cluster_ip_family
+  cluster_name      = aws_eks_cluster.this[0].name
+  cluster_version   = try(each.value.cluster_version, var.eks_managed_node_group_defaults.cluster_version, aws_eks_cluster.this[0].version)
+  cluster_ip_family = var.cluster_ip_family
 
   # EKS Managed Node Group
   name            = try(each.value.name, each.key)
@@ -320,13 +319,6 @@ module "eks_managed_node_group" {
   # Security group
   vpc_security_group_ids            = compact(concat([local.node_security_group_id], try(each.value.vpc_security_group_ids, var.eks_managed_node_group_defaults.vpc_security_group_ids, [])))
   cluster_primary_security_group_id = try(each.value.attach_cluster_primary_security_group, var.eks_managed_node_group_defaults.attach_cluster_primary_security_group, false) ? aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id : null
-  create_security_group             = try(each.value.create_security_group, var.eks_managed_node_group_defaults.create_security_group, true)
-  security_group_name               = try(each.value.security_group_name, var.eks_managed_node_group_defaults.security_group_name, null)
-  security_group_use_name_prefix    = try(each.value.security_group_use_name_prefix, var.eks_managed_node_group_defaults.security_group_use_name_prefix, true)
-  security_group_description        = try(each.value.security_group_description, var.eks_managed_node_group_defaults.security_group_description, "EKS managed node group security group")
-  vpc_id                            = try(each.value.vpc_id, var.eks_managed_node_group_defaults.vpc_id, var.vpc_id)
-  security_group_rules              = try(each.value.security_group_rules, var.eks_managed_node_group_defaults.security_group_rules, {})
-  security_group_tags               = try(each.value.security_group_tags, var.eks_managed_node_group_defaults.security_group_tags, {})
 
   tags = merge(var.tags, try(each.value.tags, var.eks_managed_node_group_defaults.tags, {}))
 }
@@ -450,15 +442,7 @@ module "self_managed_node_group" {
 
   # Security group
   vpc_security_group_ids            = compact(concat([local.node_security_group_id], try(each.value.vpc_security_group_ids, var.self_managed_node_group_defaults.vpc_security_group_ids, [])))
-  cluster_security_group_id         = local.cluster_security_group_id
   cluster_primary_security_group_id = try(each.value.attach_cluster_primary_security_group, var.self_managed_node_group_defaults.attach_cluster_primary_security_group, false) ? aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id : null
-  create_security_group             = try(each.value.create_security_group, var.self_managed_node_group_defaults.create_security_group, true)
-  security_group_name               = try(each.value.security_group_name, var.self_managed_node_group_defaults.security_group_name, null)
-  security_group_use_name_prefix    = try(each.value.security_group_use_name_prefix, var.self_managed_node_group_defaults.security_group_use_name_prefix, true)
-  security_group_description        = try(each.value.security_group_description, var.self_managed_node_group_defaults.security_group_description, "Self managed node group security group")
-  vpc_id                            = try(each.value.vpc_id, var.self_managed_node_group_defaults.vpc_id, var.vpc_id)
-  security_group_rules              = try(each.value.security_group_rules, var.self_managed_node_group_defaults.security_group_rules, {})
-  security_group_tags               = try(each.value.security_group_tags, var.self_managed_node_group_defaults.security_group_tags, {})
 
   tags = merge(var.tags, try(each.value.tags, var.self_managed_node_group_defaults.tags, {}))
 }

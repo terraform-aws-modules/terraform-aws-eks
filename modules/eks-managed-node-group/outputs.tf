@@ -62,20 +62,6 @@ output "node_group_taints" {
 }
 
 ################################################################################
-# Security Group
-################################################################################
-
-output "security_group_arn" {
-  description = "Amazon Resource Name (ARN) of the security group"
-  value       = try(aws_security_group.this[0].arn, "")
-}
-
-output "security_group_id" {
-  description = "ID of the security group"
-  value       = try(aws_security_group.this[0].id, "")
-}
-
-################################################################################
 # IAM Role
 ################################################################################
 
