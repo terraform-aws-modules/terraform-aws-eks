@@ -123,7 +123,7 @@ variable "cluster_timeouts" {
 variable "create_kms_key" {
   description = "Controls if a KMS key for cluster encryption should be created"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "kms_key_description" {
