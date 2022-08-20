@@ -345,9 +345,10 @@ resource "aws_eks_addon" "this" {
   cluster_name = aws_eks_cluster.this[0].name
   addon_name   = try(each.value.name, each.key)
 
-  addon_version            = lookup(each.value, "addon_version", null)
-  resolve_conflicts        = lookup(each.value, "resolve_conflicts", null)
-  service_account_role_arn = lookup(each.value, "service_account_role_arn", null)
+  addon_version            = try(each.value.addon_version, data.aws_eks_addon_version.this[0].version)
+  preserve                 = try(each.value.preserve, null)
+  resolve_conflicts        = try(each.value.resolve_conflicts, null)
+  service_account_role_arn = try(each.value.service_account_role_arn, null)
 
   depends_on = [
     module.fargate_profile,
@@ -356,6 +357,14 @@ resource "aws_eks_addon" "this" {
   ]
 
   tags = var.tags
+}
+
+data "aws_eks_addon_version" "this" {
+  for_each = { for k, v in var.cluster_addons : k => v if local.create }
+
+  addon_name         = try(each.value.name, each.key)
+  kubernetes_version = aws_eks_cluster.this[0].version
+  most_recent        = try(each.value.most_recent, null)
 }
 
 ################################################################################
