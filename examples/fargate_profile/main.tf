@@ -2,10 +2,15 @@ provider "aws" {
   region = local.region
 }
 
+data "aws_availability_zones" "available" {}
+
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.22"
+  cluster_version = "1.23"
   region          = "eu-west-1"
+
+  vpc_cidr = "10.0.0.0/16"
+  azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
   tags = {
     Example    = local.name
@@ -21,10 +26,8 @@ locals {
 module "eks" {
   source = "../.."
 
-  cluster_name                    = local.name
-  cluster_version                 = local.cluster_version
-  cluster_endpoint_private_access = true
-  cluster_endpoint_public_access  = true
+  cluster_name    = local.name
+  cluster_version = local.cluster_version
 
   cluster_addons = {
     # Note: https://docs.aws.amazon.com/eks/latest/userguide/fargate-getting-started.html#fargate-gs-coredns
@@ -37,13 +40,17 @@ module "eks" {
     }
   }
 
+  # Encryption key
+  create_kms_key = true
   cluster_encryption_config = [{
-    provider_key_arn = aws_kms_key.eks.arn
-    resources        = ["secrets"]
+    resources = ["secrets"]
   }]
+  kms_key_deletion_window_in_days = 7
+  enable_kms_key_rotation         = true
 
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
+  vpc_id                   = module.vpc.vpc_id
+  subnet_ids               = module.vpc.private_subnets
+  control_plane_subnet_ids = module.vpc.intra_subnets
 
   # You require a node group to schedule coredns which is critical for running correctly internal DNS.
   # If you want to use only fargate you must follow docs `(Optional) Update CoreDNS`
@@ -126,11 +133,12 @@ module "vpc" {
   version = "~> 3.0"
 
   name = local.name
-  cidr = "10.0.0.0/16"
+  cidr = local.vpc_cidr
 
-  azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  azs             = local.azs
+  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 4, k)]
+  public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 48)]
+  intra_subnets   = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 52)]
 
   enable_nat_gateway   = true
   single_nat_gateway   = true

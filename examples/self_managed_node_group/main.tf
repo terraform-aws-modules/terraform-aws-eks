@@ -14,10 +14,16 @@ provider "kubernetes" {
   }
 }
 
+data "aws_caller_identity" "current" {}
+data "aws_availability_zones" "available" {}
+
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.22"
+  cluster_version = "1.23"
   region          = "eu-west-1"
+
+  vpc_cidr = "10.0.0.0/16"
+  azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
   tags = {
     Example    = local.name
@@ -26,8 +32,6 @@ locals {
   }
 }
 
-data "aws_caller_identity" "current" {}
-
 ################################################################################
 # EKS Module
 ################################################################################
@@ -35,10 +39,9 @@ data "aws_caller_identity" "current" {}
 module "eks" {
   source = "../.."
 
-  cluster_name                    = local.name
-  cluster_version                 = local.cluster_version
-  cluster_endpoint_private_access = true
-  cluster_endpoint_public_access  = true
+  cluster_name                   = local.name
+  cluster_version                = local.cluster_version
+  cluster_endpoint_public_access = true
 
   cluster_addons = {
     coredns = {
@@ -50,13 +53,17 @@ module "eks" {
     }
   }
 
+  # Encryption key
+  create_kms_key = true
   cluster_encryption_config = [{
-    provider_key_arn = aws_kms_key.eks.arn
-    resources        = ["secrets"]
+    resources = ["secrets"]
   }]
+  kms_key_deletion_window_in_days = 7
+  enable_kms_key_rotation         = true
 
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
+  vpc_id                   = module.vpc.vpc_id
+  subnet_ids               = module.vpc.private_subnets
+  control_plane_subnet_ids = module.vpc.intra_subnets
 
   # Self managed node groups will not automatically create the aws-auth configmap so we need to
   create_aws_auth_configmap = true
@@ -115,24 +122,20 @@ module "eks" {
       ami_id        = data.aws_ami.eks_default_bottlerocket.id
       instance_type = "m5.large"
       desired_size  = 2
-      key_name      = aws_key_pair.this.key_name
-
-      iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+      key_name      = module.key_pair.key_pair_name
 
       bootstrap_extra_args = <<-EOT
-      # The admin host container provides SSH access and runs with "superpowers".
-      # It is disabled by default, but can be disabled explicitly.
-      [settings.host-containers.admin]
-      enabled = false
+        # extra args added
+        [settings.kernel]
+        lockdown = "integrity"
 
-      # The control host container provides out-of-band access via SSM.
-      # It is enabled by default, and can be disabled if you do not expect to use SSM.
-      # This could leave you with no way to access the API and change settings on an existing node!
-      [settings.host-containers.control]
-      enabled = true
+        [settings.kubernetes.node-labels]
+        "label1" = "foo"
+        "label2" = "bar"
 
-      [settings.kubernetes.node-labels]
-      ingress = "allowed"
+        [settings.kubernetes.node-taints]
+        "dedicated" = "experimental:PreferNoSchedule"
+        "special" = "true:NoSchedule"
       EOT
     }
 
@@ -175,15 +178,14 @@ module "eks" {
       instance_type = "c5n.9xlarge"
 
       post_bootstrap_user_data = <<-EOT
+        # Install EFA
+        curl -O https://efa-installer.amazonaws.com/aws-efa-installer-latest.tar.gz
+        tar -xf aws-efa-installer-latest.tar.gz && cd aws-efa-installer
+        ./efa_installer.sh -y --minimal
+        fi_info -p efa -t FI_EP_RDM
 
-      # Install EFA
-      curl -O https://efa-installer.amazonaws.com/aws-efa-installer-latest.tar.gz
-      tar -xf aws-efa-installer-latest.tar.gz && cd aws-efa-installer
-      ./efa_installer.sh -y --minimal
-      fi_info -p efa -t FI_EP_RDM
-
-      # Disable ptrace
-      sysctl -w kernel.yama.ptrace_scope=0
+        # Disable ptrace
+        sysctl -w kernel.yama.ptrace_scope=0
       EOT
 
       network_interfaces = [
@@ -212,12 +214,12 @@ module "eks" {
       bootstrap_extra_args = "--kubelet-extra-args '--max-pods=110'"
 
       pre_bootstrap_user_data = <<-EOT
-      export CONTAINER_RUNTIME="containerd"
-      export USE_MAX_PODS=false
+        export CONTAINER_RUNTIME="containerd"
+        export USE_MAX_PODS=false
       EOT
 
       post_bootstrap_user_data = <<-EOT
-      echo "you are free little kubelet!"
+        echo "you are free little kubelet!"
       EOT
 
       instance_type = "m6i.large"
@@ -239,7 +241,7 @@ module "eks" {
             iops                  = 3000
             throughput            = 150
             encrypted             = true
-            kms_key_id            = aws_kms_key.ebs.arn
+            kms_key_id            = module.ebs_kms_key.key_id
             delete_on_termination = true
           }
         }
@@ -265,9 +267,9 @@ module "eks" {
       iam_role_tags = {
         Purpose = "Protector of the kubelet"
       }
-      iam_role_additional_policies = [
-        "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-      ]
+      iam_role_additional_policies = {
+        AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+      }
 
       timeouts = {
         create = "80m"
@@ -293,11 +295,12 @@ module "vpc" {
   version = "~> 3.0"
 
   name = local.name
-  cidr = "10.0.0.0/16"
+  cidr = local.vpc_cidr
 
-  azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  azs             = local.azs
+  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 4, k)]
+  public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 48)]
+  intra_subnets   = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 52)]
 
   enable_nat_gateway   = true
   single_nat_gateway   = true
@@ -366,19 +369,37 @@ data "aws_ami" "eks_default_bottlerocket" {
   }
 }
 
-resource "tls_private_key" "this" {
-  algorithm = "RSA"
+module "key_pair" {
+  source  = "terraform-aws-modules/key-pair/aws"
+  version = "~> 2.0"
+
+  key_name_prefix    = local.name
+  create_private_key = true
+
+  tags = local.tags
 }
 
-resource "aws_key_pair" "this" {
-  key_name   = local.name
-  public_key = tls_private_key.this.public_key_openssh
-}
+module "ebs_kms_key" {
+  source  = "terraform-aws-modules/kms/aws"
+  version = "~> 1.1"
 
-resource "aws_kms_key" "ebs" {
-  description             = "Customer managed key to encrypt self managed node group volumes"
-  deletion_window_in_days = 7
-  policy                  = data.aws_iam_policy_document.ebs.json
+  description = "Customer managed key to encrypt EKS managed node group volumes"
+
+  # Policy
+  key_administrators = [
+    data.aws_caller_identity.current.arn
+  ]
+  key_service_users = [
+    # required for the ASG to manage encrypted volumes for nodes
+    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling",
+    # required for the cluster / persistentvolume-controller to create encrypted PVCs
+    module.eks.cluster_iam_role_arn,
+  ]
+
+  # Aliases
+  aliases = ["eks/${local.name}/ebs"]
+
+  tags = local.tags
 }
 
 resource "aws_ec2_capacity_reservation" "targeted" {
@@ -387,60 +408,4 @@ resource "aws_ec2_capacity_reservation" "targeted" {
   availability_zone       = "${local.region}a"
   instance_count          = 1
   instance_match_criteria = "targeted"
-}
-
-# This policy is required for the KMS key used for EKS root volumes, so the cluster is allowed to enc/dec/attach encrypted EBS volumes
-data "aws_iam_policy_document" "ebs" {
-  # Copy of default KMS policy that lets you manage it
-  statement {
-    sid       = "Enable IAM User Permissions"
-    actions   = ["kms:*"]
-    resources = ["*"]
-
-    principals {
-      type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
-    }
-  }
-
-  # Required for EKS
-  statement {
-    sid = "Allow service-linked role use of the CMK"
-    actions = [
-      "kms:Encrypt",
-      "kms:Decrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey"
-    ]
-    resources = ["*"]
-
-    principals {
-      type = "AWS"
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling", # required for the ASG to manage encrypted volumes for nodes
-        module.eks.cluster_iam_role_arn,                                                                                                            # required for the cluster / persistentvolume-controller to create encrypted PVCs
-      ]
-    }
-  }
-
-  statement {
-    sid       = "Allow attachment of persistent resources"
-    actions   = ["kms:CreateGrant"]
-    resources = ["*"]
-
-    principals {
-      type = "AWS"
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling", # required for the ASG to manage encrypted volumes for nodes
-        module.eks.cluster_iam_role_arn,                                                                                                            # required for the cluster / persistentvolume-controller to create encrypted PVCs
-      ]
-    }
-
-    condition {
-      test     = "Bool"
-      variable = "kms:GrantIsForAWSResource"
-      values   = ["true"]
-    }
-  }
 }

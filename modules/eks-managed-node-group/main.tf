@@ -29,18 +29,12 @@ module "user_data" {
 ################################################################################
 
 locals {
-  # There are 4 scenarios here that have to be considered for `use_custom_launch_template`:
-  # 1. `var.create_launch_template = false && var.launch_template_name == ""` => EKS MNG will use its own default LT
-  # 2. `var.create_launch_template = false && var.launch_template_name == "something"` => User provided custom LT will be used
-  # 3. `var.create_launch_template = true && var.launch_template_name == ""` => Custom LT will be used, module will provide a default name
-  # 4. `var.create_launch_template = true && var.launch_template_name == "something"` => Custom LT will be used, LT name is provided by user
-  use_custom_launch_template = var.create_launch_template || var.launch_template_name != ""
-  launch_template_name_int   = coalesce(var.launch_template_name, "${var.name}-eks-node-group")
-  security_group_ids         = compact(concat([var.cluster_primary_security_group_id], var.vpc_security_group_ids))
+  launch_template_name_int = coalesce(var.launch_template_name, "${var.name}-eks-node-group")
+  security_group_ids       = compact(concat([var.cluster_primary_security_group_id], var.vpc_security_group_ids))
 }
 
 resource "aws_launch_template" "this" {
-  count = var.create && var.create_launch_template ? 1 : 0
+  count = var.create && var.create_launch_template && var.use_custom_launch_template ? 1 : 0
 
   name        = var.launch_template_use_name_prefix ? null : local.launch_template_name_int
   name_prefix = var.launch_template_use_name_prefix ? "${local.launch_template_name_int}-" : null
@@ -289,13 +283,13 @@ resource "aws_eks_node_group" "this" {
   version         = var.ami_id != "" ? null : var.cluster_version
 
   capacity_type        = var.capacity_type
-  disk_size            = local.use_custom_launch_template ? null : var.disk_size # if using LT, set disk size on LT or else it will error here
+  disk_size            = var.use_custom_launch_template ? null : var.disk_size # if using LT, set disk size on LT or else it will error here
   force_update_version = var.force_update_version
   instance_types       = var.instance_types
   labels               = var.labels
 
   dynamic "launch_template" {
-    for_each = local.use_custom_launch_template ? [1] : []
+    for_each = var.use_custom_launch_template ? [1] : []
     content {
       name    = local.launch_template_name
       version = local.launch_template_version

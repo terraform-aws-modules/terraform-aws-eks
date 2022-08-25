@@ -81,7 +81,6 @@ TL;DR - Terraform resource passed into the modules map definition _must_ be know
 
 - `cluster_security_group_additional_rules` (i.e. - referencing an external security group resource in a rule)
 - `node_security_group_additional_rules` (i.e. - referencing an external security group resource in a rule)
-- `iam_role_additional_policies` (i.e. - referencing an external policy resource)
 
 ### Why are nodes not being registered?
 

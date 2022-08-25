@@ -27,7 +27,7 @@ variable "cluster_name" {
 }
 
 variable "cluster_version" {
-  description = "Kubernetes `<major>.<minor>` version to use for the EKS cluster (i.e.: `1.22`)"
+  description = "Kubernetes `<major>.<minor>` version to use for the EKS cluster (i.e.: `1.23`)"
   type        = string
   default     = null
 }
@@ -59,13 +59,13 @@ variable "subnet_ids" {
 variable "cluster_endpoint_private_access" {
   description = "Indicates whether or not the Amazon EKS private API server endpoint is enabled"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "cluster_endpoint_public_access" {
   description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "cluster_endpoint_public_access_cidrs" {
@@ -89,7 +89,9 @@ variable "cluster_service_ipv4_cidr" {
 variable "cluster_encryption_config" {
   description = "Configuration block with encryption configuration for the cluster"
   type        = list(any)
-  default     = []
+  default = [{
+    resources = ["secrets"]
+  }]
 }
 
 variable "attach_cluster_encryption_policy" {

@@ -18,8 +18,7 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
 ```hcl
   eks_managed_node_groups = {
     default = {
-      create_launch_template = false
-      launch_template_name   = ""
+      use_custom_launch_template = false
     }
   }
 ```
@@ -29,9 +28,6 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
 ```hcl
   eks_managed_node_groups = {
     bottlerocket_default = {
-      create_launch_template = false
-      launch_template_name   = ""
-
       ami_type = "BOTTLEROCKET_x86_64"
       platform = "bottlerocket"
     }
@@ -45,15 +41,15 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
     prepend_userdata = {
       # See issue https://github.com/awslabs/amazon-eks-ami/issues/844
       pre_bootstrap_user_data = <<-EOT
-      #!/bin/bash
-      set -ex
-      cat <<-EOF > /etc/profile.d/bootstrap.sh
-      export CONTAINER_RUNTIME="containerd"
-      export USE_MAX_PODS=false
-      export KUBELET_EXTRA_ARGS="--max-pods=110"
-      EOF
-      # Source extra environment variables in bootstrap script
-      sed -i '/^set -o errexit/a\\nsource /etc/profile.d/bootstrap.sh' /etc/eks/bootstrap.sh
+        #!/bin/bash
+        set -ex
+        cat <<-EOF > /etc/profile.d/bootstrap.sh
+        export CONTAINER_RUNTIME="containerd"
+        export USE_MAX_PODS=false
+        export KUBELET_EXTRA_ARGS="--max-pods=110"
+        EOF
+        # Source extra environment variables in bootstrap script
+        sed -i '/^set -o errexit/a\\nsource /etc/profile.d/bootstrap.sh' /etc/eks/bootstrap.sh
       EOT
     }
   }
@@ -68,9 +64,9 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
       platform = "bottlerocket"
 
       bootstrap_extra_args = <<-EOT
-      # extra args added
-      [settings.kernel]
-      lockdown = "integrity"
+        # extra args added
+        [settings.kernel]
+        lockdown = "integrity"
       EOT
     }
   }
@@ -116,17 +112,17 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
       enable_bootstrap_user_data = true
       # this will get added to the template
       bootstrap_extra_args = <<-EOT
-      # extra args added
-      [settings.kernel]
-      lockdown = "integrity"
+        # extra args added
+        [settings.kernel]
+        lockdown = "integrity"
 
-      [settings.kubernetes.node-labels]
-      "label1" = "foo"
-      "label2" = "bar"
+        [settings.kubernetes.node-labels]
+        "label1" = "foo"
+        "label2" = "bar"
 
-      [settings.kubernetes.node-taints]
-      "dedicated" = "experimental:PreferNoSchedule"
-      "special" = "true:NoSchedule"
+        [settings.kubernetes.node-taints]
+        "dedicated" = "experimental:PreferNoSchedule"
+        "special" = "true:NoSchedule"
       EOT
     }
   }
@@ -141,9 +137,9 @@ Refer to the [Self Managed Node Group documentation](https://docs.aws.amazon.com
 1. The `self-managed-node-group` uses the latest AWS EKS Optimized AMI (Linux) for the given Kubernetes version by default:
 
 ```hcl
-  cluster_version = "1.22"
+  cluster_version = "1.23"
 
-  # This self managed node group will use the latest AWS EKS Optimized AMI for Kubernetes 1.22
+  # This self managed node group will use the latest AWS EKS Optimized AMI for Kubernetes 1.23
   self_managed_node_groups = {
     default = {}
   }
@@ -152,7 +148,7 @@ Refer to the [Self Managed Node Group documentation](https://docs.aws.amazon.com
 2. To use Bottlerocket, specify the `platform` as `bottlerocket` and supply a Bottlerocket OS AMI:
 
 ```hcl
-  cluster_version = "1.22"
+  cluster_version = "1.23"
 
   self_managed_node_groups = {
     bottlerocket = {

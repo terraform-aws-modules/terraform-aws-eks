@@ -20,9 +20,14 @@ provider "kubernetes" {
   }
 }
 
+data "aws_availability_zones" "available" {}
+
 locals {
   name   = "ex-${replace(basename(path.cwd), "_", "-")}"
   region = "eu-west-1"
+
+  vpc_cidr = "10.0.0.0/16"
+  azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
   tags = {
     Example    = local.name
@@ -38,9 +43,8 @@ locals {
 module "eks" {
   source = "../.."
 
-  cluster_name                    = local.name
-  cluster_endpoint_private_access = true
-  cluster_endpoint_public_access  = true
+  cluster_name                   = local.name
+  cluster_endpoint_public_access = true
 
   cluster_addons = {
     coredns = {
@@ -118,17 +122,17 @@ module "eks" {
       }
 
       pre_bootstrap_user_data = <<-EOT
-      echo "foo"
-      export FOO=bar
+        echo "foo"
+        export FOO=bar
       EOT
 
       bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
 
       post_bootstrap_user_data = <<-EOT
-      cd /tmp
-      sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-      sudo systemctl enable amazon-ssm-agent
-      sudo systemctl start amazon-ssm-agent
+        cd /tmp
+        sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+        sudo systemctl enable amazon-ssm-agent
+        sudo systemctl start amazon-ssm-agent
       EOT
     }
   }
@@ -169,7 +173,7 @@ module "eks" {
       }
 
       update_config = {
-        max_unavailable_percentage = 50 # or set `max_unavailable`
+        max_unavailable_percentage = 33 # or set `max_unavailable`
       }
 
       tags = {
@@ -345,12 +349,12 @@ module "vpc" {
   version = "~> 3.0"
 
   name = local.name
-  cidr = "10.0.0.0/16"
+  cidr = local.vpc_cidr
 
-  azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
-  intra_subnets   = ["10.0.7.0/28", "10.0.7.16/28", "10.0.7.32/28"]
+  azs             = local.azs
+  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 4, k)]
+  public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 48)]
+  intra_subnets   = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 52)]
 
   enable_nat_gateway   = true
   single_nat_gateway   = true

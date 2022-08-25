@@ -84,6 +84,12 @@ variable "create_launch_template" {
   default     = true
 }
 
+variable "use_custom_launch_template" {
+  description = "Determines whether to use a custom launch template or not. If set to `false`, EKS will use its own default launch template"
+  type        = bool
+  default     = true
+}
+
 variable "launch_template_name" {
   description = "Launch template name - either to be created (`var.create_launch_template` = `true`) or existing (`var.create_launch_template` = `false`)"
   type        = string

@@ -10,7 +10,7 @@ module "eks_managed_node_group" {
 
   name            = "separate-eks-mng"
   cluster_name    = "my-cluster"
-  cluster_version = "1.22"
+  cluster_version = "1.23"
 
   vpc_id     = "vpc-1234556abcdef"
   subnet_ids = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
@@ -18,7 +18,7 @@ module "eks_managed_node_group" {
   // The following variables are necessary if you decide to use the module outside of the parent EKS module context.
   // Without it, the security groups of the nodes are empty and thus won't join the cluster.
   cluster_primary_security_group_id = module.eks.cluster_primary_security_group_id
-  cluster_security_group_id = module.eks.node_security_group_id
+  cluster_security_group_id         = module.eks.node_security_group_id
 
   min_size     = 1
   max_size     = 10
@@ -151,6 +151,7 @@ module "eks_managed_node_group" {
 | <a name="input_timeouts"></a> [timeouts](#input\_timeouts) | Create, update, and delete timeout configurations for the node group | `map(string)` | `{}` | no |
 | <a name="input_update_config"></a> [update\_config](#input\_update\_config) | Configuration block of settings for max unavailable resources during node group updates | `map(string)` | `{}` | no |
 | <a name="input_update_launch_template_default_version"></a> [update\_launch\_template\_default\_version](#input\_update\_launch\_template\_default\_version) | Whether to update the launch templates default version on each update. Conflicts with `launch_template_default_version` | `bool` | `true` | no |
+| <a name="input_use_custom_launch_template"></a> [use\_custom\_launch\_template](#input\_use\_custom\_launch\_template) | Determines whether to use a custom launch template or not. If set to `false`, EKS will use its own default launch template | `bool` | `true` | no |
 | <a name="input_use_name_prefix"></a> [use\_name\_prefix](#input\_use\_name\_prefix) | Determines whether to use `name` as is or create a unique name beginning with the `name` as the prefix | `bool` | `true` | no |
 | <a name="input_user_data_template_path"></a> [user\_data\_template\_path](#input\_user\_data\_template\_path) | Path to a local, custom user data template file to use when rendering user data | `string` | `""` | no |
 | <a name="input_vpc_security_group_ids"></a> [vpc\_security\_group\_ids](#input\_vpc\_security\_group\_ids) | A list of security group IDs to associate | `list(string)` | `[]` | no |
