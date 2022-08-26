@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.29.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.28.0...v18.29.0) (2022-08-26)
+
+
+### Features
+
+* Allow TLS provider to use versions 3.0+ (i.e. - `>= 3.0`) ([#2211](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2211)) ([f576a6f](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f576a6f9ea523c94a7bb5420d5ab3ed8c7d3fec7))
+
 ## [18.28.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.27.1...v18.28.0) (2022-08-17)
 
 
