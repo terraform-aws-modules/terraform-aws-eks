@@ -572,6 +572,7 @@ variable "aws_auth_groups" {
   description = "List of group maps to add to the aws-auth configmap"
   type        = list(any)
   default     = []
+}
 
 variable "aws_auth_users" {
   description = "List of user maps to add to the aws-auth configmap"
