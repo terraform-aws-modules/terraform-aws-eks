@@ -445,6 +445,7 @@ locals {
       ],
       var.aws_auth_roles
     ))
+    mapGroups   = yamlencode(var.aws_auth_groups)
     mapUsers    = yamlencode(var.aws_auth_users)
     mapAccounts = yamlencode(var.aws_auth_accounts)
   }
