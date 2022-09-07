@@ -20,7 +20,7 @@ By default, EKS creates a cluster primary security group that is created outside
   attach_cluster_primary_security_group = true # default is false
 ```
 
-2. If you want to use the cluster primary security group, you can "disable" the tag passed to the node security group by overriding the tag expected value like:
+2. If you want to use the cluster primary security group, you can disable the tag passed to the node security group by overriding the tag expected value like:
 
 ```hcl
   attach_cluster_primary_security_group = true # default is false
