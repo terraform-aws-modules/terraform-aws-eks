@@ -234,7 +234,7 @@ resource "aws_launch_template" "this" {
     for_each = toset(["instance", "volume", "network-interface"])
     content {
       resource_type = tag_specifications.key
-      tags          = merge(var.tags, { Name = var.name }, var.launch_template_tags)
+      tags          = merge(var.tags, { (var.instance_name_tag_key) = var.name }, var.launch_template_tags)
     }
   }
 
@@ -386,7 +386,7 @@ resource "aws_autoscaling_group" "this" {
   dynamic "tag" {
     for_each = merge(
       {
-        "Name"                                      = var.name
+        (var.instance_name_tag_key)                 = var.name
         "kubernetes.io/cluster/${var.cluster_name}" = "owned"
         "k8s.io/cluster/${var.cluster_name}"        = "owned"
       },

@@ -10,6 +10,12 @@ variable "tags" {
   default     = {}
 }
 
+variable "instance_name_tag_key" {
+  description = "Name of the instance name tag (key name)"
+  type        = string
+  default     = "Name"
+}
+
 variable "platform" {
   description = "Identifies if the OS platform is `bottlerocket` or `linux` based; `windows` is not supported"
   type        = string

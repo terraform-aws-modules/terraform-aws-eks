@@ -341,6 +341,9 @@ module "eks" {
         Purpose = "Protector of the kubelet"
       }
 
+      # Use custom tag key instead of "Name"
+      instance_name_tag_key = "InstanceName"
+
       tags = {
         ExtraTag = "EKS managed node group complete example"
       }

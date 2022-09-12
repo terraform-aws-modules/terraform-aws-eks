@@ -328,7 +328,8 @@ module "eks_managed_node_group" {
   security_group_rules              = try(each.value.security_group_rules, var.eks_managed_node_group_defaults.security_group_rules, {})
   security_group_tags               = try(each.value.security_group_tags, var.eks_managed_node_group_defaults.security_group_tags, {})
 
-  tags = merge(var.tags, try(each.value.tags, var.eks_managed_node_group_defaults.tags, {}))
+  instance_name_tag_key = try(each.value.instance_name_tag_key, var.eks_managed_node_group_defaults.instance_name_tag_key, "Name")
+  tags                  = merge(var.tags, try(each.value.tags, var.eks_managed_node_group_defaults.tags, {}))
 }
 
 ################################################################################
@@ -460,5 +461,6 @@ module "self_managed_node_group" {
   security_group_rules              = try(each.value.security_group_rules, var.self_managed_node_group_defaults.security_group_rules, {})
   security_group_tags               = try(each.value.security_group_tags, var.self_managed_node_group_defaults.security_group_tags, {})
 
-  tags = merge(var.tags, try(each.value.tags, var.self_managed_node_group_defaults.tags, {}))
+  instance_name_tag_key = try(each.value.instance_name_tag_key, var.self_managed_node_group_defaults.instance_name_tag_key, "Name")
+  tags                  = merge(var.tags, try(each.value.tags, var.self_managed_node_group_defaults.tags, {}))
 }

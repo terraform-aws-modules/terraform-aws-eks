@@ -303,6 +303,9 @@ module "eks" {
         delete = "80m"
       }
 
+      # Use custom tag key instead of "Name"
+      instance_name_tag_key = "InstanceName"
+
       tags = {
         ExtraTag = "Self managed node group complete example"
       }

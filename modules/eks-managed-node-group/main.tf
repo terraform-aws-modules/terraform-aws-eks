@@ -241,7 +241,7 @@ resource "aws_launch_template" "this" {
     for_each = toset(["instance", "volume", "network-interface"])
     content {
       resource_type = tag_specifications.key
-      tags          = merge(var.tags, { Name = var.name }, var.launch_template_tags)
+      tags          = merge(var.tags, { (var.instance_name_tag_key) = var.name }, var.launch_template_tags)
     }
   }
 
@@ -346,7 +346,7 @@ resource "aws_eks_node_group" "this" {
 
   tags = merge(
     var.tags,
-    { Name = var.name }
+    { (var.instance_name_tag_key) = var.name }
   )
 }
 
