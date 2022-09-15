@@ -451,7 +451,7 @@ locals {
 }
 
 resource "kubernetes_config_map" "aws_auth" {
-  count = var.create && var.create_aws_auth_configmap ? 1 : 0
+  count = var.create && var.create_aws_auth_configmap && !var.aws_auth_configmap_prevent_destroy ? 1 : 0
 
   metadata {
     name      = "aws-auth"
@@ -467,8 +467,26 @@ resource "kubernetes_config_map" "aws_auth" {
   }
 }
 
+resource "kubernetes_config_map" "aws_auth_prevent_destroy" {
+  count = var.create && var.create_aws_auth_configmap && var.aws_auth_configmap_prevent_destroy ? 1 : 0
+
+  metadata {
+    name      = "aws-auth"
+    namespace = "kube-system"
+  }
+
+  data = local.aws_auth_configmap_data
+
+  lifecycle {
+    # We are ignoring the data here since we will manage it with the resource below
+    # This is only intended to be used in scenarios where the configmap does not exist
+    ignore_changes  = [data]
+    prevent_destroy = true
+  }
+}
+
 resource "kubernetes_config_map_v1_data" "aws_auth" {
-  count = var.create && var.manage_aws_auth_configmap ? 1 : 0
+  count = var.create && var.manage_aws_auth_configmap && !var.aws_auth_configmap_prevent_destroy ? 1 : 0
 
   force = true
 
@@ -482,5 +500,23 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
   depends_on = [
     # Required for instances where the configmap does not exist yet to avoid race condition
     kubernetes_config_map.aws_auth,
+  ]
+}
+
+resource "kubernetes_config_map_v1_data" "aws_auth_prevent_destroy" {
+  count = var.create && var.manage_aws_auth_configmap && var.aws_auth_configmap_prevent_destroy ? 1 : 0
+
+  force = true
+
+  metadata {
+    name      = "aws-auth"
+    namespace = "kube-system"
+  }
+
+  data = local.aws_auth_configmap_data
+
+  depends_on = [
+    # Required for instances where the configmap does not exist yet to avoid race condition
+    kubernetes_config_map.aws_auth_prevent_destroy,
   ]
 }

@@ -544,6 +544,12 @@ variable "create_aws_auth_configmap" {
   default     = false
 }
 
+variable "aws_auth_configmap_prevent_destroy" {
+  description = "Whether or not to set prevent_destroy = true on the kubernetes_config_map resource"
+  type        = bool
+  default     = false
+}
+
 variable "aws_auth_node_iam_role_arns_non_windows" {
   description = "List of non-Windows based node IAM role ARNs to add to the aws-auth configmap"
   type        = list(string)
