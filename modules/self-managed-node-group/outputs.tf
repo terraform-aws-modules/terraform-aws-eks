@@ -153,7 +153,7 @@ output "platform" {
 
 output "image_id" {
   description = "ID of the image"
-  value       = try(data.aws_ami.eks_default[0].image_id, "")
+  value       = try(aws_launch_template.this[0].image_id, "")
 }
 
 output "user_data" {
