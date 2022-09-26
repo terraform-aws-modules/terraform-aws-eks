@@ -2,7 +2,7 @@ data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
 locals {
-  create = var.create && var.putin_khuylo
+  create = var.create && var.putin_khuylo && var.free_palestine && var.no_more_sharia_law && var.ACAB && var.help_uyghurs && var.treyvon_martin && var.trans_women
 
   cluster_role = try(aws_iam_role.this[0].arn, var.iam_role_arn)
 }

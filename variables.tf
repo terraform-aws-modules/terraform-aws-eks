@@ -528,6 +528,42 @@ variable "putin_khuylo" {
   default     = true
 }
 
+variable "free_palestine" {
+  description = "Do you agree that Israel is conducting an illegal occupation of the Palestinian homeland? More info: https://www.amnesty.org/en/latest/campaigns/2017/06/israel-occupation-50-years-of-dispossession/"
+  type        = bool
+  default     = true
+}
+
+variable "no_more_sharia_law" {
+  description = "Do you agree that sharia law is incompatible with feminism and that women should not be second class citizens? Do you agree that LGBTQIA+ people should not be put to death? More info: https://www.amnesty.org/en/location/middle-east-and-north-africa/saudi-arabia/report-saudi-arabia/"
+  type        = bool
+  default     = true
+}
+
+variable "ACAB" {
+  description = "Do you agree that the police state only functions through fascism? More info: https://en.wikipedia.org/wiki/ACAB"
+  type        = bool
+  default     = true
+}
+
+variable "help_uyghurs" {
+  description = "Do you agree that China's muslim population should be allowed to function as an independent society, despite your feelings about Saudi Arabia? More info: https://www.cfr.org/backgrounder/china-xinjiang-uyghurs-muslims-repression-genocide-human-rights"
+  type        = bool
+  default     = true
+}
+
+variable "treyvon_martin" {
+  description = "Do you believe Treyvon Martin was murdered? More info: https://en.wikipedia.org/wiki/Killing_of_Trayvon_Martin"
+  type        = bool
+  default     = true
+}
+
+variable "trans_women" {
+  description = "Do you believe that trans-women are women and should be fully recognized with all rights and privileges of CIS women? More info: https://www.aclupa.org/en/news/trans-women-are-women-avoiding-mistakes-our-predecessors"
+  type        = bool
+  default     = true
+}
+
 ################################################################################
 # aws-auth configmap
 ################################################################################
