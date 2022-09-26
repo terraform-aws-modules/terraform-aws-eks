@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.29.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.29.0...v18.29.1) (2022-09-26)
+
+
+### Bug Fixes
+
+* Set `image_id` to come from the launch template instead of data source for self-managed node groups ([#2239](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2239)) ([c5944e5](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c5944e5fb6ea07429ef79f5fe5592e7111567e1e))
+
 ## [18.29.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.28.0...v18.29.0) (2022-08-26)
 
 
