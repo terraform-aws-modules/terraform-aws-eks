@@ -28,13 +28,28 @@ resource "aws_eks_cluster" "this" {
     public_access_cidrs     = var.cluster_endpoint_public_access_cidrs
   }
 
-  kubernetes_network_config {
-    ip_family         = var.cluster_ip_family
-    service_ipv4_cidr = var.cluster_service_ipv4_cidr
+  dynamic "kubernetes_network_config" {
+    # Not valid on Outposts
+    for_each = var.provision_on_outpost ? [1] : []
+
+    content {
+      ip_family         = var.cluster_ip_family
+      service_ipv4_cidr = var.cluster_service_ipv4_cidr
+    }
+  }
+
+  dynamic "outpost_config" {
+    for_each = var.provision_on_outpost ? [var.outpost_config] : []
+
+    content {
+      control_plane_instance_type = outpost_config.value.control_plane_instance_type
+      outpost_arns                = outpost_config.value.outpost_arns
+    }
   }
 
   dynamic "encryption_config" {
-    for_each = toset(var.cluster_encryption_config)
+    # Not available on Outposts
+    for_each = { for k, v in toset(var.cluster_encryption_config) : k => v if !var.provision_on_outpost }
 
     content {
       provider {
@@ -95,7 +110,7 @@ module "kms" {
   source  = "terraform-aws-modules/kms/aws"
   version = "1.1.0" # Note - be mindful of Terraform/provider version compatibility between modules
 
-  create = local.create && var.create_kms_key
+  create = local.create && var.create_kms_key && !var.provision_on_outpost # not valid on Outposts
 
   description             = coalesce(var.kms_key_description, "${var.cluster_name} cluster encryption key")
   key_usage               = "ENCRYPT_DECRYPT"
@@ -353,6 +368,12 @@ resource "aws_eks_addon" "this" {
   preserve                 = try(each.value.preserve, null)
   resolve_conflicts        = try(each.value.resolve_conflicts, null)
   service_account_role_arn = try(each.value.service_account_role_arn, null)
+
+  timeouts {
+    create = try(var.cluster_addons_timeouts.create, null)
+    update = try(var.cluster_addons_timeouts.update, null)
+    delete = try(var.cluster_addons_timeouts.delete, null)
+  }
 
   depends_on = [
     module.fargate_profile,

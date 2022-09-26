@@ -86,6 +86,18 @@ variable "cluster_service_ipv4_cidr" {
   default     = null
 }
 
+variable "provision_on_outpost" {
+  description = "Determines whether cluster should be provisioned on an AWS Outpost"
+  type        = bool
+  default     = false
+}
+
+variable "outpost_config" {
+  description = "Configuration for the AWS Outpost to provision the cluster on"
+  type        = any
+  default     = {}
+}
+
 variable "cluster_encryption_config" {
   description = "Configuration block with encryption configuration for the cluster"
   type        = list(any)
@@ -461,6 +473,12 @@ variable "cluster_encryption_policy_tags" {
 variable "cluster_addons" {
   description = "Map of cluster addon configurations to enable for the cluster. Addon name can be the map keys or set with `name`"
   type        = any
+  default     = {}
+}
+
+variable "cluster_addons_timeouts" {
+  description = "Create, update, and delete timeout configurations for the cluster addons"
+  type        = map(string)
   default     = {}
 }
 
