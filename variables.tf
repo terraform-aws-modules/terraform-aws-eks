@@ -233,7 +233,7 @@ variable "cluster_security_group_id" {
 }
 
 variable "vpc_id" {
-  description = "ID of the VPC where the cluster and its nodes will be provisioned"
+  description = "ID of the VPC where the cluster security group will be provisioned"
   type        = string
   default     = null
 }

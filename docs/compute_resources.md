@@ -28,6 +28,8 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
 ```hcl
   eks_managed_node_groups = {
     bottlerocket_default = {
+      use_custom_launch_template = false
+
       ami_type = "BOTTLEROCKET_x86_64"
       platform = "bottlerocket"
     }
