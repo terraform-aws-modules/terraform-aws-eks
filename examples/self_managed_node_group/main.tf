@@ -55,9 +55,9 @@ module "eks" {
 
   # Encryption key
   create_kms_key = true
-  cluster_encryption_config = [{
+  cluster_encryption_config = {
     resources = ["secrets"]
-  }]
+  }
   kms_key_deletion_window_in_days = 7
   enable_kms_key_rotation         = true
 
@@ -269,6 +269,7 @@ module "eks" {
       }
       iam_role_additional_policies = {
         AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+        additional                         = aws_iam_policy.node_additional.arn
       }
 
       timeouts = {
@@ -408,4 +409,24 @@ resource "aws_ec2_capacity_reservation" "targeted" {
   availability_zone       = "${local.region}a"
   instance_count          = 1
   instance_match_criteria = "targeted"
+}
+
+resource "aws_iam_policy" "node_additional" {
+  name        = "${local.name}-additional"
+  description = "Example usage of node additional policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ec2:Describe*",
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
+
+  tags = local.tags
 }

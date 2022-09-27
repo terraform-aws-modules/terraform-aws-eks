@@ -100,10 +100,10 @@ variable "outpost_config" {
 
 variable "cluster_encryption_config" {
   description = "Configuration block with encryption configuration for the cluster"
-  type        = list(any)
-  default = [{
+  type        = any
+  default = {
     resources = ["secrets"]
-  }]
+  }
 }
 
 variable "attach_cluster_encryption_policy" {

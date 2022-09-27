@@ -480,22 +480,23 @@ resource "aws_iam_role" "this" {
 }
 
 resource "aws_iam_role_policy_attachment" "this" {
-  for_each = { for k, v in merge(
-    {
-      AmazonEKSWorkerNodePolicy          = "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy"
-      AmazonEC2ContainerRegistryReadOnly = "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly"
-    },
-    {
-      for k, v in { AmazonEKS_CNI_Policy = local.cni_policy } : k => v if var.iam_role_attach_cni_policy
-    },
-    var.iam_role_additional_policies
-  ) : k => v if var.create && var.create_iam_instance_profile }
+  for_each = { for k, v in toset(compact([
+    "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy",
+    "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly",
+    var.iam_role_attach_cni_policy ? local.cni_policy : "",
+  ])) : k => v if var.create && var.create_iam_instance_profile }
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name
 }
 
-# Only self-managed node group requires instance profile
+resource "aws_iam_role_policy_attachment" "additional" {
+  for_each = { for k, v in var.iam_role_additional_policies : k => v if var.create && var.create_iam_instance_profile }
+
+  policy_arn = each.value
+  role       = aws_iam_role.this[0].name
+}
+
 resource "aws_iam_instance_profile" "this" {
   count = var.create && var.create_iam_instance_profile ? 1 : 0
 
@@ -505,9 +506,9 @@ resource "aws_iam_instance_profile" "this" {
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
   path        = var.iam_role_path
 
+  tags = merge(var.tags, var.iam_role_tags)
+
   lifecycle {
     create_before_destroy = true
   }
-
-  tags = merge(var.tags, var.iam_role_tags)
 }

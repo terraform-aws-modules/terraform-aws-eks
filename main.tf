@@ -49,7 +49,7 @@ resource "aws_eks_cluster" "this" {
 
   dynamic "encryption_config" {
     # Not available on Outposts
-    for_each = { for k, v in toset(var.cluster_encryption_config) : k => v if !var.provision_on_outpost }
+    for_each = length(var.cluster_encryption_config) > 0 && !var.provision_on_outpost ? [var.cluster_encryption_config] : []
 
     content {
       provider {
@@ -306,14 +306,17 @@ resource "aws_iam_role" "this" {
 
 # Policies attached ref https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html
 resource "aws_iam_role_policy_attachment" "this" {
-  for_each = { for k, v in merge(
-    {
-      AmazonEKSClusterPolicy         = "${local.iam_role_policy_prefix}/AmazonEKSClusterPolicy",
-      AmazonEKSVPCResourceController = "${local.iam_role_policy_prefix}/AmazonEKSVPCResourceController",
-    }
-    ,
-    var.iam_role_additional_policies
-  ) : k => v if local.create_iam_role }
+  for_each = { for k, v in toset(compact([
+    "${local.iam_role_policy_prefix}/AmazonEKSClusterPolicy",
+    "${local.iam_role_policy_prefix}/AmazonEKSVPCResourceController",
+  ])) : k => v if local.create_iam_role }
+
+  policy_arn = each.value
+  role       = aws_iam_role.this[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "additional" {
+  for_each = { for k, v in var.iam_role_additional_policies : k => v if local.create_iam_role }
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name
@@ -364,7 +367,7 @@ resource "aws_eks_addon" "this" {
   cluster_name = aws_eks_cluster.this[0].name
   addon_name   = try(each.value.name, each.key)
 
-  addon_version            = try(each.value.addon_version, data.aws_eks_addon_version.this[0].version)
+  addon_version            = try(each.value.addon_version, data.aws_eks_addon_version.this[each.key].version)
   preserve                 = try(each.value.preserve, null)
   resolve_conflicts        = try(each.value.resolve_conflicts, null)
   service_account_role_arn = try(each.value.service_account_role_arn, null)
