@@ -228,6 +228,8 @@ module "eks" {
       EOF
       # Source extra environment variables in bootstrap script
       sed -i '/^set -o errexit/a\\nsource /etc/profile.d/bootstrap.sh' /etc/eks/bootstrap.sh
+      # In case of the desired change is set via CLI args (like max-pods)
+      sed -i 's/KUBELET_EXTRA_ARGS=$2/KUBELET_EXTRA_ARGS="$2 $KUBELET_EXTRA_ARGS"/' /etc/eks/bootstrap.sh
       EOT
     }
 
