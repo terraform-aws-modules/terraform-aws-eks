@@ -71,6 +71,12 @@ module "eks" {
     }
   }
 
+  fargate_profile_defaults = {
+    iam_role_additional_policies = {
+      "additional" = aws_iam_policy.additional.arn
+    }
+  }
+
   fargate_profiles = {
     default = {
       name = "default"
@@ -149,13 +155,11 @@ module "vpc" {
   create_flow_log_cloudwatch_log_group = true
 
   public_subnet_tags = {
-    "kubernetes.io/cluster/${local.name}" = "shared"
-    "kubernetes.io/role/elb"              = 1
+    "kubernetes.io/role/elb" = 1
   }
 
   private_subnet_tags = {
-    "kubernetes.io/cluster/${local.name}" = "shared"
-    "kubernetes.io/role/internal-elb"     = 1
+    "kubernetes.io/role/internal-elb" = 1
   }
 
   tags = local.tags
@@ -167,4 +171,21 @@ resource "aws_kms_key" "eks" {
   enable_key_rotation     = true
 
   tags = local.tags
+}
+
+resource "aws_iam_policy" "additional" {
+  name = "${local.name}-additional"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ec2:Describe*",
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
 }
