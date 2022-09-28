@@ -20,6 +20,17 @@ module "eks_managed_node_group" {
   cluster_primary_security_group_id = module.eks.cluster_primary_security_group_id
   cluster_security_group_id         = module.eks.node_security_group_id
 
+  // Note: `disk_size`, and `remote_access` can only be set when using the EKS managed node group default launch template
+  // This module defaults to providing a custom launch template to allow for custom security groups, tag propagation, etc.
+  // use_custom_launch_template = false
+  // disk_size = 50
+  //
+  //  # Remote access cannot be specified with a launch template
+  //  remote_access = {
+  //    ec2_ssh_key               = module.key_pair.key_pair_name
+  //    source_security_group_ids = [aws_security_group.remote_access.id]
+  //  }
+
   min_size     = 1
   max_size     = 10
   desired_size = 1
