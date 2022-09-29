@@ -21,7 +21,7 @@ variable "platform" {
 ################################################################################
 
 variable "enable_bootstrap_user_data" {
-  description = "Determines whether the bootstrap configurations are populated within the user data template"
+  description = "Determines whether the bootstrap configurations are populated within the user data template. Only valid when using a custom AMI via `ami_id`"
   type        = bool
   default     = false
 }

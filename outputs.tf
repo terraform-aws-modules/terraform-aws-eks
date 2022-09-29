@@ -108,6 +108,11 @@ output "oidc_provider_arn" {
   value       = try(aws_iam_openid_connect_provider.oidc_provider[0].arn, "")
 }
 
+output "cluster_tls_certificate_sha1_fingerprint" {
+  description = "The SHA1 fingerprint of the public key of the cluster's certificate"
+  value       = try(data.tls_certificate.this[0].certificates[0].sha1_fingerprint, "")
+}
+
 ################################################################################
 # IAM Role
 ################################################################################
