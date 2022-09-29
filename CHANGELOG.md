@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.30.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.29.1...v18.30.0) (2022-09-29)
+
+
+### Features
+
+* Add output for cluster TLS certificate SHA1 fingerprint and provider tags to cluster primary security group ([#2249](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2249)) ([a74e980](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/a74e98017b5dc7ed396cf26bfaf98ff7951c9e2e))
+
 ### [18.29.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.29.0...v18.29.1) (2022-09-26)
 
 
