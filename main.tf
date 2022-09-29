@@ -367,13 +367,13 @@ resource "aws_eks_addon" "this" {
 
   addon_version            = try(each.value.addon_version, data.aws_eks_addon_version.this[each.key].version)
   preserve                 = try(each.value.preserve, null)
-  resolve_conflicts        = try(each.value.resolve_conflicts, null)
+  resolve_conflicts        = try(each.value.resolve_conflicts, "OVERWRITE")
   service_account_role_arn = try(each.value.service_account_role_arn, null)
 
   timeouts {
-    create = try(var.cluster_addons_timeouts.create, null)
-    update = try(var.cluster_addons_timeouts.update, null)
-    delete = try(var.cluster_addons_timeouts.delete, null)
+    create = try(each.value.timeouts.create, var.cluster_addons_timeouts.create, null)
+    update = try(each.value.timeouts.update, var.cluster_addons_timeouts.update, null)
+    delete = try(each.value.timeouts.delete, var.cluster_addons_timeouts.delete, null)
   }
 
   depends_on = [
@@ -389,7 +389,7 @@ data "aws_eks_addon_version" "this" {
   for_each = { for k, v in var.cluster_addons : k => v if local.create }
 
   addon_name         = try(each.value.name, each.key)
-  kubernetes_version = aws_eks_cluster.this[0].version
+  kubernetes_version = coalesce(var.cluster_version, aws_eks_cluster.this[0].version)
   most_recent        = try(each.value.most_recent, null)
 }
 

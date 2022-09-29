@@ -48,11 +48,19 @@ module "eks" {
 
   cluster_addons = {
     coredns = {
-      resolve_conflicts = "OVERWRITE"
+      preserve    = true
+      most_recent = true
+
+      timeouts = {
+        create = "25m"
+        delete = "10m"
+      }
     }
-    kube-proxy = {}
+    kube-proxy = {
+      most_recent = true
+    }
     vpc-cni = {
-      resolve_conflicts = "OVERWRITE"
+      most_recent = true
     }
   }
 
@@ -111,6 +119,13 @@ module "eks" {
     vpc_security_group_ids = [aws_security_group.additional.id]
     iam_role_additional_policies = {
       additional = aws_iam_policy.additional.arn
+    }
+
+    instance_refresh = {
+      strategy = "Rolling"
+      preferences = {
+        min_healthy_percentage = 66
+      }
     }
   }
 

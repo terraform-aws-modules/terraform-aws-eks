@@ -56,11 +56,14 @@ module "eks" {
 
   cluster_addons = {
     coredns = {
-      resolve_conflicts = "OVERWRITE"
+      preserve    = true
+      most_recent = true
     }
-    kube-proxy = {}
+    kube-proxy = {
+      most_recent = true
+    }
     vpc-cni = {
-      resolve_conflicts        = "OVERWRITE"
+      most_recent              = true
       service_account_role_arn = module.vpc_cni_irsa.iam_role_arn
     }
   }
