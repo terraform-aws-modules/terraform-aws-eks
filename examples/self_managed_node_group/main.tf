@@ -125,17 +125,28 @@ module "eks" {
       key_name      = module.key_pair.key_pair_name
 
       bootstrap_extra_args = <<-EOT
+        # The admin host container provides SSH access and runs with "superpowers".
+        # It is disabled by default, but can be disabled explicitly.
+        [settings.host-containers.admin]
+        enabled = false
+
+        # The control host container provides out-of-band access via SSM.
+        # It is enabled by default, and can be disabled if you do not expect to use SSM.
+        # This could leave you with no way to access the API and change settings on an existing node!
+        [settings.host-containers.control]
+        enabled = true
+
         # extra args added
         [settings.kernel]
         lockdown = "integrity"
 
         [settings.kubernetes.node-labels]
-        "label1" = "foo"
-        "label2" = "bar"
+        label1 = "foo"
+        label2 = "bar"
 
         [settings.kubernetes.node-taints]
-        "dedicated" = "experimental:PreferNoSchedule"
-        "special" = "true:NoSchedule"
+        dedicated = "experimental:PreferNoSchedule"
+        special = "true:NoSchedule"
       EOT
     }
 

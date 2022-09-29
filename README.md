@@ -32,7 +32,7 @@ The examples provided under `examples/` provide a comprehensive suite of configu
 
 - AWS EKS Cluster Addons
 - AWS EKS Identity Provider Configuration
-- AWS EKS on Outposts support
+- [AWS EKS on Outposts support](https://aws.amazon.com/blogs/aws/deploy-your-amazon-eks-clusters-locally-on-aws-outposts/)
 - All [node types](https://docs.aws.amazon.com/eks/latest/userguide/eks-compute.html) are supported:
   - [EKS Managed Node Group](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html)
   - [Self Managed Node Group](https://docs.aws.amazon.com/eks/latest/userguide/worker.html)

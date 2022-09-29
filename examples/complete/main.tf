@@ -65,7 +65,7 @@ module "eks" {
   enable_kms_key_rotation         = true
 
   iam_role_additional_policies = {
-    "additional" = aws_iam_policy.additional.arn
+    additional = aws_iam_policy.additional.arn
   }
 
   vpc_id                   = module.vpc.vpc_id
@@ -110,7 +110,7 @@ module "eks" {
   self_managed_node_group_defaults = {
     vpc_security_group_ids = [aws_security_group.additional.id]
     iam_role_additional_policies = {
-      "additional" = aws_iam_policy.additional.arn
+      additional = aws_iam_policy.additional.arn
     }
   }
 
@@ -145,7 +145,7 @@ module "eks" {
     attach_cluster_primary_security_group = true
     vpc_security_group_ids                = [aws_security_group.additional.id]
     iam_role_additional_policies = {
-      "additional" = aws_iam_policy.additional.arn
+      additional = aws_iam_policy.additional.arn
     }
   }
 

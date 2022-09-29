@@ -73,7 +73,7 @@ module "eks" {
 
   fargate_profile_defaults = {
     iam_role_additional_policies = {
-      "additional" = aws_iam_policy.additional.arn
+      additional = aws_iam_policy.additional.arn
     }
   }
 
