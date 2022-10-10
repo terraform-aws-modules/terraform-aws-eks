@@ -210,6 +210,7 @@ resource "aws_launch_template" "this" {
       delete_on_termination        = lookup(network_interfaces.value, "delete_on_termination", null)
       description                  = lookup(network_interfaces.value, "description", null)
       device_index                 = lookup(network_interfaces.value, "device_index", null)
+      network_card_index           = lookup(network_interfaces.value, "network_card_index", null)
       interface_type               = lookup(network_interfaces.value, "interface_type", null)
       ipv4_addresses               = try(network_interfaces.value.ipv4_addresses, [])
       ipv4_address_count           = lookup(network_interfaces.value, "ipv4_address_count", null)
