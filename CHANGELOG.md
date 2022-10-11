@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.30.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.30.0...v18.30.1) (2022-10-11)
+
+
+### Bug Fixes
+
+* Update CloudWatch log group creation deny policy to use wildcard ([#2267](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2267)) ([ac4d549](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ac4d549629aa64bbd92f80486bef904a9098e0fa))
+
 ## [18.30.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.29.1...v18.30.0) (2022-09-29)
 
 
