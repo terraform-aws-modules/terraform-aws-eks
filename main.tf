@@ -68,9 +68,9 @@ resource "aws_ec2_tag" "cluster_primary_security_group" {
   # Ref: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2006
   # Ref: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2008
   # `aws_default_tags` is merged in to "dedupe" tags and stabilize tag updates
-  for_each = { for k, v in merge(var.tags, var.cluster_tags, data.aws_default_tags.current.tags) :
-    k => v if local.create && k != "Name" && var.create_cluster_primary_security_group_tags
-  }
+  for_each = var.create_cluster_primary_security_group_tags ? { for k, v in merge(var.tags, var.cluster_tags, data.aws_default_tags.current.tags) :
+    k => v if local.create && k != "Name"
+  } : {}
 
   resource_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
   key         = each.key
