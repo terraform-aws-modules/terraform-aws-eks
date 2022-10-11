@@ -279,7 +279,7 @@ resource "aws_iam_role" "this" {
           {
             Action   = ["logs:CreateLogGroup"]
             Effect   = "Deny"
-            Resource = aws_cloudwatch_log_group.this[0].arn
+            Resource = "*"
           },
         ]
       })
