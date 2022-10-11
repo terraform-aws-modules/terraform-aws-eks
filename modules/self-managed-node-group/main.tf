@@ -434,7 +434,7 @@ resource "aws_autoscaling_schedule" "this" {
 
   min_size         = lookup(each.value, "min_size", null)
   max_size         = lookup(each.value, "max_size", null)
-  desired_capacity = lookup(each.value, "desired_size", null)
+  desired_capacity = try(coalesce(lookup(each.value, "desired_size", null), lookup(each.value, "desired_capacity", null)), null)
   start_time       = lookup(each.value, "start_time", null)
   end_time         = lookup(each.value, "end_time", null)
   time_zone        = lookup(each.value, "time_zone", null)

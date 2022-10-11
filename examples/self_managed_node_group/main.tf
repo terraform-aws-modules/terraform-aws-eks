@@ -296,7 +296,20 @@ module "eks" {
       security_group_tags = {
         Purpose = "Protector of the kubelet"
       }
-
+      schedules = {
+        night = {
+          min_size         = 0
+          max_size         = 0
+          desired_capacity = 0
+          recurrence       = "00 00 * * 1-5"
+        },
+        morning = {
+          desired_size = 1
+          min_size     = 1
+          max_size     = 7
+          recurrence   = "00 06 * * 1-5"
+        }
+      }
       timeouts = {
         create = "80m"
         update = "80m"
