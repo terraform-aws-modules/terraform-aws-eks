@@ -234,7 +234,7 @@ resource "aws_launch_template" "this" {
     for_each = toset(["instance", "volume", "network-interface"])
     content {
       resource_type = tag_specifications.key
-      tags          = merge(var.tags, { Name = var.name }, var.launch_template_tags)
+      tags          = merge(local.tags, { Name = var.name }, var.launch_template_tags)
     }
   }
 
@@ -257,6 +257,7 @@ resource "aws_launch_template" "this" {
 ################################################################################
 
 locals {
+  tags                 = var.use_default_tags ? merge(data.aws_default_tags.current.tags, var.tags) : var.tags
   launch_template_name = try(aws_launch_template.this[0].name, var.launch_template_name)
   # Change order to allow users to set version priority before using defaults
   launch_template_version = coalesce(var.launch_template_version, try(aws_launch_template.this[0].default_version, "$Default"))
@@ -390,7 +391,7 @@ resource "aws_autoscaling_group" "this" {
         "kubernetes.io/cluster/${var.cluster_name}" = "owned"
         "k8s.io/cluster/${var.cluster_name}"        = "owned"
       },
-      var.use_default_tags ? merge(data.aws_default_tags.current.tags, var.tags) : var.tags
+      local.tags
     )
 
     content {
