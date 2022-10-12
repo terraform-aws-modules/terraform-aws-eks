@@ -43,6 +43,8 @@ module "user_data" {
 ################################################################################
 
 locals {
+  tags = var.use_default_tags ? merge(data.aws_default_tags.current.tags, var.tags) : var.tags
+
   launch_template_name_int = coalesce(var.launch_template_name, "${var.name}-node-group")
 
   security_group_ids = compact(concat([try(aws_security_group.this[0].id, ""), var.cluster_primary_security_group_id], var.vpc_security_group_ids))
@@ -257,7 +259,6 @@ resource "aws_launch_template" "this" {
 ################################################################################
 
 locals {
-  tags                 = var.use_default_tags ? merge(data.aws_default_tags.current.tags, var.tags) : var.tags
   launch_template_name = try(aws_launch_template.this[0].name, var.launch_template_name)
   # Change order to allow users to set version priority before using defaults
   launch_template_version = coalesce(var.launch_template_version, try(aws_launch_template.this[0].default_version, "$Default"))
