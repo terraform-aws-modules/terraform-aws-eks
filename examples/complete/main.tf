@@ -45,6 +45,7 @@ module "eks" {
   cluster_addons = {
     coredns = {
       resolve_conflicts = "OVERWRITE"
+      create_timeout = "30m"
     }
     kube-proxy = {}
     vpc-cni = {
