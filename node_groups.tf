@@ -75,6 +75,14 @@ locals {
       type                          = "ingress"
       source_cluster_security_group = true
     }
+    ingress_cluster_9443 = {
+      description                   = "Cluster API to WebHook port node groups"
+      protocol                      = "tcp"
+      from_port                     = 9443
+      to_port                       = 9443
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }    
     ingress_cluster_kubelet = {
       description                   = "Cluster API to node kubelets"
       protocol                      = "tcp"
