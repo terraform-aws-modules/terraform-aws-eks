@@ -355,6 +355,12 @@ resource "aws_eks_addon" "this" {
     module.self_managed_node_group,
   ]
 
+  timeouts {
+    create = lookup(each.value, "create_timeout", "20m")
+    update = lookup(each.value, "update_timeout", "20m")
+    delete = lookup(each.value, "delete_timeout", "40m")
+  }
+
   tags = var.tags
 }
 
