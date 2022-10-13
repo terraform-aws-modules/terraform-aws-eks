@@ -215,6 +215,11 @@ resource "helm_release" "coredns" {
         eks.amazonaws.com/compute-type: fargate
       EOT
   ]
+
+  depends_on = [
+    # Need to ensure the CoreDNS updates are peformed before provisioning
+    null_resource.modify_kube_dns
+  ]
 }
 
 ################################################################################
