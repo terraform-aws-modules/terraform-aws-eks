@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.30.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.30.1...v18.30.2) (2022-10-14)
+
+
+### Bug Fixes
+
+* Disable creation of cluster security group rules that map to node security group when `create_node_security_group` = `false` ([#2274](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2274)) ([28ccece](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/28ccecefe22d81a3a7febbbc3efc17c6590f88e1))
+
 ### [18.30.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.30.0...v18.30.1) (2022-10-11)
 
 
