@@ -143,7 +143,8 @@ locals {
 
   cluster_security_group_id = local.create_cluster_sg ? aws_security_group.cluster[0].id : var.cluster_security_group_id
 
-  cluster_security_group_rules = {
+  # Do not add rules to node security group if the module is not creating it
+  cluster_security_group_rules = local.create_node_sg ? {
     ingress_nodes_443 = {
       description                = "Node groups to cluster API"
       protocol                   = "tcp"
@@ -168,7 +169,7 @@ locals {
       type                       = "egress"
       source_node_security_group = true
     }
-  }
+  } : {}
 }
 
 resource "aws_security_group" "cluster" {
@@ -292,7 +293,7 @@ resource "aws_iam_role" "this" {
           {
             Action   = ["logs:CreateLogGroup"]
             Effect   = "Deny"
-            Resource = aws_cloudwatch_log_group.this[0].arn
+            Resource = "*"
           },
         ]
       })
