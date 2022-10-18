@@ -86,6 +86,12 @@ variable "cluster_service_ipv4_cidr" {
   default     = null
 }
 
+variable "cluster_service_ipv6_cidr" {
+  description = "The CIDR block to assign Kubernetes pod and service IP addresses from if `ipv6` was specified when the cluster was created. Kubernetes assigns service addresses from the unique local address range (fc00::/7) because you can't specify a custom IPv6 CIDR block when you create the cluster"
+  type        = string
+  default     = null
+}
+
 variable "provision_on_outpost" {
   description = "Determines whether cluster should be provisioned on an AWS Outpost"
   type        = bool
