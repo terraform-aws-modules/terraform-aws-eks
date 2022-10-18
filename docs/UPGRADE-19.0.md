@@ -4,7 +4,7 @@ Please consult the `examples` directory for reference example configurations. If
 
 ## List of backwards incompatible changes
 
-- Minimum supported version of Terraform AWS provider updated to v4.32 to support latest features provided via the resources utilized.
+- Minimum supported version of Terraform AWS provider updated to v4.34 to support latest features provided via the resources utilized.
 - Minimum supported version of Terraform updated to v1.0
 - Individual security group created per EKS managed node group or self managed node group has been removed. This configuration went mostly un-used and would often cause confusion ("Why is there an empty security group attached to my nodes?"). This functionality can easily be replicated by user's providing one or more externally created security groups to attach to nodes launched from the node group.
 - Previously, `var.iam_role_additional_policies` (one for each of the following: cluster IAM role, EKS managed node group IAM role, self-managed node group IAM role, and Fargate Profile IAM role) accepted a list of strings. This worked well for policies that already existed but failed for policies being created at the same time as the cluster due to the well known issue of unkown values used in a `for_each` loop. To rectify this issue in `v19.x`, two changes were made:
@@ -35,7 +35,9 @@ Please consult the `examples` directory for reference example configurations. If
 
 ### Removed
 
-- N/A
+- Remove all references of `aws_default_tags` to avoid update conflicts; this is the responsibility of the provider and should be handled at the provider level
+  - https://github.com/terraform-aws-modules/terraform-aws-eks/issues?q=is%3Aissue+default_tags+is%3Aclosed
+  - https://github.com/terraform-aws-modules/terraform-aws-eks/pulls?q=is%3Apr+default_tags+is%3Aclosed
 
 ### Variable and output changes
 
@@ -69,6 +71,7 @@ Please consult the `examples` directory for reference example configurations. If
    - `provision_on_outpost`for Outposts support
    - `outpost_config` for Outposts support
    - `cluster_addons_timeouts` for setting a common set of timeouts for all addons (unless a specific value is provided within the addon configuration)
+   - `service_ipv6_cidr` for setting the IPv6 CIDR block for the Kubernetes service addresses
 
    - Self managed node groups:
      - N/A

@@ -308,8 +308,6 @@ module "self_managed_node_group" {
     module.eks.cluster_security_group_id,
   ]
 
-  use_default_tags = true
-
   tags = merge(local.tags, { Separate = "self-managed-node-group" })
 }
 

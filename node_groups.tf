@@ -383,7 +383,6 @@ module "self_managed_node_group" {
   schedules       = try(each.value.schedules, var.self_managed_node_group_defaults.schedules, {})
 
   delete_timeout         = try(each.value.delete_timeout, var.self_managed_node_group_defaults.delete_timeout, null)
-  use_default_tags       = try(each.value.use_default_tags, var.self_managed_node_group_defaults.use_default_tags, false)
   autoscaling_group_tags = try(each.value.autoscaling_group_tags, var.self_managed_node_group_defaults.autoscaling_group_tags, {})
 
   # User data
