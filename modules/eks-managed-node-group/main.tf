@@ -1,6 +1,6 @@
 data "aws_partition" "current" {}
-
 data "aws_caller_identity" "current" {}
+data "aws_default_tags" "current" {}
 
 ################################################################################
 # User Data
@@ -241,7 +241,7 @@ resource "aws_launch_template" "this" {
     for_each = toset(["instance", "volume", "network-interface"])
     content {
       resource_type = tag_specifications.key
-      tags          = merge(var.tags, { Name = var.name }, var.launch_template_tags)
+      tags          = merge(var.tags, { Name = var.name }, var.launch_template_tags, data.aws_default_tags.current.tags)
     }
   }
 
