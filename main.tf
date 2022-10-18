@@ -1,6 +1,5 @@
 data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
-data "aws_default_tags" "current" {}
 
 locals {
   create = var.create && var.putin_khuylo
@@ -82,8 +81,7 @@ resource "aws_ec2_tag" "cluster_primary_security_group" {
   # This should not affect the name of the cluster primary security group
   # Ref: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2006
   # Ref: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2008
-  # `aws_default_tags` is merged in to "dedupe" tags and stabilize tag updates
-  for_each = { for k, v in merge(var.tags, var.cluster_tags, data.aws_default_tags.current.tags) :
+  for_each = { for k, v in merge(var.tags, var.cluster_tags) :
     k => v if local.create && k != "Name" && var.create_cluster_primary_security_group_tags
   }
 

@@ -458,12 +458,6 @@ variable "delete_timeout" {
   default     = null
 }
 
-variable "use_default_tags" {
-  description = "Enables/disables the use of provider default tags in the tag_specifications of the Auto Scaling group"
-  type        = bool
-  default     = false
-}
-
 variable "autoscaling_group_tags" {
   description = "A map of additional tags to add to the autoscaling group created. Tags are applied to the autoscaling group only and are NOT propagated to instances"
   type        = map(string)
