@@ -176,7 +176,7 @@ EKS managed node groups on `v18.x` by default create a security group that does 
   kms_key_deletion_window_in_days = 7
   enable_kms_key_rotation         = true
 
-- iam_role_additional_policies = [additional = aws_iam_policy.additional.arn]
+- iam_role_additional_policies = [aws_iam_policy.additional.arn]
 + iam_role_additional_policies = {
 +   additional = aws_iam_policy.additional.arn
 + }
@@ -222,7 +222,7 @@ EKS managed node groups on `v18.x` by default create a security group that does 
   # Self Managed Node Group(s)
   self_managed_node_group_defaults = {
     vpc_security_group_ids = [aws_security_group.additional.id]
--   iam_role_additional_policies = [additional = aws_iam_policy.additional.arn]
+-   iam_role_additional_policies = [aws_iam_policy.additional.arn]
 +   iam_role_additional_policies = {
 +     additional = aws_iam_policy.additional.arn
 +   }
@@ -265,7 +265,7 @@ EKS managed node groups on `v18.x` by default create a security group that does 
 
     attach_cluster_primary_security_group = true
     vpc_security_group_ids                = [aws_security_group.additional.id]
--   iam_role_additional_policies = [additional = aws_iam_policy.additional.arn]
+-   iam_role_additional_policies = [aws_iam_policy.additional.arn]
 +   iam_role_additional_policies = {
 +     additional = aws_iam_policy.additional.arn
 +   }
@@ -313,7 +313,7 @@ EKS managed node groups on `v18.x` by default create a security group that does 
 
   # Fargate Profile(s)
   fargate_profile_defaults = {
--   iam_role_additional_policies = [additional = aws_iam_policy.additional.arn]
+-   iam_role_additional_policies = [aws_iam_policy.additional.arn]
 +   iam_role_additional_policies = {
 +     additional = aws_iam_policy.additional.arn
 +   }
