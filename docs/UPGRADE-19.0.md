@@ -167,12 +167,12 @@ EKS managed node groups on `v18.x` by default create a security group that does 
 
   # Encryption key
   create_kms_key = true
-- cluster_encryption_config = {
+- cluster_encryption_config = [{
 -   resources = ["secrets"]
-- }
-+ cluster_encryption_config = [{
+- }]
++ cluster_encryption_config = {
 +   resources = ["secrets"]
-+ }]
++ }
   kms_key_deletion_window_in_days = 7
   enable_kms_key_rotation         = true
 

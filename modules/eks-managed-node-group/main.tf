@@ -283,7 +283,7 @@ resource "aws_eks_node_group" "this" {
   version         = var.ami_id != "" ? null : var.cluster_version
 
   capacity_type        = var.capacity_type
-  disk_size            = var.use_custom_launch_template ? null : var.disk_size # if using LT, set disk size on LT or else it will error here
+  disk_size            = var.use_custom_launch_template ? null : var.disk_size # if using a custom LT, set disk size on custom LT or else it will error here
   force_update_version = var.force_update_version
   instance_types       = var.instance_types
   labels               = var.labels
