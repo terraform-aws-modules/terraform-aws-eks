@@ -74,7 +74,13 @@ Please consult the `examples` directory for reference example configurations. If
    - `service_ipv6_cidr` for setting the IPv6 CIDR block for the Kubernetes service addresses
 
    - Self managed node groups:
-     - N/A
+     - `launch_template_id` for use when using an existing/externally created launch template (Ref: https://github.com/terraform-aws-modules/terraform-aws-autoscaling/pull/204)
+     - `maintenance_options`
+     - `private_dns_name_options`
+     - `instance_requirements`
+     - `context`
+     - `default_instance_warmup`
+     - `force_delete_warm_pool`
    - EKS managed node groups:
      - `use_custom_launch_template` was added to better clarify how users can switch betweeen a custom launch template or the default launch template provided by the EKS managed node group. Previously, to achieve this same functionality of using the default launch template, users needed to set `create_launch_template = false` and `launch_template_name = ""` which is not very intuitive.
 
