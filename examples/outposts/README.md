@@ -1,48 +1,17 @@
-# EKS Managed Node Group Example
+# EKS on Outposts
 
-Configuration in this directory creates an AWS EKS cluster with various EKS Managed Node Groups demonstrating the various methods of configuring/customizing:
+Configuration in this directory creates an AWS EKS local cluster on AWS Outposts
 
-- A default, "out of the box" EKS managed node group as supplied by AWS EKS
-- A default, "out of the box" Bottlerocket EKS managed node group as supplied by AWS EKS
-- A Bottlerocket EKS managed node group that supplies additional bootstrap settings
-- A Bottlerocket EKS managed node group that demonstrates many of the configuration/customizations offered by the `eks-managed-node-group` sub-module for the Bottlerocket OS
-- An EKS managed node group created from a launch template created outside of the module
-- An EKS managed node group that utilizes a custom AMI that is an EKS optimized AMI derivative
-- An EKS managed node group that demonstrates nearly all of the configurations/customizations offered by the `eks-managed-node-group` sub-module
+See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/eks-outposts.html) for further details.
 
-See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) for further details.
-
-## Container Runtime & User Data
-
-When using the default AMI provided by the EKS Managed Node Group service (i.e. - not specifying a value for `ami_id`), users should be aware of the limitations of configuring the node bootstrap process via user data. Due to not having direct access to the bootrap.sh script invocation and therefore its configuration flags (this is provided by the EKS Managed Node Group service in the node user data), a workaround for ensuring the appropriate configuration settings is shown below. The following example shows how to inject configuration variables ahead of the merged user data provided by the EKS Managed Node Group service as well as how to enable the containerd runtime using this approach. More details can be found [here](https://github.com/awslabs/amazon-eks-ami/issues/844).
-
-```hcl
-  ...
-  # Demo of containerd usage when not specifying a custom AMI ID
-  # (merged into user data before EKS MNG provided user data)
-  containerd = {
-    name = "containerd"
-
-    # See issue https://github.com/awslabs/amazon-eks-ami/issues/844
-    pre_bootstrap_user_data = <<-EOT
-    #!/bin/bash
-    set -ex
-    cat <<-EOF > /etc/profile.d/bootstrap.sh
-    export CONTAINER_RUNTIME="containerd"
-    export USE_MAX_PODS=false
-    export KUBELET_EXTRA_ARGS="--max-pods=110"
-    EOF
-    # Source extra environment variables in bootstrap script
-    sed -i '/^set -o errexit/a\\nsource /etc/profile.d/bootstrap.sh' /etc/eks/bootstrap.sh
-    sed -i 's/KUBELET_EXTRA_ARGS=$2/KUBELET_EXTRA_ARGS="$2 $KUBELET_EXTRA_ARGS"/' /etc/eks/bootstrap.sh
-    EOT
-  }
-  ...
-```
+Note: This example requires an an AWS Outpost to provision.
 
 ## Usage
 
-To run this example you need to execute:
+To run this example you need to:
+
+1. Copy the `terraform.tfvars.example` to `terraform.tfvars` and fill in the required variables
+2. Execute:
 
 ```bash
 $ terraform init
@@ -71,30 +40,22 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_ebs_kms_key"></a> [ebs\_kms\_key](#module\_ebs\_kms\_key) | terraform-aws-modules/kms/aws | ~> 1.1 |
 | <a name="module_eks"></a> [eks](#module\_eks) | ../.. | n/a |
-| <a name="module_key_pair"></a> [key\_pair](#module\_key\_pair) | terraform-aws-modules/key-pair/aws | ~> 2.0 |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.0 |
 | <a name="module_vpc_cni_irsa"></a> [vpc\_cni\_irsa](#module\_vpc\_cni\_irsa) | terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks | ~> 5.0 |
 
 ## Resources
 
 | Name | Type |
 |------|------|
-| [aws_autoscaling_group_tag.cluster_autoscaler_label_tags](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group_tag) | resource |
-| [aws_iam_policy.node_additional](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
-| [aws_launch_template.external](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/launch_template) | resource |
-| [aws_security_group.additional](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
-| [aws_security_group.remote_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
-| [aws_ami.eks_default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
-| [aws_ami.eks_default_arm](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
-| [aws_ami.eks_default_bottlerocket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
-| [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
-| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_outposts_outposts.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/outposts_outposts) | data source |
+| [aws_subnets.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/subnets) | data source |
 
 ## Inputs
 
-No inputs.
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_outpost_instance_type"></a> [outpost\_instance\_type](#input\_outpost\_instance\_type) | Instance type supported by the Outposts instance | `string` | `"m5.large"` | no |
+| <a name="input_region"></a> [region](#input\_region) | The AWS region to deploy into (e.g. us-east-1) | `string` | n/a | yes |
 
 ## Outputs
 

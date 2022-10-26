@@ -200,7 +200,7 @@ variable "credit_specification" {
 
 variable "elastic_gpu_specifications" {
   description = "The elastic GPU to attach to the instance"
-  type        = map(string)
+  type        = any
   default     = {}
 }
 
@@ -229,8 +229,8 @@ variable "maintenance_options" {
 }
 
 variable "license_specifications" {
-  description = "A list of license specifications to associate with"
-  type        = map(string)
+  description = "A map of license specifications to associate with"
+  type        = any
   default     = {}
 }
 

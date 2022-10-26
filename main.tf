@@ -5,6 +5,8 @@ locals {
   create = var.create && var.putin_khuylo
 
   cluster_role = try(aws_iam_role.this[0].arn, var.iam_role_arn)
+
+  create_outposts_local_cluster = length(var.outpost_config) > 0
 }
 
 ################################################################################
@@ -29,7 +31,7 @@ resource "aws_eks_cluster" "this" {
 
   dynamic "kubernetes_network_config" {
     # Not valid on Outposts
-    for_each = var.provision_on_outpost ? [1] : []
+    for_each = local.create_outposts_local_cluster ? [] : [1]
 
     content {
       ip_family         = var.cluster_ip_family
@@ -39,7 +41,7 @@ resource "aws_eks_cluster" "this" {
   }
 
   dynamic "outpost_config" {
-    for_each = var.provision_on_outpost ? [var.outpost_config] : []
+    for_each = local.create_outposts_local_cluster ? [var.outpost_config] : []
 
     content {
       control_plane_instance_type = outpost_config.value.control_plane_instance_type
@@ -49,7 +51,7 @@ resource "aws_eks_cluster" "this" {
 
   dynamic "encryption_config" {
     # Not available on Outposts
-    for_each = length(var.cluster_encryption_config) > 0 && !var.provision_on_outpost ? [var.cluster_encryption_config] : []
+    for_each = length(var.cluster_encryption_config) > 0 && !local.create_outposts_local_cluster ? [var.cluster_encryption_config] : []
 
     content {
       provider {
@@ -109,7 +111,7 @@ module "kms" {
   source  = "terraform-aws-modules/kms/aws"
   version = "1.1.0" # Note - be mindful of Terraform/provider version compatibility between modules
 
-  create = local.create && var.create_kms_key && !var.provision_on_outpost # not valid on Outposts
+  create = local.create && var.create_kms_key && !local.create_outposts_local_cluster # not valid on Outposts
 
   description             = coalesce(var.kms_key_description, "${var.cluster_name} cluster encryption key")
   key_usage               = "ENCRYPT_DECRYPT"
@@ -259,7 +261,7 @@ data "aws_iam_policy_document" "assume_role_policy" {
 
     principals {
       type        = "Service"
-      identifiers = ["eks.${local.dns_suffix}"]
+      identifiers = local.create_outposts_local_cluster ? ["outposts.eks-local.${local.dns_suffix}"] : ["eks.${local.dns_suffix}"]
     }
   }
 }

@@ -92,12 +92,6 @@ variable "cluster_service_ipv6_cidr" {
   default     = null
 }
 
-variable "provision_on_outpost" {
-  description = "Determines whether cluster should be provisioned on an AWS Outpost"
-  type        = bool
-  default     = false
-}
-
 variable "outpost_config" {
   description = "Configuration for the AWS Outpost to provision the cluster on"
   type        = any
@@ -239,13 +233,13 @@ variable "cloudwatch_log_group_kms_key_id" {
 ################################################################################
 
 variable "create_cluster_security_group" {
-  description = "Determines if a security group is created for the cluster or use the existing `cluster_security_group_id`"
+  description = "Determines if a security group is created for the cluster. Note: the EKS service creates a primary security group for the cluster by default"
   type        = bool
   default     = true
 }
 
 variable "cluster_security_group_id" {
-  description = "Existing security group ID to be attached to the cluster. Required if `create_cluster_security_group` = `false`"
+  description = "Existing security group ID to be attached to the cluster"
   type        = string
   default     = ""
 }
