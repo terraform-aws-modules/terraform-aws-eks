@@ -473,7 +473,12 @@ variable "initial_lifecycle_hooks" {
 variable "instance_refresh" {
   description = "If this block is configured, start an Instance Refresh when this Auto Scaling Group is updated"
   type        = any
-  default     = {}
+  default = {
+    strategy = "Rolling"
+    preferences = {
+      min_healthy_percentage = 66
+    }
+  }
 }
 
 variable "use_mixed_instances_policy" {

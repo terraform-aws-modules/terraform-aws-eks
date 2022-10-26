@@ -32,6 +32,16 @@ Please consult the `examples` directory for reference example configurations. If
   - `cluster_endpoint_private_access` previously defaulted to `false` and now defaults to `true`
 - The addon configuration now sets `"OVERWRITE"` as the default value for `resolve_conflicts` to ease addon upgrade management. Users can opt out of this by instead setting `"NONE"` as the value for `resolve_conflicts`
 - The `kms` module used has been updated from `v1.0.2` to `v1.1.0` - no material changes other than updated to latest
+- The default value for EKS managed node group `update_config` has been updated to the recommended `{ max_unavailable_percentage = 33 }`
+- The default value for the self-managed node group `instance_refresh` has been updated to the recommended:
+    ```hcl
+    {
+      strategy = "Rolling"
+      preferences = {
+        min_healthy_percentage = 66
+      }
+    }
+    ```
 
 ### Removed
 
@@ -83,7 +93,10 @@ Please consult the `examples` directory for reference example configurations. If
      - `force_delete_warm_pool`
    - EKS managed node groups:
      - `use_custom_launch_template` was added to better clarify how users can switch betweeen a custom launch template or the default launch template provided by the EKS managed node group. Previously, to achieve this same functionality of using the default launch template, users needed to set `create_launch_template = false` and `launch_template_name = ""` which is not very intuitive.
-
+     - `launch_template_id` for use when using an existing/externally created launch template (Ref: https://github.com/terraform-aws-modules/terraform-aws-autoscaling/pull/204)
+     - `maintenance_options`
+     - `private_dns_name_options`
+     -
 4. Removed outputs:
 
    - Self managed node groups:
@@ -140,9 +153,10 @@ EKS managed node groups on `v18.x` by default create a security group that does 
   3. New instances will launch without the EKS managed node group security group, and prior instances will be terminated
   4. Once the EKS managed node group has cycled, the security group will be deleted
 
-2. Once the node group security group(s) have been removed, you can update your module definition to specify the `v19.x` version of the module.
-3. Using the documentation provided above, update your module definition to reflect the changes in the module from `v18.x` to `v19.x`. You can utilize `terraform plan` as you go to help highlight any changes that you wish to make. See below for `terraform state mv ...` commands related to the use of `iam_role_additional_policies`. If you are not providing any values to these variables, you can skip this section.
-4. Once you are satisifed with the changes and the `terraform plan` output, you can apply the changes to sync your infrastructure with the updated module definition (or vice versa).
+2. Once the node group security group(s) have been removed, you can update your module definition to specify the `v19.x` version of the module
+3. Run `terraform init -upgrade=true` to update your configuration and pull in the v19 changes
+4. Using the documentation provided above, update your module definition to reflect the changes in the module from `v18.x` to `v19.x`. You can utilize `terraform plan` as you go to help highlight any changes that you wish to make. See below for `terraform state mv ...` commands related to the use of `iam_role_additional_policies`. If you are not providing any values to these variables, you can skip this section.
+5. Once you are satisifed with the changes and the `terraform plan` output, you can apply the changes to sync your infrastructure with the updated module definition (or vice versa).
 
 ### Diff of Before (v18.x) vs After (v19.x)
 

@@ -90,10 +90,16 @@ variable "use_custom_launch_template" {
   default     = true
 }
 
-variable "launch_template_name" {
-  description = "Launch template name - either to be created (`var.create_launch_template` = `true`) or existing (`var.create_launch_template` = `false`)"
+variable "launch_template_id" {
+  description = "The ID of an existing launch template to use. Required when `create_launch_template` = `false` and `use_custom_launch_template` = `true`"
   type        = string
   default     = ""
+}
+
+variable "launch_template_name" {
+  description = "Name of launch template to be created"
+  type        = string
+  default     = null
 }
 
 variable "launch_template_use_name_prefix" {
@@ -216,6 +222,12 @@ variable "instance_market_options" {
   default     = {}
 }
 
+variable "maintenance_options" {
+  description = "The maintenance options for the instance"
+  type        = any
+  default     = {}
+}
+
 variable "license_specifications" {
   description = "A list of license specifications to associate with"
   type        = map(string)
@@ -246,6 +258,12 @@ variable "network_interfaces" {
 
 variable "placement" {
   description = "The placement of the instance"
+  type        = map(string)
+  default     = {}
+}
+
+variable "private_dns_name_options" {
+  description = "The options for the instance hostname. The default values are inherited from the subnet"
   type        = map(string)
   default     = {}
 }
@@ -315,7 +333,7 @@ variable "capacity_type" {
 }
 
 variable "disk_size" {
-  description = "Disk size in GiB for nodes. Defaults to `20`"
+  description = "Disk size in GiB for nodes. Defaults to `20`. Only valid when `use_custom_launch_template` = `false`"
   type        = number
   default     = null
 }
@@ -351,7 +369,7 @@ variable "launch_template_version" {
 }
 
 variable "remote_access" {
-  description = "Configuration block with remote access settings"
+  description = "Configuration block with remote access settings. Only valid when `use_custom_launch_template` = `false`"
   type        = any
   default     = {}
 }
@@ -365,7 +383,9 @@ variable "taints" {
 variable "update_config" {
   description = "Configuration block of settings for max unavailable resources during node group updates"
   type        = map(string)
-  default     = {}
+  default = {
+    max_unavailable_percentage = 33
+  }
 }
 
 variable "timeouts" {

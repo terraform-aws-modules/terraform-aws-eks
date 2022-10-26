@@ -212,7 +212,7 @@ module "eks" {
     # Use existing/external launch template
     external_lt = {
       create_launch_template  = false
-      launch_template_name    = aws_launch_template.external.name
+      launch_template_id      = aws_launch_template.external.id
       launch_template_version = aws_launch_template.external.default_version
     }
 
