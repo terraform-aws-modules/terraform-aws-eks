@@ -207,7 +207,7 @@ resource "aws_security_group_rule" "node" {
 module "fargate_profile" {
   source = "./modules/fargate-profile"
 
-  for_each = { for k, v in var.fargate_profiles : k => v if var.create }
+  for_each = { for k, v in var.fargate_profiles : k => v if var.create && !local.create_outposts_local_cluster }
 
   create = try(each.value.create, true)
 
@@ -243,7 +243,7 @@ module "fargate_profile" {
 module "eks_managed_node_group" {
   source = "./modules/eks-managed-node-group"
 
-  for_each = { for k, v in var.eks_managed_node_groups : k => v if var.create }
+  for_each = { for k, v in var.eks_managed_node_groups : k => v if var.create && !local.create_outposts_local_cluster }
 
   create = try(each.value.create, true)
 

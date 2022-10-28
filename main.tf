@@ -6,7 +6,8 @@ locals {
 
   cluster_role = try(aws_iam_role.this[0].arn, var.iam_role_arn)
 
-  create_outposts_local_cluster = length(var.outpost_config) > 0
+  create_outposts_local_cluster    = length(var.outpost_config) > 0
+  enable_cluster_encryption_config = length(var.cluster_encryption_config) > 0 && !local.create_outposts_local_cluster
 }
 
 ################################################################################
@@ -26,7 +27,7 @@ resource "aws_eks_cluster" "this" {
     subnet_ids              = coalescelist(var.control_plane_subnet_ids, var.subnet_ids)
     endpoint_private_access = var.cluster_endpoint_private_access
     endpoint_public_access  = var.cluster_endpoint_public_access
-    public_access_cidrs     = var.cluster_endpoint_public_access_cidrs
+    public_access_cidrs     = var.cluster_endpoint_public_access ? var.cluster_endpoint_public_access_cidrs : []
   }
 
   dynamic "kubernetes_network_config" {
@@ -51,7 +52,7 @@ resource "aws_eks_cluster" "this" {
 
   dynamic "encryption_config" {
     # Not available on Outposts
-    for_each = length(var.cluster_encryption_config) > 0 && !local.create_outposts_local_cluster ? [var.cluster_encryption_config] : []
+    for_each = local.enable_cluster_encryption_config ? [var.cluster_encryption_config] : []
 
     content {
       provider {
@@ -218,13 +219,15 @@ resource "aws_security_group_rule" "cluster" {
 ################################################################################
 
 data "tls_certificate" "this" {
-  count = local.create && var.enable_irsa ? 1 : 0
+  # Not available on outposts
+  count = local.create && var.enable_irsa && !local.create_outposts_local_cluster ? 1 : 0
 
   url = aws_eks_cluster.this[0].identity[0].oidc[0].issuer
 }
 
 resource "aws_iam_openid_connect_provider" "oidc_provider" {
-  count = local.create && var.enable_irsa ? 1 : 0
+  # Not available on outposts
+  count = local.create && var.enable_irsa && !local.create_outposts_local_cluster ? 1 : 0
 
   client_id_list  = distinct(compact(concat(["sts.${local.dns_suffix}"], var.openid_connect_audiences)))
   thumbprint_list = concat([data.tls_certificate.this[0].certificates[0].sha1_fingerprint], var.custom_oidc_thumbprints)
@@ -261,7 +264,18 @@ data "aws_iam_policy_document" "assume_role_policy" {
 
     principals {
       type        = "Service"
-      identifiers = local.create_outposts_local_cluster ? ["outposts.eks-local.${local.dns_suffix}"] : ["eks.${local.dns_suffix}"]
+      identifiers = ["eks.${local.dns_suffix}"]
+    }
+
+    dynamic "principals" {
+      for_each = local.create_outposts_local_cluster ? [1] : []
+
+      content {
+        type = "Service"
+        identifiers = [
+          "ec2.${local.dns_suffix}",
+        ]
+      }
     }
   }
 }
@@ -307,7 +321,7 @@ resource "aws_iam_role" "this" {
 # Policies attached ref https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html
 resource "aws_iam_role_policy_attachment" "this" {
   for_each = { for k, v in {
-    AmazonEKSClusterPolicy         = "${local.iam_role_policy_prefix}/AmazonEKSClusterPolicy",
+    AmazonEKSClusterPolicy         = local.create_outposts_local_cluster ? "${local.iam_role_policy_prefix}/AmazonEKSLocalOutpostClusterPolicy" : "${local.iam_role_policy_prefix}/AmazonEKSClusterPolicy",
     AmazonEKSVPCResourceController = "${local.iam_role_policy_prefix}/AmazonEKSVPCResourceController",
   } : k => v if local.create_iam_role }
 
@@ -324,14 +338,16 @@ resource "aws_iam_role_policy_attachment" "additional" {
 
 # Using separate attachment due to `The "for_each" value depends on resource attributes that cannot be determined until apply`
 resource "aws_iam_role_policy_attachment" "cluster_encryption" {
-  count = local.create_iam_role && var.attach_cluster_encryption_policy && length(var.cluster_encryption_config) > 0 ? 1 : 0
+  # Encryption config not available on Outposts
+  count = local.create_iam_role && var.attach_cluster_encryption_policy && local.enable_cluster_encryption_config ? 1 : 0
 
   policy_arn = aws_iam_policy.cluster_encryption[0].arn
   role       = aws_iam_role.this[0].name
 }
 
 resource "aws_iam_policy" "cluster_encryption" {
-  count = local.create_iam_role && var.attach_cluster_encryption_policy && length(var.cluster_encryption_config) > 0 ? 1 : 0
+  # Encryption config not available on Outposts
+  count = local.create_iam_role && var.attach_cluster_encryption_policy && local.enable_cluster_encryption_config ? 1 : 0
 
   name        = var.cluster_encryption_policy_use_name_prefix ? null : local.cluster_encryption_policy_name
   name_prefix = var.cluster_encryption_policy_use_name_prefix ? local.cluster_encryption_policy_name : null
@@ -362,7 +378,8 @@ resource "aws_iam_policy" "cluster_encryption" {
 ################################################################################
 
 resource "aws_eks_addon" "this" {
-  for_each = { for k, v in var.cluster_addons : k => v if local.create }
+  # Not supported on outposts
+  for_each = { for k, v in var.cluster_addons : k => v if local.create && !local.create_outposts_local_cluster }
 
   cluster_name = aws_eks_cluster.this[0].name
   addon_name   = try(each.value.name, each.key)
@@ -388,7 +405,7 @@ resource "aws_eks_addon" "this" {
 }
 
 data "aws_eks_addon_version" "this" {
-  for_each = { for k, v in var.cluster_addons : k => v if local.create }
+  for_each = { for k, v in var.cluster_addons : k => v if local.create && !local.create_outposts_local_cluster }
 
   addon_name         = try(each.value.name, each.key)
   kubernetes_version = coalesce(var.cluster_version, aws_eks_cluster.this[0].version)
@@ -401,7 +418,7 @@ data "aws_eks_addon_version" "this" {
 ################################################################################
 
 resource "aws_eks_identity_provider_config" "this" {
-  for_each = { for k, v in var.cluster_identity_providers : k => v if local.create }
+  for_each = { for k, v in var.cluster_identity_providers : k => v if local.create && !local.create_outposts_local_cluster }
 
   cluster_name = aws_eks_cluster.this[0].name
 
