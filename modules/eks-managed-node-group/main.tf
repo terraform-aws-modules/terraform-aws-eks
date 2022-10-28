@@ -346,7 +346,8 @@ resource "aws_eks_node_group" "this" {
 
   tags = merge(
     var.tags,
-    { Name = var.name }
+    { Name = var.name },
+    var.node_group_tags
   )
 }
 

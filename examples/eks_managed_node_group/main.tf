@@ -341,6 +341,10 @@ module "eks" {
         Purpose = "Protector of the kubelet"
       }
 
+      node_group_tags = {
+        NodeGroupTag = "EKS managed node group complete example"
+      }
+
       tags = {
         ExtraTag = "EKS managed node group complete example"
       }

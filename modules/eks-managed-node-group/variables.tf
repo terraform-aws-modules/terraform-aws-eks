@@ -368,6 +368,12 @@ variable "timeouts" {
   default     = {}
 }
 
+variable "node_group_tags" {
+  description = "A map of additional tags to add to the Node Group created"
+  type        = map(string)
+  default     = {}
+}
+
 ################################################################################
 # Security Group
 ################################################################################

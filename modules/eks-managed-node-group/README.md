@@ -143,6 +143,7 @@ module "eks_managed_node_group" {
 | <a name="input_min_size"></a> [min\_size](#input\_min\_size) | Minimum number of instances/nodes | `number` | `0` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name of the EKS managed node group | `string` | `""` | no |
 | <a name="input_network_interfaces"></a> [network\_interfaces](#input\_network\_interfaces) | Customize network interfaces to be attached at instance boot time | `list(any)` | `[]` | no |
+| <a name="input_node_group_tags"></a> [node\_group\_tags](#input\_node\_group\_tags) | A map of additional tags to add to the Node Group created | `map(string)` | `{}` | no |
 | <a name="input_placement"></a> [placement](#input\_placement) | The placement of the instance | `map(string)` | `{}` | no |
 | <a name="input_platform"></a> [platform](#input\_platform) | Identifies if the OS platform is `bottlerocket` or `linux` based; `windows` is not supported | `string` | `"linux"` | no |
 | <a name="input_post_bootstrap_user_data"></a> [post\_bootstrap\_user\_data](#input\_post\_bootstrap\_user\_data) | User data that is appended to the user data script after of the EKS bootstrap script. Not used when `platform` = `bottlerocket` | `string` | `""` | no |
