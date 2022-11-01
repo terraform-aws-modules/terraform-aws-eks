@@ -10,7 +10,7 @@ provider "kubernetes" {
     api_version = "client.authentication.k8s.io/v1beta1"
     command     = "aws"
     # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_id]
+    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
   }
 }
 
@@ -56,7 +56,6 @@ module "eks" {
 
   cluster_addons = {
     coredns = {
-      preserve    = true
       most_recent = true
     }
     kube-proxy = {
@@ -68,60 +67,11 @@ module "eks" {
     }
   }
 
-  # Encryption key
-  create_kms_key = true
-  cluster_encryption_config = {
-    resources = ["secrets"]
-  }
-  kms_key_deletion_window_in_days = 7
-  enable_kms_key_rotation         = true
-
-  cluster_tags = {
-    # This should not affect the name of the cluster primary security group
-    # Ref: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2006
-    # Ref: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2008
-    Name = local.name
-  }
-
   vpc_id                   = module.vpc.vpc_id
   subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.intra_subnets
 
   manage_aws_auth_configmap = true
-
-  # Extend cluster security group rules
-  cluster_security_group_additional_rules = {
-    egress_nodes_ephemeral_ports_tcp = {
-      description                = "To node 1025-65535"
-      protocol                   = "tcp"
-      from_port                  = 1025
-      to_port                    = 65535
-      type                       = "egress"
-      source_node_security_group = true
-    }
-  }
-
-  # Extend node-to-node security group rules
-  node_security_group_ntp_ipv6_cidr_block = ["fd00:ec2::123/128"]
-  node_security_group_additional_rules = {
-    ingress_self_all = {
-      description = "Node to node all ports/protocols"
-      protocol    = "-1"
-      from_port   = 0
-      to_port     = 0
-      type        = "ingress"
-      self        = true
-    }
-    egress_all = {
-      description      = "Node all egress"
-      protocol         = "-1"
-      from_port        = 0
-      to_port          = 0
-      type             = "egress"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = ["::/0"]
-    }
-  }
 
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
@@ -419,7 +369,7 @@ resource "aws_security_group" "additional" {
     ]
   }
 
-  tags = local.tags
+  tags = merge(local.tags, { Name = "${local.name}-additional" })
 }
 
 module "ebs_kms_key" {
@@ -550,7 +500,7 @@ resource "aws_security_group" "remote_access" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
-  tags = local.tags
+  tags = merge(local.tags, { Name = "${local.name}-remote" })
 }
 
 resource "aws_iam_policy" "node_additional" {

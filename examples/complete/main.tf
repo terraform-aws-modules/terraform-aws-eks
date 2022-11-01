@@ -16,7 +16,7 @@ provider "kubernetes" {
     api_version = "client.authentication.k8s.io/v1beta1"
     command     = "aws"
     # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_id]
+    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
   }
 }
 
@@ -82,18 +82,17 @@ module "eks" {
 
   # Extend cluster security group rules
   cluster_security_group_additional_rules = {
-    egress_nodes_ephemeral_ports_tcp = {
-      description                = "To node 1025-65535"
+    ingress_nodes_ephemeral_ports_tcp = {
+      description                = "Nodes on ephemeral ports"
       protocol                   = "tcp"
       from_port                  = 1025
       to_port                    = 65535
-      type                       = "egress"
+      type                       = "ingress"
       source_node_security_group = true
     }
   }
 
   # Extend node-to-node security group rules
-  node_security_group_ntp_ipv4_cidr_block = ["169.254.169.123/32"]
   node_security_group_additional_rules = {
     ingress_self_all = {
       description = "Node to node all ports/protocols"
@@ -102,15 +101,6 @@ module "eks" {
       to_port     = 0
       type        = "ingress"
       self        = true
-    }
-    egress_all = {
-      description      = "Node all egress"
-      protocol         = "-1"
-      from_port        = 0
-      to_port          = 0
-      type             = "egress"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = ["::/0"]
     }
   }
 
@@ -224,12 +214,14 @@ module "eks" {
     }
   }
 
-  # OIDC Identity provider
-  cluster_identity_providers = {
-    sts = {
-      client_id = "sts.amazonaws.com"
-    }
-  }
+  # Create a new cluster where both an identity provider and Fargate profile is created
+  # will result in conflicts since only one can take place at a time
+  # # OIDC Identity provider
+  # cluster_identity_providers = {
+  #   sts = {
+  #     client_id = "sts.amazonaws.com"
+  #   }
+  # }
 
   # aws-auth configmap
   manage_aws_auth_configmap = true
@@ -279,7 +271,7 @@ module "eks_managed_node_group" {
   source = "../../modules/eks-managed-node-group"
 
   name            = "separate-eks-mng"
-  cluster_name    = module.eks.cluster_id
+  cluster_name    = module.eks.cluster_name
   cluster_version = module.eks.cluster_version
 
   subnet_ids                        = module.vpc.private_subnets
@@ -295,7 +287,7 @@ module "self_managed_node_group" {
   source = "../../modules/self-managed-node-group"
 
   name                = "separate-self-mng"
-  cluster_name        = module.eks.cluster_id
+  cluster_name        = module.eks.cluster_name
   cluster_version     = module.eks.cluster_version
   cluster_endpoint    = module.eks.cluster_endpoint
   cluster_auth_base64 = module.eks.cluster_certificate_authority_data
@@ -315,7 +307,7 @@ module "fargate_profile" {
   source = "../../modules/fargate-profile"
 
   name         = "separate-fargate-profile"
-  cluster_name = module.eks.cluster_id
+  cluster_name = module.eks.cluster_name
 
   subnet_ids = module.vpc.private_subnets
   selectors = [{
@@ -403,7 +395,7 @@ resource "aws_security_group" "additional" {
     ]
   }
 
-  tags = local.tags
+  tags = merge(local.tags, { Name = "${local.name}-additional" })
 }
 
 resource "aws_iam_policy" "additional" {

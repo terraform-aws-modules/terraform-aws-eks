@@ -11,7 +11,7 @@ provider "helm" {
       api_version = "client.authentication.k8s.io/v1beta1"
       command     = "aws"
       # This requires the awscli to be installed locally where Terraform is executed
-      args = ["eks", "get-token", "--cluster-name", module.eks.cluster_id]
+      args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
     }
   }
 }
@@ -47,14 +47,6 @@ module "eks" {
     kube-proxy = {}
     vpc-cni    = {}
   }
-
-  # Encryption key
-  create_kms_key = true
-  cluster_encryption_config = {
-    resources = ["secrets"]
-  }
-  kms_key_deletion_window_in_days = 7
-  enable_kms_key_rotation         = true
 
   vpc_id                   = module.vpc.vpc_id
   subnet_ids               = module.vpc.private_subnets
@@ -117,7 +109,7 @@ module "eks" {
 ################################################################################
 
 data "aws_eks_cluster_auth" "this" {
-  name = module.eks.cluster_id
+  name = module.eks.cluster_name
 }
 
 locals {
@@ -126,7 +118,7 @@ locals {
     kind            = "Config"
     current-context = "terraform"
     clusters = [{
-      name = module.eks.cluster_id
+      name = module.eks.cluster_name
       cluster = {
         certificate-authority-data = module.eks.cluster_certificate_authority_data
         server                     = module.eks.cluster_endpoint
@@ -135,7 +127,7 @@ locals {
     contexts = [{
       name = "terraform"
       context = {
-        cluster = module.eks.cluster_id
+        cluster = module.eks.cluster_name
         user    = "terraform"
       }
     }]

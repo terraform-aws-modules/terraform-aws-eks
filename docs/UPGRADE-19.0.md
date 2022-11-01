@@ -18,13 +18,16 @@ Please consult the `examples` directory for reference example configurations. If
 - Support for setting `preserve` as well as `most_recent` on addons.
   - `preserve` indicates if you want to preserve the created resources when deleting the EKS add-on
   - `most_recent` indicates if you want to use the most recent revision of the add-on or the default version (default)
+- Support for setting default node security group rules for common access patterns required:
+  - Egress all for `0.0.0.0/0`/`::/0`
+  - Ingress from cluster security group for 8443/TCP and 9443/TCP for common applications such as ALB Ingress Controller, Karpenter, OPA Gatekeeper, etc. These are commonly used as webhook ports for validating and mutating webhooks
 
 ### Modified
 
 - `cluster_security_group_additional_rules` and `node_security_group_additional_rules` have been modified to use `lookup()` instead of `try()` to avoid the well known issue of [unkown values within a `for_each` loop](https://github.com/hashicorp/terraform/issues/4149)
+- Default cluster security group rules have removed egress rules for TCP/443 and TCP/10250 to node groups since the cluster primary security group includes a default rule for ALL to `0.0.0.0/0`/`::/0`
+- Default node security group rules have removed egress rules have been removed since the default security group settings have egress rule for ALL to `0.0.0.0/0`/`::/0`
 - `block_device_mappings` previously required a map of maps but has since changed to an array of maps. Users can remove the outer key for each block device mapping and replace the outermost map `{}` with an array `[]`. There are no state changes required for this change.
-- `node_security_group_ntp_ipv4_cidr_block` previously defaulted to `["0.0.0.0/0"]` and now defaults to `["169.254.169.123/32"]` (Referenc: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html)
-- `node_security_group_ntp_ipv6_cidr_block` previously defaulted to `["::/0"]` and now defaults to `["fd00:ec2::123/128"]` (Referenc: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html)
 - `create_kms_key` previously defaulted to `false` and now defaults to `true`. Clusters created with this module now default to enabling secret encryption by default with a customer managed KMS key created by this module
 - `cluster_encryption_config` previously used a type of `list(any)` and now uses a type of `any` -> users can simply remove the outer `[`...`]` brackets on `v19.x`
   - `cluster_encryption_config` previously defaulted to `[]` and now defaults to `{resources = ["secrets"]}` to encrypt secrets by default
@@ -52,6 +55,9 @@ Please consult the `examples` directory for reference example configurations. If
 ### Variable and output changes
 
 1. Removed variables:
+
+  - `node_security_group_ntp_ipv4_cidr_block` - default security group settings have egress rule for ALL to `0.0.0.0/0`/`::/0`
+  - `node_security_group_ntp_ipv6_cidr_block` - default security group settings have egress rule for ALL to `0.0.0.0/0`/`::/0`
 
    - Self managed node groups:
      - `create_security_group`
@@ -82,6 +88,7 @@ Please consult the `examples` directory for reference example configurations. If
    - `outpost_config` for Outposts support
    - `cluster_addons_timeouts` for setting a common set of timeouts for all addons (unless a specific value is provided within the addon configuration)
    - `service_ipv6_cidr` for setting the IPv6 CIDR block for the Kubernetes service addresses
+   - `node_security_group_enable_recommended_rules` for enabling recommended node security group rules for common access patterns
 
    - Self managed node groups:
      - `launch_template_id` for use when using an existing/externally created launch template (Ref: https://github.com/terraform-aws-modules/terraform-aws-autoscaling/pull/204)
@@ -112,7 +119,7 @@ Please consult the `examples` directory for reference example configurations. If
 
 6. Added outputs:
 
-   - N/A
+   - `cluster_name` - The `cluster_id` currently set by the AWS provider is actually the cluster name, but in the future this will change and there will be a distinction between the `cluster_name` and `clsuter_id`. [Reference](https://github.com/hashicorp/terraform-provider-aws/issues/27560)
 
 ## Upgrade Migrations
 
@@ -205,38 +212,26 @@ EKS managed node groups on `v18.x` by default create a security group that does 
   subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.intra_subnets
 
-  # Extend cluster security group rules
-  cluster_security_group_additional_rules = {
-    egress_nodes_ephemeral_ports_tcp = {
-      description                = "To node 1025-65535"
-      protocol                   = "tcp"
-      from_port                  = 1025
-      to_port                    = 65535
-      type                       = "egress"
-      source_node_security_group = true
-    }
-  }
-
   # Extend node-to-node security group rules
 - node_security_group_ntp_ipv4_cidr_block = ["169.254.169.123/32"] # now the default
   node_security_group_additional_rules = {
-    ingress_self_all = {
-      description = "Node to node all ports/protocols"
-      protocol    = "-1"
-      from_port   = 0
-      to_port     = 0
-      type        = "ingress"
-      self        = true
-    }
-    egress_all = {
-      description      = "Node all egress"
-      protocol         = "-1"
-      from_port        = 0
-      to_port          = 0
-      type             = "egress"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = ["::/0"]
-    }
+-    ingress_self_ephemeral = {
+-      description = "Node to node ephemeral ports"
+-      protocol    = "tcp"
+-      from_port   = 0
+-      to_port     = 0
+-      type        = "ingress"
+-      self        = true
+-    }
+-    egress_all = {
+-      description      = "Node all egress"
+-      protocol         = "-1"
+-      from_port        = 0
+-      to_port          = 0
+-      type             = "egress"
+-      cidr_blocks      = ["0.0.0.0/0"]
+-      ipv6_cidr_blocks = ["::/0"]
+-    }
   }
 
   # Self Managed Node Group(s)

@@ -72,14 +72,6 @@ locals {
   node_security_group_id = local.create_node_sg ? aws_security_group.node[0].id : var.node_security_group_id
 
   node_security_group_rules = {
-    egress_cluster_443 = {
-      description                   = "Node groups to cluster API"
-      protocol                      = "tcp"
-      from_port                     = 443
-      to_port                       = 443
-      type                          = "egress"
-      source_cluster_security_group = true
-    }
     ingress_cluster_443 = {
       description                   = "Cluster API to node groups"
       protocol                      = "tcp"
@@ -104,58 +96,51 @@ locals {
       type        = "ingress"
       self        = true
     }
-    egress_self_coredns_tcp = {
-      description = "Node to node CoreDNS"
-      protocol    = "tcp"
-      from_port   = 53
-      to_port     = 53
-      type        = "egress"
-      self        = true
-    }
     ingress_self_coredns_udp = {
-      description = "Node to node CoreDNS"
+      description = "Node to node CoreDNS UDP"
       protocol    = "udp"
       from_port   = 53
       to_port     = 53
       type        = "ingress"
       self        = true
     }
-    egress_self_coredns_udp = {
-      description = "Node to node CoreDNS"
-      protocol    = "udp"
-      from_port   = 53
-      to_port     = 53
-      type        = "egress"
+  }
+
+  node_secuirty_group_recommended_rules = { for k, v in {
+    ingress_nodes_ephemeral = {
+      description = "Node to node ingress on ephemeral ports"
+      protocol    = "tcp"
+      from_port   = 1025
+      to_port     = 65535
+      type        = "ingress"
       self        = true
     }
-    egress_https = {
-      description      = "Egress all HTTPS to internet"
-      protocol         = "tcp"
-      from_port        = 443
-      to_port          = 443
+    ingress_cluster_8443_webhook = {
+      description                   = "Cluster API to node 8443/tcp webhook"
+      protocol                      = "tcp"
+      from_port                     = 8443
+      to_port                       = 8443
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }
+    ingress_cluster_9443_webhook = {
+      description                   = "Cluster API to node 9443/tcp webhook"
+      protocol                      = "tcp"
+      from_port                     = 9443
+      to_port                       = 9443
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }
+    egress_all = {
+      description      = "Allow all egress"
+      protocol         = "-1"
+      from_port        = 0
+      to_port          = 0
       type             = "egress"
       cidr_blocks      = ["0.0.0.0/0"]
       ipv6_cidr_blocks = var.cluster_ip_family == "ipv6" ? ["::/0"] : null
     }
-    egress_ntp_tcp = {
-      description      = "Egress NTP/TCP to internet"
-      protocol         = "tcp"
-      from_port        = 123
-      to_port          = 123
-      type             = "egress"
-      cidr_blocks      = var.node_security_group_ntp_ipv4_cidr_block
-      ipv6_cidr_blocks = var.cluster_ip_family == "ipv6" ? var.node_security_group_ntp_ipv6_cidr_block : null
-    }
-    egress_ntp_udp = {
-      description      = "Egress NTP/UDP to internet"
-      protocol         = "udp"
-      from_port        = 123
-      to_port          = 123
-      type             = "egress"
-      cidr_blocks      = var.node_security_group_ntp_ipv4_cidr_block
-      ipv6_cidr_blocks = var.cluster_ip_family == "ipv6" ? var.node_security_group_ntp_ipv6_cidr_block : null
-    }
-  }
+  } : k => v if var.node_security_group_enable_recommended_rules }
 }
 
 resource "aws_security_group" "node" {
@@ -181,7 +166,11 @@ resource "aws_security_group" "node" {
 }
 
 resource "aws_security_group_rule" "node" {
-  for_each = { for k, v in merge(local.node_security_group_rules, var.node_security_group_additional_rules) : k => v if local.create_node_sg }
+  for_each = { for k, v in merge(
+    local.node_security_group_rules,
+    local.node_secuirty_group_recommended_rules,
+    var.node_security_group_additional_rules,
+  ) : k => v if local.create_node_sg }
 
   # Required
   security_group_id = aws_security_group.node[0].id

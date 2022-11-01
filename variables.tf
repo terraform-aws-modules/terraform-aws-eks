@@ -35,7 +35,7 @@ variable "cluster_version" {
 variable "cluster_enabled_log_types" {
   description = "A list of the desired control plane logs to enable. For more information, see Amazon EKS Control Plane Logging documentation (https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html)"
   type        = list(string)
-  default     = ["audit", "api", "authenticator"]
+  default     = ["audit", "api", "authenticator", "controllerManager"]
 }
 
 variable "cluster_additional_security_group_ids" {
@@ -330,22 +330,16 @@ variable "node_security_group_additional_rules" {
   default     = {}
 }
 
+variable "node_security_group_enable_recommended_rules" {
+  description = "Determines whether to enable recommended security group rules for the node security group created. This includes node-to-node TCP ingress on ephemeral ports and allows all egress traffic"
+  type        = bool
+  default     = true
+}
+
 variable "node_security_group_tags" {
   description = "A map of additional tags to add to the node security group created"
   type        = map(string)
   default     = {}
-}
-
-variable "node_security_group_ntp_ipv4_cidr_block" {
-  description = "IPv4 CIDR block to allow NTP egress. Default is public IP space, but [Amazon Time Sync Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html) can be used as well with `[\"169.254.169.123/32\"]`"
-  type        = list(string)
-  default     = ["169.254.169.123/32"]
-}
-
-variable "node_security_group_ntp_ipv6_cidr_block" {
-  description = "IPv4 CIDR block to allow NTP egress. Default is public IP space, but [Amazon Time Sync Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html) can be used as well with `[\"fd00:ec2::123/128\"]`"
-  type        = list(string)
-  default     = ["fd00:ec2::123/128"]
 }
 
 ################################################################################

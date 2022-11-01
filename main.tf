@@ -146,7 +146,7 @@ locals {
   cluster_security_group_id = local.create_cluster_sg ? aws_security_group.cluster[0].id : var.cluster_security_group_id
 
   # Do not add rules to node security group if the module is not creating it
-  cluster_security_group_rules = local.create_node_sg ? {
+  cluster_security_group_rules = { for k, v in {
     ingress_nodes_443 = {
       description                = "Node groups to cluster API"
       protocol                   = "tcp"
@@ -155,23 +155,7 @@ locals {
       type                       = "ingress"
       source_node_security_group = true
     }
-    egress_nodes_443 = {
-      description                = "Cluster API to node groups"
-      protocol                   = "tcp"
-      from_port                  = 443
-      to_port                    = 443
-      type                       = "egress"
-      source_node_security_group = true
-    }
-    egress_nodes_kubelet = {
-      description                = "Cluster API to node kubelets"
-      protocol                   = "tcp"
-      from_port                  = 10250
-      to_port                    = 10250
-      type                       = "egress"
-      source_node_security_group = true
-    }
-  } : {}
+  } : k => v if local.create_node_sg }
 }
 
 resource "aws_security_group" "cluster" {
@@ -194,7 +178,10 @@ resource "aws_security_group" "cluster" {
 }
 
 resource "aws_security_group_rule" "cluster" {
-  for_each = { for k, v in merge(local.cluster_security_group_rules, var.cluster_security_group_additional_rules) : k => v if local.create_cluster_sg }
+  for_each = { for k, v in merge(
+    local.cluster_security_group_rules,
+    var.cluster_security_group_additional_rules
+  ) : k => v if local.create_cluster_sg }
 
   # Required
   security_group_id = aws_security_group.cluster[0].id
