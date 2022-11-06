@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.30.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.30.1...v18.30.2) (2022-10-14)
+
+
+### Bug Fixes
+
+* Disable creation of cluster security group rules that map to node security group when `create_node_security_group` = `false` ([#2274](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2274)) ([28ccece](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/28ccecefe22d81a3a7febbbc3efc17c6590f88e1))
+
+### [18.30.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.30.0...v18.30.1) (2022-10-11)
+
+
+### Bug Fixes
+
+* Update CloudWatch log group creation deny policy to use wildcard ([#2267](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2267)) ([ac4d549](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ac4d549629aa64bbd92f80486bef904a9098e0fa))
+
+## [18.30.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.29.1...v18.30.0) (2022-09-29)
+
+
+### Features
+
+* Add output for cluster TLS certificate SHA1 fingerprint and provider tags to cluster primary security group ([#2249](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2249)) ([a74e980](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/a74e98017b5dc7ed396cf26bfaf98ff7951c9e2e))
+
 ### [18.29.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.29.0...v18.29.1) (2022-09-26)
 
 

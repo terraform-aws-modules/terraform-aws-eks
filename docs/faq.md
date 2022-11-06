@@ -26,7 +26,7 @@ By default, EKS creates a cluster primary security group that is created outside
   attach_cluster_primary_security_group = true # default is false
 
   node_security_group_tags = {
-    "kubernetes.io/cluster/<CLUSTER_NAME>" = "" # or any other value other than "owned"
+    "kubernetes.io/cluster/<CLUSTER_NAME>" = null # or any other value other than "owned"
   }
 ```
 
@@ -36,7 +36,7 @@ By default, EKS creates a cluster primary security group that is created outside
   attach_cluster_primary_security_group = true # default is false
 
   cluster_tags = {
-    "kubernetes.io/cluster/<CLUSTER_NAME>" = "" # or any other value other than "owned"
+    "kubernetes.io/cluster/<CLUSTER_NAME>" = null # or any other value other than "owned"
   }
 ```
 

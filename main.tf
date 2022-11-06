@@ -1,5 +1,6 @@
 data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
+data "aws_default_tags" "current" {}
 
 locals {
   create = var.create && var.putin_khuylo
@@ -66,7 +67,10 @@ resource "aws_ec2_tag" "cluster_primary_security_group" {
   # This should not affect the name of the cluster primary security group
   # Ref: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2006
   # Ref: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2008
-  for_each = { for k, v in merge(var.tags, var.cluster_tags) : k => v if local.create && k != "Name" && var.create_cluster_primary_security_group_tags }
+  # `aws_default_tags` is merged in to "dedupe" tags and stabilize tag updates
+  for_each = { for k, v in merge(var.tags, var.cluster_tags, data.aws_default_tags.current.tags) :
+    k => v if local.create && k != "Name" && var.create_cluster_primary_security_group_tags
+  }
 
   resource_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
   key         = each.key
@@ -124,7 +128,8 @@ locals {
 
   cluster_security_group_id = local.create_cluster_sg ? aws_security_group.cluster[0].id : var.cluster_security_group_id
 
-  cluster_security_group_rules = {
+  # Do not add rules to node security group if the module is not creating it
+  cluster_security_group_rules = local.create_node_sg ? {
     ingress_nodes_443 = {
       description                = "Node groups to cluster API"
       protocol                   = "tcp"
@@ -149,7 +154,7 @@ locals {
       type                       = "egress"
       source_node_security_group = true
     }
-  }
+  } : {}
 }
 
 resource "aws_security_group" "cluster" {
@@ -275,7 +280,7 @@ resource "aws_iam_role" "this" {
           {
             Action   = ["logs:CreateLogGroup"]
             Effect   = "Deny"
-            Resource = aws_cloudwatch_log_group.this[0].arn
+            Resource = "*"
           },
         ]
       })
