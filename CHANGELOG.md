@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.30.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.30.2...v18.30.3) (2022-11-07)
+
+
+### Bug Fixes
+
+* Update CI configuration files to use latest version ([#2293](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2293)) ([364c60d](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/364c60d572e85676adca8f6e62679de7d9551271))
+
 ### [18.30.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.30.1...v18.30.2) (2022-10-14)
 
 
