@@ -7,8 +7,7 @@ locals {
 
   terraform_version = "1.3.3"
 
-  outpost_arn   = element(tolist(data.aws_outposts_outposts.this.arns), 0)
-  instance_type = element(tolist(data.aws_outposts_outpost_instance_types.this.instance_types), 0)
+  outpost_arn = element(tolist(data.aws_outposts_outposts.this.arns), 0)
 
   tags = {
     Example    = local.name
@@ -21,45 +20,16 @@ locals {
 # Pre-Requisites
 ################################################################################
 
-resource "aws_iam_role" "ec2" {
-  name_prefix = "${local.name}-bastion"
-
-  # Using admin to be able to provision resources from remote host
-  managed_policy_arns = ["arn:aws:iam::aws:policy/AdministratorAccess"]
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-      },
-    ]
-  })
-
-  tags = local.tags
-}
-
-resource "aws_iam_instance_profile" "ec2" {
-  name = "${local.name}-bastion"
-  role = aws_iam_role.ec2.name
-}
-
-data "aws_ssm_parameter" "al2" {
-  name = "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
-}
-
 module "ssm_bastion_ec2" {
   source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "~> 4.0"
+  version = "~> 4.2"
 
   name = "${local.name}-bastion"
 
-  ami                  = data.aws_ssm_parameter.al2.value
-  instance_type        = local.instance_type
-  iam_instance_profile = aws_iam_instance_profile.ec2.name
+  create_iam_instance_profile = true
+  iam_role_policies = {
+    AdministratorAccess = "arn:aws:iam::aws:policy/AdministratorAccess"
+  }
 
   user_data = <<-EOT
     #!/bin/bash
@@ -139,10 +109,6 @@ module "bastion_security_group" {
 ################################################################################
 
 data "aws_outposts_outposts" "this" {}
-
-data "aws_outposts_outpost_instance_types" "this" {
-  arn = local.outpost_arn
-}
 
 # This just grabs the first Outpost and returns its subnets
 data "aws_subnets" "lookup" {

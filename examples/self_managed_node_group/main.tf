@@ -200,9 +200,8 @@ module "eks" {
       launch_template_use_name_prefix = true
       launch_template_description     = "Self managed node group example launch template"
 
-      ebs_optimized          = true
-      vpc_security_group_ids = [aws_security_group.additional.id]
-      enable_monitoring      = true
+      ebs_optimized     = true
+      enable_monitoring = true
 
       block_device_mappings = {
         xvda = {
@@ -241,7 +240,7 @@ module "eks" {
       }
       iam_role_additional_policies = {
         AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-        additional                         = aws_iam_policy.node_additional.arn
+        additional                         = aws_iam_policy.additional.arn
       }
 
       timeouts = {
@@ -292,24 +291,6 @@ module "vpc" {
   }
 
   tags = local.tags
-}
-
-resource "aws_security_group" "additional" {
-  name_prefix = "${local.name}-additional"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-    cidr_blocks = [
-      "10.0.0.0/8",
-      "172.16.0.0/12",
-      "192.168.0.0/16",
-    ]
-  }
-
-  tags = merge(local.tags, { Name = "${local.name}-additional" })
 }
 
 data "aws_ami" "eks_default" {
@@ -373,7 +354,7 @@ resource "aws_ec2_capacity_reservation" "targeted" {
   instance_match_criteria = "targeted"
 }
 
-resource "aws_iam_policy" "node_additional" {
+resource "aws_iam_policy" "additional" {
   name        = "${local.name}-additional"
   description = "Example usage of node additional policy"
 
