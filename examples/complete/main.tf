@@ -1,11 +1,5 @@
 provider "aws" {
   region = local.region
-
-  default_tags {
-    tags = {
-      ExampleDefaultTag = "ExampleDefaultValue"
-    }
-  }
 }
 
 provider "kubernetes" {
@@ -236,10 +230,30 @@ module "eks" {
 
   aws_auth_roles = [
     {
-      rolearn  = "arn:aws:iam::66666666666:role/role1"
-      username = "role1"
-      groups   = ["system:masters"]
+      rolearn  = module.eks_managed_node_group.iam_role_arn
+      username = "system:node:{{EC2PrivateDNSName}}"
+      groups = [
+        "system:bootstrappers",
+        "system:nodes",
+      ]
     },
+    {
+      rolearn  = module.self_managed_node_group.iam_role_arn
+      username = "system:node:{{EC2PrivateDNSName}}"
+      groups = [
+        "system:bootstrappers",
+        "system:nodes",
+      ]
+    },
+    {
+      rolearn  = module.fargate_profile.fargate_profile_pod_execution_role_arn
+      username = "system:node:{{SessionName}}"
+      groups = [
+        "system:bootstrappers",
+        "system:nodes",
+        "system:node-proxier",
+      ]
+    }
   ]
 
   aws_auth_users = [
@@ -279,6 +293,20 @@ module "eks_managed_node_group" {
   vpc_security_group_ids = [
     module.eks.cluster_security_group_id,
   ]
+
+  ami_type = "BOTTLEROCKET_x86_64"
+  platform = "bottlerocket"
+
+  # this will get added to what AWS provides
+  bootstrap_extra_args = <<-EOT
+    # extra args added
+    [settings.kernel]
+    lockdown = "integrity"
+
+    [settings.kubernetes.node-labels]
+    "label1" = "foo"
+    "label2" = "bar"
+  EOT
 
   tags = merge(local.tags, { Separate = "eks-managed-node-group" })
 }
