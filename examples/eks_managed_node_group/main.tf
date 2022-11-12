@@ -70,6 +70,9 @@ module "eks" {
     resources        = ["secrets"]
   }]
 
+  # Self managed node groups will not automatically create the aws-auth configmap so we need to
+  #create_aws_auth_configmap = true
+
   cluster_tags = {
     # This should not affect the name of the cluster primary security group
     # Ref: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2006
@@ -115,7 +118,41 @@ module "eks" {
       ipv6_cidr_blocks = ["::/0"]
     }
   }
+  self_managed_node_group_defaults = {
+    instance_type                          = "m6i.large"
+    update_launch_template_default_version = true
+    iam_role_additional_policies = [
+      "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    ]
+  }
 
+  self_managed_node_groups = {
+    one = {
+      name         = "mixed-1"
+      max_size     = 2
+      desired_size = 1
+
+      use_mixed_instances_policy = true
+      mixed_instances_policy = {
+        instances_distribution = {
+          on_demand_base_capacity                  = 0
+          on_demand_percentage_above_base_capacity = 10
+          spot_allocation_strategy                 = "capacity-optimized"
+        }
+
+        override = [
+          {
+            instance_type     = "m5.large"
+            weighted_capacity = "1"
+          },
+          {
+            instance_type     = "m6i.large"
+            weighted_capacity = "2"
+          },
+        ]
+      }
+    }
+  }
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
     instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
