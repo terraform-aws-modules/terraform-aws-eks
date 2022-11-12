@@ -60,6 +60,9 @@ module "eks" {
       resolve_conflicts        = "OVERWRITE"
       service_account_role_arn = module.vpc_cni_irsa.iam_role_arn
     }
+    aws-ebs-csi-driver = {
+      resolve_conflicts        = "OVERWRITE"
+    }
   }
 
   cluster_encryption_config = [{
