@@ -61,6 +61,11 @@ output "node_group_taints" {
   value       = try(aws_eks_node_group.this[0].taint, [])
 }
 
+output "node_group_cluster_autoscaler" {
+  description = "List of objects containing information about cluster autoscaler options applied to the node group"
+  value       = var.cluster_autoscaler
+}
+
 ################################################################################
 # Security Group
 ################################################################################

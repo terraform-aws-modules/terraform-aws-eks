@@ -258,6 +258,7 @@ module "eks_managed_node_group" {
   force_update_version = try(each.value.force_update_version, var.eks_managed_node_group_defaults.force_update_version, null)
   instance_types       = try(each.value.instance_types, var.eks_managed_node_group_defaults.instance_types, null)
   labels               = try(each.value.labels, var.eks_managed_node_group_defaults.labels, null)
+  cluster_autoscaler   = try(each.value.cluster_autoscaler, var.eks_managed_node_group_defaults.cluster_autoscaler, null)
 
   remote_access = try(each.value.remote_access, var.eks_managed_node_group_defaults.remote_access, {})
   taints        = try(each.value.taints, var.eks_managed_node_group_defaults.taints, {})

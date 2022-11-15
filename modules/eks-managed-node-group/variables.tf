@@ -368,6 +368,12 @@ variable "timeouts" {
   default     = {}
 }
 
+variable "cluster_autoscaler" {
+  description = "Key-value map of custom options for Cluster Autoscaler"
+  type        = map(string)
+  default     = null
+}
+
 ################################################################################
 # Security Group
 ################################################################################
