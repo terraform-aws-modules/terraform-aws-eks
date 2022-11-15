@@ -1,16 +1,8 @@
 # terraform-aws-eks
 
-[![Lint Status](https://github.com/tothenew/terraform-aws-eks/workflows/Lint/badge.svg)](https://github.com/tothenew/terraform-aws-template/actions)
-[![LICENSE](https://img.shields.io/github/license/tothenew/terraform-aws-eks)](https://github.com/tothenew/terraform-aws-template/blob/master/LICENSE)
+[![Lint Status](https://github.com/tothenew/terraform-aws-eks/workflows/Lint/badge.svg)](https://github.com/tothenew/terraform-aws-eks/actions)
+[![LICENSE](https://img.shields.io/github/license/tothenew/terraform-aws-eks)](https://github.com/tothenew/terraform-aws-eks/blob/master/LICENSE)
 
-This is a eks to use for baseline. The default actions will provide updates for section bitween Requirements and Outputs.
-
-The following content needed to be created and managed:
- - Introduction
-     - Explaination of module 
-     - Intended users
- - Resource created and managed by this module
- - Example Usages
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
