@@ -131,7 +131,7 @@ resource "helm_release" "karpenter" {
   name       = "karpenter"
   repository = "oci://public.ecr.aws/karpenter"
   chart      = "karpenter"
-  version    = "v0.19.0"
+  version    = "v0.19.1"
 
   set {
     name  = "settings.aws.clusterName"
@@ -224,7 +224,7 @@ resource "kubectl_manifest" "karpenter_example_deployment" {
           terminationGracePeriodSeconds: 0
           containers:
             - name: inflate
-              image: public.ecr.aws/eks-distro/kubernetes/pause:3.2
+              image: public.ecr.aws/eks-distro/kubernetes/pause:3.7
               resources:
                 requests:
                   cpu: 1
