@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [18.31.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.30.3...v18.31.0) (2022-11-21)
+
+
+### Features
+
+* New Karpenter sub-module for easily enabling Karpenter on EKS ([#2303](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2303)) ([f24de33](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f24de3326d3c12ce61fbaefe1e3dbe7418d8bc85))
+
 ### [18.30.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.30.2...v18.30.3) (2022-11-07)
 
 
