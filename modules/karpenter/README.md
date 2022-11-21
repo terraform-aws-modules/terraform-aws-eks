@@ -64,7 +64,7 @@ module "eks" {
   source = "terraform-aws-modules/eks"
 
   # Shown just for connection between cluster and Karpenter sub-module below
-    eks_managed_node_groups = {
+  eks_managed_node_groups = {
     initial = {
       instance_types = ["t3.medium"]
 
