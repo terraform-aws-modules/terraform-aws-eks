@@ -8,7 +8,7 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
 
   cluster_name    = "example"
-  cluster_version = "1.22"
+  cluster_version = "1.24"
 
   cluster_addons = {
     vpc-cni = {

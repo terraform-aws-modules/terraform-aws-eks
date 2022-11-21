@@ -17,8 +17,13 @@ output "cluster_endpoint" {
   value       = try(aws_eks_cluster.this[0].endpoint, "")
 }
 
+output "cluster_name" {
+  description = "The name of the EKS cluster. Will block on cluster creation until the cluster is really ready"
+  value       = try(aws_eks_cluster.this[0].name, "")
+}
+
 output "cluster_id" {
-  description = "The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready"
+  description = "The id of the EKS cluster. Will block on cluster creation until the cluster is really ready"
   value       = try(aws_eks_cluster.this[0].id, "")
 }
 

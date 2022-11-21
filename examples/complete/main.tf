@@ -10,7 +10,7 @@ provider "kubernetes" {
     api_version = "client.authentication.k8s.io/v1beta1"
     command     = "aws"
     # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_id]
+    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
   }
 }
 
@@ -267,7 +267,7 @@ module "eks_managed_node_group" {
   source = "../../modules/eks-managed-node-group"
 
   name            = "separate-eks-mng"
-  cluster_name    = module.eks.cluster_id
+  cluster_name    = module.eks.cluster_name
   cluster_version = module.eks.cluster_version
 
   vpc_id                            = module.vpc.vpc_id
@@ -298,7 +298,7 @@ module "self_managed_node_group" {
   source = "../../modules/self-managed-node-group"
 
   name                = "separate-self-mng"
-  cluster_name        = module.eks.cluster_id
+  cluster_name        = module.eks.cluster_name
   cluster_version     = module.eks.cluster_version
   cluster_endpoint    = module.eks.cluster_endpoint
   cluster_auth_base64 = module.eks.cluster_certificate_authority_data
@@ -319,7 +319,7 @@ module "fargate_profile" {
   source = "../../modules/fargate-profile"
 
   name         = "separate-fargate-profile"
-  cluster_name = module.eks.cluster_id
+  cluster_name = module.eks.cluster_name
 
   subnet_ids = module.vpc.private_subnets
   selectors = [{
