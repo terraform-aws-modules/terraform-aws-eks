@@ -152,7 +152,7 @@ data "aws_iam_policy_document" "irsa" {
 }
 
 resource "aws_iam_policy" "irsa" {
-  count = var.create_irsa ? 1 : 0
+  count = local.create_irsa ? 1 : 0
 
   name_prefix = "${local.irsa_name}-"
   path        = var.irsa_path
