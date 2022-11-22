@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.31.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.31.0...v18.31.1) (2022-11-22)
+
+
+### Bug Fixes
+
+* Include all certificate fingerprints in the OIDC provider thumbprint list ([#2307](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2307)) ([7436178](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/7436178cc1a720a066c73f1de23b04b3c24ae608))
+
 ## [18.31.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.30.3...v18.31.0) (2022-11-21)
 
 
