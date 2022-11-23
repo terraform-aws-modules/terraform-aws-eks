@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.31.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.31.1...v18.31.2) (2022-11-23)
+
+
+### Bug Fixes
+
+* Ensure that `var.create` is tied to all resources correctly ([#2308](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2308)) ([3fb28b3](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/3fb28b357f4fc9144340f94abe9dd520e89f49e2))
+
 ### [18.31.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.31.0...v18.31.1) (2022-11-22)
 
 
