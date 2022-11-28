@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+### [18.31.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.31.1...v18.31.2) (2022-11-23)
+
+
+### Bug Fixes
+
+* Ensure that `var.create` is tied to all resources correctly ([#2308](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2308)) ([3fb28b3](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/3fb28b357f4fc9144340f94abe9dd520e89f49e2))
+
+### [18.31.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.31.0...v18.31.1) (2022-11-22)
+
+
+### Bug Fixes
+
+* Include all certificate fingerprints in the OIDC provider thumbprint list ([#2307](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2307)) ([7436178](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/7436178cc1a720a066c73f1de23b04b3c24ae608))
+
+## [18.31.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.30.3...v18.31.0) (2022-11-21)
+
+
+### Features
+
+* New Karpenter sub-module for easily enabling Karpenter on EKS ([#2303](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2303)) ([f24de33](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f24de3326d3c12ce61fbaefe1e3dbe7418d8bc85))
+
 ### [18.30.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.30.2...v18.30.3) (2022-11-07)
 
 
