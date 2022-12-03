@@ -2,6 +2,18 @@ provider "aws" {
   region = local.region
 }
 
+provider "kubernetes" {
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    # This requires the awscli to be installed locally where Terraform is executed
+    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+  }
+}
+
 provider "helm" {
   kubernetes {
     host                   = module.eks.cluster_endpoint
@@ -13,6 +25,20 @@ provider "helm" {
       # This requires the awscli to be installed locally where Terraform is executed
       args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
     }
+  }
+}
+
+provider "kubectl" {
+  apply_retry_count      = 5
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  load_config_file       = false
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    # This requires the awscli to be installed locally where Terraform is executed
+    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
   }
 }
 
@@ -40,68 +66,173 @@ locals {
 module "eks" {
   source = "../.."
 
-  cluster_name    = local.name
-  cluster_version = local.cluster_version
-
-  cluster_addons = {
-    kube-proxy = {}
-    vpc-cni    = {}
-  }
+  cluster_name                   = local.name
+  cluster_version                = local.cluster_version
+  cluster_endpoint_public_access = true
 
   vpc_id                   = module.vpc.vpc_id
   subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.intra_subnets
 
-  # Fargate profiles use the cluster primary security group so these are not utilized
-  create_cluster_security_group = false
-  create_node_security_group    = false
-
-  fargate_profile_defaults = {
-    iam_role_additional_policies = {
-      additional = aws_iam_policy.additional.arn
-    }
-  }
+  manage_aws_auth_configmap = true
+  aws_auth_roles = [
+    # We need to add in the Karpenter node IAM role for nodes launched by Karpenter
+    {
+      rolearn  = module.karpenter.role_arn
+      username = "system:node:{{EC2PrivateDNSName}}"
+      groups = [
+        "system:bootstrappers",
+        "system:nodes",
+      ]
+    },
+  ]
 
   fargate_profiles = {
-    example = {
-      name = "example"
-      selectors = [
-        {
-          namespace = "backend"
-          labels = {
-            Application = "backend"
-          }
-        },
-        {
-          namespace = "app-*"
-          labels = {
-            Application = "app-wildcard"
-          }
-        }
-      ]
-
-      # Using specific subnets instead of the subnets supplied for the cluster itself
-      subnet_ids = [module.vpc.private_subnets[1]]
-
-      tags = {
-        Owner = "secondary"
-      }
-
-      timeouts = {
-        create = "20m"
-        delete = "20m"
-      }
-    }
-
     kube_system = {
       name = "kube-system"
       selectors = [
         { namespace = "kube-system" }
       ]
     }
+
+    karpenter = {
+      name = "karpenter"
+      selectors = [
+        { namespace = "karpenter" }
+      ]
+    }
   }
 
+  tags = merge(local.tags, {
+    # NOTE - if creating multiple security groups with this module, only tag the
+    # security group that Karpenter should utilize with the following tag
+    # (i.e. - at most, only one security group should have this tag in your account)
+    "karpenter.sh/discovery" = local.name
+  })
+}
+
+################################################################################
+# Karpenter
+################################################################################
+
+module "karpenter" {
+  source = "../../modules/karpenter"
+
+  cluster_name           = module.eks.cluster_name
+  irsa_oidc_provider_arn = module.eks.oidc_provider_arn
+
   tags = local.tags
+}
+
+resource "helm_release" "karpenter" {
+  namespace        = "karpenter"
+  create_namespace = true
+
+  name       = "karpenter"
+  repository = "oci://public.ecr.aws/karpenter"
+  chart      = "karpenter"
+  version    = "v0.19.3"
+
+  set {
+    name  = "settings.aws.clusterName"
+    value = module.eks.cluster_name
+  }
+
+  set {
+    name  = "settings.aws.clusterEndpoint"
+    value = module.eks.cluster_endpoint
+  }
+
+  set {
+    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = module.karpenter.irsa_arn
+  }
+
+  set {
+    name  = "settings.aws.defaultInstanceProfile"
+    value = module.karpenter.instance_profile_name
+  }
+
+  set {
+    name  = "settings.aws.interruptionQueueName"
+    value = module.karpenter.queue_name
+  }
+}
+
+resource "kubectl_manifest" "karpenter_provisioner" {
+  yaml_body = <<-YAML
+    apiVersion: karpenter.sh/v1alpha5
+    kind: Provisioner
+    metadata:
+      name: default
+    spec:
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["spot"]
+      limits:
+        resources:
+          cpu: 1000
+      providerRef:
+        name: default
+      ttlSecondsAfterEmpty: 30
+  YAML
+
+  depends_on = [
+    helm_release.karpenter
+  ]
+}
+
+resource "kubectl_manifest" "karpenter_node_template" {
+  yaml_body = <<-YAML
+    apiVersion: karpenter.k8s.aws/v1alpha1
+    kind: AWSNodeTemplate
+    metadata:
+      name: default
+    spec:
+      subnetSelector:
+        karpenter.sh/discovery: ${module.eks.cluster_name}
+      securityGroupSelector:
+        karpenter.sh/discovery: ${module.eks.cluster_name}
+      tags:
+        karpenter.sh/discovery: ${module.eks.cluster_name}
+  YAML
+
+  depends_on = [
+    helm_release.karpenter
+  ]
+}
+
+# Example deployment using the [pause image](https://www.ianlewis.org/en/almighty-pause-container)
+# and starts with zero replicas
+resource "kubectl_manifest" "karpenter_example_deployment" {
+  yaml_body = <<-YAML
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: inflate
+    spec:
+      replicas: 0
+      selector:
+        matchLabels:
+          app: inflate
+      template:
+        metadata:
+          labels:
+            app: inflate
+        spec:
+          terminationGracePeriodSeconds: 0
+          containers:
+            - name: inflate
+              image: public.ecr.aws/eks-distro/kubernetes/pause:3.7
+              resources:
+                requests:
+                  cpu: 1
+  YAML
+
+  depends_on = [
+    helm_release.karpenter
+  ]
 }
 
 ################################################################################
@@ -257,24 +388,9 @@ module "vpc" {
 
   private_subnet_tags = {
     "kubernetes.io/role/internal-elb" = 1
+    # Tags subnets for Karpenter auto-discovery
+    "karpenter.sh/discovery" = local.name
   }
 
   tags = local.tags
-}
-
-resource "aws_iam_policy" "additional" {
-  name = "${local.name}-additional"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "ec2:Describe*",
-        ]
-        Effect   = "Allow"
-        Resource = "*"
-      },
-    ]
-  })
 }
