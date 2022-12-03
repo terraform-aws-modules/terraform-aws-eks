@@ -9,7 +9,8 @@ provider "kubernetes" {
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
     command     = "aws"
-    args        = ["eks", "get-token", "--cluster-id", module.eks.cluster_id, "--region", var.region]
+    #                                  Note: `cluster_id` is used with Outposts for auth
+    args = ["eks", "get-token", "--cluster-id", module.eks.cluster_id, "--region", var.region]
   }
 }
 
