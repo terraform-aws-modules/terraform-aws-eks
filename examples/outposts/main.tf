@@ -9,7 +9,7 @@ provider "kubernetes" {
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
     command     = "aws"
-    #                                  Note: `cluster_id` is used with Outposts for auth
+    #                           Note: `cluster_id` is used with Outposts for auth
     args = ["eks", "get-token", "--cluster-id", module.eks.cluster_id, "--region", var.region]
   }
 }
@@ -49,6 +49,9 @@ module "eks" {
     outpost_arns                = [local.outpost_arn]
   }
 
+  # Local clusters will automatically add the node group IAM role to the aws-auth configmap
+  manage_aws_auth_configmap = true
+
   # Extend cluster security group rules
   cluster_security_group_additional_rules = {
     ingress_vpc_https = {
@@ -77,11 +80,13 @@ module "eks" {
       max_size      = 5
       desired_size  = 3
       instance_type = local.instance_type
+
+      # Additional information is required to join local clusters to EKS
+      bootstrap_extra_args = <<-EOT
+        --enable-local-outpost true --cluster-id ${module.eks.cluster_id} --container-runtime containerd
+      EOT
     }
   }
-
-  # We need to add the node group IAM role to the aws-auth configmap
-  create_aws_auth_configmap = true
 
   tags = local.tags
 }
