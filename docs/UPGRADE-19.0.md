@@ -4,7 +4,8 @@ Please consult the `examples` directory for reference example configurations. If
 
 ## List of backwards incompatible changes
 
-- Minimum supported version of Terraform AWS provider updated to v4.34 to support latest features provided via the resources utilized.
+- The `cluster_id` output used to output the name of the cluster. This is due to the fact that the cluster name is a unique constraint and therefore its set as the unique identifier within Terraform's state map. However, starting with local EKS clusters created on Outposts, there is now an attribute returned from the `aws eks create-cluster` API named `id`. The `cluster_id` has been updated to return this value which means that for current, standard EKS clusters created in the AWS cloud, no value will be returned (at the time of this writing) for `cluster_id` and only local EKS clusters on Outposts will return a value that looks like a UUID/GUID. Users should switch all instances of `cluster_id` to use `cluster_name` before upgrading to v19. [Reference](https://github.com/hashicorp/terraform-provider-aws/issues/27560)
+- Minimum supported version of Terraform AWS provider updated to v4.45 to support latest features provided via the resources utilized.
 - Minimum supported version of Terraform updated to v1.0
 - Individual security group created per EKS managed node group or self managed node group has been removed. This configuration went mostly un-used and would often cause confusion ("Why is there an empty security group attached to my nodes?"). This functionality can easily be replicated by user's providing one or more externally created security groups to attach to nodes launched from the node group.
 - Previously, `var.iam_role_additional_policies` (one for each of the following: cluster IAM role, EKS managed node group IAM role, self-managed node group IAM role, and Fargate Profile IAM role) accepted a list of strings. This worked well for policies that already existed but failed for policies being created at the same time as the cluster due to the well known issue of unkown values used in a `for_each` loop. To rectify this issue in `v19.x`, two changes were made:
@@ -115,7 +116,7 @@ Please consult the `examples` directory for reference example configurations. If
 
 5. Renamed outputs:
 
-   - N/A
+   - `cluster_id` is not renamed but the value it returns is now different. For standard EKS clusters created in the AWS cloud, the value returned at the time of this writing is `null`/empty. For local EKS clusters created on Outposts, the value returned will look like a UUID/GUID. Users should switch all instances of `cluster_id` to use `cluster_name` before upgrading to v19. [Reference](https://github.com/hashicorp/terraform-provider-aws/issues/27560)
 
 6. Added outputs:
 
