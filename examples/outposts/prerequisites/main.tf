@@ -5,9 +5,10 @@ provider "aws" {
 locals {
   name = "ex-${basename(path.cwd)}"
 
-  terraform_version = "1.3.3"
+  terraform_version = "1.3.6"
 
-  outpost_arn = element(tolist(data.aws_outposts_outposts.this.arns), 0)
+  outpost_arn   = element(tolist(data.aws_outposts_outposts.this.arns), 0)
+  instance_type = element(tolist(data.aws_outposts_outpost_instance_types.this.instance_types), 0)
 
   tags = {
     Example    = local.name
@@ -30,6 +31,8 @@ module "ssm_bastion_ec2" {
   iam_role_policies = {
     AdministratorAccess = "arn:aws:iam::aws:policy/AdministratorAccess"
   }
+
+  instance_type = local.instance_type
 
   user_data = <<-EOT
     #!/bin/bash
@@ -109,6 +112,10 @@ module "bastion_security_group" {
 ################################################################################
 
 data "aws_outposts_outposts" "this" {}
+
+data "aws_outposts_outpost_instance_types" "this" {
+  arn = local.outpost_arn
+}
 
 # This just grabs the first Outpost and returns its subnets
 data "aws_subnets" "lookup" {

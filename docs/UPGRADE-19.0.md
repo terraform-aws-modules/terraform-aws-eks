@@ -11,6 +11,7 @@ Please consult the `examples` directory for reference example configurations. If
 - Previously, `var.iam_role_additional_policies` (one for each of the following: cluster IAM role, EKS managed node group IAM role, self-managed node group IAM role, and Fargate Profile IAM role) accepted a list of strings. This worked well for policies that already existed but failed for policies being created at the same time as the cluster due to the well known issue of unkown values used in a `for_each` loop. To rectify this issue in `v19.x`, two changes were made:
   1. `var.iam_role_additional_policies` was changed from type `list(string)` to type `map(string)` -> this is a breaking change. More information on managing this change can be found below, under `Terraform State Moves`
   2. The logic used in the root module for this variable was changed to replace the use of `try()` with `lookup()`. More details on why can be found [here](https://github.com/clowdhaus/terraform-for-each-unknown)
+- The cluster name has been removed from the Karpenter module event rule names. Due to the use of long cluster names appending to the provided naming scheme, the cluster name has moved to a `ClusterName` tag and the event rule name is now a prefix. This guarantees that users can have multiple instances of Karpenter withe their respective event rules/SQS queue without name collisions, while also still being able to identify which queues and event rules belong to which cluster.
 
 ## Additional changes
 

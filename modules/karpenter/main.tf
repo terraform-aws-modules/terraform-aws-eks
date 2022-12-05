@@ -261,11 +261,14 @@ locals {
 resource "aws_cloudwatch_event_rule" "this" {
   for_each = { for k, v in local.events : k => v if local.enable_spot_termination }
 
-  name          = "Karpenter${each.value.name}-${var.cluster_name}"
+  name_prefix   = "Karpenter${each.value.name}-"
   description   = each.value.description
   event_pattern = jsonencode(each.value.event_pattern)
 
-  tags = var.tags
+  tags = merge(
+    { "ClusterName" : var.cluster_name },
+    var.tags,
+  )
 }
 
 resource "aws_cloudwatch_event_target" "this" {
