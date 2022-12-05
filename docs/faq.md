@@ -1,7 +1,6 @@
 # Frequently Asked Questions
 
 - [I received an error: `expect exactly one securityGroup tagged with kubernetes.io/cluster/<NAME> ...`](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#i-received-an-error-expect-exactly-one-securitygroup-tagged-with-kubernetesioclustername-)
-- [I received an error: `Error: Invalid for_each argument ...`](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#i-received-an-error-error-invalid-for_each-argument-)
 - [Why are nodes not being registered?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#why-are-nodes-not-being-registered)
 - [Why are there no changes when a node group's `desired_size` is modified?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#why-are-there-no-changes-when-a-node-groups-desired_size-is-modified)
 - [How can I deploy Windows based nodes?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#how-can-i-deploy-windows-based-nodes)
@@ -47,41 +46,6 @@ By default, EKS creates a cluster primary security group that is created outside
 ```
 
 In theory, if you are attaching the cluster primary security group, you shouldn't need to use the shared node security group created by the module. However, this is left up to users to decide for their requirements and use case.
-
-### I received an error: `Error: Invalid for_each argument ...`
-
-Users may encounter an error such as `Error: Invalid for_each argument - The "for_each" value depends on resource attributes that cannot be determined until apply, so Terraform cannot predict how many instances will be created. To work around this, use the -target argument to first apply ...`
-
-This error is due to an upstream issue with [Terraform core](https://github.com/hashicorp/terraform/issues/4149). There are two potential options you can take to help mitigate this issue:
-
-1. Create the dependent resources before the cluster => `terraform apply -target <your policy or your security group>` and then `terraform apply` for the cluster (or other similar means to just ensure the referenced resources exist before creating the cluster)
-
-- Note: this is the route users will have to take for adding additional security groups to nodes since there isn't a separate "security group attachment" resource
-
-2. For additional IAM policies, users can attach the policies outside of the cluster definition as demonstrated below
-
-```hcl
-resource "aws_iam_role_policy_attachment" "additional" {
-  for_each = module.eks.eks_managed_node_groups
-  # you could also do the following or any combination:
-  # for_each = merge(
-  #   module.eks.eks_managed_node_groups,
-  #   module.eks.self_managed_node_group,
-  #   module.eks.fargate_profile,
-  # )
-
-  #            This policy does not have to exist at the time of cluster creation. Terraform can
-  #            deduce the proper order of its creation to avoid errors during creation
-  policy_arn = aws_iam_policy.node_additional.arn
-  role       = each.value.iam_role_name
-}
-```
-
-TL;DR - Terraform resource passed into the modules map definition _must_ be known before you can apply the EKS module. The variables this potentially affects are:
-
-- `cluster_security_group_additional_rules` (i.e. - referencing an external security group resource in a rule)
-- `node_security_group_additional_rules` (i.e. - referencing an external security group resource in a rule)
-- `iam_role_additional_policies` (i.e. - referencing an external policy resource)
 
 ### Why are nodes not being registered?
 

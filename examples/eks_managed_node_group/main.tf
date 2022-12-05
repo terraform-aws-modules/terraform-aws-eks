@@ -14,10 +14,16 @@ provider "kubernetes" {
   }
 }
 
+data "aws_caller_identity" "current" {}
+data "aws_availability_zones" "available" {}
+
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
   cluster_version = "1.24"
   region          = "eu-west-1"
+
+  vpc_cidr = "10.0.0.0/16"
+  azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
   tags = {
     Example    = local.name
@@ -26,8 +32,6 @@ locals {
   }
 }
 
-data "aws_caller_identity" "current" {}
-
 ################################################################################
 # EKS Module
 ################################################################################
@@ -35,10 +39,9 @@ data "aws_caller_identity" "current" {}
 module "eks" {
   source = "../.."
 
-  cluster_name                    = local.name
-  cluster_version                 = local.cluster_version
-  cluster_endpoint_private_access = true
-  cluster_endpoint_public_access  = true
+  cluster_name                   = local.name
+  cluster_version                = local.cluster_version
+  cluster_endpoint_public_access = true
 
   # IPV6
   cluster_ip_family = "ipv6"
@@ -53,65 +56,22 @@ module "eks" {
 
   cluster_addons = {
     coredns = {
-      resolve_conflicts = "OVERWRITE"
+      most_recent = true
     }
-    kube-proxy = {}
+    kube-proxy = {
+      most_recent = true
+    }
     vpc-cni = {
-      resolve_conflicts        = "OVERWRITE"
+      most_recent              = true
       service_account_role_arn = module.vpc_cni_irsa.iam_role_arn
     }
   }
 
-  cluster_encryption_config = [{
-    provider_key_arn = aws_kms_key.eks.arn
-    resources        = ["secrets"]
-  }]
-
-  cluster_tags = {
-    # This should not affect the name of the cluster primary security group
-    # Ref: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2006
-    # Ref: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2008
-    Name = local.name
-  }
-
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
+  vpc_id                   = module.vpc.vpc_id
+  subnet_ids               = module.vpc.private_subnets
+  control_plane_subnet_ids = module.vpc.intra_subnets
 
   manage_aws_auth_configmap = true
-
-  # Extend cluster security group rules
-  cluster_security_group_additional_rules = {
-    egress_nodes_ephemeral_ports_tcp = {
-      description                = "To node 1025-65535"
-      protocol                   = "tcp"
-      from_port                  = 1025
-      to_port                    = 65535
-      type                       = "egress"
-      source_node_security_group = true
-    }
-  }
-
-  # Extend node-to-node security group rules
-  node_security_group_ntp_ipv6_cidr_block = ["fd00:ec2::123/128"]
-  node_security_group_additional_rules = {
-    ingress_self_all = {
-      description = "Node to node all ports/protocols"
-      protocol    = "-1"
-      from_port   = 0
-      to_port     = 0
-      type        = "ingress"
-      self        = true
-    }
-    egress_all = {
-      description      = "Node all egress"
-      protocol         = "-1"
-      from_port        = 0
-      to_port          = 0
-      type             = "egress"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = ["::/0"]
-    }
-  }
 
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
@@ -130,14 +90,13 @@ module "eks" {
     default_node_group = {
       # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
       # so we need to disable it to use the default template provided by the AWS EKS managed node group service
-      create_launch_template = false
-      launch_template_name   = ""
+      use_custom_launch_template = false
 
       disk_size = 50
 
       # Remote access cannot be specified with a launch template
       remote_access = {
-        ec2_ssh_key               = aws_key_pair.this.key_name
+        ec2_ssh_key               = module.key_pair.key_pair_name
         source_security_group_ids = [aws_security_group.remote_access.id]
       }
     }
@@ -146,8 +105,7 @@ module "eks" {
     bottlerocket_default = {
       # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
       # so we need to disable it to use the default template provided by the AWS EKS managed node group service
-      create_launch_template = false
-      launch_template_name   = ""
+      use_custom_launch_template = false
 
       ami_type = "BOTTLEROCKET_x86_64"
       platform = "bottlerocket"
@@ -158,11 +116,11 @@ module "eks" {
       ami_type = "BOTTLEROCKET_x86_64"
       platform = "bottlerocket"
 
-      # this will get added to what AWS provides
+      # This will get added to what AWS provides
       bootstrap_extra_args = <<-EOT
-      # extra args added
-      [settings.kernel]
-      lockdown = "integrity"
+        # extra args added
+        [settings.kernel]
+        lockdown = "integrity"
       EOT
     }
 
@@ -172,29 +130,33 @@ module "eks" {
       ami_id   = data.aws_ami.eks_default_bottlerocket.image_id
       platform = "bottlerocket"
 
-      # use module user data template to boostrap
+      # Use module user data template to boostrap
       enable_bootstrap_user_data = true
-      # this will get added to the template
+      # This will get added to the template
       bootstrap_extra_args = <<-EOT
-      # extra args added
-      [settings.kernel]
-      lockdown = "integrity"
+        # The admin host container provides SSH access and runs with "superpowers".
+        # It is disabled by default, but can be disabled explicitly.
+        [settings.host-containers.admin]
+        enabled = false
 
-      [settings.kubernetes.node-labels]
-      "label1" = "foo"
-      "label2" = "bar"
+        # The control host container provides out-of-band access via SSM.
+        # It is enabled by default, and can be disabled if you do not expect to use SSM.
+        # This could leave you with no way to access the API and change settings on an existing node!
+        [settings.host-containers.control]
+        enabled = true
 
-      [settings.kubernetes.node-taints]
-      "dedicated" = "experimental:PreferNoSchedule"
-      "special" = "true:NoSchedule"
+        # extra args added
+        [settings.kernel]
+        lockdown = "integrity"
+
+        [settings.kubernetes.node-labels]
+        label1 = "foo"
+        label2 = "bar"
+
+        [settings.kubernetes.node-taints]
+        dedicated = "experimental:PreferNoSchedule"
+        special = "true:NoSchedule"
       EOT
-    }
-
-    # Use existing/external launch template
-    external_lt = {
-      create_launch_template  = false
-      launch_template_name    = aws_launch_template.external.name
-      launch_template_version = aws_launch_template.external.default_version
     }
 
     # Use a custom AMI
@@ -219,15 +181,15 @@ module "eks" {
 
       # See issue https://github.com/awslabs/amazon-eks-ami/issues/844
       pre_bootstrap_user_data = <<-EOT
-      #!/bin/bash
-      set -ex
-      cat <<-EOF > /etc/profile.d/bootstrap.sh
-      export CONTAINER_RUNTIME="containerd"
-      export USE_MAX_PODS=false
-      export KUBELET_EXTRA_ARGS="--max-pods=110"
-      EOF
-      # Source extra environment variables in bootstrap script
-      sed -i '/^set -o errexit/a\\nsource /etc/profile.d/bootstrap.sh' /etc/eks/bootstrap.sh
+        #!/bin/bash
+        set -ex
+        cat <<-EOF > /etc/profile.d/bootstrap.sh
+        export CONTAINER_RUNTIME="containerd"
+        export USE_MAX_PODS=false
+        export KUBELET_EXTRA_ARGS="--max-pods=110"
+        EOF
+        # Source extra environment variables in bootstrap script
+        sed -i '/^set -o errexit/a\\nsource /etc/profile.d/bootstrap.sh' /etc/eks/bootstrap.sh
       EOT
     }
 
@@ -247,12 +209,12 @@ module "eks" {
       bootstrap_extra_args       = "--container-runtime containerd --kubelet-extra-args '--max-pods=20'"
 
       pre_bootstrap_user_data = <<-EOT
-      export CONTAINER_RUNTIME="containerd"
-      export USE_MAX_PODS=false
+        export CONTAINER_RUNTIME="containerd"
+        export USE_MAX_PODS=false
       EOT
 
       post_bootstrap_user_data = <<-EOT
-      echo "you are free little kubelet!"
+        echo "you are free little kubelet!"
       EOT
 
       capacity_type        = "SPOT"
@@ -272,13 +234,12 @@ module "eks" {
       ]
 
       update_config = {
-        max_unavailable_percentage = 50 # or set `max_unavailable`
+        max_unavailable_percentage = 33 # or set `max_unavailable`
       }
 
       description = "EKS managed node group example launch template"
 
       ebs_optimized           = true
-      vpc_security_group_ids  = [aws_security_group.additional.id]
       disable_api_termination = false
       enable_monitoring       = true
 
@@ -291,7 +252,7 @@ module "eks" {
             iops                  = 3000
             throughput            = 150
             encrypted             = true
-            kms_key_id            = aws_kms_key.ebs.arn
+            kms_key_id            = module.ebs_kms_key.key_id
             delete_on_termination = true
           }
         }
@@ -311,34 +272,9 @@ module "eks" {
       iam_role_tags = {
         Purpose = "Protector of the kubelet"
       }
-      iam_role_additional_policies = [
-        "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-      ]
-
-      create_security_group          = true
-      security_group_name            = "eks-managed-node-group-complete-example"
-      security_group_use_name_prefix = false
-      security_group_description     = "EKS managed node group complete example security group"
-      security_group_rules = {
-        phoneOut = {
-          description = "Hello CloudFlare"
-          protocol    = "udp"
-          from_port   = 53
-          to_port     = 53
-          type        = "egress"
-          cidr_blocks = ["1.1.1.1/32"]
-        }
-        phoneHome = {
-          description                   = "Hello cluster"
-          protocol                      = "udp"
-          from_port                     = 53
-          to_port                       = 53
-          type                          = "egress"
-          source_cluster_security_group = true # bit of reflection lookup
-        }
-      }
-      security_group_tags = {
-        Purpose = "Protector of the kubelet"
+      iam_role_additional_policies = {
+        AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+        additional                         = aws_iam_policy.node_additional.arn
       }
 
       tags = {
@@ -350,18 +286,6 @@ module "eks" {
   tags = local.tags
 }
 
-# References to resources that do not exist yet when creating a cluster will cause a plan failure due to https://github.com/hashicorp/terraform/issues/4149
-# There are two options users can take
-# 1. Create the dependent resources before the cluster => `terraform apply -target <your policy or your security group> and then `terraform apply`
-#   Note: this is the route users will have to take for adding additonal security groups to nodes since there isn't a separate "security group attachment" resource
-# 2. For addtional IAM policies, users can attach the policies outside of the cluster definition as demonstrated below
-resource "aws_iam_role_policy_attachment" "additional" {
-  for_each = module.eks.eks_managed_node_groups
-
-  policy_arn = aws_iam_policy.node_additional.arn
-  role       = each.value.iam_role_name
-}
-
 ################################################################################
 # Supporting Resources
 ################################################################################
@@ -371,11 +295,12 @@ module "vpc" {
   version = "~> 3.0"
 
   name = local.name
-  cidr = "10.0.0.0/16"
+  cidr = local.vpc_cidr
 
-  azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  azs             = local.azs
+  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 4, k)]
+  public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 48)]
+  intra_subnets   = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 52)]
 
   enable_ipv6                     = true
   assign_ipv6_address_on_creation = true
@@ -393,13 +318,11 @@ module "vpc" {
   create_flow_log_cloudwatch_log_group = true
 
   public_subnet_tags = {
-    "kubernetes.io/cluster/${local.name}" = "shared"
-    "kubernetes.io/role/elb"              = 1
+    "kubernetes.io/role/elb" = 1
   }
 
   private_subnet_tags = {
-    "kubernetes.io/cluster/${local.name}" = "shared"
-    "kubernetes.io/role/internal-elb"     = 1
+    "kubernetes.io/role/internal-elb" = 1
   }
 
   tags = local.tags
@@ -407,7 +330,7 @@ module "vpc" {
 
 module "vpc_cni_irsa" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 4.12"
+  version = "~> 5.0"
 
   role_name_prefix      = "VPC-CNI-IRSA"
   attach_vpc_cni_policy = true
@@ -423,175 +346,35 @@ module "vpc_cni_irsa" {
   tags = local.tags
 }
 
-resource "aws_security_group" "additional" {
-  name_prefix = "${local.name}-additional"
-  vpc_id      = module.vpc.vpc_id
+module "ebs_kms_key" {
+  source  = "terraform-aws-modules/kms/aws"
+  version = "~> 1.1"
 
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-    cidr_blocks = [
-      "10.0.0.0/8",
-      "172.16.0.0/12",
-      "192.168.0.0/16",
-    ]
-  }
+  description = "Customer managed key to encrypt EKS managed node group volumes"
 
-  tags = local.tags
-}
+  # Policy
+  key_administrators = [
+    data.aws_caller_identity.current.arn
+  ]
+  key_service_users = [
+    # required for the ASG to manage encrypted volumes for nodes
+    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling",
+    # required for the cluster / persistentvolume-controller to create encrypted PVCs
+    module.eks.cluster_iam_role_arn,
+  ]
 
-resource "aws_kms_key" "eks" {
-  description             = "EKS Secret Encryption Key"
-  deletion_window_in_days = 7
-  enable_key_rotation     = true
+  # Aliases
+  aliases = ["eks/${local.name}/ebs"]
 
   tags = local.tags
 }
 
-resource "aws_kms_key" "ebs" {
-  description             = "Customer managed key to encrypt EKS managed node group volumes"
-  deletion_window_in_days = 7
-  policy                  = data.aws_iam_policy_document.ebs.json
-}
+module "key_pair" {
+  source  = "terraform-aws-modules/key-pair/aws"
+  version = "~> 2.0"
 
-# This policy is required for the KMS key used for EKS root volumes, so the cluster is allowed to enc/dec/attach encrypted EBS volumes
-data "aws_iam_policy_document" "ebs" {
-  # Copy of default KMS policy that lets you manage it
-  statement {
-    sid       = "Enable IAM User Permissions"
-    actions   = ["kms:*"]
-    resources = ["*"]
-
-    principals {
-      type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
-    }
-  }
-
-  # Required for EKS
-  statement {
-    sid = "Allow service-linked role use of the CMK"
-    actions = [
-      "kms:Encrypt",
-      "kms:Decrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey"
-    ]
-    resources = ["*"]
-
-    principals {
-      type = "AWS"
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling", # required for the ASG to manage encrypted volumes for nodes
-        module.eks.cluster_iam_role_arn,                                                                                                            # required for the cluster / persistentvolume-controller to create encrypted PVCs
-      ]
-    }
-  }
-
-  statement {
-    sid       = "Allow attachment of persistent resources"
-    actions   = ["kms:CreateGrant"]
-    resources = ["*"]
-
-    principals {
-      type = "AWS"
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling", # required for the ASG to manage encrypted volumes for nodes
-        module.eks.cluster_iam_role_arn,                                                                                                            # required for the cluster / persistentvolume-controller to create encrypted PVCs
-      ]
-    }
-
-    condition {
-      test     = "Bool"
-      variable = "kms:GrantIsForAWSResource"
-      values   = ["true"]
-    }
-  }
-}
-
-# This is based on the LT that EKS would create if no custom one is specified (aws ec2 describe-launch-template-versions --launch-template-id xxx)
-# there are several more options one could set but you probably dont need to modify them
-# you can take the default and add your custom AMI and/or custom tags
-#
-# Trivia: AWS transparently creates a copy of your LaunchTemplate and actually uses that copy then for the node group. If you DONT use a custom AMI,
-# then the default user-data for bootstrapping a cluster is merged in the copy.
-
-resource "aws_launch_template" "external" {
-  name_prefix            = "external-eks-ex-"
-  description            = "EKS managed node group external launch template"
-  update_default_version = true
-
-  block_device_mappings {
-    device_name = "/dev/xvda"
-
-    ebs {
-      volume_size           = 100
-      volume_type           = "gp2"
-      delete_on_termination = true
-    }
-  }
-
-  monitoring {
-    enabled = true
-  }
-
-  # Disabling due to https://github.com/hashicorp/terraform-provider-aws/issues/23766
-  # network_interfaces {
-  #   associate_public_ip_address = false
-  #   delete_on_termination       = true
-  # }
-
-  # if you want to use a custom AMI
-  # image_id      = var.ami_id
-
-  # If you use a custom AMI, you need to supply via user-data, the bootstrap script as EKS DOESNT merge its managed user-data then
-  # you can add more than the minimum code you see in the template, e.g. install SSM agent, see https://github.com/aws/containers-roadmap/issues/593#issuecomment-577181345
-  # (optionally you can use https://registry.terraform.io/providers/hashicorp/cloudinit/latest/docs/data-sources/cloudinit_config to render the script, example: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/997#issuecomment-705286151)
-  # user_data = base64encode(data.template_file.launch_template_userdata.rendered)
-
-  tag_specifications {
-    resource_type = "instance"
-
-    tags = {
-      Name      = "external_lt"
-      CustomTag = "Instance custom tag"
-    }
-  }
-
-  tag_specifications {
-    resource_type = "volume"
-
-    tags = {
-      CustomTag = "Volume custom tag"
-    }
-  }
-
-  tag_specifications {
-    resource_type = "network-interface"
-
-    tags = {
-      CustomTag = "EKS example"
-    }
-  }
-
-  tags = {
-    CustomTag = "Launch template custom tag"
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "tls_private_key" "this" {
-  algorithm = "RSA"
-}
-
-resource "aws_key_pair" "this" {
-  key_name_prefix = local.name
-  public_key      = tls_private_key.this.public_key_openssh
+  key_name_prefix    = local.name
+  create_private_key = true
 
   tags = local.tags
 }
@@ -617,7 +400,7 @@ resource "aws_security_group" "remote_access" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
-  tags = local.tags
+  tags = merge(local.tags, { Name = "${local.name}-remote" })
 }
 
 resource "aws_iam_policy" "node_additional" {
@@ -667,54 +450,5 @@ data "aws_ami" "eks_default_bottlerocket" {
   filter {
     name   = "name"
     values = ["bottlerocket-aws-k8s-${local.cluster_version}-x86_64-*"]
-  }
-}
-
-################################################################################
-# Tags for the ASG to support cluster-autoscaler scale up from 0
-################################################################################
-
-locals {
-
-  # We need to lookup K8s taint effect from the AWS API value
-  taint_effects = {
-    NO_SCHEDULE        = "NoSchedule"
-    NO_EXECUTE         = "NoExecute"
-    PREFER_NO_SCHEDULE = "PreferNoSchedule"
-  }
-
-  cluster_autoscaler_label_tags = merge([
-    for name, group in module.eks.eks_managed_node_groups : {
-      for label_name, label_value in coalesce(group.node_group_labels, {}) : "${name}|label|${label_name}" => {
-        autoscaling_group = group.node_group_autoscaling_group_names[0],
-        key               = "k8s.io/cluster-autoscaler/node-template/label/${label_name}",
-        value             = label_value,
-      }
-    }
-  ]...)
-
-  cluster_autoscaler_taint_tags = merge([
-    for name, group in module.eks.eks_managed_node_groups : {
-      for taint in coalesce(group.node_group_taints, []) : "${name}|taint|${taint.key}" => {
-        autoscaling_group = group.node_group_autoscaling_group_names[0],
-        key               = "k8s.io/cluster-autoscaler/node-template/taint/${taint.key}"
-        value             = "${taint.value}:${local.taint_effects[taint.effect]}"
-      }
-    }
-  ]...)
-
-  cluster_autoscaler_asg_tags = merge(local.cluster_autoscaler_label_tags, local.cluster_autoscaler_taint_tags)
-}
-
-resource "aws_autoscaling_group_tag" "cluster_autoscaler_label_tags" {
-  for_each = local.cluster_autoscaler_asg_tags
-
-  autoscaling_group_name = each.value.autoscaling_group
-
-  tag {
-    key   = each.value.key
-    value = each.value.value
-
-    propagate_at_launch = false
   }
 }
