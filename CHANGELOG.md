@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.31.2...v19.0.0) (2022-12-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* Add support for Outposts, remove node security group, add support for addon `preserve` and `most_recent` configurations (#2250)
+
+### Features
+
+* Add support for Outposts, remove node security group, add support for addon `preserve` and `most_recent` configurations ([#2250](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2250)) ([b2e97ca](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/b2e97ca3dcbcd76063f1c932aa5199b4f49a2aa1))
+
 ### [18.31.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.31.1...v18.31.2) (2022-11-23)
 
 
