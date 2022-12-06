@@ -300,7 +300,7 @@ resource "aws_launch_template" "this" {
 ################################################################################
 
 locals {
-  launch_template_id = var.create && var.create_launch_template ? aws_launch_template.this[0].id : var.launch_template_id
+  launch_template_id = var.create && var.create_launch_template && var.use_custom_launch_template ? aws_launch_template.this[0].id : var.launch_template_id
   # Change order to allow users to set version priority before using defaults
   launch_template_version = coalesce(var.launch_template_version, try(aws_launch_template.this[0].default_version, "$Default"))
 }
