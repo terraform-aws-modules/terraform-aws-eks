@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.0.0...v19.0.1) (2022-12-06)
+
+
+### Bug Fixes
+
+* Call to lookup() closed too early, breaks sg rule creation in cluster sg if custom source sg is defined. ([#2319](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2319)) ([7bc4a27](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/7bc4a2743f0cdf9c8556a2c067eeb82436aafb41))
+
 ## [19.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.31.2...v19.0.0) (2022-12-05)
 
 
