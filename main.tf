@@ -129,7 +129,11 @@ module "kms" {
   override_policy_documents = var.kms_key_override_policy_documents
 
   # Aliases
-  aliases = concat(["eks/${var.cluster_name}"], var.kms_key_aliases)
+  aliases = var.kms_key_aliases
+  computed_aliases = {
+    # Computed since users can pass in computed values for cluster name such as random provider resources
+    cluster = { name = "eks/${var.cluster_name}" }
+  }
 
   tags = var.tags
 }
