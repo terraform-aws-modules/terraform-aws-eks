@@ -84,6 +84,15 @@ module "eks" {
       type                       = "ingress"
       source_node_security_group = true
     }
+    # Test: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2319
+    ingress_source_security_group_id = {
+      description              = "Ingress from another computed security group"
+      protocol                 = "tcp"
+      from_port                = 22
+      to_port                  = 22
+      type                     = "ingress"
+      source_security_group_id = aws_security_group.additional.id
+    }
   }
 
   # Extend node-to-node security group rules
@@ -95,6 +104,15 @@ module "eks" {
       to_port     = 0
       type        = "ingress"
       self        = true
+    }
+    # Test: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2319
+    ingress_source_security_group_id = {
+      description              = "Ingress from another computed security group"
+      protocol                 = "tcp"
+      from_port                = 22
+      to_port                  = 22
+      type                     = "ingress"
+      source_security_group_id = aws_security_group.additional.id
     }
   }
 
