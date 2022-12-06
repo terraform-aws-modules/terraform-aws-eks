@@ -197,7 +197,7 @@ resource "aws_security_group_rule" "cluster" {
   prefix_list_ids  = lookup(each.value, "prefix_list_ids", [])
   self             = lookup(each.value, "self", null)
   source_security_group_id = lookup(each.value, "source_security_group_id",
-  lookup(each.value, "source_node_security_group", false)) ? local.node_security_group_id : null
+  lookup(each.value, "source_node_security_group", false) ? local.node_security_group_id : null)
 }
 
 ################################################################################
