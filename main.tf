@@ -112,7 +112,7 @@ module "kms" {
   source  = "terraform-aws-modules/kms/aws"
   version = "1.1.0" # Note - be mindful of Terraform/provider version compatibility between modules
 
-  create = local.create && var.create_kms_key && !local.create_outposts_local_cluster # not valid on Outposts
+  create = local.create && var.create_kms_key && local.enable_cluster_encryption_config # not valid on Outposts
 
   description             = coalesce(var.kms_key_description, "${var.cluster_name} cluster encryption key")
   key_usage               = "ENCRYPT_DECRYPT"
@@ -129,7 +129,11 @@ module "kms" {
   override_policy_documents = var.kms_key_override_policy_documents
 
   # Aliases
-  aliases = concat(["eks/${var.cluster_name}"], var.kms_key_aliases)
+  aliases = var.kms_key_aliases
+  computed_aliases = {
+    # Computed since users can pass in computed values for cluster name such as random provider resources
+    cluster = { name = "eks/${var.cluster_name}" }
+  }
 
   tags = var.tags
 }

@@ -15,6 +15,7 @@ provider "kubernetes" {
 }
 
 data "aws_availability_zones" "available" {}
+data "aws_caller_identity" "current" {}
 
 locals {
   name   = "ex-${replace(basename(path.cwd), "_", "-")}"
@@ -58,13 +59,12 @@ module "eks" {
     }
   }
 
-  # Encryption key
-  create_kms_key = true
+  # External encryption key
+  create_kms_key = false
   cluster_encryption_config = {
-    resources = ["secrets"]
+    resources        = ["secrets"]
+    provider_key_arn = module.kms.key_arn
   }
-  kms_key_deletion_window_in_days = 7
-  enable_kms_key_rotation         = true
 
   iam_role_additional_policies = {
     additional = aws_iam_policy.additional.arn
@@ -459,4 +459,16 @@ resource "aws_iam_policy" "additional" {
       },
     ]
   })
+}
+
+module "kms" {
+  source  = "terraform-aws-modules/kms/aws"
+  version = "1.1.0"
+
+  aliases               = ["eks/${local.name}"]
+  description           = "${local.name} cluster encryption key"
+  enable_default_policy = true
+  key_owners            = [data.aws_caller_identity.current.arn]
+
+  tags = local.tags
 }
