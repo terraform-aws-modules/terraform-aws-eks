@@ -16,6 +16,12 @@ variable "platform" {
   default     = "linux"
 }
 
+variable "prefix_separator" {
+  description = "The separator to use between the prefix and the generated timestamp for resource names"
+  type        = string
+  default     = "-"
+}
+
 ################################################################################
 # User Data
 ################################################################################

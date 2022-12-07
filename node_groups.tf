@@ -327,6 +327,8 @@ module "eks_managed_node_group" {
   vpc_security_group_ids            = compact(concat([local.node_security_group_id], try(each.value.vpc_security_group_ids, var.eks_managed_node_group_defaults.vpc_security_group_ids, [])))
   cluster_primary_security_group_id = try(each.value.attach_cluster_primary_security_group, var.eks_managed_node_group_defaults.attach_cluster_primary_security_group, false) ? aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id : null
 
+  prefix_separator = try(each.value.prefix_separator, var.eks_managed_node_group_defaults.prefix_separator, "-")
+
   tags = merge(var.tags, try(each.value.tags, var.eks_managed_node_group_defaults.tags, {}))
 }
 
@@ -458,6 +460,8 @@ module "self_managed_node_group" {
   # Security group
   vpc_security_group_ids            = compact(concat([local.node_security_group_id], try(each.value.vpc_security_group_ids, var.self_managed_node_group_defaults.vpc_security_group_ids, [])))
   cluster_primary_security_group_id = try(each.value.attach_cluster_primary_security_group, var.self_managed_node_group_defaults.attach_cluster_primary_security_group, false) ? aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id : null
+
+  prefix_separator = try(each.value.prefix_separator, var.self_managed_node_group_defaults.prefix_separator, "-")
 
   tags = merge(var.tags, try(each.value.tags, var.self_managed_node_group_defaults.tags, {}))
 }

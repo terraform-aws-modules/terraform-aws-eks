@@ -212,7 +212,7 @@ resource "aws_launch_template" "this" {
   }
 
   name        = var.launch_template_use_name_prefix ? null : local.launch_template_name
-  name_prefix = var.launch_template_use_name_prefix ? "${local.launch_template_name}-" : null
+  name_prefix = var.launch_template_use_name_prefix ? "${local.launch_template_name}${var.prefix_separator}" : null
 
   dynamic "network_interfaces" {
     for_each = var.network_interfaces
@@ -321,7 +321,7 @@ resource "aws_eks_node_group" "this" {
 
   # Optional
   node_group_name        = var.use_name_prefix ? null : var.name
-  node_group_name_prefix = var.use_name_prefix ? "${var.name}-" : null
+  node_group_name_prefix = var.use_name_prefix ? "${var.name}${var.prefix_separator}" : null
 
   # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
   ami_type        = var.ami_id != "" ? null : var.ami_type
@@ -418,7 +418,7 @@ resource "aws_iam_role" "this" {
   count = var.create && var.create_iam_role ? 1 : 0
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
-  name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
+  name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}${var.prefix_separator}" : null
   path        = var.iam_role_path
   description = var.iam_role_description
 
