@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.0.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.0.3...v19.0.4) (2022-12-07)
+
+
+### Bug Fixes
+
+* Ensure that custom KMS key is not created if encryption is not enabled, support computed values in cluster name ([#2328](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2328)) ([b83f6d9](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/b83f6d98bfbca548012ea74e792fe14f04f0e6dc))
+
 ### [19.0.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.0.2...v19.0.3) (2022-12-07)
 
 
