@@ -108,10 +108,10 @@ locals {
 
   node_secuirty_group_recommended_rules = { for k, v in {
     ingress_nodes_ephemeral = {
-      description = "Node to node ingress on ephemeral ports"
-      protocol    = "tcp"
-      from_port   = 1025
-      to_port     = 65535
+      description = "Node to node ingress on all traffic"
+      protocol    = "-1"
+      from_port   = 0
+      to_port     = 0
       type        = "ingress"
       self        = true
     }
