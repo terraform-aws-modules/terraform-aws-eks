@@ -105,7 +105,7 @@ output "node_security_group_id" {
 
 output "oidc_provider" {
   description = "The OpenID Connect identity provider (issuer URL without leading `https://`)"
-  value       = try(replace(aws_eks_cluster.this[0].identity[0].oidc[0].issuer, "https://", null), null)
+  value       = try(replace(aws_eks_cluster.this[0].identity[0].oidc[0].issuer, "https://", ""), null)
 }
 
 output "oidc_provider_arn" {

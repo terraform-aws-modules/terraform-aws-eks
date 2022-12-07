@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.0.1...v19.0.2) (2022-12-06)
+
+
+### Bug Fixes
+
+* `public_access_cidrs` require a value even if public endpoint is disabled ([#2320](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2320)) ([3f6d915](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/3f6d915eef6672440df8c82468c31ed2bc2fce54))
+
 ### [19.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.0.0...v19.0.1) (2022-12-06)
 
 
