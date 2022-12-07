@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.0.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.0.2...v19.0.3) (2022-12-07)
+
+
+### Bug Fixes
+
+* Invalid value for "replace" parameter: argument must not be null. ([#2322](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2322)) ([9adc475](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/9adc475bc1f1a201648e37b26cefe9bdf6b3a2f7))
+
 ### [19.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.0.1...v19.0.2) (2022-12-06)
 
 
