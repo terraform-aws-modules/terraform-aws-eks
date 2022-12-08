@@ -283,7 +283,7 @@ resource "aws_iam_role" "this" {
   force_detach_policies = true
 
   # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/920
-  # Resources running on the cluster are still generaring logs when destroying the module resources
+  # Resources running on the cluster are still generating logs when destroying the module resources
   # which results in the log group being re-created even after Terraform destroys it. Removing the
   # ability for the cluster role to create the log group prevents this log group from being re-created
   # outside of Terraform due to services still generating logs during destroy process

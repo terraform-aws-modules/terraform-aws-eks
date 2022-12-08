@@ -37,7 +37,7 @@ The examples provided under `examples/` provide a comprehensive suite of configu
   - [EKS Managed Node Group](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html)
   - [Self Managed Node Group](https://docs.aws.amazon.com/eks/latest/userguide/worker.html)
   - [Fargate Profile](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html)
-- Support for creating Karpenter related AWS infrastruture resources (e.g. IAM roles, SQS queue, EventBridge rules, etc.)
+- Support for creating Karpenter related AWS infrastructure resources (e.g. IAM roles, SQS queue, EventBridge rules, etc.)
 - Support for custom AMI, custom launch template, and custom user data including custom user data template
 - Support for Amazon Linux 2 EKS Optimized AMI and Bottlerocket nodes
   - Windows based node support is limited to a default user data template that is provided due to the lack of Windows support and manual steps required to provision Windows based EKS nodes

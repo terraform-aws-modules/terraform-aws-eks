@@ -8,7 +8,7 @@ Please consult the `examples` directory for reference example configurations. If
 - Minimum supported version of Terraform AWS provider updated to v4.45 to support latest features provided via the resources utilized.
 - Minimum supported version of Terraform updated to v1.0
 - Individual security group created per EKS managed node group or self managed node group has been removed. This configuration went mostly un-used and would often cause confusion ("Why is there an empty security group attached to my nodes?"). This functionality can easily be replicated by user's providing one or more externally created security groups to attach to nodes launched from the node group.
-- Previously, `var.iam_role_additional_policies` (one for each of the following: cluster IAM role, EKS managed node group IAM role, self-managed node group IAM role, and Fargate Profile IAM role) accepted a list of strings. This worked well for policies that already existed but failed for policies being created at the same time as the cluster due to the well known issue of unkown values used in a `for_each` loop. To rectify this issue in `v19.x`, two changes were made:
+- Previously, `var.iam_role_additional_policies` (one for each of the following: cluster IAM role, EKS managed node group IAM role, self-managed node group IAM role, and Fargate Profile IAM role) accepted a list of strings. This worked well for policies that already existed but failed for policies being created at the same time as the cluster due to the well known issue of unknown values used in a `for_each` loop. To rectify this issue in `v19.x`, two changes were made:
   1. `var.iam_role_additional_policies` was changed from type `list(string)` to type `map(string)` -> this is a breaking change. More information on managing this change can be found below, under `Terraform State Moves`
   2. The logic used in the root module for this variable was changed to replace the use of `try()` with `lookup()`. More details on why can be found [here](https://github.com/clowdhaus/terraform-for-each-unknown)
 - The cluster name has been removed from the Karpenter module event rule names. Due to the use of long cluster names appending to the provided naming scheme, the cluster name has moved to a `ClusterName` tag and the event rule name is now a prefix. This guarantees that users can have multiple instances of Karpenter withe their respective event rules/SQS queue without name collisions, while also still being able to identify which queues and event rules belong to which cluster.
@@ -26,7 +26,7 @@ Please consult the `examples` directory for reference example configurations. If
 
 ### Modified
 
-- `cluster_security_group_additional_rules` and `node_security_group_additional_rules` have been modified to use `lookup()` instead of `try()` to avoid the well known issue of [unkown values within a `for_each` loop](https://github.com/hashicorp/terraform/issues/4149)
+- `cluster_security_group_additional_rules` and `node_security_group_additional_rules` have been modified to use `lookup()` instead of `try()` to avoid the well known issue of [unknown values within a `for_each` loop](https://github.com/hashicorp/terraform/issues/4149)
 - Default cluster security group rules have removed egress rules for TCP/443 and TCP/10250 to node groups since the cluster primary security group includes a default rule for ALL to `0.0.0.0/0`/`::/0`
 - Default node security group rules have removed egress rules have been removed since the default security group settings have egress rule for ALL to `0.0.0.0/0`/`::/0`
 - `block_device_mappings` previously required a map of maps but has since changed to an array of maps. Users can remove the outer key for each block device mapping and replace the outermost map `{}` with an array `[]`. There are no state changes required for this change.
@@ -101,7 +101,7 @@ Please consult the `examples` directory for reference example configurations. If
      - `default_instance_warmup`
      - `force_delete_warm_pool`
    - EKS managed node groups:
-     - `use_custom_launch_template` was added to better clarify how users can switch betweeen a custom launch template or the default launch template provided by the EKS managed node group. Previously, to achieve this same functionality of using the default launch template, users needed to set `create_launch_template = false` and `launch_template_name = ""` which is not very intuitive.
+     - `use_custom_launch_template` was added to better clarify how users can switch between a custom launch template or the default launch template provided by the EKS managed node group. Previously, to achieve this same functionality of using the default launch template, users needed to set `create_launch_template = false` and `launch_template_name = ""` which is not very intuitive.
      - `launch_template_id` for use when using an existing/externally created launch template (Ref: https://github.com/terraform-aws-modules/terraform-aws-autoscaling/pull/204)
      - `maintenance_options`
      - `private_dns_name_options`
@@ -121,7 +121,7 @@ Please consult the `examples` directory for reference example configurations. If
 
 6. Added outputs:
 
-   - `cluster_name` - The `cluster_id` currently set by the AWS provider is actually the cluster name, but in the future this will change and there will be a distinction between the `cluster_name` and `clsuter_id`. [Reference](https://github.com/hashicorp/terraform-provider-aws/issues/27560)
+   - `cluster_name` - The `cluster_id` currently set by the AWS provider is actually the cluster name, but in the future this will change and there will be a distinction between the `cluster_name` and `cluster_id`. [Reference](https://github.com/hashicorp/terraform-provider-aws/issues/27560)
 
 ## Upgrade Migrations
 
@@ -165,7 +165,7 @@ EKS managed node groups on `v18.x` by default create a security group that does 
 2. Once the node group security group(s) have been removed, you can update your module definition to specify the `v19.x` version of the module
 3. Run `terraform init -upgrade=true` to update your configuration and pull in the v19 changes
 4. Using the documentation provided above, update your module definition to reflect the changes in the module from `v18.x` to `v19.x`. You can utilize `terraform plan` as you go to help highlight any changes that you wish to make. See below for `terraform state mv ...` commands related to the use of `iam_role_additional_policies`. If you are not providing any values to these variables, you can skip this section.
-5. Once you are satisifed with the changes and the `terraform plan` output, you can apply the changes to sync your infrastructure with the updated module definition (or vice versa).
+5. Once you are satisfied with the changes and the `terraform plan` output, you can apply the changes to sync your infrastructure with the updated module definition (or vice versa).
 
 ### Diff of Before (v18.x) vs After (v19.x)
 
@@ -418,7 +418,7 @@ Where `"<POLICY_ARN>"` is specified, this should be replaced with the full ARN o
 
 ```hcl
   ...
-  # This is demonstrating the cluster IAM role addtional policies
+  # This is demonstrating the cluster IAM role additional policies
   iam_role_additional_policies = {
     additional = aws_iam_policy.additional.arn
   }

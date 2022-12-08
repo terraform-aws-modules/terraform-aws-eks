@@ -47,7 +47,7 @@ data "aws_iam_policy_document" "cni_ipv6_policy" {
   }
 }
 
-# Note - we are keeping this to a minimim in hopes that its soon replaced with an AWS managed policy like `AmazonEKS_CNI_Policy`
+# Note - we are keeping this to a minimum in hopes that its soon replaced with an AWS managed policy like `AmazonEKS_CNI_Policy`
 resource "aws_iam_policy" "cni_ipv6_policy" {
   count = var.create && var.create_cni_ipv6_iam_policy ? 1 : 0
 
@@ -106,7 +106,7 @@ locals {
     }
   }
 
-  node_secuirty_group_recommended_rules = { for k, v in {
+  node_security_group_recommended_rules = { for k, v in {
     ingress_nodes_ephemeral = {
       description = "Node to node ingress on ephemeral ports"
       protocol    = "tcp"
@@ -168,7 +168,7 @@ resource "aws_security_group" "node" {
 resource "aws_security_group_rule" "node" {
   for_each = { for k, v in merge(
     local.node_security_group_rules,
-    local.node_secuirty_group_recommended_rules,
+    local.node_security_group_recommended_rules,
     var.node_security_group_additional_rules,
   ) : k => v if local.create_node_sg }
 

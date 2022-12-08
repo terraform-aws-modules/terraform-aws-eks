@@ -70,7 +70,7 @@ data "cloudinit_config" "linux_eks_managed_node_group" {
   gzip          = false
   boundary      = "//"
 
-  # Prepend to existing user data suppled by AWS EKS
+  # Prepend to existing user data supplied by AWS EKS
   part {
     content_type = "text/x-shellscript"
     content      = var.pre_bootstrap_user_data

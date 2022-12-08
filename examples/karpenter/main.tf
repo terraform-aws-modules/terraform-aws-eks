@@ -292,7 +292,7 @@ resource "null_resource" "remove_default_coredns_deployment" {
     }
 
     # We are removing the deployment provided by the EKS service and replacing it through the self-managed CoreDNS Helm addon
-    # However, we are maintaing the existing kube-dns service and annotating it for Helm to assume control
+    # However, we are maintaining the existing kube-dns service and annotating it for Helm to assume control
     command = <<-EOT
       kubectl --namespace kube-system delete deployment coredns --kubeconfig <(echo $KUBECONFIG | base64 --decode)
     EOT
@@ -308,7 +308,7 @@ resource "null_resource" "modify_kube_dns" {
       KUBECONFIG = base64encode(local.kubeconfig)
     }
 
-    # We are maintaing the existing kube-dns service and annotating it for Helm to assume control
+    # We are maintaining the existing kube-dns service and annotating it for Helm to assume control
     command = <<-EOT
       echo "Setting implicit dependency on ${module.eks.fargate_profiles["kube_system"].fargate_profile_pod_execution_role_arn}"
       kubectl --namespace kube-system annotate --overwrite service kube-dns meta.helm.sh/release-name=coredns --kubeconfig <(echo $KUBECONFIG | base64 --decode)
@@ -363,7 +363,7 @@ resource "helm_release" "coredns" {
   ]
 
   depends_on = [
-    # Need to ensure the CoreDNS updates are peformed before provisioning
+    # Need to ensure the CoreDNS updates are performed before provisioning
     null_resource.modify_kube_dns
   ]
 }
