@@ -130,7 +130,7 @@ module "eks" {
       ami_id   = data.aws_ami.eks_default_bottlerocket.image_id
       platform = "bottlerocket"
 
-      # Use module user data template to boostrap
+      # Use module user data template to bootstrap
       enable_bootstrap_user_data = true
       # This will get added to the template
       bootstrap_extra_args = <<-EOT
@@ -165,7 +165,7 @@ module "eks" {
       # Current default AMI used by managed node groups - pseudo "custom"
       ami_id = data.aws_ami.eks_default_arm.image_id
 
-      # This will ensure the boostrap user data is used to join the node
+      # This will ensure the bootstrap user data is used to join the node
       # By default, EKS managed node groups will not append bootstrap script;
       # this adds it back in using the default template provided by the module
       # Note: this assumes the AMI provided is an EKS optimized AMI derivative
