@@ -270,6 +270,7 @@ module "eks_managed_node_group" {
   cluster_auth_base64        = try(aws_eks_cluster.this[0].certificate_authority[0].data, "")
   cluster_service_ipv4_cidr  = var.cluster_service_ipv4_cidr
   enable_bootstrap_user_data = try(each.value.enable_bootstrap_user_data, var.eks_managed_node_group_defaults.enable_bootstrap_user_data, false)
+  cloud_config_content_type  = try(each.value.cloud_config_content_type, var.eks_managed_node_group_defaults.cloud_config_content_type, "text/x-shellscript")
   pre_bootstrap_user_data    = try(each.value.pre_bootstrap_user_data, var.eks_managed_node_group_defaults.pre_bootstrap_user_data, "")
   post_bootstrap_user_data   = try(each.value.post_bootstrap_user_data, var.eks_managed_node_group_defaults.post_bootstrap_user_data, "")
   bootstrap_extra_args       = try(each.value.bootstrap_extra_args, var.eks_managed_node_group_defaults.bootstrap_extra_args, "")
@@ -393,13 +394,14 @@ module "self_managed_node_group" {
   autoscaling_group_tags = try(each.value.autoscaling_group_tags, var.self_managed_node_group_defaults.autoscaling_group_tags, {})
 
   # User data
-  platform                 = try(each.value.platform, var.self_managed_node_group_defaults.platform, "linux")
-  cluster_endpoint         = try(aws_eks_cluster.this[0].endpoint, "")
-  cluster_auth_base64      = try(aws_eks_cluster.this[0].certificate_authority[0].data, "")
-  pre_bootstrap_user_data  = try(each.value.pre_bootstrap_user_data, var.self_managed_node_group_defaults.pre_bootstrap_user_data, "")
-  post_bootstrap_user_data = try(each.value.post_bootstrap_user_data, var.self_managed_node_group_defaults.post_bootstrap_user_data, "")
-  bootstrap_extra_args     = try(each.value.bootstrap_extra_args, var.self_managed_node_group_defaults.bootstrap_extra_args, "")
-  user_data_template_path  = try(each.value.user_data_template_path, var.self_managed_node_group_defaults.user_data_template_path, "")
+  platform                  = try(each.value.platform, var.self_managed_node_group_defaults.platform, "linux")
+  cluster_endpoint          = try(aws_eks_cluster.this[0].endpoint, "")
+  cluster_auth_base64       = try(aws_eks_cluster.this[0].certificate_authority[0].data, "")
+  cloud_config_content_type = try(each.value.cloud_config_content_type, var.eks_managed_node_group_defaults.cloud_config_content_type, "text/x-shellscript")
+  pre_bootstrap_user_data   = try(each.value.pre_bootstrap_user_data, var.self_managed_node_group_defaults.pre_bootstrap_user_data, "")
+  post_bootstrap_user_data  = try(each.value.post_bootstrap_user_data, var.self_managed_node_group_defaults.post_bootstrap_user_data, "")
+  bootstrap_extra_args      = try(each.value.bootstrap_extra_args, var.self_managed_node_group_defaults.bootstrap_extra_args, "")
+  user_data_template_path   = try(each.value.user_data_template_path, var.self_managed_node_group_defaults.user_data_template_path, "")
 
   # Launch Template
   create_launch_template                 = try(each.value.create_launch_template, var.self_managed_node_group_defaults.create_launch_template, true)

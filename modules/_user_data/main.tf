@@ -72,7 +72,7 @@ data "cloudinit_config" "linux_eks_managed_node_group" {
 
   # Prepend to existing user data supplied by AWS EKS
   part {
-    content_type = "text/x-shellscript"
+    content_type = var.cloud_config_content_type
     content      = var.pre_bootstrap_user_data
   }
 }

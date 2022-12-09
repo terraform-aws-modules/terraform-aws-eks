@@ -23,6 +23,16 @@ module "eks_mng_linux_additional" {
   EOT
 }
 
+module "eks_mng_linux_cloud_config" {
+  source = "../../modules/_user_data"
+
+  cloud_config_content_type = "text/cloud-config"
+  pre_bootstrap_user_data = templatefile(
+    "${path.module}/templates/cloud_config.yaml",
+    { var1 = "rocks" }
+  )
+}
+
 module "eks_mng_linux_custom_ami" {
   source = "../../modules/_user_data"
 

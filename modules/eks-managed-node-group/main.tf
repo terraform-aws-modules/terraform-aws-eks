@@ -18,6 +18,7 @@ module "user_data" {
   cluster_service_ipv4_cidr = var.cluster_service_ipv4_cidr
 
   enable_bootstrap_user_data = var.enable_bootstrap_user_data
+  cloud_config_content_type  = var.cloud_config_content_type
   pre_bootstrap_user_data    = var.pre_bootstrap_user_data
   post_bootstrap_user_data   = var.post_bootstrap_user_data
   bootstrap_extra_args       = var.bootstrap_extra_args

@@ -38,6 +38,12 @@ variable "cluster_auth_base64" {
   default     = ""
 }
 
+variable "cloud_config_content_type" {
+  description = "Content type of the user data script injected ahead of the EKS bootstrap script. Not used when `platform` = `bottlerocket`"
+  type        = string
+  default     = ""
+}
+
 variable "pre_bootstrap_user_data" {
   description = "User data that is injected into the user data script ahead of the EKS bootstrap script. Not used when `platform` = `bottlerocket`"
   type        = string

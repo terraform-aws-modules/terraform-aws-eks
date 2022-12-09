@@ -32,6 +32,7 @@ No providers.
 | <a name="module_eks_mng_bottlerocket_custom_template"></a> [eks\_mng\_bottlerocket\_custom\_template](#module\_eks\_mng\_bottlerocket\_custom\_template) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_bottlerocket_no_op"></a> [eks\_mng\_bottlerocket\_no\_op](#module\_eks\_mng\_bottlerocket\_no\_op) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_linux_additional"></a> [eks\_mng\_linux\_additional](#module\_eks\_mng\_linux\_additional) | ../../modules/_user_data | n/a |
+| <a name="module_eks_mng_linux_cloud_config"></a> [eks\_mng\_linux\_cloud\_config](#module\_eks\_mng\_linux\_cloud\_config) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_linux_custom_ami"></a> [eks\_mng\_linux\_custom\_ami](#module\_eks\_mng\_linux\_custom\_ami) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_linux_custom_template"></a> [eks\_mng\_linux\_custom\_template](#module\_eks\_mng\_linux\_custom\_template) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_linux_no_op"></a> [eks\_mng\_linux\_no\_op](#module\_eks\_mng\_linux\_no\_op) | ../../modules/_user_data | n/a |

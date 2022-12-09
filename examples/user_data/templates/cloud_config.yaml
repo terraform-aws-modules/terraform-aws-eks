@@ -1,0 +1,6 @@
+#cloud-config
+cloud_final_modules:
+  - [scripts-user, always]
+
+runcmd:
+  - echo "cloud-config ${var1} !"

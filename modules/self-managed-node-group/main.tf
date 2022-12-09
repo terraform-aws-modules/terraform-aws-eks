@@ -29,6 +29,7 @@ module "user_data" {
   cluster_auth_base64 = var.cluster_auth_base64
 
   enable_bootstrap_user_data = true
+  cloud_config_content_type  = var.cloud_config_content_type
   pre_bootstrap_user_data    = var.pre_bootstrap_user_data
   post_bootstrap_user_data   = var.post_bootstrap_user_data
   bootstrap_extra_args       = var.bootstrap_extra_args
