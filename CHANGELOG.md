@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.0.4...v19.1.0) (2022-12-16)
+
+
+### Features
+
+* Add support for addon `configuration_values` ([#2345](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2345)) ([3b62f6c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/3b62f6c31604490fc19184e626e73873b296ecd1))
+
 ### [19.0.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.0.3...v19.0.4) (2022-12-07)
 
 
