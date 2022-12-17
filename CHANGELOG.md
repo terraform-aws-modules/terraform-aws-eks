@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.1.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.1.0...v19.1.1) (2022-12-17)
+
+
+### Bug Fixes
+
+* Use IAM session context data source to resolve the identities role when using `assumed_role` ([#2347](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2347)) ([71b8eca](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/71b8ecaa87db89c454b2c9446ff3d7675e4dc5a7))
+
 ## [19.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.0.4...v19.1.0) (2022-12-16)
 
 
