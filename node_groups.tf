@@ -116,7 +116,7 @@ locals {
       self        = true
     }
     # metrics-server
-    ingress_cluster_8443_webhook = {
+    ingress_cluster_4443_webhook = {
       description                   = "Cluster API to node 4443/tcp webhook"
       protocol                      = "tcp"
       from_port                     = 4443
