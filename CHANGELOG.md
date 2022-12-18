@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.1.1...v19.2.0) (2022-12-18)
+
+
+### Features
+
+* Ensure all supported resources are tagged under `tag_specifications` on launch templates ([#2352](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2352)) ([0751a0c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/0751a0ca04d6303015e8a9c2f917956ea00d184b))
+
 ### [19.1.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.1.0...v19.1.1) (2022-12-17)
 
 
