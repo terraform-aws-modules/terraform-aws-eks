@@ -115,6 +115,16 @@ locals {
       type        = "ingress"
       self        = true
     }
+    # metrics-server
+    ingress_cluster_8443_webhook = {
+      description                   = "Cluster API to node 4443/tcp webhook"
+      protocol                      = "tcp"
+      from_port                     = 4443
+      to_port                       = 4443
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }
+    # Karpenter
     ingress_cluster_8443_webhook = {
       description                   = "Cluster API to node 8443/tcp webhook"
       protocol                      = "tcp"
@@ -123,6 +133,7 @@ locals {
       type                          = "ingress"
       source_cluster_security_group = true
     }
+    # ALB controller, NGINX
     ingress_cluster_9443_webhook = {
       description                   = "Cluster API to node 9443/tcp webhook"
       protocol                      = "tcp"
