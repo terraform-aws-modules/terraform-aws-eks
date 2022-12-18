@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.3.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.3.0...v19.3.1) (2022-12-18)
+
+
+### Bug Fixes
+
+* Correct map name for security group rule 4443/tcp ([#2354](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2354)) ([13a9542](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/13a9542dadd29fa75fd76c2adcee9dd17dcffda4))
+
 ## [19.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.2.0...v19.3.0) (2022-12-18)
 
 
