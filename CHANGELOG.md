@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.2.0...v19.3.0) (2022-12-18)
+
+
+### Features
+
+* Add additional port for `metrics-server` to recommended rules ([#2353](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2353)) ([5a270b7](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/5a270b7bf8de8c5846e91d72ffd9f594cbd8b921))
+
 ## [19.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.1.1...v19.2.0) (2022-12-18)
 
 
