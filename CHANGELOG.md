@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.4.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.3.1...v19.4.0) (2022-12-19)
+
+
+### Features
+
+* Allow configuring which tags are passed on launch template tag specifications ([#2360](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2360)) ([094ed1d](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/094ed1d5e461552a0a76bc019c36690fe0fc2dd5))
+
 ### [19.3.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.3.0...v19.3.1) (2022-12-18)
 
 
