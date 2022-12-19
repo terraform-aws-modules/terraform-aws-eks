@@ -286,6 +286,12 @@ variable "launch_template_tags" {
   default     = {}
 }
 
+variable "tag_specifications" {
+  description = "The tags to apply to the resources during launch"
+  type        = list(string)
+  default     = ["instance", "volume", "elastic-gpu", "network-interface", "spot-instances-request"]
+}
+
 ################################################################################
 # Autoscaling group
 ################################################################################
