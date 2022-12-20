@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.4.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.4.0...v19.4.1) (2022-12-20)
+
+
+### Bug Fixes
+
+* Correct `eks_managed_*` to `self_managed_*` for `tag_specification` argument ([#2364](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2364)) ([df7c57c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/df7c57c199d9e9f54d9ed18fb7c1e3a47ad732ed))
+
 ## [19.4.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.3.1...v19.4.0) (2022-12-19)
 
 
