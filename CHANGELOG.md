@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.4.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.4.1...v19.4.2) (2022-12-20)
+
+
+### Bug Fixes
+
+* Drop spot-instances-request from tag_specifications ([#2363](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2363)) ([e391a99](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e391a99a7bd8209618fdb65cc09460673fbaf1bc))
+
 ### [19.4.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.4.0...v19.4.1) (2022-12-20)
 
 
