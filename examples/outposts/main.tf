@@ -64,14 +64,6 @@ module "eks" {
     }
   }
 
-  self_managed_node_group_defaults = {
-    attach_cluster_primary_security_group = true
-
-    iam_role_additional_policies = {
-      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-    }
-  }
-
   self_managed_node_groups = {
     outpost = {
       name = local.name
