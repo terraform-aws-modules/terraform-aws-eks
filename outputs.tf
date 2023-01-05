@@ -221,3 +221,12 @@ output "aws_auth_configmap_yaml" {
     }
   )
 }
+
+################################################################################
+# EKS Addon Version Id
+################################################################################
+
+output "aws_eks_addon_version" {
+  description = "aks cluster addon version details"
+  value = data.aws_eks_addon_version.this.id
+}
