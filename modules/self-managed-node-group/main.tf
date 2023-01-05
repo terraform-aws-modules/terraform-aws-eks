@@ -2,7 +2,7 @@ data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
 data "aws_ami" "eks_default" {
-  count = var.create ? 1 : 0
+  count = var.create && var.create_launch_template ? 1 : 0
 
   filter {
     name   = "name"
