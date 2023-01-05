@@ -54,44 +54,48 @@ module "eks" {
     }
   }
 
-  fargate_profiles = {
-    example = {
-      name = "example"
-      selectors = [
-        {
-          namespace = "backend"
-          labels = {
-            Application = "backend"
+  fargate_profiles = merge(
+    {
+      example = {
+        name = "example"
+        selectors = [
+          {
+            namespace = "backend"
+            labels = {
+              Application = "backend"
+            }
+          },
+          {
+            namespace = "app-*"
+            labels = {
+              Application = "app-wildcard"
+            }
           }
-        },
-        {
-          namespace = "app-*"
-          labels = {
-            Application = "app-wildcard"
-          }
+        ]
+
+        # Using specific subnets instead of the subnets supplied for the cluster itself
+        subnet_ids = [module.vpc.private_subnets[1]]
+
+        tags = {
+          Owner = "secondary"
         }
-      ]
 
-      # Using specific subnets instead of the subnets supplied for the cluster itself
-      subnet_ids = [module.vpc.private_subnets[1]]
-
-      tags = {
-        Owner = "secondary"
+        timeouts = {
+          create = "20m"
+          delete = "20m"
+        }
       }
-
-      timeouts = {
-        create = "20m"
-        delete = "20m"
+    },
+    { for i in range(3) :
+      "kube-system-${element(split("-", local.azs[i]), 2)}" => {
+        selectors = [
+          { namespace = "kube-system" }
+        ]
+        # We want to create a profile per AZ for high availability
+        subnet_ids = element(module.vpc.private_subnets, i)
       }
     }
-
-    kube_system = {
-      name = "kube-system"
-      selectors = [
-        { namespace = "kube-system" }
-      ]
-    }
-  }
+  )
 
   tags = local.tags
 }
