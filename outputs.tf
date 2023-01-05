@@ -228,5 +228,5 @@ output "aws_auth_configmap_yaml" {
 
 output "aws_eks_addon_version" {
   description = "aks cluster addon version details"
-  value = data.aws_eks_addon_version.this.id
+  value = data.aws_eks_addon_version.this.*.id
 }
