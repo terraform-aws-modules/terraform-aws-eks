@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.5.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.5.0...v19.5.1) (2023-01-05)
+
+
+### Bug Fixes
+
+* AMI lookup should only happen when launch template is created ([#2386](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2386)) ([3834935](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/383493538748f1df844d40068cdde62579b79476))
+
 ## [19.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.4.3...v19.5.0) (2023-01-05)
 
 
