@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.4.3...v19.5.0) (2023-01-05)
+
+
+### Features
+
+* Ignore changes to labels and annotations on on `aws-auth` ConfigMap ([#2380](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2380)) ([5015b42](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/5015b429e656d927fb66f214c998713c6fc84755))
+
 ### [19.4.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.4.2...v19.4.3) (2023-01-05)
 
 
