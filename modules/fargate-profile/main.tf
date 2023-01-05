@@ -40,13 +40,15 @@ resource "aws_iam_role" "this" {
   tags = merge(var.tags, var.iam_role_tags)
 }
 
-resource "aws_iam_role_policy_attachment" "this" {
-  for_each = { for k, v in toset(compact([
-    "${local.iam_role_policy_prefix}/AmazonEKSFargatePodExecutionRolePolicy",
-    var.iam_role_attach_cni_policy ? local.cni_policy : "",
-  ])) : k => v if var.create && var.create_iam_role }
+resource "aws_iam_role_policy_attachment" "cni_policy" {
+  count = var.create && var.create_iam_role && var.iam_role_attach_cni_policy ? 1 : 0
+  policy_arn = local.cni_policy
+  role       = aws_iam_role.this[0].name
+}
 
-  policy_arn = each.value
+resource "aws_iam_role_policy_attachment" "fargate_pod_execution_role_policy" {
+  count = var.create && var.create_iam_role ? 1 : 0
+  policy_arn = "${local.iam_role_policy_prefix}/AmazonEKSFargatePodExecutionRolePolicy"
   role       = aws_iam_role.this[0].name
 }
 
