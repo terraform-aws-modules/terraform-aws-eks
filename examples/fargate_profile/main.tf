@@ -92,7 +92,7 @@ module "eks" {
           { namespace = "kube-system" }
         ]
         # We want to create a profile per AZ for high availability
-        subnet_ids = element(module.vpc.private_subnets, i)
+        subnet_ids = [element(module.vpc.private_subnets, i)]
       }
     }
   )
