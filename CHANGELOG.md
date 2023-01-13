@@ -249,7 +249,7 @@ All notable changes to this project will be documented in this file.
 
 ### Features
 
-* Add support for specifiying NTP address to use private Amazon Time Sync Service ([#2125](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2125)) ([4543ab4](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/4543ab454bea80b64381b88a631d955a7cfae247))
+* Add support for specifying NTP address to use private Amazon Time Sync Service ([#2125](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2125)) ([4543ab4](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/4543ab454bea80b64381b88a631d955a7cfae247))
 
 ## [18.25.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.24.1...v18.25.0) (2022-06-28)
 
@@ -270,7 +270,7 @@ All notable changes to this project will be documented in this file.
 
 ### Features
 
-* Add support for specifying conrol plane subnets separate from those used by node groups (data plane) ([#2113](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2113)) ([ebc91bc](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ebc91bcd37a919a350d872a5b235ccc2a79955a6))
+* Add support for specifying control plane subnets separate from those used by node groups (data plane) ([#2113](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2113)) ([ebc91bc](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ebc91bcd37a919a350d872a5b235ccc2a79955a6))
 
 ## [18.23.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.22.0...v18.23.0) (2022-06-02)
 
@@ -613,7 +613,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bug Fixes
 
-* Use the prefix_seperator var for node sg prefix ([#1751](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1751)) ([62879dd](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/62879dd81a69ba010f19ba9ece8392e1730b53e0))
+* Use the prefix_separator var for node sg prefix ([#1751](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1751)) ([62879dd](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/62879dd81a69ba010f19ba9ece8392e1730b53e0))
 
 ### [18.0.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.0.3...v18.0.4) (2022-01-07)
 
@@ -890,7 +890,7 @@ BREAKING CHANGES:
 - The  variable `config_output_path` is renamed into `kubeconfig_output_path` for naming consistency. Please upgrade your configuration accordingly.
 
 NOTES:
-- Since we now search only for Linux or Windows AMI if there is a worker groups for the corresponding plateform, we can now define different default root block device name for each plateform. Use locals `root_block_device_name` and `root_block_device_name_windows` to define your owns.
+- Since we now search only for Linux or Windows AMI if there is a worker groups for the corresponding platform, we can now define different default root block device name for each platform. Use locals `root_block_device_name` and `root_block_device_name_windows` to define your owns.
 - The kubeconfig file permission is not world and group readable anymore. The default permission is now `600`. This value can be changed with the variable `var.kubeconfig_file_permission`.
 
 
@@ -929,7 +929,7 @@ BUG FIXES:
 - Bump `terraform-aws-modules/http` provider version to support darwin arm64 release ([#1369](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1369))
 
 DOCS:
-- Use IRSA for Node Termination Handler IAM policy attachement in Instance Refresh example ([#1373](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1373))
+- Use IRSA for Node Termination Handler IAM policy attachment in Instance Refresh example ([#1373](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1373))
 
 
 <a name="v16.0.0"></a>
@@ -1002,7 +1002,7 @@ FEATURES:
 - Add permissions boundary to fargate execution IAM role ([#1108](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1108))
 
 ENHANCEMENTS:
-- Dont set -x in userdata to avoid printing sensitive informations in logs ([#1187](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1187))
+- Don't set -x in userdata to avoid printing sensitive information in logs ([#1187](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1187))
 
 BUG FIXES:
 - Merge tags from Fargate profiles with common tags from cluster ([#1159](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1159))
@@ -1114,7 +1114,7 @@ BREAKING CHANGES:
 NOTES:
 - `credit_specification` for worker groups launch template can now be set to `null` so that we can use non burstable EC2 families
 - Starting in v12.1.0 the `cluster_id` output depends on the
-`wait_for_cluster` null resource. This means that initialisation of the
+`wait_for_cluster` null resource. This means that initialization of the
 kubernetes provider will be blocked until the cluster is really ready,
 if the module is set to manage the aws_auth ConfigMap and user followed
 the typical Usage Example. kubernetes resources in the same plan do not
@@ -1220,7 +1220,7 @@ TESTS:
 - Remove unused kitchen test related stuff ([#787](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/787))
 
 CI:
-- Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
+- Restrict semantic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
 [Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.23.0...HEAD
