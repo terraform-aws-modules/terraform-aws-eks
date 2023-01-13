@@ -88,14 +88,6 @@ locals {
       type                          = "ingress"
       source_cluster_security_group = true
     }
-    ingress_cluster_vpc_cni_metrics = {
-      description                   = "Cluster to node VPC CNI Metric Helper TCP"
-      protocol                      = "tcp"
-      from_port                     = 61678
-      to_port                       = 61678
-      type                          = "ingress"
-      source_cluster_security_group = true
-    }
     ingress_self_coredns_tcp = {
       description = "Node to node CoreDNS"
       protocol    = "tcp"
@@ -147,6 +139,15 @@ locals {
       protocol                      = "tcp"
       from_port                     = 9443
       to_port                       = 9443
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }
+    # VPC CNI
+    ingress_cluster_vpc_cni_metrics = {
+      description                   = "Cluster API to node 61678/tcp VPC CNI metrics"
+      protocol                      = "tcp"
+      from_port                     = 61678
+      to_port                       = 61678
       type                          = "ingress"
       source_cluster_security_group = true
     }
