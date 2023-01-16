@@ -124,6 +124,15 @@ locals {
       type                          = "ingress"
       source_cluster_security_group = true
     }
+    # prometheus-adapter
+    ingress_cluster_6443_webhook = {
+      description                   = "Cluster API to node 6443/tcp webhook"
+      protocol                      = "tcp"
+      from_port                     = 6443
+      to_port                       = 6443
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }
     # Karpenter
     ingress_cluster_8443_webhook = {
       description                   = "Cluster API to node 8443/tcp webhook"
