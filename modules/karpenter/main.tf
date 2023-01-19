@@ -360,4 +360,3 @@ resource "aws_iam_instance_profile" "this" {
 
   tags = merge(var.tags, var.iam_role_tags)
 }
-
