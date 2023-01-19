@@ -14,7 +14,7 @@ locals {
 
 locals {
   create_irsa = var.create && var.create_irsa
-  irsa_name   = coalesce(var.irsa_name, "KarpenterIRSA-${var.cluster_name}")
+  irsa_name   = substr(coalesce(var.irsa_name, "KarpenterIRSA-${var.cluster_name}"), 0, 37)
 
   irsa_oidc_provider_url = replace(var.irsa_oidc_provider_arn, "/^(.*provider/)/", "")
 }
