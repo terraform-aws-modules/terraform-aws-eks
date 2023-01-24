@@ -576,18 +576,26 @@ variable "aws_auth_fargate_profile_pod_execution_role_arns" {
 
 variable "aws_auth_roles" {
   description = "List of role maps to add to the aws-auth configmap"
-  type        = list(any)
-  default     = []
+  type = list(object({
+    rolearn  = string
+    username = string
+    groups   = list(string)
+  }))
+  default = []
 }
 
 variable "aws_auth_users" {
   description = "List of user maps to add to the aws-auth configmap"
-  type        = list(any)
-  default     = []
+  type = list(object({
+    userarn  = string
+    username = string
+    groups   = list(string)
+  }))
+  default = []
 }
 
 variable "aws_auth_accounts" {
   description = "List of account maps to add to the aws-auth configmap"
-  type        = list(any)
+  type        = list(string)
   default     = []
 }
