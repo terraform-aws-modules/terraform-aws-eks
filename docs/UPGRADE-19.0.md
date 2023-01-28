@@ -150,7 +150,7 @@ Self managed node groups on `v18.x` by default create a security group that does
   3. New instances will launch without the self-managed node group security group, and prior instances will be terminated
   4. Once the self-managed node group has cycled, the security group will be deleted
 
-#### EKS Managed Node Groups
+### EKS Managed Node Groups
 
 EKS managed node groups on `v18.x` by default create a security group that does not specify any rules. In `v19.x`, this security group has been removed due to the predominant lack of usage (most users rely on the the shared node security group). While still using version `v18.x` of your module definition, remove this security group from your node groups by setting `create_security_group = false`.
 
