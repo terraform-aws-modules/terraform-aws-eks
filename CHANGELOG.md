@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.6.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.5.1...v19.6.0) (2023-01-28)
+
+
+### Features
+
+* Add prometheus-adapter port 6443 to recommended sec groups ([#2399](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2399)) ([059dc0c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/059dc0c67c2aebbf2c9a2f0a05856a823dd1b5a0))
+
 ### [19.5.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.5.0...v19.5.1) (2023-01-05)
 
 
