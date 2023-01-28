@@ -17,7 +17,7 @@ module "eks_managed_node_group" {
   // The following variables are necessary if you decide to use the module outside of the parent EKS module context.
   // Without it, the security groups of the nodes are empty and thus won't join the cluster.
   cluster_primary_security_group_id = module.eks.cluster_primary_security_group_id
-  cluster_security_group_id         = module.eks.node_security_group_id
+  vpc_security_group_ids            = [module.eks.node_security_group_id]
 
   // Note: `disk_size`, and `remote_access` can only be set when using the EKS managed node group default launch template
   // This module defaults to providing a custom launch template to allow for custom security groups, tag propagation, etc.
