@@ -224,3 +224,13 @@ variable "create_instance_profile" {
   type        = bool
   default     = true
 }
+
+################################################################################
+# Event Bridge Rules
+################################################################################
+
+variable "rule_name_prefix" {
+  description = "Prefix used for all event bridge rules"
+  type        = string
+  default     = "Karpenter"
+}
