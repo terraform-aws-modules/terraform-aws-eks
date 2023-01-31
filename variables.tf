@@ -378,3 +378,23 @@ variable "node_groups_delete_timeout" {
   default     = "60m"
 
 }
+variable "allow_all_egress" {
+  description = "trigger to either allow all egress traffic or a more restrictive set"
+  type        = bool
+  default     = true
+}
+variable "egress_ports_allowed" {
+  description = "ports to allow all egress traffic"
+  type        = list
+  default     = []
+}
+variable "egress_cidr_blocks_allowed" {
+  description = "cidr blocks to allow all egress traffic"
+  type        = list
+  default     = []
+}
+variable "egress_custom_allowed" {
+  description = "cidr custom blocks to allow all egress traffic"
+  type        = list
+  default     = []
+}
