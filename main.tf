@@ -290,29 +290,6 @@ resource "aws_iam_role" "this" {
   permissions_boundary  = var.iam_role_permissions_boundary
   force_detach_policies = true
 
-  # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/920
-  # Resources running on the cluster are still generating logs when destroying the module resources
-  # which results in the log group being re-created even after Terraform destroys it. Removing the
-  # ability for the cluster role to create the log group prevents this log group from being re-created
-  # outside of Terraform due to services still generating logs during destroy process
-  dynamic "inline_policy" {
-    for_each = var.create_cloudwatch_log_group ? [1] : []
-    content {
-      name = local.iam_role_name
-
-      policy = jsonencode({
-        Version = "2012-10-17"
-        Statement = [
-          {
-            Action   = ["logs:CreateLogGroup"]
-            Effect   = "Deny"
-            Resource = "*"
-          },
-        ]
-      })
-    }
-  }
-
   tags = merge(var.tags, var.iam_role_tags)
 }
 
@@ -332,6 +309,40 @@ resource "aws_iam_role_policy_attachment" "additional" {
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name
+}
+
+# https://github.com/terraform-aws-modules/terraform-aws-eks/issues/920
+# Resources running on the cluster are still generating logs when destroying the module resources
+# which results in the log group being re-created even after Terraform destroys it. Removing the
+# ability for the cluster role to create the log group prevents this log group from being re-created
+# outside of Terraform due to services still generating logs during destroy process
+# Using separate attachment due to `The "for_each" value depends on resource attributes that cannot be determined until apply`
+resource "aws_iam_role_policy_attachment" "cloudwatch_log_group" {
+  count = var.create_cloudwatch_log_group ? 1 : 0
+
+  policy_arn = aws_iam_policy.cloudwatch_log_group[0].arn
+  role       = aws_iam_role.this[0].name
+}
+
+resource "aws_iam_policy" "cloudwatch_log_group" {
+  count = var.create_cloudwatch_log_group ? 1 : 0
+
+  name        = "${local.iam_role_name}-cloudwatch-log-group"
+  description = var.cloudwatch_log_group_policy_description
+  path        = var.cloudwatch_log_group_policy_path
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action   = ["logs:CreateLogGroup"]
+        Effect   = "Deny"
+        Resource = "*"
+      },
+    ]
+  })
+
+  tags = merge(var.tags, var.cloudwatch_log_group_policy_tags)
 }
 
 # Using separate attachment due to `The "for_each" value depends on resource attributes that cannot be determined until apply`

@@ -460,6 +460,23 @@ variable "cluster_encryption_policy_tags" {
   default     = {}
 }
 
+variable "cloudwatch_log_group_policy_description" {
+  description = "Description of the cloudwatch log group policy created"
+  type        = string
+  default     = "Cloudwatch log group policy to allow logging during destroy process"
+}
+
+variable "cloudwatch_log_group_policy_path" {
+  description = "Coudwatch log group policy path"
+  type        = string
+  default     = null
+}
+
+variable "cloudwatch_log_group_policy_tags" {
+  description = "A map of additional tags to add to the cloudwatch log group policy created"
+  type        = map(string)
+  default     = {}
+}
 ################################################################################
 # EKS Addons
 ################################################################################
