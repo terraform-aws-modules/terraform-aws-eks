@@ -13,8 +13,9 @@ locals {
 ################################################################################
 
 locals {
-  create_irsa = var.create && var.create_irsa
-  irsa_name   = coalesce(var.irsa_name, "KarpenterIRSA-${var.cluster_name}")
+  create_irsa      = var.create && var.create_irsa
+  irsa_name        = coalesce(var.irsa_name, "KarpenterIRSA-${var.cluster_name}")
+  irsa_policy_name = coalesce(var.irsa_policy_name, local.irsa_name)
 
   irsa_oidc_provider_url = replace(var.irsa_oidc_provider_arn, "/^(.*provider/)/", "")
 }
@@ -159,7 +160,7 @@ data "aws_iam_policy_document" "irsa" {
 resource "aws_iam_policy" "irsa" {
   count = local.create_irsa ? 1 : 0
 
-  name_prefix = "${local.irsa_name}-"
+  name_prefix = "${local.irsa_policy_name}-"
   path        = var.irsa_path
   description = var.irsa_description
   policy      = data.aws_iam_policy_document.irsa[0].json

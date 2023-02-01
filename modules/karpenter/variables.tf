@@ -32,6 +32,12 @@ variable "irsa_name" {
   default     = null
 }
 
+variable "irsa_policy_name" {
+  description = "Name of IAM policy for service accounts"
+  type        = string
+  default     = null
+}
+
 variable "irsa_use_name_prefix" {
   description = "Determines whether the IAM role for service accounts name (`irsa_name`) is used as a prefix"
   type        = bool

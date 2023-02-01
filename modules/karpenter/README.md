@@ -163,6 +163,7 @@ No modules.
 | <a name="input_irsa_oidc_provider_arn"></a> [irsa\_oidc\_provider\_arn](#input\_irsa\_oidc\_provider\_arn) | OIDC provider arn used in trust policy for IAM role for service accounts | `string` | `""` | no |
 | <a name="input_irsa_path"></a> [irsa\_path](#input\_irsa\_path) | Path of IAM role for service accounts | `string` | `"/"` | no |
 | <a name="input_irsa_permissions_boundary_arn"></a> [irsa\_permissions\_boundary\_arn](#input\_irsa\_permissions\_boundary\_arn) | Permissions boundary ARN to use for IAM role for service accounts | `string` | `null` | no |
+| <a name="input_irsa_policy_name"></a> [irsa\_policy\_name](#input\_irsa\_policy\_name) | Name of IAM policy for service accounts | `string` | `null` | no |
 | <a name="input_irsa_ssm_parameter_arns"></a> [irsa\_ssm\_parameter\_arns](#input\_irsa\_ssm\_parameter\_arns) | List of SSM Parameter ARNs that contain AMI IDs launched by Karpenter | `list(string)` | <pre>[<br>  "arn:aws:ssm:*:*:parameter/aws/service/*"<br>]</pre> | no |
 | <a name="input_irsa_subnet_account_id"></a> [irsa\_subnet\_account\_id](#input\_irsa\_subnet\_account\_id) | Account ID of where the subnets Karpenter will utilize resides. Used when subnets are shared from another account | `string` | `""` | no |
 | <a name="input_irsa_tag_key"></a> [irsa\_tag\_key](#input\_irsa\_tag\_key) | Tag key (`{key = value}`) applied to resources launched by Karpenter through the Karpenter provisioner | `string` | `"karpenter.sh/discovery"` | no |
