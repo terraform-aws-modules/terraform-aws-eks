@@ -159,6 +159,7 @@ No modules.
 | <a name="input_irsa_description"></a> [irsa\_description](#input\_irsa\_description) | IAM role for service accounts description | `string` | `"Karpenter IAM role for service account"` | no |
 | <a name="input_irsa_max_session_duration"></a> [irsa\_max\_session\_duration](#input\_irsa\_max\_session\_duration) | Maximum API session duration in seconds between 3600 and 43200 | `number` | `null` | no |
 | <a name="input_irsa_name"></a> [irsa\_name](#input\_irsa\_name) | Name of IAM role for service accounts | `string` | `null` | no |
+| <a name="input_irsa_policy_name"></a> [irsa\_policy\_name](#input\_irsa\_policy\_name) | Name of IAM policy for service accounts. Uses `irsa_name` if not set. | `string` | `null` | no |
 | <a name="input_irsa_namespace_service_accounts"></a> [irsa\_namespace\_service\_accounts](#input\_irsa\_namespace\_service\_accounts) | List of `namespace:serviceaccount`pairs to use in trust policy for IAM role for service accounts | `list(string)` | <pre>[<br>  "karpenter:karpenter"<br>]</pre> | no |
 | <a name="input_irsa_oidc_provider_arn"></a> [irsa\_oidc\_provider\_arn](#input\_irsa\_oidc\_provider\_arn) | OIDC provider arn used in trust policy for IAM role for service accounts | `string` | `""` | no |
 | <a name="input_irsa_path"></a> [irsa\_path](#input\_irsa\_path) | Path of IAM role for service accounts | `string` | `"/"` | no |
