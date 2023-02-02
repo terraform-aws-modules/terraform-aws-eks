@@ -192,6 +192,11 @@ output "eks_managed_node_groups_autoscaling_group_names" {
   value       = compact(flatten([for group in module.eks_managed_node_group : group.node_group_autoscaling_group_names]))
 }
 
+output "eks_managed_node_groups_autoscaling_group_arns" {
+  description = "List of the autoscaling group arns created by EKS managed node groups"
+  value       = compact(flatten([for group in module.eks_managed_node_group : group.node_group_autoscaling_group_arns]))
+}
+
 ################################################################################
 # Self Managed Node Group
 ################################################################################

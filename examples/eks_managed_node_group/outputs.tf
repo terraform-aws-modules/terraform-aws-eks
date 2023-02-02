@@ -187,6 +187,11 @@ output "eks_managed_node_groups_autoscaling_group_names" {
   value       = module.eks.eks_managed_node_groups_autoscaling_group_names
 }
 
+output "eks_managed_node_groups_autoscaling_group_arns" {
+  description = "List of the autoscaling group arns created by self-managed node groups"
+  value       = module.eks.eks_managed_node_groups_autoscaling_group_arns
+}
+
 ################################################################################
 # Self Managed Node Group
 ################################################################################

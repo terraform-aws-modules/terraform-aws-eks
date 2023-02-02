@@ -46,6 +46,10 @@ output "node_group_autoscaling_group_names" {
   value       = try(flatten(aws_eks_node_group.this[0].resources[*].autoscaling_groups[*].name), [])
 }
 
+output "node_group_autoscaling_group_arns" {
+  value = try(data.aws_autoscaling_group.managed_groups[0].arn, "")
+}
+
 output "node_group_status" {
   description = "Status of the EKS Node Group"
   value       = try(aws_eks_node_group.this[0].arn, null)

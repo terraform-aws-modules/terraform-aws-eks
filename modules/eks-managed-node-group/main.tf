@@ -390,6 +390,11 @@ resource "aws_eks_node_group" "this" {
   )
 }
 
+data "aws_autoscaling_group" "managed_groups" {
+  count = var.create ? 1 : 0
+  name  = element(try(flatten(aws_eks_node_group.this[0].resources[*].autoscaling_groups[*].name), []), 0)
+}
+
 ################################################################################
 # IAM Role
 ################################################################################
