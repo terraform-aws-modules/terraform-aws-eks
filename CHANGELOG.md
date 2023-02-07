@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.6.0...v19.7.0) (2023-02-07)
+
+
+### Features
+
+* Allow to pass prefix for rule names ([#2437](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2437)) ([68fe60f](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/68fe60f1c4e975d7f6f2c22ae891a32fd80a0156))
+
 ## [19.6.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.5.1...v19.6.0) (2023-01-28)
 
 
