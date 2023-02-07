@@ -133,7 +133,7 @@ data "aws_iam_policy_document" "irsa" {
 
   statement {
     actions   = ["eks:DescribeCluster"]
-    resources = "arn:${local.partition}:eks:${local.region}:${local.account_id}:cluster/${var.cluster_name}"
+    resources = "arn:${local.partition}:eks:*:${local.account_id}:cluster/${var.cluster_name}"
   }
 
   statement {
