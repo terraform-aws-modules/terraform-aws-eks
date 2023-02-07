@@ -132,6 +132,11 @@ data "aws_iam_policy_document" "irsa" {
   }
 
   statement {
+    actions   = ["eks:DescribeCluster"]
+    resources = "arn:${local.partition}:eks:${local.region}:${local.account_id}:cluster/${var.cluster_name}"
+  }
+
+  statement {
     actions   = ["iam:PassRole"]
     resources = [var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn]
   }
