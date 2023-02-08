@@ -82,6 +82,8 @@ module "eks_managed_node_group" {
 
 | Name | Type |
 |------|------|
+| [aws_autoscaling_group_tag.node_group_label](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group_tag) | resource |
+| [aws_autoscaling_group_tag.node_group_taint](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group_tag) | resource |
 | [aws_eks_node_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group) | resource |
 | [aws_iam_role.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role_policy_attachment.additional](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
@@ -157,6 +159,10 @@ module "eks_managed_node_group" {
 | <a name="input_post_bootstrap_user_data"></a> [post\_bootstrap\_user\_data](#input\_post\_bootstrap\_user\_data) | User data that is appended to the user data script after of the EKS bootstrap script. Not used when `platform` = `bottlerocket` | `string` | `""` | no |
 | <a name="input_pre_bootstrap_user_data"></a> [pre\_bootstrap\_user\_data](#input\_pre\_bootstrap\_user\_data) | User data that is injected into the user data script ahead of the EKS bootstrap script. Not used when `platform` = `bottlerocket` | `string` | `""` | no |
 | <a name="input_private_dns_name_options"></a> [private\_dns\_name\_options](#input\_private\_dns\_name\_options) | The options for the instance hostname. The default values are inherited from the subnet | `map(string)` | `{}` | no |
+| <a name="input_propagate_label_tag_prefix"></a> [propagate\_label\_tag\_prefix](#input\_propagate\_label\_tag\_prefix) | Prefix add no node group labels propagated to ASG tags e.g. `k8s.io/cluster-autoscaler/node-template/label/` for cluster-autoscaler | `string` | `""` | no |
+| <a name="input_propagate_labels"></a> [propagate\_labels](#input\_propagate\_labels) | Propagate node group labels as tags for ASG | `bool` | `false` | no |
+| <a name="input_propagate_taint_tag_prefix"></a> [propagate\_taint\_tag\_prefix](#input\_propagate\_taint\_tag\_prefix) | Prefix add no node group taints propagated to ASG tags, e.g. `k8s.io/cluster-autoscaler/node-template/taint/` for cluster-autoscaler | `string` | `""` | no |
+| <a name="input_propagate_taints"></a> [propagate\_taints](#input\_propagate\_taints) | Propagate node group taints as tags for ASG | `bool` | `false` | no |
 | <a name="input_ram_disk_id"></a> [ram\_disk\_id](#input\_ram\_disk\_id) | The ID of the ram disk | `string` | `null` | no |
 | <a name="input_remote_access"></a> [remote\_access](#input\_remote\_access) | Configuration block with remote access settings. Only valid when `use_custom_launch_template` = `false` | `any` | `{}` | no |
 | <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | Identifiers of EC2 Subnets to associate with the EKS Node Group. These subnets must have the following resource tag: `kubernetes.io/cluster/CLUSTER_NAME` | `list(string)` | `null` | no |

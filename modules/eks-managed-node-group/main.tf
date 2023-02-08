@@ -390,6 +390,52 @@ resource "aws_eks_node_group" "this" {
   )
 }
 
+# Propagate node group labels and taints as ASG tags
+locals {
+  label_tags = var.labels == null ? [] : [
+    for key, value in var.labels : {
+      state_key : "${var.name}-${key}"
+      key : "${var.propagate_label_tag_prefix}${key}"
+      value : value
+    }
+  ]
+  taint_tags = [
+    for key, value in var.taints : {
+      state_key : "${var.name}-${key}"
+      key : "${var.propagate_taint_tag_prefix}${key}"
+      value : "${value.value}:${value.effect}"
+    } if length(var.taints) > 0
+  ]
+}
+
+resource "aws_autoscaling_group_tag" "node_group_label" {
+  for_each = {
+    for tag in local.label_tags : tag.state_key => tag if var.propagate_labels
+  }
+
+  autoscaling_group_name = var.create ? aws_eks_node_group.this[0].resources[0].autoscaling_groups[0].name : null
+
+  tag {
+    key                 = each.value.key
+    value               = each.value.value
+    propagate_at_launch = true
+  }
+}
+
+resource "aws_autoscaling_group_tag" "node_group_taint" {
+  for_each = {
+    for tag in local.taint_tags : tag.state_key => tag if var.propagate_taints
+  }
+
+  autoscaling_group_name = var.create ? aws_eks_node_group.this[0].resources[0].autoscaling_groups[0].name : null
+
+  tag {
+    key                 = each.value.key
+    propagate_at_launch = true
+    value               = each.value.value
+  }
+}
+
 ################################################################################
 # IAM Role
 ################################################################################

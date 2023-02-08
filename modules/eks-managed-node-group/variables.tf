@@ -400,6 +400,30 @@ variable "timeouts" {
   default     = {}
 }
 
+variable "propagate_labels" {
+  description = "Propagate node group labels as tags for ASG"
+  type        = bool
+  default     = false
+}
+
+variable "propagate_label_tag_prefix" {
+  description = "Prefix add no node group labels propagated to ASG tags e.g. `k8s.io/cluster-autoscaler/node-template/label/` for cluster-autoscaler"
+  type        = string
+  default     = ""
+}
+
+variable "propagate_taints" {
+  description = "Propagate node group taints as tags for ASG"
+  type        = bool
+  default     = false
+}
+
+variable "propagate_taint_tag_prefix" {
+  description = "Prefix add no node group taints propagated to ASG tags, e.g. `k8s.io/cluster-autoscaler/node-template/taint/` for cluster-autoscaler"
+  type        = string
+  default     = ""
+}
+
 ################################################################################
 # IAM Role
 ################################################################################
