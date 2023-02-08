@@ -231,6 +231,8 @@ module "eks" {
         GithubRepo = "terraform-aws-eks"
         GithubOrg  = "terraform-aws-modules"
       }
+      propagate_labels           = true
+      propagate_label_tag_prefix = "k8s.io/cluster-autoscaler/node-template/label/"
 
       taints = [
         {
@@ -239,6 +241,8 @@ module "eks" {
           effect = "NO_SCHEDULE"
         }
       ]
+      propagate_taints           = true
+      propagate_taint_tag_prefix = "k8s.io/cluster-autoscaler/node-template/taint/"
 
       update_config = {
         max_unavailable_percentage = 33 # or set `max_unavailable`
