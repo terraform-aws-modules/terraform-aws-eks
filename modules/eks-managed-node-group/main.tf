@@ -402,7 +402,7 @@ locals {
   taint_tags = [
     for key, value in var.taints : {
       state_key : "${var.name}-${key}"
-      key : "${var.propagate_taint_tag_prefix}${key}"
+      key : "${var.propagate_taint_tag_prefix}${value.key}"
       value : "${value.value}:${value.effect}"
     } if length(var.taints) > 0
   ]

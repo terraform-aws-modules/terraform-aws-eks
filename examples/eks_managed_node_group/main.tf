@@ -106,6 +106,13 @@ module "eks" {
         ec2_ssh_key               = module.key_pair.key_pair_name
         source_security_group_ids = [aws_security_group.remote_access.id]
       }
+
+      labels = {
+        GithubRepo = "terraform-aws-eks"
+        GithubOrg  = "terraform-aws-modules"
+      }
+      propagate_labels           = true
+      propagate_label_tag_prefix = "k8s.io/cluster-autoscaler/node-template/label/"
     }
 
     # Default node group - as provided by AWS EKS using Bottlerocket
@@ -263,7 +270,7 @@ module "eks" {
             iops                  = 3000
             throughput            = 150
             encrypted             = true
-            kms_key_id            = module.ebs_kms_key.key_id
+            kms_key_id            = module.ebs_kms_key.key_arn
             delete_on_termination = true
           }
         }
@@ -319,6 +326,7 @@ module "vpc" {
 
   public_subnet_ipv6_prefixes  = [0, 1, 2]
   private_subnet_ipv6_prefixes = [3, 4, 5]
+  intra_subnet_ipv6_prefixes   = [6, 7, 8]
 
   enable_nat_gateway   = true
   single_nat_gateway   = true
