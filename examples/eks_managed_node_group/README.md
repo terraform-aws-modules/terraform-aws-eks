@@ -12,34 +12,6 @@ Configuration in this directory creates an AWS EKS cluster with various EKS Mana
 
 See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) for further details.
 
-## Container Runtime & User Data
-
-When using the default AMI provided by the EKS Managed Node Group service (i.e. - not specifying a value for `ami_id`), users should be aware of the limitations of configuring the node bootstrap process via user data. Due to not having direct access to the bootstrap.sh script invocation and therefore its configuration flags (this is provided by the EKS Managed Node Group service in the node user data), a workaround for ensuring the appropriate configuration settings is shown below. The following example shows how to inject configuration variables ahead of the merged user data provided by the EKS Managed Node Group service as well as how to enable the containerd runtime using this approach. More details can be found [here](https://github.com/awslabs/amazon-eks-ami/issues/844).
-
-```hcl
-  ...
-  # Demo of containerd usage when not specifying a custom AMI ID
-  # (merged into user data before EKS MNG provided user data)
-  containerd = {
-    name = "containerd"
-
-    # See issue https://github.com/awslabs/amazon-eks-ami/issues/844
-    pre_bootstrap_user_data = <<-EOT
-    #!/bin/bash
-    set -ex
-    cat <<-EOF > /etc/profile.d/bootstrap.sh
-    export CONTAINER_RUNTIME="containerd"
-    export USE_MAX_PODS=false
-    export KUBELET_EXTRA_ARGS="--max-pods=110"
-    EOF
-    # Source extra environment variables in bootstrap script
-    sed -i '/^set -o errexit/a\\nsource /etc/profile.d/bootstrap.sh' /etc/eks/bootstrap.sh
-    sed -i 's/KUBELET_EXTRA_ARGS=$2/KUBELET_EXTRA_ARGS="$2 $KUBELET_EXTRA_ARGS"/' /etc/eks/bootstrap.sh
-    EOT
-  }
-  ...
-```
-
 ## Usage
 
 To run this example you need to execute:
@@ -71,7 +43,7 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_ebs_kms_key"></a> [ebs\_kms\_key](#module\_ebs\_kms\_key) | terraform-aws-modules/kms/aws | ~> 1.1 |
+| <a name="module_ebs_kms_key"></a> [ebs\_kms\_key](#module\_ebs\_kms\_key) | terraform-aws-modules/kms/aws | ~> 1.5 |
 | <a name="module_eks"></a> [eks](#module\_eks) | ../.. | n/a |
 | <a name="module_key_pair"></a> [key\_pair](#module\_key\_pair) | terraform-aws-modules/key-pair/aws | ~> 2.0 |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.0 |

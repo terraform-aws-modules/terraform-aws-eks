@@ -181,25 +181,6 @@ module "eks" {
       instance_types = ["t4g.medium"]
     }
 
-    # Demo of containerd usage when not specifying a custom AMI ID
-    # (merged into user data before EKS MNG provided user data)
-    containerd = {
-      name = "containerd"
-
-      # See issue https://github.com/awslabs/amazon-eks-ami/issues/844
-      pre_bootstrap_user_data = <<-EOT
-        #!/bin/bash
-        set -ex
-        cat <<-EOF > /etc/profile.d/bootstrap.sh
-        export CONTAINER_RUNTIME="containerd"
-        export USE_MAX_PODS=false
-        export KUBELET_EXTRA_ARGS="--max-pods=110"
-        EOF
-        # Source extra environment variables in bootstrap script
-        sed -i '/^set -o errexit/a\\nsource /etc/profile.d/bootstrap.sh' /etc/eks/bootstrap.sh
-      EOT
-    }
-
     # Complete
     complete = {
       name            = "complete-eks-mng"
@@ -213,11 +194,9 @@ module "eks" {
 
       ami_id                     = data.aws_ami.eks_default.image_id
       enable_bootstrap_user_data = true
-      bootstrap_extra_args       = "--container-runtime containerd --kubelet-extra-args '--max-pods=20'"
 
       pre_bootstrap_user_data = <<-EOT
-        export CONTAINER_RUNTIME="containerd"
-        export USE_MAX_PODS=false
+        export FOO=bar
       EOT
 
       post_bootstrap_user_data = <<-EOT
@@ -259,7 +238,7 @@ module "eks" {
             iops                  = 3000
             throughput            = 150
             encrypted             = true
-            kms_key_id            = module.ebs_kms_key.key_id
+            kms_key_id            = module.ebs_kms_key.key_arn
             delete_on_termination = true
           }
         }
@@ -315,6 +294,7 @@ module "vpc" {
 
   public_subnet_ipv6_prefixes  = [0, 1, 2]
   private_subnet_ipv6_prefixes = [3, 4, 5]
+  intra_subnet_ipv6_prefixes   = [6, 7, 8]
 
   enable_nat_gateway   = true
   single_nat_gateway   = true
@@ -355,7 +335,7 @@ module "vpc_cni_irsa" {
 
 module "ebs_kms_key" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 1.1"
+  version = "~> 1.5"
 
   description = "Customer managed key to encrypt EKS managed node group volumes"
 
@@ -363,7 +343,8 @@ module "ebs_kms_key" {
   key_administrators = [
     data.aws_caller_identity.current.arn
   ]
-  key_service_users = [
+
+  key_service_roles_for_autoscaling = [
     # required for the ASG to manage encrypted volumes for nodes
     "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling",
     # required for the cluster / persistentvolume-controller to create encrypted PVCs
