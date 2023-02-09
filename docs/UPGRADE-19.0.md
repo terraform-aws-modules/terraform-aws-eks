@@ -7,8 +7,8 @@ Please consult the `examples` directory for reference example configurations. If
 - The `cluster_id` output used to output the name of the cluster. This is due to the fact that the cluster name is a unique constraint and therefore its set as the unique identifier within Terraform's state map. However, starting with local EKS clusters created on Outposts, there is now an attribute returned from the `aws eks create-cluster` API named `id`. The `cluster_id` has been updated to return this value which means that for current, standard EKS clusters created in the AWS cloud, no value will be returned (at the time of this writing) for `cluster_id` and only local EKS clusters on Outposts will return a value that looks like a UUID/GUID. Users should switch all instances of `cluster_id` to use `cluster_name` before upgrading to v19. [Reference](https://github.com/hashicorp/terraform-provider-aws/issues/27560)
 - Minimum supported version of Terraform AWS provider updated to v4.45 to support the latest features provided via the resources utilized.
 - Minimum supported version of Terraform updated to v1.0
-- Individual security group created per EKS managed node group or self managed node group has been removed. This configuration went mostly unused and would often cause confusion ("Why is there an empty security group attached to my nodes?"). This functionality can easily be replicated by user's providing one or more externally created security groups to attach to nodes launched from the node group.
-- Previously, `var.iam_role_additional_policies` (one for each of the following: cluster IAM role, EKS managed node group IAM role, self managed node group IAM role, and Fargate Profile IAM role) accepted a list of strings. This worked well for policies that already existed but failed for policies being created at the same time as the cluster due to the well-known issue of unknown values used in a `for_each` loop. To rectify this issue in `v19.x`, two changes were made:
+- Individual security group created per EKS managed node group or self-managed node group has been removed. This configuration went mostly unused and would often cause confusion ("Why is there an empty security group attached to my nodes?"). This functionality can easily be replicated by user's providing one or more externally created security groups to attach to nodes launched from the node group.
+- Previously, `var.iam_role_additional_policies` (one for each of the following: cluster IAM role, EKS managed node group IAM role, self-managed node group IAM role, and Fargate Profile IAM role) accepted a list of strings. This worked well for policies that already existed but failed for policies being created at the same time as the cluster due to the well-known issue of unknown values used in a `for_each` loop. To rectify this issue in `v19.x`, two changes were made:
   1. `var.iam_role_additional_policies` was changed from type `list(string)` to type `map(string)` -> this is a breaking change. More information on managing this change can be found below, under `Terraform State Moves`
   2. The logic used in the root module for this variable was changed to replace the use of `try()` with `lookup()`. More details on why can be found [here](https://github.com/clowdhaus/terraform-for-each-unknown)
 - The cluster name has been removed from the Karpenter module event rule names. Due to the use of long cluster names appending to the provided naming scheme, the cluster name has moved to a `ClusterName` tag and the event rule name is now a prefix. This guarantees that users can have multiple instances of Karpenter with their respective event rules/SQS queue without name collisions, while also still being able to identify which queues and event rules belong to which cluster.
@@ -38,7 +38,7 @@ Please consult the `examples` directory for reference example configurations. If
 - The addon configuration now sets `"OVERWRITE"` as the default value for `resolve_conflicts` to ease add-on upgrade management. Users can opt out of this by instead setting `"NONE"` as the value for `resolve_conflicts`
 - The `kms` module used has been updated from `v1.0.2` to `v1.1.0` - no material changes other than updated to latest
 - The default value for EKS managed node group `update_config` has been updated to the recommended `{ max_unavailable_percentage = 33 }`
-- The default value for the self managed node group `instance_refresh` has been updated to the recommended:
+- The default value for the self-managed node group `instance_refresh` has been updated to the recommended:
     ```hcl
     {
       strategy = "Rolling"
@@ -61,7 +61,7 @@ Please consult the `examples` directory for reference example configurations. If
   - `node_security_group_ntp_ipv4_cidr_block` - default security group settings have an egress rule for ALL to `0.0.0.0/0`/`::/0`
   - `node_security_group_ntp_ipv6_cidr_block` - default security group settings have an egress rule for ALL to `0.0.0.0/0`/`::/0`
 
-   - Self managed node groups:
+   - Self-managed node groups:
      - `create_security_group`
      - `security_group_name`
      - `security_group_use_name_prefix`
@@ -92,7 +92,7 @@ Please consult the `examples` directory for reference example configurations. If
    - `service_ipv6_cidr` for setting the IPv6 CIDR block for the Kubernetes service addresses
    - `node_security_group_enable_recommended_rules` for enabling recommended node security group rules for common access patterns
 
-   - Self managed node groups:
+   - Self-managed node groups:
      - `launch_template_id` for use when using an existing/externally created launch template (Ref: https://github.com/terraform-aws-modules/terraform-aws-autoscaling/pull/204)
      - `maintenance_options`
      - `private_dns_name_options`
@@ -108,7 +108,7 @@ Please consult the `examples` directory for reference example configurations. If
      -
 4. Removed outputs:
 
-   - Self managed node groups:
+   - Self-managed node groups:
      - `security_group_arn`
      - `security_group_id`
    - EKS managed node groups:
@@ -125,15 +125,15 @@ Please consult the `examples` directory for reference example configurations. If
 
 ## Upgrade Migrations
 
-1. Before upgrading your module definition to `v19.x`, please see below for both EKS managed node group(s) and self managed node groups and remove the node group(s) security group prior to upgrading.
+1. Before upgrading your module definition to `v19.x`, please see below for both EKS managed node group(s) and self-managed node groups and remove the node group(s) security group prior to upgrading.
 
-### Self Managed Node Groups
+### Self-Managed Node Groups
 
-Self managed node groups on `v18.x` by default create a security group that does not specify any rules. In `v19.x`, this security group has been removed due to the predominant lack of usage (most users rely on the shared node security group). While still using version `v18.x` of your module definition, remove this security group from your node groups by setting `create_security_group = false`.
+Self-managed node groups on `v18.x` by default create a security group that does not specify any rules. In `v19.x`, this security group has been removed due to the predominant lack of usage (most users rely on the shared node security group). While still using version `v18.x` of your module definition, remove this security group from your node groups by setting `create_security_group = false`.
 
 - If you are currently utilizing this security group, it is recommended to create an additional security group that matches the rules/settings of the security group created by the node group, and specify that security group ID in `vpc_security_group_ids`. Once this is in place, you can proceed with the original security group removal.
 - For most users, the security group is not used and can be safely removed. However, deployed instances will have the security group attached to nodes and require the security group to be disassociated before the security group can be deleted. Because instances are deployed via autoscaling groups, we cannot simply remove the security group from the code and have those changes reflected on the instances. Instead, we have to update the code and then trigger the autoscaling groups to cycle the instances deployed so that new instances are provisioned without the security group attached. You can utilize the `instance_refresh` parameter of Autoscaling groups to force nodes to re-deploy when removing the security group since changes to launch templates automatically trigger an instance refresh. An example configuration is provided below.
-  - Add the following to either/or `self_managed_node_group_defaults` or the individual self managed node group definitions:
+  - Add the following to either/or `self_managed_node_group_defaults` or the individual self-managed node group definitions:
     ```hcl
     create_security_group = false
     instance_refresh = {
@@ -145,17 +145,17 @@ Self managed node groups on `v18.x` by default create a security group that does
     ```
 - It is recommended to use the `aws-node-termination-handler` while performing this update. Please refer to the [`irsa-autoscale-refresh` example](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/20af82846b4a1f23f3787a8c455f39c0b6164d80/examples/irsa_autoscale_refresh/charts.tf#L86) for usage. This will ensure that pods are safely evicted in a controlled manner to avoid service disruptions.
 - Once the necessary configurations are in place, you can apply the changes which will:
-  1. Create a new launch template (version) without the self managed node group security group
+  1. Create a new launch template (version) without the self-managed node group security group
   2. Replace instances based on the `instance_refresh` configuration settings
-  3. New instances will launch without the self managed node group security group, and prior instances will be terminated
-  4. Once the self managed node group has cycled, the security group will be deleted
+  3. New instances will launch without the self-managed node group security group, and prior instances will be terminated
+  4. Once the self-managed node group has cycled, the security group will be deleted
 
 ### EKS Managed Node Groups
 
 EKS managed node groups on `v18.x` by default create a security group that does not specify any rules. In `v19.x`, this security group has been removed due to the predominant lack of usage (most users rely on the shared node security group). While still using version `v18.x` of your module definition, remove this security group from your node groups by setting `create_security_group = false`.
 
 - If you are currently utilizing this security group, it is recommended to create an additional security group that matches the rules/settings of the security group created by the node group, and specify that security group ID in `vpc_security_group_ids`. Once this is in place, you can proceed with the original security group removal.
-- EKS managed node groups rollout changes using a [rolling update strategy](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-update-behavior.html) that can be influenced through `update_config`. No additional changes are required for removing the security group created by node groups (unlike self managed node groups which should utilize the `instance_refresh` setting of Autoscaling groups).
+- EKS managed node groups rollout changes using a [rolling update strategy](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-update-behavior.html) that can be influenced through `update_config`. No additional changes are required for removing the security group created by node groups (unlike self-managed node groups which should utilize the `instance_refresh` setting of Autoscaling groups).
 - Once `create_security_group = false` has been set, you can apply the changes which will:
   1. Create a new launch template (version) without the EKS managed node group security group
   2. Replace instances based on the `update_config` configuration settings
@@ -236,7 +236,7 @@ EKS managed node groups on `v18.x` by default create a security group that does 
 -    }
   }
 
-  # Self Managed Node Group(s)
+  # Self-Managed Node Group(s)
   self_managed_node_group_defaults = {
     vpc_security_group_ids = [aws_security_group.additional.id]
 -   iam_role_additional_policies = [aws_iam_policy.additional.arn]
@@ -449,7 +449,7 @@ Where `"<NODE_GROUP_KEY>"` is the key used in the `eks_managed_node_groups` map 
 terraform state mv 'module.eks.module.eks_managed_node_group["<NODE_GROUP_KEY>"].aws_iam_role_policy_attachment.this["<POLICY_ARN>"]' 'module.eks.module.eks_managed_node_group["<NODE_GROUP_KEY>"].aws_iam_role_policy_attachment.additional["<POLICY_MAP_KEY>"]'
 ```
 
-### Self managed Node Group IAM Role
+### Self-Managed Node Group IAM Role
 
 Where `"<NODE_GROUP_KEY>"` is the key used in the `self_managed_node_groups` map for the associated node group. Repeat for each policy provided in `iam_role_additional_policies` in either/or `self_managed_node_group_defaults` or the individual node group definitions:
 
