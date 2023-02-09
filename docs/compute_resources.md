@@ -36,28 +36,7 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
   }
 ```
 
-3. Users have limited support to extend the user data that is pre-pended to the user data provided by the AWS EKS Managed Node Group service:
-
-```hcl
-  eks_managed_node_groups = {
-    prepend_userdata = {
-      # See issue https://github.com/awslabs/amazon-eks-ami/issues/844
-      pre_bootstrap_user_data = <<-EOT
-        #!/bin/bash
-        set -ex
-        cat <<-EOF > /etc/profile.d/bootstrap.sh
-        export CONTAINER_RUNTIME="containerd"
-        export USE_MAX_PODS=false
-        export KUBELET_EXTRA_ARGS="--max-pods=110"
-        EOF
-        # Source extra environment variables in bootstrap script
-        sed -i '/^set -o errexit/a\\nsource /etc/profile.d/bootstrap.sh' /etc/eks/bootstrap.sh
-      EOT
-    }
-  }
-```
-
-4. Bottlerocket OS is supported in a similar manner. However, note that the user data for Bottlerocket OS uses the TOML format:
+3. Bottlerocket OS is supported in a similar manner. However, note that the user data for Bottlerocket OS uses the TOML format:
 
 ```hcl
   eks_managed_node_groups = {
@@ -74,7 +53,7 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
   }
 ```
 
-5. When using a custom AMI, the AWS EKS Managed Node Group service will NOT inject the necessary bootstrap script into the supplied user data. Users can elect to provide their own user data to bootstrap and connect or opt in to use the module provided user data:
+4. When using a custom AMI, the AWS EKS Managed Node Group service will NOT inject the necessary bootstrap script into the supplied user data. Users can elect to provide their own user data to bootstrap and connect or opt in to use the module provided user data:
 
 ```hcl
   eks_managed_node_groups = {
@@ -86,11 +65,8 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
       # Note: this assumes the AMI provided is an EKS optimized AMI derivative
       enable_bootstrap_user_data = true
 
-      bootstrap_extra_args = "--container-runtime containerd --kubelet-extra-args '--max-pods=20'"
-
       pre_bootstrap_user_data = <<-EOT
-        export CONTAINER_RUNTIME="containerd"
-        export USE_MAX_PODS=false
+        export FOO=bar
       EOT
 
       # Because we have full control over the user data supplied, we can also run additional
@@ -102,7 +78,7 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
   }
 ```
 
-6. There is similar support for Bottlerocket OS:
+5. There is similar support for Bottlerocket OS:
 
 ```hcl
   eks_managed_node_groups = {
