@@ -1,10 +1,15 @@
 # Frequently Asked Questions
 
+- [Setting `disk_size` or `remote_access` does not make any changes](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#Settings-disk_size-or-remote_access-does-not-make-any-changes)
 - [I received an error: `expect exactly one securityGroup tagged with kubernetes.io/cluster/<NAME> ...`](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#i-received-an-error-expect-exactly-one-securitygroup-tagged-with-kubernetesioclustername-)
 - [Why are nodes not being registered?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#why-are-nodes-not-being-registered)
 - [Why are there no changes when a node group's `desired_size` is modified?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#why-are-there-no-changes-when-a-node-groups-desired_size-is-modified)
 - [How can I deploy Windows based nodes?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#how-can-i-deploy-windows-based-nodes)
 - [How do I access compute resource attributes?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#how-do-i-access-compute-resource-attributes)
+
+### Setting `disk_size` or `remote_access` does not make any changes
+
+`disk_size`, and `remote_access` can only be set when using the EKS managed node group default launch template. This module defaults to providing a custom launch template to allow for custom security groups, tag propagation, etc. If you wish to forgo the custom launch template route, you can set `use_custom_launch_template = false` and then you can set `disk_size` and `remote_access`.
 
 ### I received an error: `expect exactly one securityGroup tagged with kubernetes.io/cluster/<NAME> ...`
 

@@ -182,12 +182,10 @@ module "eks" {
       max_size     = 7
       desired_size = 1
 
-      ami_id               = data.aws_ami.eks_default.id
-      bootstrap_extra_args = "--kubelet-extra-args '--max-pods=110'"
+      ami_id = data.aws_ami.eks_default.id
 
       pre_bootstrap_user_data = <<-EOT
-        export CONTAINER_RUNTIME="containerd"
-        export USE_MAX_PODS=false
+        export FOO=bar
       EOT
 
       post_bootstrap_user_data = <<-EOT
@@ -212,7 +210,7 @@ module "eks" {
             iops                  = 3000
             throughput            = 150
             encrypted             = true
-            kms_key_id            = module.ebs_kms_key.key_id
+            kms_key_id            = module.ebs_kms_key.key_arn
             delete_on_termination = true
           }
         }
@@ -223,12 +221,6 @@ module "eks" {
         http_tokens                 = "required"
         http_put_response_hop_limit = 2
         instance_metadata_tags      = "disabled"
-      }
-
-      capacity_reservation_specification = {
-        capacity_reservation_target = {
-          capacity_reservation_id = aws_ec2_capacity_reservation.targeted.id
-        }
       }
 
       create_iam_role          = true
@@ -325,7 +317,7 @@ module "key_pair" {
 
 module "ebs_kms_key" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 1.1"
+  version = "~> 1.5"
 
   description = "Customer managed key to encrypt EKS managed node group volumes"
 
@@ -333,7 +325,8 @@ module "ebs_kms_key" {
   key_administrators = [
     data.aws_caller_identity.current.arn
   ]
-  key_service_users = [
+
+  key_service_roles_for_autoscaling = [
     # required for the ASG to manage encrypted volumes for nodes
     "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling",
     # required for the cluster / persistentvolume-controller to create encrypted PVCs
@@ -344,14 +337,6 @@ module "ebs_kms_key" {
   aliases = ["eks/${local.name}/ebs"]
 
   tags = local.tags
-}
-
-resource "aws_ec2_capacity_reservation" "targeted" {
-  instance_type           = "m6i.large"
-  instance_platform       = "Linux/UNIX"
-  availability_zone       = "${local.region}a"
-  instance_count          = 1
-  instance_match_criteria = "targeted"
 }
 
 resource "aws_iam_policy" "additional" {
