@@ -5,13 +5,7 @@ provider "aws" {
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    #                           Note: `cluster_id` is used with Outposts for auth
-    args = ["eks", "get-token", "--cluster-id", module.eks.cluster_id, "--region", var.region]
-  }
+  token                  = data.aws_eks_cluster_auth.this.token
 }
 
 locals {
@@ -141,4 +135,8 @@ data "aws_subnets" "this" {
 
 data "aws_vpc" "this" {
   id = data.aws_subnet.this.vpc_id
+}
+
+data "aws_eks_cluster_auth" "this" {
+  name = module.eks.cluster_name
 }
