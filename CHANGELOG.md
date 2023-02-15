@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.7.0...v19.8.0) (2023-02-15)
+
+
+### Features
+
+* Add auto discovery permission of cluster endpoint to Karpenter role ([#2451](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2451)) ([c4a4b8a](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c4a4b8afe3d1e89117573e9e04aea08871a069dc))
+
 ## [19.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.6.0...v19.7.0) (2023-02-07)
 
 
