@@ -19,6 +19,11 @@ locals {
   }
 }
 
+# This sleep resource is used to provide a timed gap between the cluster creation and the downstream dependencies
+# that consume the outputs from here. Any of the values that are used as triggers can be used in dependencies
+# to ensure that the downstream resources are created after both the cluster is ready and the sleep time has passed.
+# This was primarily added to give addons that need to be configured BEFORE data plane compute resources
+# enough time to create and configure themselves before the data plane compute resources are created.
 resource "time_sleep" "this" {
   count = var.create ? 1 : 0
 
