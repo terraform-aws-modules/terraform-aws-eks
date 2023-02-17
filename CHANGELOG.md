@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.9.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.8.0...v19.9.0) (2023-02-17)
+
+
+### Features
+
+* Add support for enabling addons before data plane compute is created ([#2478](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2478)) ([78027f3](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/78027f37e43c79748cd7528d3803122cb8072ed7))
+
 ## [19.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.7.0...v19.8.0) (2023-02-15)
 
 
