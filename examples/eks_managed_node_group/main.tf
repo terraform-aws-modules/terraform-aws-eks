@@ -63,6 +63,7 @@ module "eks" {
     }
     vpc-cni = {
       most_recent              = true
+      before_compute           = true
       service_account_role_arn = module.vpc_cni_irsa.iam_role_arn
       configuration_values = jsonencode({
         env = {
