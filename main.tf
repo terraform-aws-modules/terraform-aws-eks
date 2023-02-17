@@ -85,7 +85,8 @@ resource "aws_eks_cluster" "this" {
     aws_iam_role_policy_attachment.this,
     aws_security_group_rule.cluster,
     aws_security_group_rule.node,
-    aws_cloudwatch_log_group.this
+    aws_cloudwatch_log_group.this,
+    aws_iam_policy.cni_ipv6_policy,
   ]
 }
 
@@ -377,7 +378,7 @@ resource "aws_iam_policy" "cluster_encryption" {
 
 resource "aws_eks_addon" "this" {
   # Not supported on outposts
-  for_each = { for k, v in var.cluster_addons : k => v if local.create && !local.create_outposts_local_cluster }
+  for_each = { for k, v in var.cluster_addons : k => v if !try(v.before_compute, false) && local.create && !local.create_outposts_local_cluster }
 
   cluster_name = aws_eks_cluster.this[0].name
   addon_name   = try(each.value.name, each.key)
@@ -399,6 +400,28 @@ resource "aws_eks_addon" "this" {
     module.eks_managed_node_group,
     module.self_managed_node_group,
   ]
+
+  tags = var.tags
+}
+
+resource "aws_eks_addon" "before_compute" {
+  # Not supported on outposts
+  for_each = { for k, v in var.cluster_addons : k => v if try(v.before_compute, false) && local.create && !local.create_outposts_local_cluster }
+
+  cluster_name = aws_eks_cluster.this[0].name
+  addon_name   = try(each.value.name, each.key)
+
+  addon_version            = try(each.value.addon_version, data.aws_eks_addon_version.this[each.key].version)
+  configuration_values     = try(each.value.configuration_values, null)
+  preserve                 = try(each.value.preserve, null)
+  resolve_conflicts        = try(each.value.resolve_conflicts, "OVERWRITE")
+  service_account_role_arn = try(each.value.service_account_role_arn, null)
+
+  timeouts {
+    create = try(each.value.timeouts.create, var.cluster_addons_timeouts.create, null)
+    update = try(each.value.timeouts.update, var.cluster_addons_timeouts.update, null)
+    delete = try(each.value.timeouts.delete, var.cluster_addons_timeouts.delete, null)
+  }
 
   tags = var.tags
 }
