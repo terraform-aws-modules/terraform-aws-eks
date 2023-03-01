@@ -76,3 +76,6 @@ data "cloudinit_config" "linux_eks_managed_node_group" {
     content      = var.pre_bootstrap_user_data
   }
 }
+
+#
+
