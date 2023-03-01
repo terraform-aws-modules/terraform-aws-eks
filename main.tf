@@ -489,3 +489,6 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
     kubernetes_config_map.aws_auth,
   ]
 }
+
+#
+      
