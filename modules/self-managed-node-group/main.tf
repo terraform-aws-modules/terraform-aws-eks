@@ -705,6 +705,13 @@ locals {
   iam_role_name          = coalesce(var.iam_role_name, "${var.name}-node-group")
   iam_role_policy_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
   cni_policy             = var.cluster_ip_family == "ipv6" ? "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/AmazonEKS_CNI_IPv6_Policy" : "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
+  
+  iam_role_policy_map = merge({
+    AmazonEKSWorkerNodePolicy          = "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy",
+    AmazonEC2ContainerRegistryReadOnly = "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly",
+  }, var.iam_role_attach_cni_policy ? {
+    AmazonEKSCNIPolicy = local.cni_policy,
+  } : {})
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
@@ -737,11 +744,7 @@ resource "aws_iam_role" "this" {
 }
 
 resource "aws_iam_role_policy_attachment" "this" {
-  for_each = { for k, v in toset(compact([
-    "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy",
-    "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly",
-    var.iam_role_attach_cni_policy ? local.cni_policy : "",
-  ])) : k => v if var.create && var.create_iam_instance_profile }
+  for_each = { for k, v in local.iam_role_policy_map : k => v if var.create && var.create_iam_instance_profile }
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name
