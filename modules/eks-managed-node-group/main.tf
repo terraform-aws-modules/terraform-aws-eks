@@ -402,7 +402,7 @@ locals {
   iam_role_policy_map = merge({
     AmazonEKSWorkerNodePolicy          = "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy",
     AmazonEC2ContainerRegistryReadOnly = "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly",
-  }, var.iam_role_attach_cni_policy ? {
+    }, var.iam_role_attach_cni_policy ? {
     AmazonEKSCNIPolicy = local.cni_policy,
   } : {})
 }
