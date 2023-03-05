@@ -111,8 +111,8 @@ resource "aws_cloudwatch_log_group" "this" {
   kms_key_id        = var.cloudwatch_log_group_kms_key_id
 
   tags = merge(
-    { Name = "/aws/eks/${var.cluster_name}/cluster" },
-    var.tags
+    var.tags,
+    { Name = "/aws/eks/${var.cluster_name}/cluster" }
   )
 }
 
