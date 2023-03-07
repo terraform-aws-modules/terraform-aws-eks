@@ -235,6 +235,9 @@ locals {
       event_pattern = {
         source      = ["aws.health"]
         detail-type = ["AWS Health Event"]
+        detail = {
+          service = ["EC2"] # Specific Health Event EC2 Service
+        }
       }
     }
     spot_interupt = {
@@ -259,6 +262,9 @@ locals {
       event_pattern = {
         source      = ["aws.ec2"]
         detail-type = ["EC2 Instance State-change Notification"]
+        detail = {
+          state = ["stopping", "stopped", "shutting-down", "terminated"] # Ignore "pending" and "running"
+        }
       }
     }
   }
