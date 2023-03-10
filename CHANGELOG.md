@@ -2,6 +2,325 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.10.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.9.0...v19.10.0) (2023-02-17)
+
+
+### Features
+
+* Allow setting custom IRSA policy name for karpenter ([#2480](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2480)) ([8954ff7](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/8954ff7bb433358ba99b77248e3aae377d3a580b))
+
+## [19.9.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.8.0...v19.9.0) (2023-02-17)
+
+
+### Features
+
+* Add support for enabling addons before data plane compute is created ([#2478](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2478)) ([78027f3](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/78027f37e43c79748cd7528d3803122cb8072ed7))
+
+## [19.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.7.0...v19.8.0) (2023-02-15)
+
+
+### Features
+
+* Add auto discovery permission of cluster endpoint to Karpenter role ([#2451](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2451)) ([c4a4b8a](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c4a4b8afe3d1e89117573e9e04aea08871a069dc))
+
+## [19.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.6.0...v19.7.0) (2023-02-07)
+
+
+### Features
+
+* Allow to pass prefix for rule names ([#2437](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2437)) ([68fe60f](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/68fe60f1c4e975d7f6f2c22ae891a32fd80a0156))
+
+## [19.6.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.5.1...v19.6.0) (2023-01-28)
+
+
+### Features
+
+* Add prometheus-adapter port 6443 to recommended sec groups ([#2399](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2399)) ([059dc0c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/059dc0c67c2aebbf2c9a2f0a05856a823dd1b5a0))
+
+### [19.5.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.5.0...v19.5.1) (2023-01-05)
+
+
+### Bug Fixes
+
+* AMI lookup should only happen when launch template is created ([#2386](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2386)) ([3834935](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/383493538748f1df844d40068cdde62579b79476))
+
+## [19.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.4.3...v19.5.0) (2023-01-05)
+
+
+### Features
+
+* Ignore changes to labels and annotations on on `aws-auth` ConfigMap ([#2380](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2380)) ([5015b42](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/5015b429e656d927fb66f214c998713c6fc84755))
+
+### [19.4.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.4.2...v19.4.3) (2023-01-05)
+
+
+### Bug Fixes
+
+* Use a version for  to avoid GitHub API rate limiting on CI workflows ([#2376](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2376)) ([460e43d](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/460e43db77244ad3ca2e62514de712fb0cc2cd7a))
+
+### [19.4.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.4.1...v19.4.2) (2022-12-20)
+
+
+### Bug Fixes
+
+* Drop spot-instances-request from tag_specifications ([#2363](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2363)) ([e391a99](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e391a99a7bd8209618fdb65cc09460673fbaf1bc))
+
+### [19.4.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.4.0...v19.4.1) (2022-12-20)
+
+
+### Bug Fixes
+
+* Correct `eks_managed_*` to `self_managed_*` for `tag_specification` argument ([#2364](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2364)) ([df7c57c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/df7c57c199d9e9f54d9ed18fb7c1e3a47ad732ed))
+
+## [19.4.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.3.1...v19.4.0) (2022-12-19)
+
+
+### Features
+
+* Allow configuring which tags are passed on launch template tag specifications ([#2360](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2360)) ([094ed1d](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/094ed1d5e461552a0a76bc019c36690fe0fc2dd5))
+
+### [19.3.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.3.0...v19.3.1) (2022-12-18)
+
+
+### Bug Fixes
+
+* Correct map name for security group rule 4443/tcp ([#2354](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2354)) ([13a9542](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/13a9542dadd29fa75fd76c2adcee9dd17dcffda4))
+
+## [19.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.2.0...v19.3.0) (2022-12-18)
+
+
+### Features
+
+* Add additional port for `metrics-server` to recommended rules ([#2353](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2353)) ([5a270b7](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/5a270b7bf8de8c5846e91d72ffd9f594cbd8b921))
+
+## [19.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.1.1...v19.2.0) (2022-12-18)
+
+
+### Features
+
+* Ensure all supported resources are tagged under `tag_specifications` on launch templates ([#2352](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2352)) ([0751a0c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/0751a0ca04d6303015e8a9c2f917956ea00d184b))
+
+### [19.1.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.1.0...v19.1.1) (2022-12-17)
+
+
+### Bug Fixes
+
+* Use IAM session context data source to resolve the identities role when using `assumed_role` ([#2347](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2347)) ([71b8eca](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/71b8ecaa87db89c454b2c9446ff3d7675e4dc5a7))
+
+## [19.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.0.4...v19.1.0) (2022-12-16)
+
+
+### Features
+
+* Add support for addon `configuration_values` ([#2345](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2345)) ([3b62f6c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/3b62f6c31604490fc19184e626e73873b296ecd1))
+
+### [19.0.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.0.3...v19.0.4) (2022-12-07)
+
+
+### Bug Fixes
+
+* Ensure that custom KMS key is not created if encryption is not enabled, support computed values in cluster name ([#2328](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2328)) ([b83f6d9](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/b83f6d98bfbca548012ea74e792fe14f04f0e6dc))
+
+### [19.0.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.0.2...v19.0.3) (2022-12-07)
+
+
+### Bug Fixes
+
+* Invalid value for "replace" parameter: argument must not be null. ([#2322](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2322)) ([9adc475](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/9adc475bc1f1a201648e37b26cefe9bdf6b3a2f7))
+
+### [19.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.0.1...v19.0.2) (2022-12-06)
+
+
+### Bug Fixes
+
+* `public_access_cidrs` require a value even if public endpoint is disabled ([#2320](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2320)) ([3f6d915](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/3f6d915eef6672440df8c82468c31ed2bc2fce54))
+
+### [19.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.0.0...v19.0.1) (2022-12-06)
+
+
+### Bug Fixes
+
+* Call to lookup() closed too early, breaks sg rule creation in cluster sg if custom source sg is defined. ([#2319](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2319)) ([7bc4a27](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/7bc4a2743f0cdf9c8556a2c067eeb82436aafb41))
+
+## [19.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.31.2...v19.0.0) (2022-12-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* Add support for Outposts, remove node security group, add support for addon `preserve` and `most_recent` configurations (#2250)
+
+### Features
+
+* Add support for Outposts, remove node security group, add support for addon `preserve` and `most_recent` configurations ([#2250](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2250)) ([b2e97ca](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/b2e97ca3dcbcd76063f1c932aa5199b4f49a2aa1))
+
+### [18.31.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.31.1...v18.31.2) (2022-11-23)
+
+
+### Bug Fixes
+
+* Ensure that `var.create` is tied to all resources correctly ([#2308](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2308)) ([3fb28b3](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/3fb28b357f4fc9144340f94abe9dd520e89f49e2))
+
+### [18.31.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.31.0...v18.31.1) (2022-11-22)
+
+
+### Bug Fixes
+
+* Include all certificate fingerprints in the OIDC provider thumbprint list ([#2307](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2307)) ([7436178](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/7436178cc1a720a066c73f1de23b04b3c24ae608))
+
+## [18.31.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.30.3...v18.31.0) (2022-11-21)
+
+
+### Features
+
+* New Karpenter sub-module for easily enabling Karpenter on EKS ([#2303](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2303)) ([f24de33](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f24de3326d3c12ce61fbaefe1e3dbe7418d8bc85))
+
+### [18.30.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.30.2...v18.30.3) (2022-11-07)
+
+
+### Bug Fixes
+
+* Update CI configuration files to use latest version ([#2293](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2293)) ([364c60d](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/364c60d572e85676adca8f6e62679de7d9551271))
+
+### [18.30.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.30.1...v18.30.2) (2022-10-14)
+
+
+### Bug Fixes
+
+* Disable creation of cluster security group rules that map to node security group when `create_node_security_group` = `false` ([#2274](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2274)) ([28ccece](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/28ccecefe22d81a3a7febbbc3efc17c6590f88e1))
+
+### [18.30.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.30.0...v18.30.1) (2022-10-11)
+
+
+### Bug Fixes
+
+* Update CloudWatch log group creation deny policy to use wildcard ([#2267](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2267)) ([ac4d549](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ac4d549629aa64bbd92f80486bef904a9098e0fa))
+
+## [18.30.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.29.1...v18.30.0) (2022-09-29)
+
+
+### Features
+
+* Add output for cluster TLS certificate SHA1 fingerprint and provider tags to cluster primary security group ([#2249](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2249)) ([a74e980](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/a74e98017b5dc7ed396cf26bfaf98ff7951c9e2e))
+
+### [18.29.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.29.0...v18.29.1) (2022-09-26)
+
+
+### Bug Fixes
+
+* Set `image_id` to come from the launch template instead of data source for self-managed node groups ([#2239](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2239)) ([c5944e5](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c5944e5fb6ea07429ef79f5fe5592e7111567e1e))
+
+## [18.29.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.28.0...v18.29.0) (2022-08-26)
+
+
+### Features
+
+* Allow TLS provider to use versions 3.0+ (i.e. - `>= 3.0`) ([#2211](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2211)) ([f576a6f](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f576a6f9ea523c94a7bb5420d5ab3ed8c7d3fec7))
+
+## [18.28.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.27.1...v18.28.0) (2022-08-17)
+
+
+### Features
+
+* Add output for launch template name, and correct variable type value ([#2205](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2205)) ([0a52d69](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/0a52d690d54a7c39fd4e0d46db36d200f7ef679e))
+
+### [18.27.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.27.0...v18.27.1) (2022-08-09)
+
+
+### Bug Fixes
+
+* Remove empty `""` from node group names output when node group creation is disabled ([#2197](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2197)) ([d2f162b](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/d2f162b190596756f1bc9d8f8061e68329c3e5c4))
+
+## [18.27.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.6...v18.27.0) (2022-08-09)
+
+
+### Features
+
+* Default to clusters OIDC issuer URL for `aws_eks_identity_provider_config` ([#2190](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2190)) ([93065fa](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/93065fabdf508267b399f677d561f18fd6d7b7f0))
+
+### [18.26.6](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.5...v18.26.6) (2022-07-22)
+
+
+### Bug Fixes
+
+* Pin TLS provider version to 3.x versions only ([#2174](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2174)) ([d990ea8](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/d990ea8aff682315828d7c177a309c71541e023c))
+
+### [18.26.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.4...v18.26.5) (2022-07-20)
+
+
+### Bug Fixes
+
+* Bump kms module to 1.0.2 to fix malformed policy document when not specifying key_owners ([#2163](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2163)) ([0fd1ab1](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/0fd1ab1db9b752e58211428e3c19f62655e5f97d))
+
+### [18.26.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.3...v18.26.4) (2022-07-20)
+
+
+### Bug Fixes
+
+* Use partition data source on VPC CNI IPv6 policy ([#2161](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2161)) ([f2d67ff](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f2d67ffa97cc0f9827f75673b1cd263e3a5062b6))
+
+### [18.26.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.2...v18.26.3) (2022-07-05)
+
+
+### Bug Fixes
+
+* Correct Fargate profiles additional IAM role policies default type to match variable ([#2143](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2143)) ([c4e6d28](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c4e6d28fc064435f6f05c6c57d7fff8576d9fbba))
+
+### [18.26.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.1...v18.26.2) (2022-07-01)
+
+
+### Bug Fixes
+
+* Correct variable types to improve dynamic check correctness ([#2133](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2133)) ([2d7701c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/2d7701c3b0f2c6dcc10f31fc1f703bfde31b2c5b))
+
+### [18.26.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.26.0...v18.26.1) (2022-06-29)
+
+
+### Bug Fixes
+
+* Update KMS module version which aligns on module version requirements ([#2127](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2127)) ([bc04cd3](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/bc04cd3a0a4286566ea56b20d9314115c6e489ab))
+
+## [18.26.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.25.0...v18.26.0) (2022-06-28)
+
+
+### Features
+
+* Add support for specifying NTP address to use private Amazon Time Sync Service ([#2125](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2125)) ([4543ab4](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/4543ab454bea80b64381b88a631d955a7cfae247))
+
+## [18.25.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.24.1...v18.25.0) (2022-06-28)
+
+
+### Features
+
+* Add support for creating KMS key for cluster secret encryption ([#2121](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2121)) ([75acb09](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/75acb09ec56c5ce8e5f74ebc7bf15468b272db8a))
+
+### [18.24.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.24.0...v18.24.1) (2022-06-19)
+
+
+### Bug Fixes
+
+* Remove `modified_at` from ignored changes on EKS addons ([#2114](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2114)) ([5a5a32e](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/5a5a32ed1241ba3cc64abe37b37bcb5ad52d42c4))
+
+## [18.24.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.23.0...v18.24.0) (2022-06-18)
+
+
+### Features
+
+* Add support for specifying control plane subnets separate from those used by node groups (data plane) ([#2113](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2113)) ([ebc91bc](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ebc91bcd37a919a350d872a5b235ccc2a79955a6))
+
+## [18.23.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.22.0...v18.23.0) (2022-06-02)
+
+
+### Features
+
+* Add `autoscaling_group_tags` variable to self-managed-node-groups ([#2084](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2084)) ([8584dcb](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/8584dcb2e0c9061828505c36a8ed8eb6ced02053))
+
+## [18.22.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.21.0...v18.22.0) (2022-06-02)
+
+
+### Features
+
+* Apply `distinct()` on role arns to ensure no duplicated roles in aws-auth configmap ([#2097](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2097)) ([3feb369](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/3feb36927f92fb72ab0cfc25a3ab67465872f4bf))
+
 ## [18.21.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.20.5...v18.21.0) (2022-05-12)
 
 
@@ -329,7 +648,7 @@ All notable changes to this project will be documented in this file.
 
 ### Bug Fixes
 
-* Use the prefix_seperator var for node sg prefix ([#1751](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1751)) ([62879dd](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/62879dd81a69ba010f19ba9ece8392e1730b53e0))
+* Use the prefix_separator var for node sg prefix ([#1751](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1751)) ([62879dd](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/62879dd81a69ba010f19ba9ece8392e1730b53e0))
 
 ### [18.0.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v18.0.3...v18.0.4) (2022-01-07)
 
@@ -606,7 +925,7 @@ BREAKING CHANGES:
 - The  variable `config_output_path` is renamed into `kubeconfig_output_path` for naming consistency. Please upgrade your configuration accordingly.
 
 NOTES:
-- Since we now search only for Linux or Windows AMI if there is a worker groups for the corresponding plateform, we can now define different default root block device name for each plateform. Use locals `root_block_device_name` and `root_block_device_name_windows` to define your owns.
+- Since we now search only for Linux or Windows AMI if there is a worker groups for the corresponding platform, we can now define different default root block device name for each platform. Use locals `root_block_device_name` and `root_block_device_name_windows` to define your owns.
 - The kubeconfig file permission is not world and group readable anymore. The default permission is now `600`. This value can be changed with the variable `var.kubeconfig_file_permission`.
 
 
@@ -645,7 +964,7 @@ BUG FIXES:
 - Bump `terraform-aws-modules/http` provider version to support darwin arm64 release ([#1369](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1369))
 
 DOCS:
-- Use IRSA for Node Termination Handler IAM policy attachement in Instance Refresh example ([#1373](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1373))
+- Use IRSA for Node Termination Handler IAM policy attachment in Instance Refresh example ([#1373](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1373))
 
 
 <a name="v16.0.0"></a>
@@ -718,7 +1037,7 @@ FEATURES:
 - Add permissions boundary to fargate execution IAM role ([#1108](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1108))
 
 ENHANCEMENTS:
-- Dont set -x in userdata to avoid printing sensitive informations in logs ([#1187](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1187))
+- Don't set -x in userdata to avoid printing sensitive information in logs ([#1187](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1187))
 
 BUG FIXES:
 - Merge tags from Fargate profiles with common tags from cluster ([#1159](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1159))
@@ -830,7 +1149,7 @@ BREAKING CHANGES:
 NOTES:
 - `credit_specification` for worker groups launch template can now be set to `null` so that we can use non burstable EC2 families
 - Starting in v12.1.0 the `cluster_id` output depends on the
-`wait_for_cluster` null resource. This means that initialisation of the
+`wait_for_cluster` null resource. This means that initialization of the
 kubernetes provider will be blocked until the cluster is really ready,
 if the module is set to manage the aws_auth ConfigMap and user followed
 the typical Usage Example. kubernetes resources in the same plan do not
@@ -936,7 +1255,7 @@ TESTS:
 - Remove unused kitchen test related stuff ([#787](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/787))
 
 CI:
-- Restrict sementic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
+- Restrict semantic PR to validate PR title only ([#804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/804))
 
 
 [Unreleased]: https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v17.23.0...HEAD

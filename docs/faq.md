@@ -1,45 +1,56 @@
 # Frequently Asked Questions
 
-- [I received an error: `Error: Invalid for_each argument ...`](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#i-received-an-error-error-invalid-for_each-argument-)
+- [Setting `disk_size` or `remote_access` does not make any changes](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#Settings-disk_size-or-remote_access-does-not-make-any-changes)
+- [I received an error: `expect exactly one securityGroup tagged with kubernetes.io/cluster/<NAME> ...`](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#i-received-an-error-expect-exactly-one-securitygroup-tagged-with-kubernetesioclustername-)
 - [Why are nodes not being registered?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#why-are-nodes-not-being-registered)
 - [Why are there no changes when a node group's `desired_size` is modified?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#why-are-there-no-changes-when-a-node-groups-desired_size-is-modified)
 - [How can I deploy Windows based nodes?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#how-can-i-deploy-windows-based-nodes)
 - [How do I access compute resource attributes?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#how-do-i-access-compute-resource-attributes)
 
-### I received an error: `Error: Invalid for_each argument ...`
+### Setting `disk_size` or `remote_access` does not make any changes
 
-Users may encounter an error such as `Error: Invalid for_each argument - The "for_each" value depends on resource attributes that cannot be determined until apply, so Terraform cannot predict how many instances will be created. To work around this, use the -target argument to first apply ...`
+`disk_size`, and `remote_access` can only be set when using the EKS managed node group default launch template. This module defaults to providing a custom launch template to allow for custom security groups, tag propagation, etc. If you wish to forgo the custom launch template route, you can set `use_custom_launch_template = false` and then you can set `disk_size` and `remote_access`.
 
-This error is due to an upstream issue with [Terraform core](https://github.com/hashicorp/terraform/issues/4149). There are two potential options you can take to help mitigate this issue:
+### I received an error: `expect exactly one securityGroup tagged with kubernetes.io/cluster/<NAME> ...`
 
-1. Create the dependent resources before the cluster => `terraform apply -target <your policy or your security group>` and then `terraform apply` for the cluster (or other similar means to just ensure the referenced resources exist before creating the cluster)
+By default, EKS creates a cluster primary security group that is created outside of the module and the EKS service adds the tag `{ "kubernetes.io/cluster/<CLUSTER_NAME>" = "owned" }`. This on its own does not cause any conflicts for addons such as the AWS Load Balancer Controller until users decide to attach both the cluster primary security group and the shared node security group created by the module (by setting `attach_cluster_primary_security_group = true`). The issue is not with having multiple security groups in your account with this tag key:value combination, but having multiple security groups with this tag key:value combination attached to nodes in the same cluster. There are a few ways to resolve this depending on your use case/intentions:
 
-- Note: this is the route users will have to take for adding additional security groups to nodes since there isn't a separate "security group attachment" resource
+⚠️ `<CLUSTER_NAME>` below needs to be replaced with the name of your cluster
 
-2. For additional IAM policies, users can attach the policies outside of the cluster definition as demonstrated below
+1. If you want to use the cluster primary security group, you can disable the creation of the shared node security group with:
 
 ```hcl
-resource "aws_iam_role_policy_attachment" "additional" {
-  for_each = module.eks.eks_managed_node_groups
-  # you could also do the following or any combination:
-  # for_each = merge(
-  #   module.eks.eks_managed_node_groups,
-  #   module.eks.self_managed_node_group,
-  #   module.eks.fargate_profile,
-  # )
-
-  #            This policy does not have to exist at the time of cluster creation. Terraform can
-  #            deduce the proper order of its creation to avoid errors during creation
-  policy_arn = aws_iam_policy.node_additional.arn
-  role       = each.value.iam_role_name
-}
+  create_node_security_group            = false # default is true
+  attach_cluster_primary_security_group = true # default is false
 ```
 
-TL;DR - Terraform resource passed into the modules map definition _must_ be known before you can apply the EKS module. The variables this potentially affects are:
+2. If you want to use the cluster primary security group, you can disable the tag passed to the node security group by overriding the tag expected value like:
 
-- `cluster_security_group_additional_rules` (i.e. - referencing an external security group resource in a rule)
-- `node_security_group_additional_rules` (i.e. - referencing an external security group resource in a rule)
-- `iam_role_additional_policies` (i.e. - referencing an external policy resource)
+```hcl
+  attach_cluster_primary_security_group = true # default is false
+
+  node_security_group_tags = {
+    "kubernetes.io/cluster/<CLUSTER_NAME>" = null # or any other value other than "owned"
+  }
+```
+
+3. By overriding the tag expected value on the cluster primary security group like:
+
+```hcl
+  attach_cluster_primary_security_group = true # default is false
+
+  cluster_tags = {
+    "kubernetes.io/cluster/<CLUSTER_NAME>" = null # or any other value other than "owned"
+  }
+```
+
+4. By not attaching the cluster primary security group. The cluster primary security group has quite broad access and the module has instead provided a security group with the minimum amount of access to launch an empty EKS cluster successfully and users are encouraged to open up access when necessary to support their workload.
+
+```hcl
+  attach_cluster_primary_security_group = false # this is the default for the module
+```
+
+In theory, if you are attaching the cluster primary security group, you shouldn't need to use the shared node security group created by the module. However, this is left up to users to decide for their requirements and use case.
 
 ### Why are nodes not being registered?
 
@@ -75,8 +86,6 @@ Note: Windows based node support is limited to a default user data template that
 ### How do I access compute resource attributes?
 
 Examples of accessing the attributes of the compute resource(s) created by the root module are shown below. Note - the assumption is that your cluster module definition is named `eks` as in `module "eks" { ... }`:
-
-````hcl
 
 - EKS Managed Node Group attributes
 

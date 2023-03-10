@@ -18,8 +18,13 @@ output "cluster_endpoint" {
 }
 
 output "cluster_id" {
-  description = "The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready"
+  description = "The ID of the EKS cluster. Note: currently a value is returned only for local EKS clusters created on Outposts"
   value       = module.eks.cluster_id
+}
+
+output "cluster_name" {
+  description = "The name of the EKS cluster"
+  value       = module.eks.cluster_name
 }
 
 output "cluster_oidc_issuer_url" {
@@ -40,6 +45,25 @@ output "cluster_status" {
 output "cluster_primary_security_group_id" {
   description = "Cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication. Referred to as 'Cluster security group' in the EKS console"
   value       = module.eks.cluster_primary_security_group_id
+}
+
+################################################################################
+# KMS Key
+################################################################################
+
+output "kms_key_arn" {
+  description = "The Amazon Resource Name (ARN) of the key"
+  value       = module.eks.kms_key_arn
+}
+
+output "kms_key_id" {
+  description = "The globally unique identifier for the key"
+  value       = module.eks.kms_key_id
+}
+
+output "kms_key_policy" {
+  description = "The IAM resource policy set on the key"
+  value       = module.eks.kms_key_policy
 }
 
 ################################################################################
@@ -82,6 +106,11 @@ output "oidc_provider" {
 output "oidc_provider_arn" {
   description = "The ARN of the OIDC Provider if `enable_irsa = true`"
   value       = module.eks.oidc_provider_arn
+}
+
+output "cluster_tls_certificate_sha1_fingerprint" {
+  description = "The SHA1 fingerprint of the public key of the cluster's certificate"
+  value       = module.eks.cluster_tls_certificate_sha1_fingerprint
 }
 
 ################################################################################

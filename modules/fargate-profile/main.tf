@@ -1,13 +1,10 @@
 data "aws_partition" "current" {}
-
 data "aws_caller_identity" "current" {}
 
 locals {
-  iam_role_name = coalesce(var.iam_role_name, var.name, "fargate-profile")
-
+  iam_role_name          = coalesce(var.iam_role_name, var.name, "fargate-profile")
   iam_role_policy_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
-
-  cni_policy = var.cluster_ip_family == "ipv6" ? "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/AmazonEKS_CNI_IPv6_Policy" : "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
+  cni_policy             = var.cluster_ip_family == "ipv6" ? "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/AmazonEKS_CNI_IPv6_Policy" : "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
 }
 
 ################################################################################
@@ -44,10 +41,17 @@ resource "aws_iam_role" "this" {
 }
 
 resource "aws_iam_role_policy_attachment" "this" {
-  for_each = var.create && var.create_iam_role ? toset(compact(distinct(concat([
+  for_each = { for k, v in toset(compact([
     "${local.iam_role_policy_prefix}/AmazonEKSFargatePodExecutionRolePolicy",
     var.iam_role_attach_cni_policy ? local.cni_policy : "",
-  ], var.iam_role_additional_policies)))) : toset([])
+  ])) : k => v if var.create && var.create_iam_role }
+
+  policy_arn = each.value
+  role       = aws_iam_role.this[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "additional" {
+  for_each = { for k, v in var.iam_role_additional_policies : k => v if var.create && var.create_iam_role }
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name

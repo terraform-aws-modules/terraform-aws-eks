@@ -21,7 +21,7 @@ variable "platform" {
 ################################################################################
 
 variable "enable_bootstrap_user_data" {
-  description = "Determines whether the bootstrap configurations are populated within the user data template"
+  description = "Determines whether the bootstrap configurations are populated within the user data template. Only valid when using a custom AMI via `ami_id`"
   type        = bool
   default     = false
 }
@@ -84,10 +84,22 @@ variable "create_launch_template" {
   default     = true
 }
 
-variable "launch_template_name" {
-  description = "Launch template name - either to be created (`var.create_launch_template` = `true`) or existing (`var.create_launch_template` = `false`)"
+variable "use_custom_launch_template" {
+  description = "Determines whether to use a custom launch template or not. If set to `false`, EKS will use its own default launch template"
+  type        = bool
+  default     = true
+}
+
+variable "launch_template_id" {
+  description = "The ID of an existing launch template to use. Required when `create_launch_template` = `false` and `use_custom_launch_template` = `true`"
   type        = string
   default     = ""
+}
+
+variable "launch_template_name" {
+  description = "Name of launch template to be created"
+  type        = string
+  default     = null
 }
 
 variable "launch_template_use_name_prefix" {
@@ -171,49 +183,55 @@ variable "block_device_mappings" {
 variable "capacity_reservation_specification" {
   description = "Targeting for EC2 capacity reservations"
   type        = any
-  default     = null
+  default     = {}
 }
 
 variable "cpu_options" {
   description = "The CPU options for the instance"
   type        = map(string)
-  default     = null
+  default     = {}
 }
 
 variable "credit_specification" {
   description = "Customize the credit specification of the instance"
   type        = map(string)
-  default     = null
+  default     = {}
 }
 
 variable "elastic_gpu_specifications" {
   description = "The elastic GPU to attach to the instance"
-  type        = map(string)
-  default     = null
+  type        = any
+  default     = {}
 }
 
 variable "elastic_inference_accelerator" {
   description = "Configuration block containing an Elastic Inference Accelerator to attach to the instance"
   type        = map(string)
-  default     = null
+  default     = {}
 }
 
 variable "enclave_options" {
   description = "Enable Nitro Enclaves on launched instances"
   type        = map(string)
-  default     = null
+  default     = {}
 }
 
 variable "instance_market_options" {
   description = "The market (purchasing) option for the instance"
   type        = any
-  default     = null
+  default     = {}
+}
+
+variable "maintenance_options" {
+  description = "The maintenance options for the instance"
+  type        = any
+  default     = {}
 }
 
 variable "license_specifications" {
-  description = "A list of license specifications to associate with"
-  type        = map(string)
-  default     = null
+  description = "A map of license specifications to associate with"
+  type        = any
+  default     = {}
 }
 
 variable "metadata_options" {
@@ -241,13 +259,25 @@ variable "network_interfaces" {
 variable "placement" {
   description = "The placement of the instance"
   type        = map(string)
-  default     = null
+  default     = {}
+}
+
+variable "private_dns_name_options" {
+  description = "The options for the instance hostname. The default values are inherited from the subnet"
+  type        = map(string)
+  default     = {}
 }
 
 variable "launch_template_tags" {
   description = "A map of additional tags to add to the tag_specifications of launch template created"
   type        = map(string)
   default     = {}
+}
+
+variable "tag_specifications" {
+  description = "The tags to apply to the resources during launch"
+  type        = list(string)
+  default     = ["instance", "volume", "network-interface"]
 }
 
 ################################################################################
@@ -309,7 +339,7 @@ variable "capacity_type" {
 }
 
 variable "disk_size" {
-  description = "Disk size in GiB for nodes. Defaults to `20`"
+  description = "Disk size in GiB for nodes. Defaults to `20`. Only valid when `use_custom_launch_template` = `false`"
   type        = number
   default     = null
 }
@@ -345,7 +375,7 @@ variable "launch_template_version" {
 }
 
 variable "remote_access" {
-  description = "Configuration block with remote access settings"
+  description = "Configuration block with remote access settings. Only valid when `use_custom_launch_template` = `false`"
   type        = any
   default     = {}
 }
@@ -359,63 +389,13 @@ variable "taints" {
 variable "update_config" {
   description = "Configuration block of settings for max unavailable resources during node group updates"
   type        = map(string)
-  default     = {}
+  default = {
+    max_unavailable_percentage = 33
+  }
 }
 
 variable "timeouts" {
   description = "Create, update, and delete timeout configurations for the node group"
-  type        = map(string)
-  default     = {}
-}
-
-################################################################################
-# Security Group
-################################################################################
-
-variable "create_security_group" {
-  description = "Determines whether to create a security group"
-  type        = bool
-  default     = true
-}
-
-variable "security_group_name" {
-  description = "Name to use on security group created"
-  type        = string
-  default     = null
-}
-
-variable "security_group_use_name_prefix" {
-  description = "Determines whether the security group name (`security_group_name`) is used as a prefix"
-  type        = string
-  default     = true
-}
-
-variable "security_group_description" {
-  description = "Description for the security group created"
-  type        = string
-  default     = "EKS managed node group security group"
-}
-
-variable "vpc_id" {
-  description = "ID of the VPC where the security group/nodes will be provisioned"
-  type        = string
-  default     = null
-}
-
-variable "security_group_rules" {
-  description = "List of security group rules to add to the security group created"
-  type        = any
-  default     = {}
-}
-
-variable "cluster_security_group_id" {
-  description = "Cluster control plane security group ID"
-  type        = string
-  default     = null
-}
-
-variable "security_group_tags" {
-  description = "A map of additional tags to add to the security group created"
   type        = map(string)
   default     = {}
 }
@@ -480,8 +460,8 @@ variable "iam_role_attach_cni_policy" {
 
 variable "iam_role_additional_policies" {
   description = "Additional policies to be added to the IAM role"
-  type        = list(string)
-  default     = []
+  type        = map(string)
+  default     = {}
 }
 
 variable "iam_role_tags" {
