@@ -48,7 +48,7 @@ output "node_group_autoscaling_group_names" {
 
 output "node_group_status" {
   description = "Status of the EKS Node Group"
-  value       = try(aws_eks_node_group.this[0].arn, null)
+  value       = try(aws_eks_node_group.this[0].status, null)
 }
 
 output "node_group_labels" {
