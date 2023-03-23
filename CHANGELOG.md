@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.10.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.10.0...v19.10.1) (2023-03-17)
+
+
+### Bug Fixes
+
+* Return correct status for mng ([#2524](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2524)) ([e257daf](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e257dafe94e11384caf210d9ff21c4d3e078cb17))
+
 ## [19.10.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.9.0...v19.10.0) (2023-02-17)
 
 
