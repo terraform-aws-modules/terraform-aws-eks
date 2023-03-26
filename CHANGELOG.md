@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.10.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.10.2...v19.10.3) (2023-03-23)
+
+
+### Bug Fixes
+
+* Add `aws_eks_addons.before_compute` to the `cluster_addons` output ([#2533](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2533)) ([f977d83](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f977d83500ac529b09918d4e78aa8887749a8cd1))
+
+### [19.10.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.10.1...v19.10.2) (2023-03-23)
+
+
+### Bug Fixes
+
+* Add Name tag for EKS cloudwatch log group ([#2500](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2500)) ([e64a490](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e64a490d8db4ebf495f42c542a40d7d763005873))
+
+### [19.10.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.10.0...v19.10.1) (2023-03-17)
+
+
+### Bug Fixes
+
+* Return correct status for mng ([#2524](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2524)) ([e257daf](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e257dafe94e11384caf210d9ff21c4d3e078cb17))
+
 ## [19.10.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.9.0...v19.10.0) (2023-02-17)
 
 
