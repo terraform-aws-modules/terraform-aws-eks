@@ -74,6 +74,12 @@ variable "irsa_tags" {
   default     = {}
 }
 
+variable "irsa_additional_policy_arns" {
+  description = "List of additional policy ARNs to be attached to the IAM role for service account"
+  type        = list(string)
+  default     = []
+}
+
 variable "irsa_tag_key" {
   description = "Tag key (`{key = value}`) applied to resources launched by Karpenter through the Karpenter provisioner"
   type        = string
