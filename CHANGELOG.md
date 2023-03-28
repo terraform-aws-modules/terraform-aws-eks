@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.11.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.10.3...v19.11.0) (2023-03-28)
+
+
+### Features
+
+* Add optional list of policy ARNs for attachment to Karpenter IRSA ([#2537](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2537)) ([bd387d6](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/bd387d69fac5a431a426e12de786ab80aea112a6))
+
 ### [19.10.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.10.2...v19.10.3) (2023-03-23)
 
 
