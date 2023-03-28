@@ -176,7 +176,7 @@ resource "aws_iam_role_policy_attachment" "irsa" {
 }
 
 resource "aws_iam_role_policy_attachment" "irsa_additional" {
-  for_each = { for k, v in var.irsa_additional_policy_arns : k => v if local.create_irsa }
+  for_each = { for k, v in var.policies : k => v if local.create_irsa }
 
   role       = aws_iam_role.irsa[0].name
   policy_arn = each.value

@@ -74,10 +74,10 @@ variable "irsa_tags" {
   default     = {}
 }
 
-variable "irsa_additional_policy_arns" {
-  description = "List of additional policy ARNs to be attached to the IAM role for service account"
-  type        = list(string)
-  default     = []
+variable "policies" {
+  description = "Policies to attach to the IAM role in `{'static_name' = 'policy_arn'}` format"
+  type        = map(string)
+  default     = {}
 }
 
 variable "irsa_tag_key" {
