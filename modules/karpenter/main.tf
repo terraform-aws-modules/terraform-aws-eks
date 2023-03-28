@@ -175,6 +175,13 @@ resource "aws_iam_role_policy_attachment" "irsa" {
   policy_arn = aws_iam_policy.irsa[0].arn
 }
 
+resource "aws_iam_role_policy_attachment" "irsa_additional" {
+  for_each = { for k, v in var.policies : k => v if local.create_irsa }
+
+  role       = aws_iam_role.irsa[0].name
+  policy_arn = each.value
+}
+
 ################################################################################
 # Node Termination Queue
 ################################################################################
