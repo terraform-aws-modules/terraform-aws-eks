@@ -74,6 +74,12 @@ variable "irsa_tags" {
   default     = {}
 }
 
+variable "policies" {
+  description = "Policies to attach to the IAM role in `{'static_name' = 'policy_arn'}` format"
+  type        = map(string)
+  default     = {}
+}
+
 variable "irsa_tag_key" {
   description = "Tag key (`{key = value}`) applied to resources launched by Karpenter through the Karpenter provisioner"
   type        = string
