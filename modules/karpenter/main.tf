@@ -302,7 +302,7 @@ locals {
 
   iam_role_name          = coalesce(var.iam_role_name, "Karpenter-${var.cluster_name}")
   iam_role_policy_prefix = "arn:${local.partition}:iam::aws:policy"
-  cni_policy             = var.cluster_ip_family == "ipv6" ? "${local.iam_role_policy_prefix}/AmazonEKS_CNI_IPv6_Policy" : "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
+  cni_policy             = var.cluster_ip_family == "ipv6" ? "arn:${local.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/AmazonEKS_CNI_IPv6_Policy" : "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
 }
 
 data "aws_iam_policy_document" "assume_role" {
