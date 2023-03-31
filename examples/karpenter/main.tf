@@ -84,6 +84,26 @@ module "eks" {
     coredns = {
       configuration_values = jsonencode({
         computeType = "Fargate"
+        # Ensure that the we fully utilize the minimum amount of resources that are supplied by
+        # Fargate https://docs.aws.amazon.com/eks/latest/userguide/fargate-pod-configuration.html
+        # Fargate adds 256 MB to each pod's memory reservation for the required Kubernetes
+        # components (kubelet, kube-proxy, and containerd). Fargate rounds up to the following
+        # compute configuration that most closely matches the sum of vCPU and memory requests in
+        # order to ensure pods always have the resources that they need to run.
+        resources = {
+          limits = {
+            cpu = "0.25"
+            # We are targetting the smallest Task size of 512Mb, so we subtract 256Mb from the
+            # request/limit to ensure we can fit within that task
+            memory = "256M"
+          }
+          requests = {
+            cpu = "0.25"
+            # We are targetting the smallest Task size of 512Mb, so we subtract 256Mb from the
+            # request/limit to ensure we can fit within that task
+            memory = "256M"
+          }
+        }
       })
     }
   }
@@ -109,26 +129,18 @@ module "eks" {
     },
   ]
 
-  fargate_profiles = merge(
-    { for i in range(3) :
-      "kube-system-${element(split("-", local.azs[i]), 2)}" => {
-        selectors = [
-          { namespace = "kube-system" }
-        ]
-        # We want to create a profile per AZ for high availability
-        subnet_ids = [element(module.vpc.private_subnets, i)]
-      }
-    },
-    { for i in range(3) :
-      "karpenter-${element(split("-", local.azs[i]), 2)}" => {
-        selectors = [
-          { namespace = "karpenter" }
-        ]
-        # We want to create a profile per AZ for high availability
-        subnet_ids = [element(module.vpc.private_subnets, i)]
-      }
-    },
-  )
+  fargate_profiles = {
+    karpenter = {
+      selectors = [
+        { namespace = "karpenter" }
+      ]
+    }
+    kube-system = {
+      selectors = [
+        { namespace = "kube-system" }
+      ]
+    }
+  }
 
   tags = merge(local.tags, {
     # NOTE - if creating multiple security groups with this module, only tag the
@@ -147,6 +159,10 @@ module "karpenter" {
 
   cluster_name           = module.eks.cluster_name
   irsa_oidc_provider_arn = module.eks.oidc_provider_arn
+
+  policies = {
+    AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  }
 
   tags = local.tags
 }
