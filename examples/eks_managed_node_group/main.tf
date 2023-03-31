@@ -264,6 +264,27 @@ module "eks" {
         additional                         = aws_iam_policy.node_additional.arn
       }
 
+      schedules = {
+        scale-up = {
+          min_size     = 2
+          max_size     = "-1" # Retains current max size
+          desired_size = 2
+          start_time   = "2023-03-05T00:00:00Z"
+          end_time     = "2024-03-05T00:00:00Z"
+          timezone     = "Etc/GMT+0"
+          recurrence   = "0 0 * * *"
+        },
+        scale-down = {
+          min_size     = 0
+          max_size     = "-1" # Retains current max size
+          desired_size = 0
+          start_time   = "2023-03-05T12:00:00Z"
+          end_time     = "2024-03-05T12:00:00Z"
+          timezone     = "Etc/GMT+0"
+          recurrence   = "0 12 * * *"
+        }
+      }
+
       tags = {
         ExtraTag = "EKS managed node group complete example"
       }
