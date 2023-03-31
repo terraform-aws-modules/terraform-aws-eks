@@ -471,7 +471,7 @@ variable "iam_role_tags" {
 }
 
 ################################################################################
-# Autoscaling group schedule
+# Autoscaling Group Schedule
 ################################################################################
 
 variable "create_schedule" {

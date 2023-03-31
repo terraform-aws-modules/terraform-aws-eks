@@ -449,7 +449,7 @@ resource "aws_iam_role_policy_attachment" "additional" {
 }
 
 ################################################################################
-# Autoscaling group schedule
+# Autoscaling Group Schedule
 ################################################################################
 
 resource "aws_autoscaling_schedule" "this" {
