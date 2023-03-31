@@ -62,6 +62,15 @@ output "node_group_taints" {
 }
 
 ################################################################################
+# Autoscaling Group Schedule
+################################################################################
+
+output "autoscaling_group_schedule_arns" {
+  description = "ARNs of autoscaling group schedules"
+  value       = { for k, v in aws_autoscaling_schedule.this : k => v.arn }
+}
+
+################################################################################
 # IAM Role
 ################################################################################
 
@@ -78,13 +87,4 @@ output "iam_role_arn" {
 output "iam_role_unique_id" {
   description = "Stable and unique string identifying the IAM role"
   value       = try(aws_iam_role.this[0].unique_id, null)
-}
-
-################################################################################
-# Autoscaling group schedule
-################################################################################
-
-output "autoscaling_group_schedule_arns" {
-  description = "ARNs of autoscaling group schedules"
-  value       = { for k, v in aws_autoscaling_schedule.this : k => v.arn }
 }

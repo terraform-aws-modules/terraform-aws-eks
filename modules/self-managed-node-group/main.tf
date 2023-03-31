@@ -680,7 +680,7 @@ resource "aws_autoscaling_group" "this" {
 ################################################################################
 
 resource "aws_autoscaling_schedule" "this" {
-  for_each = var.create && var.create_schedule ? var.schedules : {}
+  for_each = { for k, v in var.schedules : k => v if var.create && var.create_schedule }
 
   scheduled_action_name  = each.key
   autoscaling_group_name = aws_autoscaling_group.this[0].name

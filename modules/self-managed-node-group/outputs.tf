@@ -82,7 +82,7 @@ output "autoscaling_group_vpc_zone_identifier" {
 }
 
 ################################################################################
-# autoscaling group schedule
+# Autoscaling Group Schedule
 ################################################################################
 
 output "autoscaling_group_schedule_arns" {
