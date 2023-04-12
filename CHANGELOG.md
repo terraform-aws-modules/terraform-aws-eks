@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.13.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.12.0...v19.13.0) (2023-04-12)
+
+
+### Features
+
+* Add support for allowed_instance_type ([#2552](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2552)) ([54417d2](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/54417d244c06b459b399e84433343af6e9934bb3))
+
 ## [19.12.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.11.0...v19.12.0) (2023-03-31)
 
 
