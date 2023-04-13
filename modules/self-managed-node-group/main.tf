@@ -318,7 +318,7 @@ resource "aws_launch_template" "this" {
   }
 
   name        = var.launch_template_use_name_prefix ? null : local.launch_template_name
-  name_prefix = var.launch_template_use_name_prefix ? "${local.launch_template_name}-" : null
+  name_prefix = var.launch_template_use_name_prefix ? "${local.launch_template_name}${var.prefix_separator}" : null
 
   dynamic "network_interfaces" {
     for_each = var.network_interfaces
@@ -616,7 +616,7 @@ resource "aws_autoscaling_group" "this" {
   }
 
   name                    = var.use_name_prefix ? null : var.name
-  name_prefix             = var.use_name_prefix ? "${var.name}-" : null
+  name_prefix             = var.use_name_prefix ? "${var.name}${var.prefix_separator}" : null
   placement_group         = var.placement_group
   protect_from_scale_in   = var.protect_from_scale_in
   service_linked_role_arn = var.service_linked_role_arn
@@ -735,7 +735,7 @@ resource "aws_iam_role" "this" {
   count = var.create && var.create_iam_instance_profile ? 1 : 0
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
-  name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
+  name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}${var.prefix_separator}" : null
   path        = var.iam_role_path
   description = var.iam_role_description
 
@@ -770,7 +770,7 @@ resource "aws_iam_instance_profile" "this" {
   role = aws_iam_role.this[0].name
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
-  name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
+  name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}${var.prefix_separator}" : null
   path        = var.iam_role_path
 
   tags = merge(var.tags, var.iam_role_tags)

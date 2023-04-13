@@ -387,6 +387,8 @@ module "self_managed_node_group" {
   cluster_name      = time_sleep.this[0].triggers["cluster_name"]
   cluster_ip_family = var.cluster_ip_family
 
+  prefix_separator = try(each.value.prefix_separator, var.self_managed_node_group_defaults.prefix_separator, "-")
+
   # Autoscaling Group
   create_autoscaling_group = try(each.value.create_autoscaling_group, var.self_managed_node_group_defaults.create_autoscaling_group, true)
 
