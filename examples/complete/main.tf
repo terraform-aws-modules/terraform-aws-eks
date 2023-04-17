@@ -293,6 +293,10 @@ module "eks" {
   ]
 
   tags = local.tags
+
+  cluster_primary_security_group_custom_tags = {
+    TestTagClusterPrimarySG = "Test tag for cluster primary SG"
+  }
 }
 
 ################################################################################
