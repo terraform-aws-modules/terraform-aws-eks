@@ -124,6 +124,12 @@ variable "create_cluster_primary_security_group_tags" {
   default     = true
 }
 
+variable "cluster_primary_security_group_custom_tags" {
+  description = "A map of additional tags to add to the cluster primary security group"
+  type        = map(string)
+  default     = {}
+}
+
 variable "cluster_timeouts" {
   description = "Create, update, and delete timeout configurations for the cluster"
   type        = map(string)
