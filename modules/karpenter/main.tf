@@ -197,7 +197,7 @@ resource "aws_sqs_queue" "this" {
 
   name                              = local.queue_name
   message_retention_seconds         = 300
-  sqs_managed_sse_enabled           = var.queue_managed_sse_enabled
+  sqs_managed_sse_enabled           = var.queue_managed_sse_enabled ? var.queue_managed_sse_enabled : null
   kms_master_key_id                 = var.queue_kms_master_key_id
   kms_data_key_reuse_period_seconds = var.queue_kms_data_key_reuse_period_seconds
 
