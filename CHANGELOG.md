@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.13.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.13.0...v19.13.1) (2023-04-18)
+
+
+### Bug Fixes
+
+* SQS queue encryption types selection ([#2575](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2575)) ([969c7a7](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/969c7a7c4340c8ed327d18f86c5e00e18190a48b))
+
 ## [19.13.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.12.0...v19.13.0) (2023-04-12)
 
 
