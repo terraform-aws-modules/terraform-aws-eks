@@ -528,7 +528,13 @@ locals {
       ],
       var.aws_auth_roles
     ))
-    mapUsers    = yamlencode(var.aws_auth_users)
+    mapUsers = yamlencode(concat([
+      { # Always give `root` user of current account `system:master` access
+        userarn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        username = "root"
+        groups   = ["system:masters"]
+      }
+    ], var.aws_auth_users))
     mapAccounts = yamlencode(var.aws_auth_accounts)
   }
 }
