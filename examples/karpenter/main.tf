@@ -31,6 +31,11 @@ provider "helm" {
       args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
     }
   }
+  registry {
+    url      = "oci://public.ecr.aws/"
+    username = data.aws_ecrpublic_authorization_token.token.user_name
+    password = data.aws_ecrpublic_authorization_token.token.password
+  }
 }
 
 provider "kubectl" {
@@ -160,6 +165,9 @@ module "karpenter" {
   cluster_name           = module.eks.cluster_name
   irsa_oidc_provider_arn = module.eks.oidc_provider_arn
 
+  # add SSM access for debugging
+  iam_role_additional_policies = [ "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore" ]
+
   policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }
@@ -173,10 +181,8 @@ resource "helm_release" "karpenter" {
 
   name                = "karpenter"
   repository          = "oci://public.ecr.aws/karpenter"
-  repository_username = data.aws_ecrpublic_authorization_token.token.user_name
-  repository_password = data.aws_ecrpublic_authorization_token.token.password
   chart               = "karpenter"
-  version             = "v0.21.1"
+  version             = "v0.27.3"
 
   set {
     name  = "settings.aws.clusterName"
@@ -201,6 +207,15 @@ resource "helm_release" "karpenter" {
   set {
     name  = "settings.aws.interruptionQueueName"
     value = module.karpenter.queue_name
+  }
+
+  set {
+    name  = "tolerations[0].key"
+    value = "eks.amazonaws.com/compute-type"
+  }
+  set {
+    name  = "tolerations[0].value"
+    value = "fargate"
   }
 }
 
@@ -286,7 +301,7 @@ resource "kubectl_manifest" "karpenter_example_deployment" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   name = local.name
   cidr = local.vpc_cidr
