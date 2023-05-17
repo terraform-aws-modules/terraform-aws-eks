@@ -143,7 +143,7 @@ output "cluster_iam_role_unique_id" {
 
 output "cluster_addons" {
   description = "Map of attribute maps for all EKS cluster addons enabled"
-  value       = aws_eks_addon.this
+  value       = merge(aws_eks_addon.this, aws_eks_addon.before_compute)
 }
 
 ################################################################################
