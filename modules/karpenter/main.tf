@@ -63,6 +63,10 @@ resource "aws_iam_role" "irsa" {
   tags = merge(var.tags, var.irsa_tags)
 }
 
+locals {
+  irsa_tag_values = coalescelist([var.cluster_name], var.irsa_tag_values)
+}
+
 data "aws_iam_policy_document" "irsa" {
   count = local.create_irsa ? 1 : 0
 
@@ -97,7 +101,7 @@ data "aws_iam_policy_document" "irsa" {
     condition {
       test     = "StringEquals"
       variable = "ec2:ResourceTag/${var.irsa_tag_key}"
-      values   = [var.cluster_name]
+      values   = local.irsa_tag_values
     }
   }
 
@@ -110,7 +114,7 @@ data "aws_iam_policy_document" "irsa" {
     condition {
       test     = "StringEquals"
       variable = "ec2:ResourceTag/${var.irsa_tag_key}"
-      values   = [var.cluster_name]
+      values   = local.irsa_tag_values
     }
   }
 
