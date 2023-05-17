@@ -81,7 +81,7 @@ variable "launch_template_id" {
 variable "launch_template_name" {
   description = "Name of launch template to be created"
   type        = string
-  default     = null
+  default     = "test"
 }
 
 variable "launch_template_use_name_prefix" {
