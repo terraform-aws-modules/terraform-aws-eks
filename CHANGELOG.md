@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.14.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.13.1...v19.14.0) (2023-05-17)
+
+
+### Features
+
+* Add irsa_tag_values variable ([#2584](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2584)) ([aa3bdf1](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/aa3bdf1c19747bca7067c6e49c071ae80a9ca5e5))
+
 ### [19.13.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.13.0...v19.13.1) (2023-04-18)
 
 

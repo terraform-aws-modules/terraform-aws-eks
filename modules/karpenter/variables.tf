@@ -86,6 +86,12 @@ variable "irsa_tag_key" {
   default     = "karpenter.sh/discovery"
 }
 
+variable "irsa_tag_values" {
+  description = "Tag values (`{key = value}`) applied to resources launched by Karpenter through the Karpenter provisioner. Defaults to cluster name when not set."
+  type        = list(string)
+  default     = null
+}
+
 variable "irsa_ssm_parameter_arns" {
   description = "List of SSM Parameter ARNs that contain AMI IDs launched by Karpenter"
   type        = list(string)
