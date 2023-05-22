@@ -1,10 +1,5 @@
 locals {
   worker_ami_name_filter = var.worker_ami_name_filter != "" ? var.worker_ami_name_filter : "amazon-eks-node-${var.cluster_version}-v*"
-
-  # Windows nodes are available from k8s 1.14. If cluster version is less than 1.14, fix ami filter to some constant to not fail on 'terraform plan'.
-  worker_ami_name_filter_windows = (var.worker_ami_name_filter_windows != "" ?
-    var.worker_ami_name_filter_windows : "Windows_Server-2019-English-Core-EKS_Optimized-${tonumber(var.cluster_version) >= 1.14 ? var.cluster_version : 1.14}-*"
-  )
 }
 
 data "aws_iam_policy_document" "workers_assume_role_policy" {
@@ -32,23 +27,6 @@ data "aws_ami" "eks_worker" {
 
   owners = [var.worker_ami_owner_id]
 }
-
-data "aws_ami" "eks_worker_windows" {
-  filter {
-    name   = "name"
-    values = [local.worker_ami_name_filter_windows]
-  }
-
-  filter {
-    name   = "platform"
-    values = ["windows"]
-  }
-
-  most_recent = true
-
-  owners = [var.worker_ami_owner_id_windows]
-}
-
 
 data "aws_iam_policy_document" "cluster_assume_role_policy" {
   statement {

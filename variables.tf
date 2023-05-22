@@ -160,13 +160,6 @@ variable "worker_ami_name_filter" {
   default     = ""
 }
 
-variable "worker_ami_name_filter_windows" {
-  description = "Name filter for AWS EKS Windows worker AMI. If not provided, the latest official AMI for the specified 'cluster_version' is used."
-  type        = string
-  default     = ""
-}
-
-
 variable "worker_ami_owner_id" {
   description = "The ID of the owner for the AMI to use for the AWS EKS workers. Valid values are an AWS account ID, 'self' (the current account), or an AWS owner alias (e.g. 'amazon', 'aws-marketplace', 'microsoft')."
   type        = string

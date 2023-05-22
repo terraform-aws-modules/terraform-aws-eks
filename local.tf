@@ -1,11 +1,11 @@
 locals {
   asg_tags = [
     for item in keys(var.tags) :
-    map(
-      "key", item,
-      "value", element(values(var.tags), index(keys(var.tags), item)),
-      "propagate_at_launch", "true"
-    )
+    tomap({
+      "key"                 = item,
+      "value"               = element(values(var.tags), index(keys(var.tags), item)),
+      "propagate_at_launch" = "true"
+    })
   ]
 
   cluster_security_group_id = var.cluster_security_group_id == "" ? join("", aws_security_group.cluster.*.id) : var.cluster_security_group_id
@@ -16,8 +16,7 @@ locals {
   default_iam_role_id = concat(aws_iam_role.workers.*.id, [""])[0]
   kubeconfig_name     = var.kubeconfig_name == "" ? "eks_${var.cluster_name}" : var.kubeconfig_name
 
-  default_ami_id_linux   = data.aws_ami.eks_worker.id
-  default_ami_id_windows = data.aws_ami.eks_worker_windows.id
+  default_ami_id_linux = data.aws_ami.eks_worker.id
 
   # workers_group_defaults = {
   #   name                          = "count.index"               # Name of the worker group. Literal count.index will never be used but if name is not set, the count.index interpolation will be used.
@@ -69,7 +68,7 @@ locals {
   # }
 
   nodes_groups_defaults = merge(
-    {node_sg_group_id = aws_security_group.workers.*.id},
+    { node_sg_group_id = aws_security_group.workers.*.id },
     var.node_groups_defaults,
     #{node_instance_profile = concat(aws_iam_instance_profile.node_group_instance_profile.*.arn, [null])[0]}
   )

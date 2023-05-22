@@ -1,5 +1,5 @@
 data "cloudinit_config" "workers_userdata" {
-  for_each = local.node_groups_expanded
+  for_each = nonsensitive(local.node_groups_expanded)
 
   gzip          = false
   base64_encode = true
@@ -23,7 +23,7 @@ data "cloudinit_config" "workers_userdata" {
 # Trivia: AWS transparently creates a copy of your LaunchTemplate and actually uses that copy then for the node group. If you DONT use a custom AMI,
 # then the default user-data for bootstrapping a cluster is merged in the copy.
 resource "aws_launch_template" "workers" {
-  for_each = local.node_groups_expanded
+  for_each = nonsensitive(local.node_groups_expanded)
 
   name_prefix            = local.node_groups_names[each.key]
   description            = format("EKS Managed Node Group custom LT for %s", local.node_groups_names[each.key])

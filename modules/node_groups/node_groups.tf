@@ -1,5 +1,5 @@
 resource "aws_eks_node_group" "workers" {
-  for_each = local.node_groups_expanded
+  for_each = nonsensitive(local.node_groups_expanded)
 
   node_group_name = "${var.is_default ? "" : "${var.cluster_name}_"}${each.value["name"]}"
   version         = lookup(each.value, "version", null)

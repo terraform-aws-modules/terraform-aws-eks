@@ -1,26 +1,26 @@
 output "cluster_id" {
   description = "The name/id of the EKS cluster."
-  value       = element(concat(aws_eks_cluster.this.*.id, list("")), 0)
+  value       = element(concat(aws_eks_cluster.this.*.id, tolist([""])), 0)
 }
 
 output "cluster_arn" {
   description = "The Amazon Resource Name (ARN) of the cluster."
-  value       = element(concat(aws_eks_cluster.this.*.arn, list("")), 0)
+  value       = element(concat(aws_eks_cluster.this.*.arn, tolist([""])), 0)
 }
 
 output "cluster_certificate_authority_data" {
   description = "Nested attribute containing certificate-authority-data for your cluster. This is the base64 encoded certificate data required to communicate with your cluster."
-  value       = element(concat(aws_eks_cluster.this[*].certificate_authority[0].data, list("")), 0)
+  value       = element(concat(aws_eks_cluster.this[*].certificate_authority[0].data, tolist([""])), 0)
 }
 
 output "cluster_endpoint" {
   description = "The endpoint for your EKS Kubernetes API."
-  value       = element(concat(aws_eks_cluster.this.*.endpoint, list("")), 0)
+  value       = element(concat(aws_eks_cluster.this.*.endpoint, tolist([""])), 0)
 }
 
 output "cluster_version" {
   description = "The Kubernetes server version for the EKS cluster."
-  value       = element(concat(aws_eks_cluster.this[*].version, list("")), 0)
+  value       = element(concat(aws_eks_cluster.this[*].version, tolist([""])), 0)
 }
 
 output "cluster_security_group_id" {
@@ -90,4 +90,19 @@ output "node_groups" {
 
 output "node_group_LTs" {
   value = module.node_groups.launch_templates
+}
+
+output "worker_security_group_id" {
+  description = "security groups for the worker nodes"
+  value       = local.worker_security_group_id
+}
+
+output "worker_iam_arn" {
+  description = "security groups for the worker nodes"
+  value       = join("", aws_iam_role.workers.*.arn)
+}
+
+output "worker_iam_name" {
+  description = "security groups for the worker nodes"
+  value       = join("", aws_iam_role.workers.*.name)
 }
