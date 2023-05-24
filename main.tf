@@ -318,12 +318,6 @@ resource "aws_iam_role" "this" {
   }
 
   tags = merge(var.tags, var.iam_role_tags)
-
-  lifecycle {
-    ignore_changes = [
-      role_last_used,
-    ]
-  }
 }
 
 # Policies attached ref https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html
