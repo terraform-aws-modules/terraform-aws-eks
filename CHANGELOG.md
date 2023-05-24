@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.15.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.15.0...v19.15.1) (2023-05-24)
+
+
+### Bug Fixes
+
+* Revert changes to ignore `role_last_used` ([#2629](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2629)) ([e23139a](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e23139ad2da0c31c8aa644ae0516ba9ee2a66399))
+
 ## [19.15.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.14.0...v19.15.0) (2023-05-24)
 
 
