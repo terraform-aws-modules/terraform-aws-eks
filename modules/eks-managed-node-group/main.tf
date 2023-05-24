@@ -427,12 +427,6 @@ resource "aws_iam_role" "this" {
   force_detach_policies = true
 
   tags = merge(var.tags, var.iam_role_tags)
-
-  lifecycle {
-    ignore_changes = [
-      role_last_used,
-    ]
-  }
 }
 
 # Policies attached ref https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
