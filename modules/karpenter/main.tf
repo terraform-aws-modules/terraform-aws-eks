@@ -61,6 +61,12 @@ resource "aws_iam_role" "irsa" {
   force_detach_policies = true
 
   tags = merge(var.tags, var.irsa_tags)
+
+  lifecycle {
+    ignore_changes = [
+      role_last_used,
+    ]
+  }
 }
 
 locals {
