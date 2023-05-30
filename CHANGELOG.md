@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.15.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.15.1...v19.15.2) (2023-05-30)
+
+
+### Bug Fixes
+
+* Ensure `isra_tag_values` can be tried before defaulting to `cluster_name` on Karpenter module ([#2631](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2631)) ([6c56e2a](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/6c56e2ad20057a5672526b5484df96806598a4e2))
+
 ### [19.15.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.15.0...v19.15.1) (2023-05-24)
 
 
