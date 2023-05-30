@@ -10,7 +10,7 @@ module "eks_managed_node_group" {
 
   name            = "separate-eks-mng"
   cluster_name    = "my-cluster"
-  cluster_version = "1.24"
+  cluster_version = "1.27"
 
   subnet_ids = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
 

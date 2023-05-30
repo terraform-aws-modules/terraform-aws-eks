@@ -64,7 +64,7 @@ resource "aws_iam_role" "irsa" {
 }
 
 locals {
-  irsa_tag_values = coalescelist([var.cluster_name], var.irsa_tag_values)
+  irsa_tag_values = coalescelist(var.irsa_tag_values, [var.cluster_name])
 }
 
 data "aws_iam_policy_document" "irsa" {
