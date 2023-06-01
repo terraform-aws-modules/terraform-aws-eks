@@ -386,11 +386,11 @@ resource "aws_eks_addon" "this" {
   cluster_name = aws_eks_cluster.this[0].name
   addon_name   = try(each.value.name, each.key)
 
-  addon_version            = try(each.value.addon_version, data.aws_eks_addon_version.this[each.key].version)
-  configuration_values     = try(each.value.configuration_values, null)
-  preserve                 = try(each.value.preserve, null)
-  resolve_conflicts        = try(each.value.resolve_conflicts, "OVERWRITE")
-  service_account_role_arn = try(each.value.service_account_role_arn, null)
+  addon_version               = try(each.value.addon_version, data.aws_eks_addon_version.this[each.key].version)
+  configuration_values        = try(each.value.configuration_values, null)
+  preserve                    = try(each.value.preserve, null)
+  resolve_conflicts_on_update = try(each.value.resolve_conflicts, "OVERWRITE")
+  service_account_role_arn    = try(each.value.service_account_role_arn, null)
 
   timeouts {
     create = try(each.value.timeouts.create, var.cluster_addons_timeouts.create, null)
