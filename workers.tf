@@ -26,7 +26,7 @@ resource "aws_security_group_rule" "workers_egress_whole_internet" {
 }
 
 resource "aws_security_group_rule" "workers_egress_cidr_blocks_internet" {
-  count             = var.worker_security_group_id == "" && var.create_eks && !var.allow_all_egress ? 1 : 0
+  count             = var.worker_security_group_id == "" && var.create_eks && ! var.allow_all_egress ? 1 : 0
   description       = "Allow nodes all egress to these cidr blocks."
   protocol          = "-1"
   security_group_id = local.worker_security_group_id
@@ -37,7 +37,7 @@ resource "aws_security_group_rule" "workers_egress_cidr_blocks_internet" {
 }
 
 resource "aws_security_group_rule" "workers_egress_internet_ports" {
-  count             = var.worker_security_group_id == "" && var.create_eks && !var.allow_all_egress ? length(var.egress_ports_allowed) : 0
+  count             = var.worker_security_group_id == "" && var.create_eks && ! var.allow_all_egress ? length(var.egress_ports_allowed) : 0
   description       = "Allow nodes all egress to the Internet on these ports."
   protocol          = "tcp"
   security_group_id = local.worker_security_group_id
@@ -48,7 +48,7 @@ resource "aws_security_group_rule" "workers_egress_internet_ports" {
 }
 
 resource "aws_security_group_rule" "workers_egress_custom_rules" {
-  count             = var.worker_security_group_id == "" && var.create_eks && !var.allow_all_egress ? length(var.egress_custom_allowed) : 0
+  count             = var.worker_security_group_id == "" && var.create_eks && ! var.allow_all_egress ? length(var.egress_custom_allowed) : 0
   description       = "Allow nodes all egress to these custom blocks and ports."
   protocol          = "tcp"
   security_group_id = local.worker_security_group_id
