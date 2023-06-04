@@ -23,3 +23,12 @@ resource "aws_eks_addon" "kube_proxy" {
   addon_version = var.kube_proxy_version
   resolve_conflicts = var.kube_proxy_resolve_conflicts
 }
+
+resource "aws_eks_addon" "aws_ebs_csi_driver" {
+  count = var.create_eks && var.enable_aws_ebs_csi_driver_addon ? 1 : 0
+  cluster_name = aws_eks_cluster.this[0].name
+  addon_name   = "aws-ebs-csi-driver"
+  addon_version = var.aws_ebs_csi_driver_version
+  resolve_conflicts = var.aws_ebs_csi_driver_resolve_conflicts
+  service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
+}

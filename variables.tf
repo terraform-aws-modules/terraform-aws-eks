@@ -142,6 +142,23 @@ variable "kube_proxy_resolve_conflicts" {
   default     = "NONE"
 }
 
+variable "enable_aws_ebs_csi_driver_addon" {
+  description = "Whether or not to install the vpc-cni addon in the cluster"
+  type        = bool
+  default     = true
+}
+
+variable "aws_ebs_csi_driver_version" {
+  description = "Version of the kube-proxy container to install"
+  type        = string
+}
+
+variable "aws_ebs_csi_driver_resolve_conflicts" {
+  description = "Whether or not to force overwrite of the config. Options: NONE, OVERWRITE"
+  type        = string
+  default     = "NONE"
+}
+
 variable "worker_groups_launch_template" {
   description = "A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys."
   type        = any
