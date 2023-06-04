@@ -160,7 +160,7 @@ variable "aws_ebs_csi_driver_resolve_conflicts" {
 }
 
 variable "ebs_csi_driver_role_arn" {
-  description = "Role for ebs csi driver needed by the service accounts to perform voilume resizing"
+  description = "Role for ebs csi driver needed by the service accounts to perform ondemand volume resizing"
   type        = string
 }
 
