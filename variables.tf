@@ -159,6 +159,11 @@ variable "aws_ebs_csi_driver_resolve_conflicts" {
   default     = "NONE"
 }
 
+variable "ebs_csi_driver_role_arn" {
+  description = "Role for ebs csi driver needed by the service accounts to perform voilume resizing"
+  type        = string
+}
+
 variable "worker_groups_launch_template" {
   description = "A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys."
   type        = any
