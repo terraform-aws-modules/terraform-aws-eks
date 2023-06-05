@@ -143,13 +143,13 @@ variable "kube_proxy_resolve_conflicts" {
 }
 
 variable "enable_aws_ebs_csi_driver_addon" {
-  description = "Whether or not to install the vpc-cni addon in the cluster"
+  description = "Whether or not to install the ebs driver addon in the cluster"
   type        = bool
   default     = true
 }
 
 variable "aws_ebs_csi_driver_version" {
-  description = "Version of the kube-proxy container to install"
+  description = "Version of the ebs csi driver container to install"
   type        = string
 }
 
