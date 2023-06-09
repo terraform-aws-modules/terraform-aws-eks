@@ -122,6 +122,7 @@ data "aws_iam_policy_document" "irsa" {
     actions = ["ec2:RunInstances"]
     resources = [
       "arn:${local.partition}:ec2:*::image/*",
+      "arn:${local.partition}:ec2:*::snapshot/*",
       "arn:${local.partition}:ec2:*:${local.account_id}:instance/*",
       "arn:${local.partition}:ec2:*:${local.account_id}:spot-instances-request/*",
       "arn:${local.partition}:ec2:*:${local.account_id}:security-group/*",
