@@ -284,6 +284,10 @@ resource "kubectl_manifest" "karpenter_example_deployment" {
 # Supporting Resources
 ################################################################################
 
+resource "aws_iam_service_linked_role" "spot" {
+  aws_service_name = "spot.amazonaws.com"
+}
+
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 4.0"
