@@ -4,6 +4,11 @@ Configuration in this directory creates an AWS EKS cluster with [Karpenter](http
 
 ## Usage
 
+### Enable spot instances if not already done. This needs to be done once per account and can't be added to Terraform code
+```bash
+aws iam create-service-linked-role --aws-service-name spot.amazonaws.com
+```
+
 To run this example you need to execute:
 
 ```bash
