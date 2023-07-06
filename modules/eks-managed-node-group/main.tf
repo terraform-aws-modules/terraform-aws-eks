@@ -170,6 +170,8 @@ resource "aws_launch_template" "this" {
     }
   }
 
+  instance_type = var.instance_type
+
   # # Set on node group instead
   # instance_type = var.launch_template_instance_type
   kernel_id = var.kernel_id

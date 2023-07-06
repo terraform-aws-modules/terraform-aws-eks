@@ -341,6 +341,7 @@ module "eks_managed_node_group" {
   elastic_inference_accelerator      = try(each.value.elastic_inference_accelerator, var.eks_managed_node_group_defaults.elastic_inference_accelerator, {})
   enclave_options                    = try(each.value.enclave_options, var.eks_managed_node_group_defaults.enclave_options, {})
   instance_market_options            = try(each.value.instance_market_options, var.eks_managed_node_group_defaults.instance_market_options, {})
+  instance_type                      = try(each.value.instance_type, var.eks_managed_node_group_defaults.instance_type, null)
   license_specifications             = try(each.value.license_specifications, var.eks_managed_node_group_defaults.license_specifications, {})
   metadata_options                   = try(each.value.metadata_options, var.eks_managed_node_group_defaults.metadata_options, local.metadata_options)
   enable_monitoring                  = try(each.value.enable_monitoring, var.eks_managed_node_group_defaults.enable_monitoring, true)

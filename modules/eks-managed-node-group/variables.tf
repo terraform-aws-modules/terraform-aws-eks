@@ -222,6 +222,12 @@ variable "instance_market_options" {
   default     = {}
 }
 
+variable "instance_type" {
+  description = "Set of instance type associated with the Launch Template. Conflicts with `instance_types`"
+  type        = string
+  default     = null
+}
+
 variable "maintenance_options" {
   description = "The maintenance options for the instance"
   type        = any
@@ -351,7 +357,7 @@ variable "force_update_version" {
 }
 
 variable "instance_types" {
-  description = "Set of instance types associated with the EKS Node Group. Defaults to `[\"t3.medium\"]`"
+  description = "Set of instance types associated with the EKS Node Group. Defaults to `[\"t3.medium\"]`. Conflicts with `instance_types`"
   type        = list(string)
   default     = null
 }
