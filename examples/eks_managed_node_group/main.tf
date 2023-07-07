@@ -182,6 +182,12 @@ module "eks" {
       instance_types = ["t4g.medium"]
     }
 
+    # Set the instance type in the launch template
+    lt_instance_type = {
+      instance_type  = "t3.medium"
+      instance_types = null # Reset the value from eks_managed_node_group_defaults to prevent conflict.
+    }
+
     # Complete
     complete = {
       name            = "complete-eks-mng"
@@ -269,8 +275,8 @@ module "eks" {
           min_size     = 2
           max_size     = "-1" # Retains current max size
           desired_size = 2
-          start_time   = "2023-03-05T00:00:00Z"
-          end_time     = "2024-03-05T00:00:00Z"
+          start_time   = "2024-03-05T00:00:00Z"
+          end_time     = "2025-03-05T00:00:00Z"
           timezone     = "Etc/GMT+0"
           recurrence   = "0 0 * * *"
         },
@@ -278,8 +284,8 @@ module "eks" {
           min_size     = 0
           max_size     = "-1" # Retains current max size
           desired_size = 0
-          start_time   = "2023-03-05T12:00:00Z"
-          end_time     = "2024-03-05T12:00:00Z"
+          start_time   = "2024-03-05T12:00:00Z"
+          end_time     = "2025-03-05T12:00:00Z"
           timezone     = "Etc/GMT+0"
           recurrence   = "0 12 * * *"
         }
