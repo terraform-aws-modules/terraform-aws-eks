@@ -36,7 +36,8 @@ Please consult the `examples` directory for reference example configurations. If
   - `cluster_encryption_config` previously defaulted to `[]` and now defaults to `{resources = ["secrets"]}` to encrypt secrets by default
 - `cluster_endpoint_public_access` previously defaulted to `true` and now defaults to `false`. Clusters created with this module now default to private-only access to the cluster endpoint
   - `cluster_endpoint_private_access` previously defaulted to `false` and now defaults to `true`
-- The addon configuration now sets `"OVERWRITE"` as the default value for `resolve_conflicts` to ease add-on upgrade management. Users can opt out of this by instead setting `"NONE"` as the value for `resolve_conflicts`
+- The addon configuration now sets `"OVERWRITE"` as the default value for `resolve_conflicts_on_create` to ease add-on upgrade management. Users can opt out of this by instead setting `"NONE"` as the value for `resolve_conflicts_on_create`
+- The addon configuration now sets `"OVERWRITE"` as the default value for `resolve_conflicts_on_update` to ease add-on upgrade management. Users can opt out of this by instead setting `"NONE"` as the value for `resolve_conflicts_on_update`
 - The `kms` module used has been updated from `v1.0.2` to `v1.1.0` - no material changes other than updated to latest
 - The default value for EKS managed node group `update_config` has been updated to the recommended `{ max_unavailable_percentage = 33 }`
 - The default value for the self-managed node group `instance_refresh` has been updated to the recommended:
@@ -190,7 +191,8 @@ EKS managed node groups on `v18.x` by default create a security group that does 
     }
     kube-proxy = {}
     vpc-cni = {
--     resolve_conflicts = "OVERWRITE" # now the default
+-     resolve_conflicts_on_create = "OVERWRITE" # now the default
+-     resolve_conflicts_on_update = "OVERWRITE" # now the default
     }
   }
 
