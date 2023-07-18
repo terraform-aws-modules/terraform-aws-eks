@@ -1,3 +1,4 @@
+#code sets up the necessary IAM role and its associated policies, along with a Fargate profile for an Amazon EKS cluster, based on the provided input variables and conditions.
 data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
