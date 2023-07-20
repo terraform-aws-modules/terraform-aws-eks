@@ -197,8 +197,9 @@ resource "aws_launch_template" "this" {
         }
       }
 
-      accelerator_types = try(instance_requirements.value.accelerator_types, [])
-      bare_metal        = try(instance_requirements.value.bare_metal, null)
+      accelerator_types      = try(instance_requirements.value.accelerator_types, [])
+      allowed_instance_types = try(instance_requirements.value.allowed_instance_types, null)
+      bare_metal             = try(instance_requirements.value.bare_metal, null)
 
       dynamic "baseline_ebs_bandwidth_mbps" {
         for_each = try([instance_requirements.value.baseline_ebs_bandwidth_mbps], [])
@@ -211,7 +212,7 @@ resource "aws_launch_template" "this" {
 
       burstable_performance   = try(instance_requirements.value.burstable_performance, null)
       cpu_manufacturers       = try(instance_requirements.value.cpu_manufacturers, [])
-      excluded_instance_types = try(instance_requirements.value.excluded_instance_types, [])
+      excluded_instance_types = try(instance_requirements.value.excluded_instance_types, null)
       instance_generations    = try(instance_requirements.value.instance_generations, [])
       local_storage           = try(instance_requirements.value.local_storage, null)
       local_storage_types     = try(instance_requirements.value.local_storage_types, [])
@@ -231,6 +232,15 @@ resource "aws_launch_template" "this" {
         content {
           max = try(memory_mib.value.max, null)
           min = memory_mib.value.min
+        }
+      }
+
+      dynamic "network_bandwidth_gbps" {
+        for_each = try([instance_requirements.value.network_bandwidth_gbps], [])
+
+        content {
+          max = try(network_bandwidth_gbps.value.max, null)
+          min = try(network_bandwidth_gbps.value.min, null)
         }
       }
 
@@ -680,7 +690,7 @@ resource "aws_autoscaling_group" "this" {
 ################################################################################
 
 resource "aws_autoscaling_schedule" "this" {
-  for_each = var.create && var.create_schedule ? var.schedules : {}
+  for_each = { for k, v in var.schedules : k => v if var.create && var.create_schedule }
 
   scheduled_action_name  = each.key
   autoscaling_group_name = aws_autoscaling_group.this[0].name

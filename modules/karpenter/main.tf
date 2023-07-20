@@ -63,6 +63,10 @@ resource "aws_iam_role" "irsa" {
   tags = merge(var.tags, var.irsa_tags)
 }
 
+locals {
+  irsa_tag_values = coalescelist(var.irsa_tag_values, [var.cluster_name])
+}
+
 data "aws_iam_policy_document" "irsa" {
   count = local.create_irsa ? 1 : 0
 
@@ -97,7 +101,7 @@ data "aws_iam_policy_document" "irsa" {
     condition {
       test     = "StringEquals"
       variable = "ec2:ResourceTag/${var.irsa_tag_key}"
-      values   = [var.cluster_name]
+      values   = local.irsa_tag_values
     }
   }
 
@@ -110,7 +114,7 @@ data "aws_iam_policy_document" "irsa" {
     condition {
       test     = "StringEquals"
       variable = "ec2:ResourceTag/${var.irsa_tag_key}"
-      values   = [var.cluster_name]
+      values   = local.irsa_tag_values
     }
   }
 
@@ -118,6 +122,7 @@ data "aws_iam_policy_document" "irsa" {
     actions = ["ec2:RunInstances"]
     resources = [
       "arn:${local.partition}:ec2:*::image/*",
+      "arn:${local.partition}:ec2:*::snapshot/*",
       "arn:${local.partition}:ec2:*:${local.account_id}:instance/*",
       "arn:${local.partition}:ec2:*:${local.account_id}:spot-instances-request/*",
       "arn:${local.partition}:ec2:*:${local.account_id}:security-group/*",
@@ -175,6 +180,13 @@ resource "aws_iam_role_policy_attachment" "irsa" {
   policy_arn = aws_iam_policy.irsa[0].arn
 }
 
+resource "aws_iam_role_policy_attachment" "irsa_additional" {
+  for_each = { for k, v in var.policies : k => v if local.create_irsa }
+
+  role       = aws_iam_role.irsa[0].name
+  policy_arn = each.value
+}
+
 ################################################################################
 # Node Termination Queue
 ################################################################################
@@ -190,7 +202,7 @@ resource "aws_sqs_queue" "this" {
 
   name                              = local.queue_name
   message_retention_seconds         = 300
-  sqs_managed_sse_enabled           = var.queue_managed_sse_enabled
+  sqs_managed_sse_enabled           = var.queue_managed_sse_enabled ? var.queue_managed_sse_enabled : null
   kms_master_key_id                 = var.queue_kms_master_key_id
   kms_data_key_reuse_period_seconds = var.queue_kms_data_key_reuse_period_seconds
 

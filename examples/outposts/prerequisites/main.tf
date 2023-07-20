@@ -56,7 +56,7 @@ module "ssm_bastion_ec2" {
     rm terraform_${local.terraform_version}_linux_amd64.zip 2> /dev/null
 
     # Install kubectl
-    curl -LO https://dl.k8s.io/release/v1.21.0/bin/linux/amd64/kubectl
+    curl -LO https://dl.k8s.io/release/v1.27.0/bin/linux/amd64/kubectl
     install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
     # Remove default awscli which is v1 - we want latest v2
@@ -66,9 +66,8 @@ module "ssm_bastion_ec2" {
     ./aws/install
 
     # Clone repo
-    git clone https://github.com/bryantbiggs/terraform-aws-eks.git \
-    && cd /home/ssm-user/terraform-aws-eks \
-    && git checkout refactor/v19
+    git clone https://github.com/terraform-aws-modules/terraform-aws-eks.git \
+    && cd /home/ssm-user/terraform-aws-eks
 
     chown -R ssm-user:ssm-user /home/ssm-user/
   EOT

@@ -27,7 +27,7 @@ variable "cluster_name" {
 }
 
 variable "cluster_version" {
-  description = "Kubernetes `<major>.<minor>` version to use for the EKS cluster (i.e.: `1.24`)"
+  description = "Kubernetes `<major>.<minor>` version to use for the EKS cluster (i.e.: `1.27`)"
   type        = string
   default     = null
 }
@@ -99,7 +99,7 @@ variable "outpost_config" {
 }
 
 variable "cluster_encryption_config" {
-  description = "Configuration block with encryption configuration for the cluster"
+  description = "Configuration block with encryption configuration for the cluster. To disable secret encryption, set this value to `{}`"
   type        = any
   default = {
     resources = ["secrets"]
