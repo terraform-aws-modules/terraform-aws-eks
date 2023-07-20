@@ -32,7 +32,7 @@ By default, EKS creates a cluster primary security group that is created outside
 
 In theory, if you are attaching the cluster primary security group, you shouldn't need to use the shared node security group created by the module. However, this is left up to users to decide for their requirements and use case.
 
-If you choose to use [Custom Networking](https://docs.aws.amazon.com/eks/latest/userguide/cni-custom-network.html), make sure to only attach the security groups chosen used above in your ENIConfig resources to avoid redundant tags.
+If you choose to use [Custom Networking](https://docs.aws.amazon.com/eks/latest/userguide/cni-custom-network.html), make sure to only attach the security groups matching your choice above in your ENIConfig resources. This will ensure you avoid redundant tags.
 
 ### Why are nodes not being registered?
 
