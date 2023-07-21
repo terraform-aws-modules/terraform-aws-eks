@@ -201,8 +201,8 @@ module "eks" {
       ebs_optimized     = true
       enable_monitoring = true
 
-      block_device_mappings = {
-        xvda = {
+      block_device_mappings = [
+        {
           device_name = "/dev/xvda"
           ebs = {
             volume_size           = 75
@@ -214,7 +214,7 @@ module "eks" {
             delete_on_termination = true
           }
         }
-      }
+      ]
 
       metadata_options = {
         http_endpoint               = "enabled"
