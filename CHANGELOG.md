@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.15.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.15.3...v19.15.4) (2023-07-27)
+
+
+### Bug Fixes
+
+* Use `coalesce` when desired default value is not `null` ([#2696](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2696)) ([c86f8d4](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c86f8d4db3236e7dae59ef9142da4d7e496138c8))
+
 ### [19.15.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.15.2...v19.15.3) (2023-06-09)
 
 
