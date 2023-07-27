@@ -386,7 +386,7 @@ resource "aws_eks_addon" "this" {
   cluster_name = aws_eks_cluster.this[0].name
   addon_name   = try(each.value.name, each.key)
 
-  addon_version            = coalesce(try(each.value.addon_version, null), data.aws_eks_addon_version.this[each.key].version))
+  addon_version            = coalesce(try(each.value.addon_version, null), data.aws_eks_addon_version.this[each.key].version)
   configuration_values     = try(each.value.configuration_values, null)
   preserve                 = try(each.value.preserve, null)
   resolve_conflicts        = try(each.value.resolve_conflicts, "OVERWRITE")
@@ -414,7 +414,7 @@ resource "aws_eks_addon" "before_compute" {
   cluster_name = aws_eks_cluster.this[0].name
   addon_name   = try(each.value.name, each.key)
 
-  addon_version            = coalesce(try(each.value.addon_version, null), data.aws_eks_addon_version.this[each.key].version))
+  addon_version            = coalesce(try(each.value.addon_version, null), data.aws_eks_addon_version.this[each.key].version)
   configuration_values     = try(each.value.configuration_values, null)
   preserve                 = try(each.value.preserve, null)
   resolve_conflicts        = try(each.value.resolve_conflicts, "OVERWRITE")
