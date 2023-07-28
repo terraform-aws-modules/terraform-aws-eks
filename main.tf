@@ -438,6 +438,33 @@ data "aws_eks_addon_version" "this" {
 }
 
 ################################################################################
+# EKS Additional Addons
+################################################################################
+
+module "cluster_autoscaler" {
+  source = "./modules/addons/cluster-autoscaler"
+
+  for_each = { for k, v in var.cluster_additional_addons : k => v if k == "cluster-autoscaler" && local.create && var.enable_irsa && !local.create_outposts_local_cluster }
+
+  install   = try(each.value.install, false)
+  time_wait = try(each.value.time_wait, "30s")
+
+  image_tag            = try(each.value.image_tag, "")
+  namespace            = try(each.value.namespace, "kube-system")
+  helm_release_version = try(each.value.helm_release_version, "")
+  helm_release_values  = try(each.value.helm_release_values, "")
+
+  irsa_role_name = try(each.value.rirsa_role_name, "")
+
+  cluster_name              = aws_eks_cluster.this[0].name
+  cluster_version           = aws_eks_cluster.this[0].version
+  cluster_oidc_provider_arn = aws_iam_openid_connect_provider.oidc_provider[0].arn
+
+  tags = var.tags
+
+}
+
+################################################################################
 # EKS Identity Provider
 # Note - this is different from IRSA
 ################################################################################

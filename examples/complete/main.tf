@@ -59,6 +59,12 @@ module "eks" {
     }
   }
 
+  cluster_additional_addons = {
+    cluster-autoscaler = {
+      install = true
+    }
+  }
+
   # External encryption key
   create_kms_key = false
   cluster_encryption_config = {

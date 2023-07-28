@@ -483,6 +483,16 @@ variable "cluster_addons_timeouts" {
 }
 
 ################################################################################
+# EKS Additional Addons
+################################################################################
+
+variable "cluster_additional_addons" {
+  description = "Map of addtional external addons configurations to enable for the cluster. Addon name can be the map keys or set with `name`"
+  type        = any
+  default     = {}
+}
+
+################################################################################
 # EKS Identity Provider
 ################################################################################
 
