@@ -19,12 +19,12 @@ output "cluster_endpoint" {
 
 output "cluster_id" {
   description = "The ID of the EKS cluster. Note: currently a value is returned only for local EKS clusters created on Outposts"
-  value       = try(aws_eks_cluster.this[0].cluster_id, null)
+  value       = try(aws_eks_cluster.this[0].cluster_id, "")
 }
 
 output "cluster_name" {
   description = "The name of the EKS cluster"
-  value       = try(aws_eks_cluster.this[0].name, null)
+  value       = try(aws_eks_cluster.this[0].name, "")
 }
 
 output "cluster_oidc_issuer_url" {
@@ -143,7 +143,7 @@ output "cluster_iam_role_unique_id" {
 
 output "cluster_addons" {
   description = "Map of attribute maps for all EKS cluster addons enabled"
-  value       = aws_eks_addon.this
+  value       = merge(aws_eks_addon.this, aws_eks_addon.before_compute)
 }
 
 ################################################################################

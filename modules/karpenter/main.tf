@@ -13,8 +13,9 @@ locals {
 ################################################################################
 
 locals {
-  create_irsa = var.create && var.create_irsa
-  irsa_name   = coalesce(var.irsa_name, "KarpenterIRSA-${var.cluster_name}")
+  create_irsa      = var.create && var.create_irsa
+  irsa_name        = coalesce(var.irsa_name, "KarpenterIRSA-${var.cluster_name}")
+  irsa_policy_name = coalesce(var.irsa_policy_name, local.irsa_name)
 
   irsa_oidc_provider_url = replace(var.irsa_oidc_provider_arn, "/^(.*provider/)/", "")
 }
@@ -62,6 +63,10 @@ resource "aws_iam_role" "irsa" {
   tags = merge(var.tags, var.irsa_tags)
 }
 
+locals {
+  irsa_tag_values = coalescelist(var.irsa_tag_values, [var.cluster_name])
+}
+
 data "aws_iam_policy_document" "irsa" {
   count = local.create_irsa ? 1 : 0
 
@@ -96,7 +101,7 @@ data "aws_iam_policy_document" "irsa" {
     condition {
       test     = "StringEquals"
       variable = "ec2:ResourceTag/${var.irsa_tag_key}"
-      values   = [var.cluster_name]
+      values   = local.irsa_tag_values
     }
   }
 
@@ -109,7 +114,7 @@ data "aws_iam_policy_document" "irsa" {
     condition {
       test     = "StringEquals"
       variable = "ec2:ResourceTag/${var.irsa_tag_key}"
-      values   = [var.cluster_name]
+      values   = local.irsa_tag_values
     }
   }
 
@@ -117,6 +122,7 @@ data "aws_iam_policy_document" "irsa" {
     actions = ["ec2:RunInstances"]
     resources = [
       "arn:${local.partition}:ec2:*::image/*",
+      "arn:${local.partition}:ec2:*::snapshot/*",
       "arn:${local.partition}:ec2:*:${local.account_id}:instance/*",
       "arn:${local.partition}:ec2:*:${local.account_id}:spot-instances-request/*",
       "arn:${local.partition}:ec2:*:${local.account_id}:security-group/*",
@@ -129,6 +135,11 @@ data "aws_iam_policy_document" "irsa" {
   statement {
     actions   = ["ssm:GetParameter"]
     resources = var.irsa_ssm_parameter_arns
+  }
+
+  statement {
+    actions   = ["eks:DescribeCluster"]
+    resources = ["arn:${local.partition}:eks:*:${local.account_id}:cluster/${var.cluster_name}"]
   }
 
   statement {
@@ -154,7 +165,7 @@ data "aws_iam_policy_document" "irsa" {
 resource "aws_iam_policy" "irsa" {
   count = local.create_irsa ? 1 : 0
 
-  name_prefix = "${local.irsa_name}-"
+  name_prefix = "${local.irsa_policy_name}-"
   path        = var.irsa_path
   description = var.irsa_description
   policy      = data.aws_iam_policy_document.irsa[0].json
@@ -167,6 +178,13 @@ resource "aws_iam_role_policy_attachment" "irsa" {
 
   role       = aws_iam_role.irsa[0].name
   policy_arn = aws_iam_policy.irsa[0].arn
+}
+
+resource "aws_iam_role_policy_attachment" "irsa_additional" {
+  for_each = { for k, v in var.policies : k => v if local.create_irsa }
+
+  role       = aws_iam_role.irsa[0].name
+  policy_arn = each.value
 }
 
 ################################################################################
@@ -184,7 +202,7 @@ resource "aws_sqs_queue" "this" {
 
   name                              = local.queue_name
   message_retention_seconds         = 300
-  sqs_managed_sse_enabled           = var.queue_managed_sse_enabled
+  sqs_managed_sse_enabled           = var.queue_managed_sse_enabled ? var.queue_managed_sse_enabled : null
   kms_master_key_id                 = var.queue_kms_master_key_id
   kms_data_key_reuse_period_seconds = var.queue_kms_data_key_reuse_period_seconds
 

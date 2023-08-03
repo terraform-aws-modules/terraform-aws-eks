@@ -48,7 +48,7 @@ output "node_group_autoscaling_group_names" {
 
 output "node_group_status" {
   description = "Status of the EKS Node Group"
-  value       = try(aws_eks_node_group.this[0].arn, null)
+  value       = try(aws_eks_node_group.this[0].status, null)
 }
 
 output "node_group_labels" {
@@ -59,6 +59,15 @@ output "node_group_labels" {
 output "node_group_taints" {
   description = "List of objects containing information about taints applied to the node group"
   value       = try(aws_eks_node_group.this[0].taint, [])
+}
+
+################################################################################
+# Autoscaling Group Schedule
+################################################################################
+
+output "autoscaling_group_schedule_arns" {
+  description = "ARNs of autoscaling group schedules"
+  value       = { for k, v in aws_autoscaling_schedule.this : k => v.arn }
 }
 
 ################################################################################

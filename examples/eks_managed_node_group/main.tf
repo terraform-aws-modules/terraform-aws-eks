@@ -19,7 +19,7 @@ data "aws_availability_zones" "available" {}
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.24"
+  cluster_version = "1.27"
   region          = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
@@ -63,6 +63,7 @@ module "eks" {
     }
     vpc-cni = {
       most_recent              = true
+      before_compute           = true
       service_account_role_arn = module.vpc_cni_irsa.iam_role_arn
       configuration_values = jsonencode({
         env = {
@@ -263,6 +264,27 @@ module "eks" {
         additional                         = aws_iam_policy.node_additional.arn
       }
 
+      schedules = {
+        scale-up = {
+          min_size     = 2
+          max_size     = "-1" # Retains current max size
+          desired_size = 2
+          start_time   = "2023-03-05T00:00:00Z"
+          end_time     = "2024-03-05T00:00:00Z"
+          timezone     = "Etc/GMT+0"
+          recurrence   = "0 0 * * *"
+        },
+        scale-down = {
+          min_size     = 0
+          max_size     = "-1" # Retains current max size
+          desired_size = 0
+          start_time   = "2023-03-05T12:00:00Z"
+          end_time     = "2024-03-05T12:00:00Z"
+          timezone     = "Etc/GMT+0"
+          recurrence   = "0 12 * * *"
+        }
+      }
+
       tags = {
         ExtraTag = "EKS managed node group complete example"
       }
@@ -278,7 +300,7 @@ module "eks" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   name = local.name
   cidr = local.vpc_cidr
@@ -288,21 +310,17 @@ module "vpc" {
   public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 48)]
   intra_subnets   = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 52)]
 
-  enable_ipv6                     = true
-  assign_ipv6_address_on_creation = true
-  create_egress_only_igw          = true
+  enable_nat_gateway     = true
+  single_nat_gateway     = true
+  enable_ipv6            = true
+  create_egress_only_igw = true
 
-  public_subnet_ipv6_prefixes  = [0, 1, 2]
-  private_subnet_ipv6_prefixes = [3, 4, 5]
-  intra_subnet_ipv6_prefixes   = [6, 7, 8]
-
-  enable_nat_gateway   = true
-  single_nat_gateway   = true
-  enable_dns_hostnames = true
-
-  enable_flow_log                      = true
-  create_flow_log_cloudwatch_iam_role  = true
-  create_flow_log_cloudwatch_log_group = true
+  public_subnet_ipv6_prefixes                    = [0, 1, 2]
+  public_subnet_assign_ipv6_address_on_creation  = true
+  private_subnet_ipv6_prefixes                   = [3, 4, 5]
+  private_subnet_assign_ipv6_address_on_creation = true
+  intra_subnet_ipv6_prefixes                     = [6, 7, 8]
+  intra_subnet_assign_ipv6_address_on_creation   = true
 
   public_subnet_tags = {
     "kubernetes.io/role/elb" = 1
@@ -438,5 +456,54 @@ data "aws_ami" "eks_default_bottlerocket" {
   filter {
     name   = "name"
     values = ["bottlerocket-aws-k8s-${local.cluster_version}-x86_64-*"]
+  }
+}
+
+################################################################################
+# Tags for the ASG to support cluster-autoscaler scale up from 0
+################################################################################
+
+locals {
+
+  # We need to lookup K8s taint effect from the AWS API value
+  taint_effects = {
+    NO_SCHEDULE        = "NoSchedule"
+    NO_EXECUTE         = "NoExecute"
+    PREFER_NO_SCHEDULE = "PreferNoSchedule"
+  }
+
+  cluster_autoscaler_label_tags = merge([
+    for name, group in module.eks.eks_managed_node_groups : {
+      for label_name, label_value in coalesce(group.node_group_labels, {}) : "${name}|label|${label_name}" => {
+        autoscaling_group = group.node_group_autoscaling_group_names[0],
+        key               = "k8s.io/cluster-autoscaler/node-template/label/${label_name}",
+        value             = label_value,
+      }
+    }
+  ]...)
+
+  cluster_autoscaler_taint_tags = merge([
+    for name, group in module.eks.eks_managed_node_groups : {
+      for taint in coalesce(group.node_group_taints, []) : "${name}|taint|${taint.key}" => {
+        autoscaling_group = group.node_group_autoscaling_group_names[0],
+        key               = "k8s.io/cluster-autoscaler/node-template/taint/${taint.key}"
+        value             = "${taint.value}:${local.taint_effects[taint.effect]}"
+      }
+    }
+  ]...)
+
+  cluster_autoscaler_asg_tags = merge(local.cluster_autoscaler_label_tags, local.cluster_autoscaler_taint_tags)
+}
+
+resource "aws_autoscaling_group_tag" "cluster_autoscaler_label_tags" {
+  for_each = local.cluster_autoscaler_asg_tags
+
+  autoscaling_group_name = each.value.autoscaling_group
+
+  tag {
+    key   = each.value.key
+    value = each.value.value
+
+    propagate_at_launch = false
   }
 }

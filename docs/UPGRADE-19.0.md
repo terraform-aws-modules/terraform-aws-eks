@@ -12,6 +12,7 @@ Please consult the `examples` directory for reference example configurations. If
   1. `var.iam_role_additional_policies` was changed from type `list(string)` to type `map(string)` -> this is a breaking change. More information on managing this change can be found below, under `Terraform State Moves`
   2. The logic used in the root module for this variable was changed to replace the use of `try()` with `lookup()`. More details on why can be found [here](https://github.com/clowdhaus/terraform-for-each-unknown)
 - The cluster name has been removed from the Karpenter module event rule names. Due to the use of long cluster names appending to the provided naming scheme, the cluster name has moved to a `ClusterName` tag and the event rule name is now a prefix. This guarantees that users can have multiple instances of Karpenter with their respective event rules/SQS queue without name collisions, while also still being able to identify which queues and event rules belong to which cluster.
+- The new variable `node_security_group_enable_recommended_rules` is set to true by default and may conflict with any custom ingress/egress rules. Please ensure that any duplicates from the `node_security_group_additional_rules` are removed before upgrading, or set `node_security_group_enable_recommended_rules` to false. [Reference](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/UPGRADE-19.0.md#added)
 
 ## Additional changes
 
@@ -57,10 +58,9 @@ Please consult the `examples` directory for reference example configurations. If
 ### Variable and output changes
 
 1. Removed variables:
-
-  - `node_security_group_ntp_ipv4_cidr_block` - default security group settings have an egress rule for ALL to `0.0.0.0/0`/`::/0`
-  - `node_security_group_ntp_ipv6_cidr_block` - default security group settings have an egress rule for ALL to `0.0.0.0/0`/`::/0`
-
+ 
+   - `node_security_group_ntp_ipv4_cidr_block` - default security group settings have an egress rule for ALL to `0.0.0.0/0`/`::/0`
+   - `node_security_group_ntp_ipv6_cidr_block` - default security group settings have an egress rule for ALL to `0.0.0.0/0`/`::/0`
    - Self-managed node groups:
      - `create_security_group`
      - `security_group_name`

@@ -27,7 +27,7 @@ variable "cluster_name" {
 }
 
 variable "cluster_version" {
-  description = "Kubernetes `<major>.<minor>` version to use for the EKS cluster (i.e.: `1.24`)"
+  description = "Kubernetes `<major>.<minor>` version to use for the EKS cluster (i.e.: `1.27`)"
   type        = string
   default     = null
 }
@@ -99,7 +99,7 @@ variable "outpost_config" {
 }
 
 variable "cluster_encryption_config" {
-  description = "Configuration block with encryption configuration for the cluster"
+  description = "Configuration block with encryption configuration for the cluster. To disable secret encryption, set this value to `{}`"
   type        = any
   default = {
     resources = ["secrets"]
@@ -458,6 +458,12 @@ variable "cluster_encryption_policy_tags" {
   description = "A map of additional tags to add to the cluster encryption policy created"
   type        = map(string)
   default     = {}
+}
+
+variable "dataplane_wait_duration" {
+  description = "Duration to wait after the EKS cluster has become active before creating the dataplane components (EKS managed nodegroup(s), self-managed nodegroup(s), Fargate profile(s))"
+  type        = string
+  default     = "30s"
 }
 
 ################################################################################
