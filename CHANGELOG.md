@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.16.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.15.4...v19.16.0) (2023-08-03)
+
+
+### Features
+
+* Add `node_iam_role_arns` local variable to check for Windows platform on EKS managed nodegroups ([#2477](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2477)) ([adb47f4](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/adb47f46dc53b1a0c18691a59dc58401c327c0be))
+
 ### [19.15.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.15.3...v19.15.4) (2023-07-27)
 
 
