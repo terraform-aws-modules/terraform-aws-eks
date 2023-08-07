@@ -142,6 +142,28 @@ variable "kube_proxy_resolve_conflicts" {
   default     = "NONE"
 }
 
+variable "enable_aws_ebs_csi_driver_addon" {
+  description = "Whether or not to install the ebs driver addon in the cluster"
+  type        = bool
+  default     = true
+}
+
+variable "aws_ebs_csi_driver_version" {
+  description = "Version of the ebs csi driver container to install"
+  type        = string
+}
+
+variable "aws_ebs_csi_driver_resolve_conflicts" {
+  description = "Whether or not to force overwrite of the config. Options: NONE, OVERWRITE"
+  type        = string
+  default     = "NONE"
+}
+
+variable "ebs_csi_driver_role_arn" {
+  description = "Role for ebs csi driver needed by the service accounts to perform ondemand volume resizing"
+  type        = string
+}
+
 variable "worker_groups_launch_template" {
   description = "A list of maps defining worker group configurations to be defined using AWS Launch Templates. See workers_group_defaults for valid keys."
   type        = any
