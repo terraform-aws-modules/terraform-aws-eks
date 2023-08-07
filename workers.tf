@@ -131,6 +131,12 @@ resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryRea
   role       = aws_iam_role.workers[0].name
 }
 
+resource "aws_iam_role_policy_attachment" "workers_AmazonSSMManagedInstanceCore" {
+  count      = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  role       = aws_iam_role.workers[0].name
+}
+
 resource "aws_iam_role_policy_attachment" "workers_additional_policies" {
   count      = var.manage_worker_iam_resources && var.create_eks ? length(var.workers_additional_policies) : 0
   role       = aws_iam_role.workers[0].name
