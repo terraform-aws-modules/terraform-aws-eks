@@ -10,6 +10,7 @@ resource "aws_security_group" "workers" {
     {
       "Name"                                                  = "${aws_eks_cluster.this[0].name}-eks_worker_sg"
       "kubernetes.io/cluster/${aws_eks_cluster.this[0].name}" = "owned"
+      "karpenter.sh/discovery"                                = aws_eks_cluster.this[0].name
     },
   )
 }
@@ -128,6 +129,12 @@ resource "aws_iam_role_policy_attachment" "workers_AmazonEKS_CNI_Policy" {
 resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryReadOnly" {
   count      = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  role       = aws_iam_role.workers[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "workers_AmazonSSMManagedInstanceCore" {
+  count      = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   role       = aws_iam_role.workers[0].name
 }
 
