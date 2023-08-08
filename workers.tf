@@ -10,6 +10,7 @@ resource "aws_security_group" "workers" {
     {
       "Name"                                                  = "${aws_eks_cluster.this[0].name}-eks_worker_sg"
       "kubernetes.io/cluster/${aws_eks_cluster.this[0].name}" = "owned"
+      "karpenter.sh/discovery"                                = aws_eks_cluster.this[0].name
     },
   )
 }
