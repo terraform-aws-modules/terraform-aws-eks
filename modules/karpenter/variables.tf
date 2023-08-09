@@ -246,6 +246,11 @@ variable "create_instance_profile" {
 ################################################################################
 # Event Bridge Rules
 ################################################################################
+variable "rule_use_name_prefix" {
+  description = "Determines whether the Cloud Watch Event name (`rule_name_prefix`) is used as a prefix"
+  type        = bool
+  default     = true
+}
 
 variable "rule_name_prefix" {
   description = "Prefix used for all event bridge rules"
