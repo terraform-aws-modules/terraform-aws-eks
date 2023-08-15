@@ -271,7 +271,7 @@ module "eks" {
           desired_size = 2
           start_time   = "2023-03-05T00:00:00Z"
           end_time     = "2024-03-05T00:00:00Z"
-          timezone     = "Etc/GMT+0"
+          time_zone    = "Etc/GMT+0"
           recurrence   = "0 0 * * *"
         },
         scale-down = {
@@ -280,7 +280,7 @@ module "eks" {
           desired_size = 0
           start_time   = "2023-03-05T12:00:00Z"
           end_time     = "2024-03-05T12:00:00Z"
-          timezone     = "Etc/GMT+0"
+          time_zone    = "Etc/GMT+0"
           recurrence   = "0 12 * * *"
         }
       }
