@@ -1,4 +1,5 @@
 data "aws_partition" "current" {}
+data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 
 data "aws_iam_session_context" "current" {
@@ -277,6 +278,16 @@ data "aws_iam_policy_document" "assume_role_policy" {
         identifiers = [
           "ec2.${local.dns_suffix}",
         ]
+      }
+    }
+
+    dynamic "condition" {
+      for_each = var.create_iam_role_source_arn_condition ? [1] : []
+
+      content {
+        test     = "ForAnyValue:ArnEquals"
+        variable = "aws:SourceArn"
+        values   = ["arn:${data.aws_partition.current.partition}:eks:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:cluster:${var.cluster_name}"]
       }
     }
   }

@@ -374,6 +374,12 @@ variable "create_iam_role" {
   default     = true
 }
 
+variable "create_iam_role_source_arn_condition" {
+  description = "Determines whether a condition is added to the IAM role for cross-service confused deputy prevention. Defaults to `false`"
+  type        = bool
+  default     = false
+}
+
 variable "iam_role_arn" {
   description = "Existing IAM role ARN for the cluster. Required if `create_iam_role` is set to `false`"
   type        = string

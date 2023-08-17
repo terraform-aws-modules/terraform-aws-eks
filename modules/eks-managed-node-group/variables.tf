@@ -410,6 +410,12 @@ variable "create_iam_role" {
   default     = true
 }
 
+variable "create_iam_role_source_arn_condition" {
+  description = "Determines whether a condition is added to the IAM role for cross-service confused deputy prevention. Defaults to `false`"
+  type        = bool
+  default     = false
+}
+
 variable "cluster_ip_family" {
   description = "The IP family used to assign Kubernetes pod and service addresses. Valid values are `ipv4` (default) and `ipv6`"
   type        = string

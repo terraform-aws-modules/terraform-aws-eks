@@ -1,4 +1,5 @@
 data "aws_partition" "current" {}
+data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 
 ################################################################################
@@ -410,6 +411,36 @@ data "aws_iam_policy_document" "assume_role_policy" {
     principals {
       type        = "Service"
       identifiers = ["ec2.${data.aws_partition.current.dns_suffix}"]
+    }
+
+    dynamic "condition" {
+      for_each = var.create_iam_role_source_arn_condition ? [1] : []
+
+      content {
+        test     = "ForAnyValue:ArnLike"
+        variable = "aws:SourceArn"
+        values   = ["arn:${data.aws_partition.current.partition}:ec2:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:instance/*"]
+      }
+    }
+
+    dynamic "condition" {
+      for_each = var.create_iam_role_source_arn_condition ? [1] : []
+
+      content {
+        test     = "ForAnyValue:StringLike"
+        variable = "ec2:ResourceTag/aws:eks:cluster-name"
+        values   = [var.cluster_name]
+      }
+    }
+
+    dynamic "condition" {
+      for_each = var.create_iam_role_source_arn_condition ? [1] : []
+
+      content {
+        test     = "ForAnyValue:StringLike"
+        variable = "ec2:ResourceTag/eks:nodegroup-name"
+        values   = ["${var.name}-*"]
+      }
     }
   }
 }

@@ -247,15 +247,16 @@ module "fargate_profile" {
   timeouts          = try(each.value.timeouts, var.fargate_profile_defaults.timeouts, {})
 
   # IAM role
-  create_iam_role               = try(each.value.create_iam_role, var.fargate_profile_defaults.create_iam_role, true)
-  iam_role_arn                  = try(each.value.iam_role_arn, var.fargate_profile_defaults.iam_role_arn, null)
-  iam_role_name                 = try(each.value.iam_role_name, var.fargate_profile_defaults.iam_role_name, null)
-  iam_role_use_name_prefix      = try(each.value.iam_role_use_name_prefix, var.fargate_profile_defaults.iam_role_use_name_prefix, true)
-  iam_role_path                 = try(each.value.iam_role_path, var.fargate_profile_defaults.iam_role_path, null)
-  iam_role_description          = try(each.value.iam_role_description, var.fargate_profile_defaults.iam_role_description, "Fargate profile IAM role")
-  iam_role_permissions_boundary = try(each.value.iam_role_permissions_boundary, var.fargate_profile_defaults.iam_role_permissions_boundary, null)
-  iam_role_tags                 = try(each.value.iam_role_tags, var.fargate_profile_defaults.iam_role_tags, {})
-  iam_role_attach_cni_policy    = try(each.value.iam_role_attach_cni_policy, var.fargate_profile_defaults.iam_role_attach_cni_policy, true)
+  create_iam_role                      = try(each.value.create_iam_role, var.fargate_profile_defaults.create_iam_role, true)
+  create_iam_role_source_arn_condition = try(each.value.create_iam_role_source_arn_condition, var.fargate_profile_defaults.create_iam_role_source_arn_condition, true)
+  iam_role_arn                         = try(each.value.iam_role_arn, var.fargate_profile_defaults.iam_role_arn, null)
+  iam_role_name                        = try(each.value.iam_role_name, var.fargate_profile_defaults.iam_role_name, null)
+  iam_role_use_name_prefix             = try(each.value.iam_role_use_name_prefix, var.fargate_profile_defaults.iam_role_use_name_prefix, true)
+  iam_role_path                        = try(each.value.iam_role_path, var.fargate_profile_defaults.iam_role_path, null)
+  iam_role_description                 = try(each.value.iam_role_description, var.fargate_profile_defaults.iam_role_description, "Fargate profile IAM role")
+  iam_role_permissions_boundary        = try(each.value.iam_role_permissions_boundary, var.fargate_profile_defaults.iam_role_permissions_boundary, null)
+  iam_role_tags                        = try(each.value.iam_role_tags, var.fargate_profile_defaults.iam_role_tags, {})
+  iam_role_attach_cni_policy           = try(each.value.iam_role_attach_cni_policy, var.fargate_profile_defaults.iam_role_attach_cni_policy, true)
   # To better understand why this `lookup()` logic is required, see:
   # https://github.com/hashicorp/terraform/issues/31646#issuecomment-1217279031
   iam_role_additional_policies = lookup(each.value, "iam_role_additional_policies", lookup(var.fargate_profile_defaults, "iam_role_additional_policies", {}))
@@ -350,15 +351,16 @@ module "eks_managed_node_group" {
   private_dns_name_options           = try(each.value.private_dns_name_options, var.eks_managed_node_group_defaults.private_dns_name_options, {})
 
   # IAM role
-  create_iam_role               = try(each.value.create_iam_role, var.eks_managed_node_group_defaults.create_iam_role, true)
-  iam_role_arn                  = try(each.value.iam_role_arn, var.eks_managed_node_group_defaults.iam_role_arn, null)
-  iam_role_name                 = try(each.value.iam_role_name, var.eks_managed_node_group_defaults.iam_role_name, null)
-  iam_role_use_name_prefix      = try(each.value.iam_role_use_name_prefix, var.eks_managed_node_group_defaults.iam_role_use_name_prefix, true)
-  iam_role_path                 = try(each.value.iam_role_path, var.eks_managed_node_group_defaults.iam_role_path, null)
-  iam_role_description          = try(each.value.iam_role_description, var.eks_managed_node_group_defaults.iam_role_description, "EKS managed node group IAM role")
-  iam_role_permissions_boundary = try(each.value.iam_role_permissions_boundary, var.eks_managed_node_group_defaults.iam_role_permissions_boundary, null)
-  iam_role_tags                 = try(each.value.iam_role_tags, var.eks_managed_node_group_defaults.iam_role_tags, {})
-  iam_role_attach_cni_policy    = try(each.value.iam_role_attach_cni_policy, var.eks_managed_node_group_defaults.iam_role_attach_cni_policy, true)
+  create_iam_role                      = try(each.value.create_iam_role, var.eks_managed_node_group_defaults.create_iam_role, true)
+  create_iam_role_source_arn_condition = try(each.value.create_iam_role_source_arn_condition, var.eks_managed_node_group_defaults.create_iam_role_source_arn_condition, true)
+  iam_role_arn                         = try(each.value.iam_role_arn, var.eks_managed_node_group_defaults.iam_role_arn, null)
+  iam_role_name                        = try(each.value.iam_role_name, var.eks_managed_node_group_defaults.iam_role_name, null)
+  iam_role_use_name_prefix             = try(each.value.iam_role_use_name_prefix, var.eks_managed_node_group_defaults.iam_role_use_name_prefix, true)
+  iam_role_path                        = try(each.value.iam_role_path, var.eks_managed_node_group_defaults.iam_role_path, null)
+  iam_role_description                 = try(each.value.iam_role_description, var.eks_managed_node_group_defaults.iam_role_description, "EKS managed node group IAM role")
+  iam_role_permissions_boundary        = try(each.value.iam_role_permissions_boundary, var.eks_managed_node_group_defaults.iam_role_permissions_boundary, null)
+  iam_role_tags                        = try(each.value.iam_role_tags, var.eks_managed_node_group_defaults.iam_role_tags, {})
+  iam_role_attach_cni_policy           = try(each.value.iam_role_attach_cni_policy, var.eks_managed_node_group_defaults.iam_role_attach_cni_policy, true)
   # To better understand why this `lookup()` logic is required, see:
   # https://github.com/hashicorp/terraform/issues/31646#issuecomment-1217279031
   iam_role_additional_policies = lookup(each.value, "iam_role_additional_policies", lookup(var.eks_managed_node_group_defaults, "iam_role_additional_policies", {}))
