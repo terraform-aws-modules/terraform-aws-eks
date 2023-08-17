@@ -45,10 +45,12 @@ module "eks" {
   control_plane_subnet_ids = module.vpc.intra_subnets
 
   # Fargate profiles use the cluster primary security group so these are not utilized
-  create_cluster_security_group = false
-  create_node_security_group    = false
+  create_cluster_security_group        = false
+  create_node_security_group           = false
+  create_iam_role_source_arn_condition = true
 
   fargate_profile_defaults = {
+    create_iam_role_source_arn_condition = true
     iam_role_additional_policies = {
       additional = aws_iam_policy.additional.arn
     }

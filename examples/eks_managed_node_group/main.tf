@@ -79,11 +79,13 @@ module "eks" {
   subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.intra_subnets
 
-  manage_aws_auth_configmap = true
+  manage_aws_auth_configmap            = true
+  create_iam_role_source_arn_condition = true
 
   eks_managed_node_group_defaults = {
-    ami_type       = "AL2_x86_64"
-    instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
+    create_iam_role_source_arn_condition = true
+    ami_type                             = "AL2_x86_64"
+    instance_types                       = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
 
     # We are using the IRSA created below for permissions
     # However, we have to deploy with the policy attached FIRST (when creating a fresh cluster)
