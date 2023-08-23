@@ -341,14 +341,25 @@ resource "aws_iam_role" "this" {
 }
 
 # Policies attached ref https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
-resource "aws_iam_role_policy_attachment" "this" {
-  for_each = { for k, v in toset(compact([
-    "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy",
-    "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly",
-    var.iam_role_attach_cni_policy ? local.cni_policy : "",
-  ])) : k => v if local.create_iam_role }
 
-  policy_arn = each.value
+resource "aws_iam_role_policy_attachment" "AmazonEKSWorkerNodePolicy" {
+
+  count = local.create_iam_role ? 1 : 0
+  policy_arn = "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy"
+  role       = aws_iam_role.this[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly" {
+
+  count = local.create_iam_role ? 1 : 0
+  policy_arn = "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly"
+  role       = aws_iam_role.this[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "cni_policy" {
+
+  count = var.iam_role_attach_cni_policy && local.create_iam_role ? 1 : 0
+  policy_arn = var.iam_role_attach_cni_policy ? local.cni_policy : ""
   role       = aws_iam_role.this[0].name
 }
 
