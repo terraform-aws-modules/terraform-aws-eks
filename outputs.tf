@@ -106,3 +106,13 @@ output "worker_iam_name" {
   description = "IAM Role name for worker groups"
   value       = join("", aws_iam_role.workers.*.name)
 }
+
+output "karpenter_node_instance_profile_arn" {
+  description = "IAM Instance Profile ARN for Karpenter Node Group"
+  value       = aws_iam_instance_profile.karpenter_node_instance_profile.arn
+}
+
+output "karpenter_node_instance_profile_name" {
+  description = "IAM Instance Profile ARN for Karpenter Node Group"
+  value       = aws_iam_instance_profile.karpenter_node_instance_profile.name
+}

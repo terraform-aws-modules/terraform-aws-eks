@@ -7,6 +7,12 @@ locals {
       "propagate_at_launch" = "true"
     })
   ]
+  worker_policy_list = [
+    "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+    "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  ]
 
   cluster_security_group_id = var.cluster_security_group_id == "" ? join("", aws_security_group.cluster.*.id) : var.cluster_security_group_id
   cluster_iam_role_name     = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.name) : var.cluster_iam_role_name
