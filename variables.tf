@@ -413,3 +413,9 @@ variable "egress_custom_allowed" {
   type        = list
   default     = []
 }
+
+variable "stage" {
+  type        = string
+  description = "Stage (e.g. `prod`, `dev`, `staging`)"
+  default     = ""
+}
