@@ -414,7 +414,7 @@ variable "egress_custom_allowed" {
   default     = []
 }
 
-variable "stage" {
+variable "logging_stage" {
   type        = string
   description = "Stage (e.g. `prod`, `dev`, `staging`)"
 }
