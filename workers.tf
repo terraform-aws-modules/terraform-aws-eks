@@ -132,12 +132,6 @@ resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryRea
   role       = aws_iam_role.workers[0].name
 }
 
-resource "aws_iam_role_policy_attachment" "worker_policy_attachments" {
-  count      = var.manage_worker_iam_resources && var.create_eks ? length(local.worker_policy_list) : 0
-  policy_arn = local.worker_policy_list[count.index]
-  role       = aws_iam_role.workers[0].name
-}
-
 resource "aws_iam_role_policy_attachment" "workers_additional_policies" {
   count      = var.manage_worker_iam_resources && var.create_eks ? length(var.workers_additional_policies) : 0
   role       = aws_iam_role.workers[0].name
