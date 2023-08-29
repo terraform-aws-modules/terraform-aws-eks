@@ -114,6 +114,24 @@ resource "aws_iam_role" "workers" {
   tags                  = var.tags
 }
 
+resource "aws_iam_role_policy_attachment" "workers_AmazonEKSWorkerNodePolicy" {
+  count      = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+  role       = aws_iam_role.workers[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "workers_AmazonEKS_CNI_Policy" {
+  count      = var.manage_worker_iam_resources && var.attach_worker_cni_policy && var.create_eks ? 1 : 0
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  role       = aws_iam_role.workers[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "workers_AmazonEC2ContainerRegistryReadOnly" {
+  count      = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  role       = aws_iam_role.workers[0].name
+}
+
 resource "aws_iam_role_policy_attachment" "worker_policy_attachments" {
   count      = var.manage_worker_iam_resources && var.create_eks ? length(local.worker_policy_list) : 0
   policy_arn = local.worker_policy_list[count.index]
