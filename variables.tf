@@ -417,5 +417,4 @@ variable "egress_custom_allowed" {
 variable "stage" {
   type        = string
   description = "Stage (e.g. `prod`, `dev`, `staging`)"
-  default     = ""
 }
