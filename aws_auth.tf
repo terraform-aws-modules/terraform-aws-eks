@@ -10,7 +10,7 @@ data "template_file" "node_group_arns" {
 
 resource "kubernetes_config_map" "aws_auth" {
   count      = var.create_eks && var.manage_aws_auth ? 1 : 0
-  depends_on = [null_resource.wait_for_cluster[0], aws_iam_instance_profile.node_instance_profile]
+  depends_on = [null_resource.wait_for_cluster[0], aws_iam_instance_profile.karpenter_node_instance_profile]
 
   metadata {
     name      = "aws-auth"
