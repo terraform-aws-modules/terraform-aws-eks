@@ -16,7 +16,7 @@ resource "aws_iam_role_policy_attachment" "karpenter_policy_attachments" {
 # Karpenter requires a node instance profile created to be passed to the helmfile
 resource "aws_iam_role" "karpenter_role" {
   count                 = var.manage_worker_iam_resources && var.create_eks ? 1 : 0
-  name                  = "karpenter_role_${var.logging_stage}"
+  name                  = "karpenter_node_role_${var.logging_stage}"
   permissions_boundary  = var.permissions_boundary
   path                  = var.iam_path
   force_detach_policies = true
