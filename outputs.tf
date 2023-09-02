@@ -112,7 +112,7 @@ output "karpenter_node_instance_profile_name" {
   value       = aws_iam_instance_profile.karpenter_node_instance_profile.name
 }
 
-output "karpenter_role_arn" {
+output "karpenter_node_role_arn" {
   description = "IAM Instance Profile ARN for Karpenter Node Group"
   value       = aws_iam_role.karpenter_role[0].arn
 }
