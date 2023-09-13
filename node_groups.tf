@@ -36,6 +36,10 @@ resource "time_sleep" "this" {
 
     cluster_certificate_authority_data = aws_eks_cluster.this[0].certificate_authority[0].data
   }
+
+  depends_on = [
+    aws_eks_addon.before_compute
+  ]
 }
 
 ################################################################################
