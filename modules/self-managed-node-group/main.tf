@@ -719,21 +719,43 @@ locals {
 
 data "aws_iam_policy_document" "assume_role_policy" {
   count = var.create && var.create_iam_instance_profile ? 1 : 0
-
+  #for_each = var.worker_nodes_arn
   statement {
     sid     = "EKSNodeAssumeRole"
     actions = ["sts:AssumeRole"]
+    effect = "Allow"
 
     principals {
       type        = "Service"
       identifiers = ["ec2.${data.aws_partition.current.dns_suffix}"]
     }
+    
+  }
+  statement {
+    sid     = "EKSNodeRole"
+    actions = ["sts:AssumeRole"]
+    effect = "Allow"
+
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+    }
+
+  condition {
+    test     = "StringLike"
+    variable = "aws:PrincipalArn"
+    values   = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.iam_role_name}-*"]
+  }
+    
   }
 }
 
+#identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.iam_role_name}-*"]
+#identifiers = [var.a != "" ? var.a : "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:role/local.value[0]"]
+
+
 resource "aws_iam_role" "this" {
   count = var.create && var.create_iam_instance_profile ? 1 : 0
-
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
   path        = var.iam_role_path
