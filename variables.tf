@@ -44,6 +44,12 @@ variable "cluster_additional_security_group_ids" {
   default     = []
 }
 
+variable "cluster_additional_security_group_ids_include_cluster_sg_id" {
+  description = "If true the cluster security group ID is excluded from the list of additionl security groups"
+  type        = bool
+  default     = false
+}
+
 variable "control_plane_subnet_ids" {
   description = "A list of subnet IDs where the EKS cluster control plane (ENIs) will be provisioned. Used for expanding the pool of subnets used by nodes/node groups without replacing the EKS control plane"
   type        = list(string)
