@@ -44,7 +44,7 @@ variable "cluster_additional_security_group_ids" {
   default     = []
 }
 
-variable "cluster_additional_security_group_ids_include_cluster_sg_id" {
+variable "cluster_additional_security_group_ids_exclude_cluster_sg_id" {
   description = "If true the cluster security group ID is excluded from the list of additionl security groups"
   type        = bool
   default     = false
