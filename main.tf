@@ -94,9 +94,10 @@ resource "aws_ec2_tag" "cluster_primary_security_group" {
   # This should not affect the name of the cluster primary security group
   # Ref: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2006
   # Ref: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2008
-  for_each = { for k, v in merge(var.tags, var.cluster_tags) :
-    k => v if local.create && k != "Name" && var.create_cluster_primary_security_group_tags && v != null
-  }
+  # Ref: https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2760
+  for_each = var.create_cluster_primary_security_group_tags ? { for k, v in merge(var.tags, var.cluster_tags) :
+    k => v if local.create && k != "Name" && v != null
+  } : {}
 
   resource_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
   key         = each.key
