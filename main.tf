@@ -85,7 +85,6 @@ resource "aws_eks_cluster" "this" {
     aws_iam_role_policy_attachment.this,
     aws_security_group_rule.cluster,
     aws_security_group_rule.node,
-    aws_cloudwatch_log_group.this,
     aws_iam_policy.cni_ipv6_policy,
   ]
 }
@@ -114,6 +113,10 @@ resource "aws_cloudwatch_log_group" "this" {
     var.tags,
     { Name = "/aws/eks/${var.cluster_name}/cluster" }
   )
+
+  depends_on = [
+    aws_eks_cluster.this
+  ]
 }
 
 ################################################################################
