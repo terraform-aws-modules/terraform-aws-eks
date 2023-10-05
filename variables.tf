@@ -597,3 +597,9 @@ variable "aws_auth_accounts" {
   type        = list(any)
   default     = []
 }
+
+variable "nodegroup_sg_kubernetes_owner_tag_enabled" {
+  type        = bool
+  default     = true
+  description = "Creates kubernetes.io/cluster/cluster_name owned Tag on Nodegroup Security Group. If false, no tag is created. Created to address issue with Cluster Autoscaler discovery"
+}

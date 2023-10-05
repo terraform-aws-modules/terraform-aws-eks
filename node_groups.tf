@@ -194,6 +194,7 @@ resource "aws_security_group" "node" {
     var.tags,
     {
       "Name"                                      = local.node_sg_name
+      "kubernetes.io/cluster/${var.cluster_name}" = var.nodegroup_sg_kubernetes_owner_tag_enabled == true ? "owned" : null
     },
     var.node_security_group_tags
   )
