@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.17.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.16.0...v19.17.0) (2023-10-06)
+
+
+### Features
+
+* Add support for `allowed_instance_types` on self-managed nodegroup ASG ([#2757](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2757)) ([feee18d](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/feee18dd423b1e76f8a5119206f23306e5879b26))
+
 ## [19.16.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.15.4...v19.16.0) (2023-08-03)
 
 
