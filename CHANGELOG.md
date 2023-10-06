@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.17.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.17.0...v19.17.1) (2023-10-06)
+
+
+### Bug Fixes
+
+* Only include CA thumbprint in OIDC provider list ([#2769](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2769)) ([7e5de15](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/7e5de1566c7e1330c05c5e6c51f5ab4690001915)), closes [#2732](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2732) [#32847](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/32847)
+
 ## [19.17.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.16.0...v19.17.0) (2023-10-06)
 
 
