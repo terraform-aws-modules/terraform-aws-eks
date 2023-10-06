@@ -72,8 +72,14 @@ variable "create_launch_template" {
   default     = true
 }
 
+variable "launch_template_id" {
+  description = "The ID of an existing launch template to use. Required when `create_launch_template` = `false`"
+  type        = string
+  default     = ""
+}
+
 variable "launch_template_name" {
-  description = "Launch template name - either to be created (`var.create_launch_template` = `true`) or existing (`var.create_launch_template` = `false`)"
+  description = "Name of launch template to be created"
   type        = string
   default     = null
 }
@@ -135,55 +141,61 @@ variable "block_device_mappings" {
 variable "capacity_reservation_specification" {
   description = "Targeting for EC2 capacity reservations"
   type        = any
-  default     = null
+  default     = {}
 }
 
 variable "cpu_options" {
   description = "The CPU options for the instance"
   type        = map(string)
-  default     = null
+  default     = {}
 }
 
 variable "credit_specification" {
   description = "Customize the credit specification of the instance"
   type        = map(string)
-  default     = null
+  default     = {}
 }
 
 variable "elastic_gpu_specifications" {
   description = "The elastic GPU to attach to the instance"
-  type        = map(string)
-  default     = null
+  type        = any
+  default     = {}
 }
 
 variable "elastic_inference_accelerator" {
   description = "Configuration block containing an Elastic Inference Accelerator to attach to the instance"
   type        = map(string)
-  default     = null
+  default     = {}
 }
 
 variable "enclave_options" {
   description = "Enable Nitro Enclaves on launched instances"
   type        = map(string)
-  default     = null
+  default     = {}
 }
 
 variable "hibernation_options" {
   description = "The hibernation options for the instance"
   type        = map(string)
-  default     = null
+  default     = {}
 }
 
 variable "instance_market_options" {
   description = "The market (purchasing) option for the instance"
   type        = any
-  default     = null
+  default     = {}
+}
+
+variable "maintenance_options" {
+  description = "The maintenance options for the instance"
+  type        = any
+  default     = {}
 }
 
 variable "license_specifications" {
-  description = "A list of license specifications to associate with"
-  type        = map(string)
-  default     = null
+  description = "A map of license specifications to associate with"
+  type        = any
+  default     = {}
 }
 
 variable "network_interfaces" {
@@ -195,7 +207,13 @@ variable "network_interfaces" {
 variable "placement" {
   description = "The placement of the instance"
   type        = map(string)
-  default     = null
+  default     = {}
+}
+
+variable "private_dns_name_options" {
+  description = "The options for the instance hostname. The default values are inherited from the subnet"
+  type        = map(string)
+  default     = {}
 }
 
 variable "ebs_optimized" {
@@ -214,6 +232,12 @@ variable "cluster_version" {
   description = "Kubernetes cluster version - used to lookup default AMI ID if one is not provided"
   type        = string
   default     = null
+}
+
+variable "instance_requirements" {
+  description = "The attribute requirements for the type of instance. If present then `instance_type` cannot be present"
+  type        = any
+  default     = {}
 }
 
 variable "instance_type" {
@@ -262,9 +286,21 @@ variable "launch_template_tags" {
   default     = {}
 }
 
+variable "tag_specifications" {
+  description = "The tags to apply to the resources during launch"
+  type        = list(string)
+  default     = ["instance", "volume", "network-interface"]
+}
+
 ################################################################################
 # Autoscaling group
 ################################################################################
+
+variable "create_autoscaling_group" {
+  description = "Determines whether to create autoscaling group or not"
+  type        = bool
+  default     = true
+}
 
 variable "name" {
   description = "Name of the Self managed Node Group"
@@ -314,6 +350,12 @@ variable "desired_size" {
   default     = 1
 }
 
+variable "context" {
+  description = "Reserved"
+  type        = string
+  default     = null
+}
+
 variable "capacity_rebalance" {
   description = "Indicates whether capacity rebalance is enabled"
   type        = bool
@@ -340,6 +382,12 @@ variable "wait_for_capacity_timeout" {
 
 variable "default_cooldown" {
   description = "The amount of time, in seconds, after a scaling activity completes before another scaling activity can start"
+  type        = number
+  default     = null
+}
+
+variable "default_instance_warmup" {
+  description = "Amount of time, in seconds, until a newly launched instance can contribute to the Amazon CloudWatch metrics. This delay lets an instance finish initializing before Amazon EC2 Auto Scaling aggregates instance metrics, resulting in more reliable usage data"
   type        = number
   default     = null
 }
@@ -380,16 +428,22 @@ variable "force_delete" {
   default     = null
 }
 
+variable "force_delete_warm_pool" {
+  description = "Allows deleting the Auto Scaling Group without waiting for all instances in the warm pool to terminate"
+  type        = bool
+  default     = null
+}
+
 variable "termination_policies" {
   description = "A list of policies to decide how the instances in the Auto Scaling Group should be terminated. The allowed values are `OldestInstance`, `NewestInstance`, `OldestLaunchConfiguration`, `ClosestToNextInstanceHour`, `OldestLaunchTemplate`, `AllocationStrategy`, `Default`"
   type        = list(string)
-  default     = null
+  default     = []
 }
 
 variable "suspended_processes" {
   description = "A list of processes to suspend for the Auto Scaling Group. The allowed values are `Launch`, `Terminate`, `HealthCheck`, `ReplaceUnhealthy`, `AZRebalance`, `AlarmNotification`, `ScheduledActions`, `AddToLoadBalancer`. Note that if you suspend either the `Launch` or `Terminate` process types, it can prevent your Auto Scaling Group from functioning properly"
   type        = list(string)
-  default     = null
+  default     = []
 }
 
 variable "max_instance_lifetime" {
@@ -401,7 +455,7 @@ variable "max_instance_lifetime" {
 variable "enabled_metrics" {
   description = "A list of metrics to collect. The allowed values are `GroupDesiredCapacity`, `GroupInServiceCapacity`, `GroupPendingCapacity`, `GroupMinSize`, `GroupMaxSize`, `GroupInServiceInstances`, `GroupPendingInstances`, `GroupStandbyInstances`, `GroupStandbyCapacity`, `GroupTerminatingCapacity`, `GroupTerminatingInstances`, `GroupTotalCapacity`, `GroupTotalInstances`"
   type        = list(string)
-  default     = null
+  default     = []
 }
 
 variable "metrics_granularity" {
@@ -425,7 +479,12 @@ variable "initial_lifecycle_hooks" {
 variable "instance_refresh" {
   description = "If this block is configured, start an Instance Refresh when this Auto Scaling Group is updated"
   type        = any
-  default     = null
+  default = {
+    strategy = "Rolling"
+    preferences = {
+      min_healthy_percentage = 66
+    }
+  }
 }
 
 variable "use_mixed_instances_policy" {
@@ -443,7 +502,7 @@ variable "mixed_instances_policy" {
 variable "warm_pool" {
   description = "If this block is configured, add a Warm Pool to the specified Auto Scaling group"
   type        = any
-  default     = null
+  default     = {}
 }
 
 variable "delete_timeout" {
@@ -452,10 +511,10 @@ variable "delete_timeout" {
   default     = null
 }
 
-variable "use_default_tags" {
-  description = "Enables/disables the use of provider default tags in the tag_specifications of the Auto Scaling group"
-  type        = bool
-  default     = false
+variable "autoscaling_group_tags" {
+  description = "A map of additional tags to add to the autoscaling group created. Tags are applied to the autoscaling group only and are NOT propagated to instances"
+  type        = map(string)
+  default     = {}
 }
 
 ################################################################################
@@ -471,58 +530,6 @@ variable "create_schedule" {
 variable "schedules" {
   description = "Map of autoscaling group schedule to create"
   type        = map(any)
-  default     = {}
-}
-
-################################################################################
-# Security Group
-################################################################################
-
-variable "create_security_group" {
-  description = "Determines whether to create a security group"
-  type        = bool
-  default     = true
-}
-
-variable "security_group_name" {
-  description = "Name to use on security group created"
-  type        = string
-  default     = null
-}
-
-variable "security_group_use_name_prefix" {
-  description = "Determines whether the security group name (`security_group_name`) is used as a prefix"
-  type        = string
-  default     = true
-}
-
-variable "security_group_description" {
-  description = "Description for the security group created"
-  type        = string
-  default     = "EKS self-managed node group security group"
-}
-
-variable "vpc_id" {
-  description = "ID of the VPC where the security group/nodes will be provisioned"
-  type        = string
-  default     = null
-}
-
-variable "security_group_rules" {
-  description = "List of security group rules to add to the security group created"
-  type        = any
-  default     = {}
-}
-
-variable "cluster_security_group_id" {
-  description = "Cluster control plane security group ID"
-  type        = string
-  default     = null
-}
-
-variable "security_group_tags" {
-  description = "A map of additional tags to add to the security group created"
-  type        = map(string)
   default     = {}
 }
 
@@ -586,8 +593,8 @@ variable "iam_role_attach_cni_policy" {
 
 variable "iam_role_additional_policies" {
   description = "Additional policies to be added to the IAM role"
-  type        = list(string)
-  default     = []
+  type        = map(string)
+  default     = {}
 }
 
 variable "iam_role_tags" {

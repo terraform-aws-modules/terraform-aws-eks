@@ -2,10 +2,10 @@
 
 ## Table of Contents
 
-- [EKS Managed Node Groups](https://github.com/terraform-aws-module/terraform-aws-eks/blob/master/docs/node_groups.md#eks-managed-node-groups)
-- [Self Managed Node Groups](https://github.com/terraform-aws-module/terraform-aws-eks/blob/master/docs/node_groups.md#self-managed-node-groups)
-- [Fargate Profiles](https://github.com/terraform-aws-module/terraform-aws-eks/blob/master/docs/node_groups.md#fargate-profiles)
-- [Default Configurations](https://github.com/terraform-aws-module/terraform-aws-eks/blob/master/docs/node_groups.md#default-configurations)
+- [EKS Managed Node Groups](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/compute_resources.md#eks-managed-node-groups)
+- [Self Managed Node Groups](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/compute_resources.md#self-managed-node-groups)
+- [Fargate Profiles](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/compute_resources.md#fargate-profiles)
+- [Default Configurations](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/compute_resources.md#default-configurations)
 
 ℹ️ Only the pertinent attributes are shown below for brevity
 
@@ -13,13 +13,12 @@
 
 Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) documentation for service related details.
 
-1. The module creates a custom launch template by default to ensure settings such as tags are propagated to instances. To use the default template provided by the AWS EKS managed node group service, disable the launch template creation and set the `launch_template_name` to an empty string:
+1. The module creates a custom launch template by default to ensure settings such as tags are propagated to instances. Please note that many of the customization options listed [here](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/eks-managed-node-group#Inputs) are only available when a custom launch template is created. To use the default template provided by the AWS EKS managed node group service, disable the launch template creation by setting `use_custom_launch_template` to `false`:
 
 ```hcl
   eks_managed_node_groups = {
     default = {
-      create_launch_template = false
-      launch_template_name   = ""
+      use_custom_launch_template = false
     }
   }
 ```
@@ -29,8 +28,7 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
 ```hcl
   eks_managed_node_groups = {
     bottlerocket_default = {
-      create_launch_template = false
-      launch_template_name   = ""
+      use_custom_launch_template = false
 
       ami_type = "BOTTLEROCKET_x86_64"
       platform = "bottlerocket"
@@ -38,28 +36,7 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
   }
 ```
 
-3. Users have limited support to extend the user data that is pre-pended to the user data provided by the AWS EKS Managed Node Group service:
-
-```hcl
-  eks_managed_node_groups = {
-    prepend_userdata = {
-      # See issue https://github.com/awslabs/amazon-eks-ami/issues/844
-      pre_bootstrap_user_data = <<-EOT
-      #!/bin/bash
-      set -ex
-      cat <<-EOF > /etc/profile.d/bootstrap.sh
-      export CONTAINER_RUNTIME="containerd"
-      export USE_MAX_PODS=false
-      export KUBELET_EXTRA_ARGS="--max-pods=110"
-      EOF
-      # Source extra environment variables in bootstrap script
-      sed -i '/^set -o errexit/a\\nsource /etc/profile.d/bootstrap.sh' /etc/eks/bootstrap.sh
-      EOT
-    }
-  }
-```
-
-4. Bottlerocket OS is supported in a similar manner. However, note that the user data for Bottlerocket OS uses the TOML format:
+3. Bottlerocket OS is supported in a similar manner. However, note that the user data for Bottlerocket OS uses the TOML format:
 
 ```hcl
   eks_managed_node_groups = {
@@ -68,15 +45,15 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
       platform = "bottlerocket"
 
       bootstrap_extra_args = <<-EOT
-      # extra args added
-      [settings.kernel]
-      lockdown = "integrity"
+        # extra args added
+        [settings.kernel]
+        lockdown = "integrity"
       EOT
     }
   }
 ```
 
-5. When using a custom AMI, the AWS EKS Managed Node Group service will NOT inject the necessary bootstrap script into the supplied user data. Users can elect to provide their own user data to bootstrap and connect or opt in to use the module provided user data:
+4. When using a custom AMI, the AWS EKS Managed Node Group service will NOT inject the necessary bootstrap script into the supplied user data. Users can elect to provide their own user data to bootstrap and connect or opt in to use the module provided user data:
 
 ```hcl
   eks_managed_node_groups = {
@@ -88,11 +65,8 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
       # Note: this assumes the AMI provided is an EKS optimized AMI derivative
       enable_bootstrap_user_data = true
 
-      bootstrap_extra_args = "--container-runtime containerd --kubelet-extra-args '--max-pods=20'"
-
       pre_bootstrap_user_data = <<-EOT
-        export CONTAINER_RUNTIME="containerd"
-        export USE_MAX_PODS=false
+        export FOO=bar
       EOT
 
       # Because we have full control over the user data supplied, we can also run additional
@@ -104,7 +78,7 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
   }
 ```
 
-6. There is similar support for Bottlerocket OS:
+5. There is similar support for Bottlerocket OS:
 
 ```hcl
   eks_managed_node_groups = {
@@ -116,17 +90,17 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
       enable_bootstrap_user_data = true
       # this will get added to the template
       bootstrap_extra_args = <<-EOT
-      # extra args added
-      [settings.kernel]
-      lockdown = "integrity"
+        # extra args added
+        [settings.kernel]
+        lockdown = "integrity"
 
-      [settings.kubernetes.node-labels]
-      "label1" = "foo"
-      "label2" = "bar"
+        [settings.kubernetes.node-labels]
+        "label1" = "foo"
+        "label2" = "bar"
 
-      [settings.kubernetes.node-taints]
-      "dedicated" = "experimental:PreferNoSchedule"
-      "special" = "true:NoSchedule"
+        [settings.kubernetes.node-taints]
+        "dedicated" = "experimental:PreferNoSchedule"
+        "special" = "true:NoSchedule"
       EOT
     }
   }
@@ -141,9 +115,9 @@ Refer to the [Self Managed Node Group documentation](https://docs.aws.amazon.com
 1. The `self-managed-node-group` uses the latest AWS EKS Optimized AMI (Linux) for the given Kubernetes version by default:
 
 ```hcl
-  cluster_version = "1.21"
+  cluster_version = "1.27"
 
-  # This self managed node group will use the latest AWS EKS Optimized AMI for Kubernetes 1.21
+  # This self managed node group will use the latest AWS EKS Optimized AMI for Kubernetes 1.27
   self_managed_node_groups = {
     default = {}
   }
@@ -152,7 +126,7 @@ Refer to the [Self Managed Node Group documentation](https://docs.aws.amazon.com
 2. To use Bottlerocket, specify the `platform` as `bottlerocket` and supply a Bottlerocket OS AMI:
 
 ```hcl
-  cluster_version = "1.21"
+  cluster_version = "1.27"
 
   self_managed_node_groups = {
     bottlerocket = {

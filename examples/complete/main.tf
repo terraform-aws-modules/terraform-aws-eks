@@ -1,11 +1,5 @@
 provider "aws" {
   region = local.region
-
-  default_tags {
-    tags = {
-      ExampleDefaultTag = "ExampleDefaultValue"
-    }
-  }
 }
 
 provider "kubernetes" {
@@ -13,16 +7,22 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
 
   exec {
-    api_version = "client.authentication.k8s.io/v1alpha1"
+    api_version = "client.authentication.k8s.io/v1beta1"
     command     = "aws"
     # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_id]
+    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
   }
 }
+
+data "aws_availability_zones" "available" {}
+data "aws_caller_identity" "current" {}
 
 locals {
   name   = "ex-${replace(basename(path.cwd), "_", "-")}"
   region = "eu-west-1"
+
+  vpc_cidr = "10.0.0.0/16"
+  azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
   tags = {
     Example    = local.name
@@ -38,37 +38,60 @@ locals {
 module "eks" {
   source = "../.."
 
-  cluster_name                    = local.name
-  cluster_endpoint_private_access = true
-  cluster_endpoint_public_access  = true
+  cluster_name                   = local.name
+  cluster_endpoint_public_access = true
 
   cluster_addons = {
     coredns = {
-      resolve_conflicts = "OVERWRITE"
+      preserve    = true
+      most_recent = true
+
+      timeouts = {
+        create = "25m"
+        delete = "10m"
+      }
     }
-    kube-proxy = {}
+    kube-proxy = {
+      most_recent = true
+    }
     vpc-cni = {
-      resolve_conflicts = "OVERWRITE"
+      most_recent = true
     }
   }
 
-  cluster_encryption_config = [{
-    provider_key_arn = aws_kms_key.eks.arn
+  # External encryption key
+  create_kms_key = false
+  cluster_encryption_config = {
     resources        = ["secrets"]
-  }]
+    provider_key_arn = module.kms.key_arn
+  }
 
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
+  iam_role_additional_policies = {
+    additional = aws_iam_policy.additional.arn
+  }
+
+  vpc_id                   = module.vpc.vpc_id
+  subnet_ids               = module.vpc.private_subnets
+  control_plane_subnet_ids = module.vpc.intra_subnets
 
   # Extend cluster security group rules
   cluster_security_group_additional_rules = {
-    egress_nodes_ephemeral_ports_tcp = {
-      description                = "To node 1025-65535"
+    ingress_nodes_ephemeral_ports_tcp = {
+      description                = "Nodes on ephemeral ports"
       protocol                   = "tcp"
       from_port                  = 1025
       to_port                    = 65535
-      type                       = "egress"
+      type                       = "ingress"
       source_node_security_group = true
+    }
+    # Test: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2319
+    ingress_source_security_group_id = {
+      description              = "Ingress from another computed security group"
+      protocol                 = "tcp"
+      from_port                = 22
+      to_port                  = 22
+      type                     = "ingress"
+      source_security_group_id = aws_security_group.additional.id
     }
   }
 
@@ -82,21 +105,30 @@ module "eks" {
       type        = "ingress"
       self        = true
     }
-    egress_all = {
-      description      = "Node all egress"
-      protocol         = "-1"
-      from_port        = 0
-      to_port          = 0
-      type             = "egress"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = ["::/0"]
+    # Test: https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2319
+    ingress_source_security_group_id = {
+      description              = "Ingress from another computed security group"
+      protocol                 = "tcp"
+      from_port                = 22
+      to_port                  = 22
+      type                     = "ingress"
+      source_security_group_id = aws_security_group.additional.id
     }
   }
 
   # Self Managed Node Group(s)
   self_managed_node_group_defaults = {
-    vpc_security_group_ids       = [aws_security_group.additional.id]
-    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    vpc_security_group_ids = [aws_security_group.additional.id]
+    iam_role_additional_policies = {
+      additional = aws_iam_policy.additional.arn
+    }
+
+    instance_refresh = {
+      strategy = "Rolling"
+      preferences = {
+        min_healthy_percentage = 66
+      }
+    }
   }
 
   self_managed_node_groups = {
@@ -107,17 +139,17 @@ module "eks" {
       }
 
       pre_bootstrap_user_data = <<-EOT
-      echo "foo"
-      export FOO=bar
+        echo "foo"
+        export FOO=bar
       EOT
 
       bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
 
       post_bootstrap_user_data = <<-EOT
-      cd /tmp
-      sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-      sudo systemctl enable amazon-ssm-agent
-      sudo systemctl start amazon-ssm-agent
+        cd /tmp
+        sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+        sudo systemctl enable amazon-ssm-agent
+        sudo systemctl start amazon-ssm-agent
       EOT
     }
   }
@@ -125,11 +157,13 @@ module "eks" {
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
-    disk_size      = 50
     instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
 
     attach_cluster_primary_security_group = true
     vpc_security_group_ids                = [aws_security_group.additional.id]
+    iam_role_additional_policies = {
+      additional = aws_iam_policy.additional.arn
+    }
   }
 
   eks_managed_node_groups = {
@@ -156,7 +190,7 @@ module "eks" {
       }
 
       update_config = {
-        max_unavailable_percentage = 50 # or set `max_unavailable`
+        max_unavailable_percentage = 33 # or set `max_unavailable`
       }
 
       tags = {
@@ -192,6 +226,15 @@ module "eks" {
     }
   }
 
+  # Create a new cluster where both an identity provider and Fargate profile is created
+  # will result in conflicts since only one can take place at a time
+  # # OIDC Identity provider
+  # cluster_identity_providers = {
+  #   sts = {
+  #     client_id = "sts.amazonaws.com"
+  #   }
+  # }
+
   # aws-auth configmap
   manage_aws_auth_configmap = true
 
@@ -205,10 +248,30 @@ module "eks" {
 
   aws_auth_roles = [
     {
-      rolearn  = "arn:aws:iam::66666666666:role/role1"
-      username = "role1"
-      groups   = ["system:masters"]
+      rolearn  = module.eks_managed_node_group.iam_role_arn
+      username = "system:node:{{EC2PrivateDNSName}}"
+      groups = [
+        "system:bootstrappers",
+        "system:nodes",
+      ]
     },
+    {
+      rolearn  = module.self_managed_node_group.iam_role_arn
+      username = "system:node:{{EC2PrivateDNSName}}"
+      groups = [
+        "system:bootstrappers",
+        "system:nodes",
+      ]
+    },
+    {
+      rolearn  = module.fargate_profile.fargate_profile_pod_execution_role_arn
+      username = "system:node:{{SessionName}}"
+      groups = [
+        "system:bootstrappers",
+        "system:nodes",
+        "system:node-proxier",
+      ]
+    }
   ]
 
   aws_auth_users = [
@@ -240,15 +303,28 @@ module "eks_managed_node_group" {
   source = "../../modules/eks-managed-node-group"
 
   name            = "separate-eks-mng"
-  cluster_name    = module.eks.cluster_id
+  cluster_name    = module.eks.cluster_name
   cluster_version = module.eks.cluster_version
 
-  vpc_id                            = module.vpc.vpc_id
   subnet_ids                        = module.vpc.private_subnets
   cluster_primary_security_group_id = module.eks.cluster_primary_security_group_id
   vpc_security_group_ids = [
     module.eks.cluster_security_group_id,
   ]
+
+  ami_type = "BOTTLEROCKET_x86_64"
+  platform = "bottlerocket"
+
+  # this will get added to what AWS provides
+  bootstrap_extra_args = <<-EOT
+    # extra args added
+    [settings.kernel]
+    lockdown = "integrity"
+
+    [settings.kubernetes.node-labels]
+    "label1" = "foo"
+    "label2" = "bar"
+  EOT
 
   tags = merge(local.tags, { Separate = "eks-managed-node-group" })
 }
@@ -257,21 +333,18 @@ module "self_managed_node_group" {
   source = "../../modules/self-managed-node-group"
 
   name                = "separate-self-mng"
-  cluster_name        = module.eks.cluster_id
+  cluster_name        = module.eks.cluster_name
   cluster_version     = module.eks.cluster_version
   cluster_endpoint    = module.eks.cluster_endpoint
   cluster_auth_base64 = module.eks.cluster_certificate_authority_data
 
   instance_type = "m5.large"
 
-  vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
   vpc_security_group_ids = [
     module.eks.cluster_primary_security_group_id,
     module.eks.cluster_security_group_id,
   ]
-
-  use_default_tags = true
 
   tags = merge(local.tags, { Separate = "self-managed-node-group" })
 }
@@ -280,7 +353,7 @@ module "fargate_profile" {
   source = "../../modules/fargate-profile"
 
   name         = "separate-fargate-profile"
-  cluster_name = module.eks.cluster_id
+  cluster_name = module.eks.cluster_name
 
   subnet_ids = module.vpc.private_subnets
   selectors = [{
@@ -324,31 +397,25 @@ module "disabled_self_managed_node_group" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   name = local.name
-  cidr = "10.0.0.0/16"
+  cidr = local.vpc_cidr
 
-  azs             = ["${local.region}a", "${local.region}b", "${local.region}c"]
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  azs             = local.azs
+  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 4, k)]
+  public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 48)]
+  intra_subnets   = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 52)]
 
-  enable_nat_gateway   = true
-  single_nat_gateway   = true
-  enable_dns_hostnames = true
-
-  enable_flow_log                      = true
-  create_flow_log_cloudwatch_iam_role  = true
-  create_flow_log_cloudwatch_log_group = true
+  enable_nat_gateway = true
+  single_nat_gateway = true
 
   public_subnet_tags = {
-    "kubernetes.io/cluster/${local.name}" = "shared"
-    "kubernetes.io/role/elb"              = 1
+    "kubernetes.io/role/elb" = 1
   }
 
   private_subnet_tags = {
-    "kubernetes.io/cluster/${local.name}" = "shared"
-    "kubernetes.io/role/internal-elb"     = 1
+    "kubernetes.io/role/internal-elb" = 1
   }
 
   tags = local.tags
@@ -369,13 +436,34 @@ resource "aws_security_group" "additional" {
     ]
   }
 
-  tags = local.tags
+  tags = merge(local.tags, { Name = "${local.name}-additional" })
 }
 
-resource "aws_kms_key" "eks" {
-  description             = "EKS Secret Encryption Key"
-  deletion_window_in_days = 7
-  enable_key_rotation     = true
+resource "aws_iam_policy" "additional" {
+  name = "${local.name}-additional"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ec2:Describe*",
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
+}
+
+module "kms" {
+  source  = "terraform-aws-modules/kms/aws"
+  version = "~> 1.5"
+
+  aliases               = ["eks/${local.name}"]
+  description           = "${local.name} cluster encryption key"
+  enable_default_policy = true
+  key_owners            = [data.aws_caller_identity.current.arn]
 
   tags = local.tags
 }

@@ -20,8 +20,7 @@ Please refer to the [AWS documentation](https://docs.aws.amazon.com/eks/latest/u
   - Lastly, users are able to opt in to attaching the primary security group automatically created by the EKS service by setting `attach_cluster_primary_security_group` = `true` from the root module for the respective node group (or set it within the node group defaults). This security group is not managed by the module; it is created by the EKS service. It permits all traffic within the domain of the security group as well as all egress traffic to the internet.
 
 - Node Group Security Group(s)
-  - Each node group (EKS Managed Node Group and Self Managed Node Group) by default creates its own security group. By default, this security group does not contain any additional security group rules. It is merely an "empty container" that offers users the ability to opt into any addition inbound our outbound rules as necessary
-  - Users also have the option to supply their own, and/or additional, externally created security group(s) to the node group as well via the `vpc_security_group_ids` variable
+  - Users have the option to assign their own externally created security group(s) to the node group via the `vpc_security_group_ids` variable
 
 See the example snippet below which adds additional security group rules to the cluster security group as well as the shared node security group (for node-to-node access). Users can use this extensibility to open up network access as they see fit using the security groups provided by the module:
 

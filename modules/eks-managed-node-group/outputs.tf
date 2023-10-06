@@ -4,17 +4,22 @@
 
 output "launch_template_id" {
   description = "The ID of the launch template"
-  value       = try(aws_launch_template.this[0].id, "")
+  value       = try(aws_launch_template.this[0].id, null)
 }
 
 output "launch_template_arn" {
   description = "The ARN of the launch template"
-  value       = try(aws_launch_template.this[0].arn, "")
+  value       = try(aws_launch_template.this[0].arn, null)
 }
 
 output "launch_template_latest_version" {
   description = "The latest version of the launch template"
-  value       = try(aws_launch_template.this[0].latest_version, "")
+  value       = try(aws_launch_template.this[0].latest_version, null)
+}
+
+output "launch_template_name" {
+  description = "The name of the launch template"
+  value       = try(aws_launch_template.this[0].name, null)
 }
 
 ################################################################################
@@ -23,17 +28,17 @@ output "launch_template_latest_version" {
 
 output "node_group_arn" {
   description = "Amazon Resource Name (ARN) of the EKS Node Group"
-  value       = try(aws_eks_node_group.this[0].arn, "")
+  value       = try(aws_eks_node_group.this[0].arn, null)
 }
 
 output "node_group_id" {
   description = "EKS Cluster name and EKS Node Group name separated by a colon (`:`)"
-  value       = try(aws_eks_node_group.this[0].id, "")
+  value       = try(aws_eks_node_group.this[0].id, null)
 }
 
 output "node_group_resources" {
   description = "List of objects containing information about underlying resources"
-  value       = try(aws_eks_node_group.this[0].resources, "")
+  value       = try(aws_eks_node_group.this[0].resources, null)
 }
 
 output "node_group_autoscaling_group_names" {
@@ -43,21 +48,26 @@ output "node_group_autoscaling_group_names" {
 
 output "node_group_status" {
   description = "Status of the EKS Node Group"
-  value       = try(aws_eks_node_group.this[0].arn, "")
+  value       = try(aws_eks_node_group.this[0].status, null)
+}
+
+output "node_group_labels" {
+  description = "Map of labels applied to the node group"
+  value       = try(aws_eks_node_group.this[0].labels, {})
+}
+
+output "node_group_taints" {
+  description = "List of objects containing information about taints applied to the node group"
+  value       = try(aws_eks_node_group.this[0].taint, [])
 }
 
 ################################################################################
-# Security Group
+# Autoscaling Group Schedule
 ################################################################################
 
-output "security_group_arn" {
-  description = "Amazon Resource Name (ARN) of the security group"
-  value       = try(aws_security_group.this[0].arn, "")
-}
-
-output "security_group_id" {
-  description = "ID of the security group"
-  value       = try(aws_security_group.this[0].id, "")
+output "autoscaling_group_schedule_arns" {
+  description = "ARNs of autoscaling group schedules"
+  value       = { for k, v in aws_autoscaling_schedule.this : k => v.arn }
 }
 
 ################################################################################
@@ -66,7 +76,7 @@ output "security_group_id" {
 
 output "iam_role_name" {
   description = "The name of the IAM role"
-  value       = try(aws_iam_role.this[0].name, "")
+  value       = try(aws_iam_role.this[0].name, null)
 }
 
 output "iam_role_arn" {
@@ -76,5 +86,14 @@ output "iam_role_arn" {
 
 output "iam_role_unique_id" {
   description = "Stable and unique string identifying the IAM role"
-  value       = try(aws_iam_role.this[0].unique_id, "")
+  value       = try(aws_iam_role.this[0].unique_id, null)
+}
+
+################################################################################
+# Additional
+################################################################################
+
+output "platform" {
+  description = "Identifies if the OS platform is `bottlerocket`, `linux`, or `windows` based"
+  value       = var.platform
 }

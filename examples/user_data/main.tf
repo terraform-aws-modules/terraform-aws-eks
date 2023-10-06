@@ -19,7 +19,7 @@ module "eks_mng_linux_additional" {
   source = "../../modules/_user_data"
 
   pre_bootstrap_user_data = <<-EOT
-  export CONTAINER_RUNTIME="containerd"
+    export USE_MAX_PODS=false
   EOT
 }
 
@@ -34,14 +34,13 @@ module "eks_mng_linux_custom_ami" {
   enable_bootstrap_user_data = true
 
   pre_bootstrap_user_data = <<-EOT
-  export CONTAINER_RUNTIME="containerd"
-  export USE_MAX_PODS=false
+    export FOO=bar
   EOT
 
-  bootstrap_extra_args = "--container-runtime containerd --kubelet-extra-args '--max-pods=20 --instance-type t3a.large'"
+  bootstrap_extra_args = "--kubelet-extra-args '--instance-type t3a.large'"
 
   post_bootstrap_user_data = <<-EOT
-  echo "All done"
+    echo "All done"
   EOT
 }
 
@@ -56,14 +55,14 @@ module "eks_mng_linux_custom_template" {
   user_data_template_path = "${path.module}/templates/linux_custom.tpl"
 
   pre_bootstrap_user_data = <<-EOT
-  echo "foo"
-  export FOO=bar
+    echo "foo"
+    export FOO=bar
   EOT
 
   bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
 
   post_bootstrap_user_data = <<-EOT
-  echo "All done"
+    echo "All done"
   EOT
 }
 
@@ -80,9 +79,9 @@ module "eks_mng_bottlerocket_additional" {
   platform = "bottlerocket"
 
   bootstrap_extra_args = <<-EOT
-  # extra args added
-  [settings.kernel]
-  lockdown = "integrity"
+    # extra args added
+    [settings.kernel]
+    lockdown = "integrity"
   EOT
 }
 
@@ -98,9 +97,9 @@ module "eks_mng_bottlerocket_custom_ami" {
   enable_bootstrap_user_data = true
 
   bootstrap_extra_args = <<-EOT
-  # extra args added
-  [settings.kernel]
-  lockdown = "integrity"
+    # extra args added
+    [settings.kernel]
+    lockdown = "integrity"
   EOT
 }
 
@@ -116,9 +115,9 @@ module "eks_mng_bottlerocket_custom_template" {
   user_data_template_path = "${path.module}/templates/bottlerocket_custom.tpl"
 
   bootstrap_extra_args = <<-EOT
-  # extra args added
-  [settings.kernel]
-  lockdown = "integrity"
+    # extra args added
+    [settings.kernel]
+    lockdown = "integrity"
   EOT
 }
 
@@ -140,14 +139,14 @@ module "self_mng_linux_bootstrap" {
   cluster_auth_base64 = local.cluster_auth_base64
 
   pre_bootstrap_user_data = <<-EOT
-  echo "foo"
-  export FOO=bar
+    echo "foo"
+    export FOO=bar
   EOT
 
   bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
 
   post_bootstrap_user_data = <<-EOT
-  echo "All done"
+    echo "All done"
   EOT
 }
 
@@ -164,14 +163,14 @@ module "self_mng_linux_custom_template" {
   user_data_template_path = "${path.module}/templates/linux_custom.tpl"
 
   pre_bootstrap_user_data = <<-EOT
-  echo "foo"
-  export FOO=bar
+    echo "foo"
+    export FOO=bar
   EOT
 
   bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
 
   post_bootstrap_user_data = <<-EOT
-  echo "All done"
+    echo "All done"
   EOT
 }
 
@@ -197,9 +196,9 @@ module "self_mng_bottlerocket_bootstrap" {
   cluster_auth_base64 = local.cluster_auth_base64
 
   bootstrap_extra_args = <<-EOT
-  # extra args added
-  [settings.kernel]
-  lockdown = "integrity"
+    # extra args added
+    [settings.kernel]
+    lockdown = "integrity"
   EOT
 }
 
@@ -218,9 +217,9 @@ module "self_mng_bottlerocket_custom_template" {
   user_data_template_path = "${path.module}/templates/bottlerocket_custom.tpl"
 
   bootstrap_extra_args = <<-EOT
-  # extra args added
-  [settings.kernel]
-  lockdown = "integrity"
+    # extra args added
+    [settings.kernel]
+    lockdown = "integrity"
   EOT
 }
 
@@ -246,13 +245,13 @@ module "self_mng_windows_bootstrap" {
   cluster_auth_base64 = local.cluster_auth_base64
 
   pre_bootstrap_user_data = <<-EOT
-  [string]$Something = 'IDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
+    [string]$Something = 'IDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
   EOT
   # I don't know if this is the right way on WindowsOS, but its just a string check here anyways
   bootstrap_extra_args = "-KubeletExtraArgs --node-labels=node.kubernetes.io/lifecycle=spot"
 
   post_bootstrap_user_data = <<-EOT
-  [string]$Something = 'IStillDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
+    [string]$Something = 'IStillDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
   EOT
 }
 
@@ -271,12 +270,12 @@ module "self_mng_windows_custom_template" {
   user_data_template_path = "${path.module}/templates/windows_custom.tpl"
 
   pre_bootstrap_user_data = <<-EOT
-  [string]$Something = 'IDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
+    [string]$Something = 'IDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
   EOT
   # I don't know if this is the right way on WindowsOS, but its just a string check here anyways
   bootstrap_extra_args = "-KubeletExtraArgs --node-labels=node.kubernetes.io/lifecycle=spot"
 
   post_bootstrap_user_data = <<-EOT
-  [string]$Something = 'IStillDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
+    [string]$Something = 'IStillDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
   EOT
 }
