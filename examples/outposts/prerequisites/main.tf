@@ -23,7 +23,7 @@ locals {
 
 module "ssm_bastion_ec2" {
   source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "~> 4.2"
+  version = "~> 5.5"
 
   name = "${local.name}-bastion"
 
@@ -80,7 +80,7 @@ module "ssm_bastion_ec2" {
 
 module "bastion_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   name        = "${local.name}-bastion"
   description = "Security group to allow provisioning ${local.name} EKS local cluster on Outposts"

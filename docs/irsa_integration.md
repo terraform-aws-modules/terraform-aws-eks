@@ -12,8 +12,8 @@ module "eks" {
 
   cluster_addons = {
     vpc-cni = {
-      resolve_conflicts        = "OVERWRITE"
-      service_account_role_arn = module.vpc_cni_irsa.iam_role_arn
+      resolve_conflicts_on_update = "OVERWRITE"
+      service_account_role_arn    = module.vpc_cni_irsa.iam_role_arn
     }
   }
 
