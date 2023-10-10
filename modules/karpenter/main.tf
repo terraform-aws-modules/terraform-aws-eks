@@ -224,7 +224,6 @@ data "aws_iam_policy_document" "queue" {
         "sqs.${local.dns_suffix}",
       ]
     }
-
   }
 }
 
