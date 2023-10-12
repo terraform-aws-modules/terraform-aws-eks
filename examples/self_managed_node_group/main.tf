@@ -69,6 +69,10 @@ module "eks" {
       "k8s.io/cluster-autoscaler/enabled" : true,
       "k8s.io/cluster-autoscaler/${local.name}" : "owned",
     }
+    root_block_device = {
+      volume_type = "standard"
+      volume_size = 15
+    }
   }
 
   self_managed_node_groups = {
@@ -84,7 +88,10 @@ module "eks" {
       instance_type = "m5.large"
       desired_size  = 2
       key_name      = module.key_pair.key_pair_name
-
+      root_block_device = {
+        volume_type = "standard"
+        volume_size = 20
+      }
       bootstrap_extra_args = <<-EOT
         # The admin host container provides SSH access and runs with "superpowers".
         # It is disabled by default, but can be disabled explicitly.
@@ -117,7 +124,10 @@ module "eks" {
       min_size     = 1
       max_size     = 5
       desired_size = 2
-
+      root_block_device = {
+        volume_type = "standard"
+        volume_size = 25
+      }
       bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
 
       use_mixed_instances_policy = true
@@ -148,7 +158,10 @@ module "eks" {
 
       # aws ec2 describe-instance-types --region eu-west-1 --filters Name=network-info.efa-supported,Values=true --query "InstanceTypes[*].[InstanceType]" --output text | sort
       instance_type = "c5n.9xlarge"
-
+      root_block_device = {
+        volume_type = "standard"
+        volume_size = 30
+      }
       post_bootstrap_user_data = <<-EOT
         # Install EFA
         curl -O https://efa-installer.amazonaws.com/aws-efa-installer-latest.tar.gz
@@ -201,9 +214,19 @@ module "eks" {
       ebs_optimized     = true
       enable_monitoring = true
 
+      root_block_device = {
+        volume_size           = 75
+        volume_type           = "gp3"
+        iops                  = 3000
+        throughput            = 150
+        encrypted             = true
+        kms_key_id            = module.ebs_kms_key.key_arn
+        delete_on_termination = true
+      }
+
       block_device_mappings = {
-        xvda = {
-          device_name = "/dev/xvda"
+        xvdb = {
+          device_name = "/dev/xvdb"
           ebs = {
             volume_size           = 75
             volume_type           = "gp3"

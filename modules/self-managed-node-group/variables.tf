@@ -132,6 +132,12 @@ variable "ram_disk_id" {
   default     = null
 }
 
+variable "root_block_device" {
+  description = "Specify volume to replace the volume by the AMI"
+  type        = any
+  default     = {}
+}
+
 variable "block_device_mappings" {
   description = "Specify volumes to attach to the instance besides the volumes specified by the AMI"
   type        = any

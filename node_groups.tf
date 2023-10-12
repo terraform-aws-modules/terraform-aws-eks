@@ -467,6 +467,7 @@ module "self_managed_node_group" {
   kernel_id                            = try(each.value.kernel_id, var.self_managed_node_group_defaults.kernel_id, null)
   ram_disk_id                          = try(each.value.ram_disk_id, var.self_managed_node_group_defaults.ram_disk_id, null)
 
+  root_block_device                  = try(each.value.root_block_device, var.self_managed_node_group_defaults.root_block_device, {})
   block_device_mappings              = try(each.value.block_device_mappings, var.self_managed_node_group_defaults.block_device_mappings, {})
   capacity_reservation_specification = try(each.value.capacity_reservation_specification, var.self_managed_node_group_defaults.capacity_reservation_specification, {})
   cpu_options                        = try(each.value.cpu_options, var.self_managed_node_group_defaults.cpu_options, {})

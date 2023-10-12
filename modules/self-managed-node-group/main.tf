@@ -44,11 +44,37 @@ locals {
   security_group_ids   = compact(concat([var.cluster_primary_security_group_id], var.vpc_security_group_ids))
 }
 
+data "aws_ami" "final_ami" {
+  filter {
+    name   = "image-id"
+    values = [coalesce(var.ami_id, data.aws_ami.eks_default[0].image_id)]
+  }
+  most_recent = true
+}
+
 resource "aws_launch_template" "this" {
   count = var.create && var.create_launch_template ? 1 : 0
 
   dynamic "block_device_mappings" {
-    for_each = var.block_device_mappings
+    for_each = merge(
+      # It will be errored if multiple block devices have the same value for device_name
+      {
+        for device in var.block_device_mappings : device.device_name => device
+        if device.device_name != ""
+      },
+      # root_block_device block will override blocks in block_device_mappings if having the same value for device_name
+      # device_name depends on aws_ami root_device_name
+      # just apply when aws_ami root_device_type is ebs
+      {
+        for device in { root_block_device = {
+          device_name = data.aws_ami.final_ami.root_device_name
+          ebs         = var.root_block_device
+        } } : device.device_name => device
+        if device.device_name != ""
+        && var.root_block_device != {}
+        && data.aws_ami.final_ami.root_device_type == "ebs"
+      }
+    )
 
     content {
       device_name = try(block_device_mappings.value.device_name, null)
@@ -148,7 +174,7 @@ resource "aws_launch_template" "this" {
     arn = var.create_iam_instance_profile ? aws_iam_instance_profile.this[0].arn : var.iam_instance_profile_arn
   }
 
-  image_id                             = coalesce(var.ami_id, data.aws_ami.eks_default[0].image_id)
+  image_id                             = data.aws_ami.final_ami.image_id
   instance_initiated_shutdown_behavior = var.instance_initiated_shutdown_behavior
 
   dynamic "instance_market_options" {
