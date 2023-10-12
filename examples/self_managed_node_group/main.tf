@@ -216,56 +216,46 @@ module "eks" {
         }
       }
 
-      instance_attributes = {
-        name = "instance-attributes"
+      bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
 
-        min_size     = 1
-        max_size     = 2
-        desired_size = 1
+      # launch template configuration
+      instance_requirements = {
+        cpu_manufacturers                           = ["intel"]
+        instance_generations                        = ["current", "previous"]
+        spot_max_price_percentage_over_lowest_price = 100
 
-        bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-
-        instance_type = null
-
-        # launch template configuration
-        instance_requirements = {
-          cpu_manufacturers                           = ["intel"]
-          instance_generations                        = ["current", "previous"]
-          spot_max_price_percentage_over_lowest_price = 100
-
-          vcpu_count = {
-            min = 1
-          }
-
-          allowed_instance_types = ["t*", "m*"]
+        vcpu_count = {
+          min = 1
         }
 
-        use_mixed_instances_policy = true
-        mixed_instances_policy = {
-          instances_distribution = {
-            on_demand_base_capacity                  = 0
-            on_demand_percentage_above_base_capacity = 0
-            on_demand_allocation_strategy            = "lowest-price"
-            spot_allocation_strategy                 = "price-capacity-optimized"
-          }
+        allowed_instance_types = ["t*", "m*"]
+      }
 
-          # ASG configuration
-          override = [
-            {
-              instance_requirements = {
-                cpu_manufacturers                           = ["intel"]
-                instance_generations                        = ["current", "previous"]
-                spot_max_price_percentage_over_lowest_price = 100
+      use_mixed_instances_policy = true
+      mixed_instances_policy = {
+        instances_distribution = {
+          on_demand_base_capacity                  = 0
+          on_demand_percentage_above_base_capacity = 0
+          on_demand_allocation_strategy            = "lowest-price"
+          spot_allocation_strategy                 = "price-capacity-optimized"
+        }
 
-                vcpu_count = {
-                  min = 1
-                }
+        # ASG configuration
+        override = [
+          {
+            instance_requirements = {
+              cpu_manufacturers                           = ["intel"]
+              instance_generations                        = ["current", "previous"]
+              spot_max_price_percentage_over_lowest_price = 100
 
-                allowed_instance_types = ["t*", "m*"]
+              vcpu_count = {
+                min = 1
               }
+
+              allowed_instance_types = ["t*", "m*"]
             }
-          ]
-        }
+          }
+        ]
       }
 
       metadata_options = {
