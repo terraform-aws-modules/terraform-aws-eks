@@ -441,7 +441,3 @@ variable "efs_csi_driver_role_arn" {
   description = "Role for efs csi driver needed by the service accounts to perform ondemand volume resizing"
   type        = string
 }
-variable "logging_stage" {
-  type        = string
-  description = "Stage (e.g. `prod`, `dev`, `staging`)"
-}
