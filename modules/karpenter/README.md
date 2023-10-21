@@ -139,6 +139,7 @@ No modules.
 | [aws_iam_policy_document.irsa_assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.queue](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
 ## Inputs
 
@@ -170,7 +171,7 @@ No modules.
 | <a name="input_irsa_path"></a> [irsa\_path](#input\_irsa\_path) | Path of IAM role for service accounts | `string` | `"/"` | no |
 | <a name="input_irsa_permissions_boundary_arn"></a> [irsa\_permissions\_boundary\_arn](#input\_irsa\_permissions\_boundary\_arn) | Permissions boundary ARN to use for IAM role for service accounts | `string` | `null` | no |
 | <a name="input_irsa_policy_name"></a> [irsa\_policy\_name](#input\_irsa\_policy\_name) | Name of IAM policy for service accounts | `string` | `null` | no |
-| <a name="input_irsa_ssm_parameter_arns"></a> [irsa\_ssm\_parameter\_arns](#input\_irsa\_ssm\_parameter\_arns) | List of SSM Parameter ARNs that contain AMI IDs launched by Karpenter | `list(string)` | <pre>[<br>  "arn:aws:ssm:*:*:parameter/aws/service/*"<br>]</pre> | no |
+| <a name="input_irsa_ssm_parameter_arns"></a> [irsa\_ssm\_parameter\_arns](#input\_irsa\_ssm\_parameter\_arns) | List of SSM Parameter ARNs that contain AMI IDs launched by Karpenter | `list(string)` | `[]` | no |
 | <a name="input_irsa_subnet_account_id"></a> [irsa\_subnet\_account\_id](#input\_irsa\_subnet\_account\_id) | Account ID of where the subnets Karpenter will utilize resides. Used when subnets are shared from another account | `string` | `""` | no |
 | <a name="input_irsa_tag_key"></a> [irsa\_tag\_key](#input\_irsa\_tag\_key) | Tag key (`{key = value}`) applied to resources launched by Karpenter through the Karpenter provisioner | `string` | `"karpenter.sh/discovery"` | no |
 | <a name="input_irsa_tag_values"></a> [irsa\_tag\_values](#input\_irsa\_tag\_values) | Tag values (`{key = value}`) applied to resources launched by Karpenter through the Karpenter provisioner. Defaults to cluster name when not set. | `list(string)` | `[]` | no |

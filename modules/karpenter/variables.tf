@@ -95,8 +95,7 @@ variable "irsa_tag_values" {
 variable "irsa_ssm_parameter_arns" {
   description = "List of SSM Parameter ARNs that contain AMI IDs launched by Karpenter"
   type        = list(string)
-  # https://github.com/aws/karpenter/blob/ed9473a9863ca949b61b9846c8b9f33f35b86dbd/pkg/cloudprovider/aws/ami.go#L105-L123
-  default = ["arn:aws:ssm:*:*:parameter/aws/service/*"]
+  default     = []
 }
 
 variable "irsa_subnet_account_id" {
