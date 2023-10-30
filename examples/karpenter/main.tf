@@ -160,7 +160,13 @@ module "karpenter" {
   cluster_name           = module.eks.cluster_name
   irsa_oidc_provider_arn = module.eks.oidc_provider_arn
 
-  policies = {
+  # Used to attach additional IAM policies to the Karpenter controller IRSA role
+  # policies = {
+  #   "xxx" = "yyy"
+  # }
+
+  # Used to attach additional IAM policies to the Karpenter node IAM role
+  iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }
 
@@ -176,7 +182,7 @@ resource "helm_release" "karpenter" {
   repository_username = data.aws_ecrpublic_authorization_token.token.user_name
   repository_password = data.aws_ecrpublic_authorization_token.token.password
   chart               = "karpenter"
-  version             = "v0.21.1"
+  version             = "v0.29.0"
 
   set {
     name  = "settings.aws.clusterName"

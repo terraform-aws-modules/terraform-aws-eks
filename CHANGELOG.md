@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.17.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.17.2...v19.17.3) (2023-10-30)
+
+
+### Bug Fixes
+
+* Correct key used on `license_configuration_arn` ([#2796](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2796)) ([bd4bda2](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/bd4bda266e23635c7ca09b6e9d307b29ef6b8579))
+
+### [19.17.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.17.1...v19.17.2) (2023-10-10)
+
+
+### Bug Fixes
+
+* Karpenter node IAM role policies variable should be a map of strings, not list ([#2771](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2771)) ([f4766e5](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f4766e5c27f060e8c7f5950cf82d1fe59c3231af))
+
 ### [19.17.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.17.0...v19.17.1) (2023-10-06)
 
 
