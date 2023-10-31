@@ -282,7 +282,7 @@ resource "aws_launch_template" "this" {
   key_name      = var.key_name
 
   dynamic "license_specification" {
-    for_each = length(var.license_specifications) > 0 ? var.license_specifications : []
+    for_each = length(var.license_specifications) > 0 ? var.license_specifications : {}
 
     content {
       license_configuration_arn = license_specification.value.license_configuration_arn

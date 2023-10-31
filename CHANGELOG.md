@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.17.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.17.3...v19.17.4) (2023-10-30)
+
+
+### Bug Fixes
+
+* Updating license_specification result type ([#2798](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2798)) ([ba0ebeb](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ba0ebeb11a64a6400a3666165509975d5cdfea43))
+
 ### [19.17.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.17.2...v19.17.3) (2023-10-30)
 
 
