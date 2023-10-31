@@ -193,8 +193,8 @@ variable "maintenance_options" {
 }
 
 variable "license_specifications" {
-  description = "A map of license specifications to associate with"
-  type        = any
+  description = "A list of license specifications to associate with"
+  type        = map(string)
   default     = {}
 }
 
