@@ -160,10 +160,9 @@ module "karpenter" {
   cluster_name           = module.eks.cluster_name
   irsa_oidc_provider_arn = module.eks.oidc_provider_arn
 
-  # Used to attach additional IAM policies to the Karpenter controller IRSA role
-  # policies = {
-  #   "xxx" = "yyy"
-  # }
+  # In v0.32.0/v1beta1, Karpenter now creates the IAM instance profile
+  # so we disable the Terraform creation and add the necessary permissions for Karpenter IRSA
+  enable_karpenter_instance_profile_creation = true
 
   # Used to attach additional IAM policies to the Karpenter node IAM role
   iam_role_additional_policies = {
@@ -182,56 +181,27 @@ resource "helm_release" "karpenter" {
   repository_username = data.aws_ecrpublic_authorization_token.token.user_name
   repository_password = data.aws_ecrpublic_authorization_token.token.password
   chart               = "karpenter"
-  version             = "v0.32.0"
+  version             = "v0.32.1"
 
-  set {
-    name  = "settings.aws.clusterName"
-    value = module.eks.cluster_name
-  }
+  values = [
+    <<-EOT
+    settings:
+      aws:
+        clusterName: ${module.eks.cluster_name}
+        clusterEndpoint: ${module.eks.cluster_endpoint}
+        interruptionQueueName: ${module.karpenter.queue_name}
+    tolerations:
+      - key: eks.amazonaws.com/compute-type
+        value: fargate
+        effect: NoSchedule
+    EOT
+  ]
 
-  set {
-    name  = "settings.aws.clusterEndpoint"
-    value = module.eks.cluster_endpoint
-  }
 
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
     value = module.karpenter.irsa_arn
   }
-
-  set {
-    name  = "settings.aws.defaultInstanceProfile"
-    value = module.karpenter.instance_profile_name
-  }
-
-  set {
-    name  = "settings.aws.interruptionQueueName"
-    value = module.karpenter.queue_name
-  }
-}
-
-resource "kubectl_manifest" "karpenter_provisioner" {
-  yaml_body = <<-YAML
-    apiVersion: karpenter.sh/v1alpha5
-    kind: Provisioner
-    metadata:
-      name: default
-    spec:
-      requirements:
-        - key: karpenter.sh/capacity-type
-          operator: In
-          values: ["spot"]
-      limits:
-        resources:
-          cpu: 1000
-      providerRef:
-        name: default
-      ttlSecondsAfterEmpty: 30
-  YAML
-
-  depends_on = [
-    helm_release.karpenter
-  ]
 }
 
 resource "kubectl_manifest" "karpenter_node_pool" {
@@ -251,27 +221,13 @@ resource "kubectl_manifest" "karpenter_node_pool" {
         name: default
       disruption:
         consolidationPolicy: WhenEmpty
-        consolidationAfter: 30s
-  YAML
-
-  depends_on = [
-    helm_release.karpenter
-  ]
-}
-
-resource "kubectl_manifest" "karpenter_node_template" {
-  yaml_body = <<-YAML
-    apiVersion: karpenter.k8s.aws/v1alpha1
-    kind: AWSNodeTemplate
-    metadata:
-      name: default
-    spec:
-      subnetSelector:
-        karpenter.sh/discovery: ${module.eks.cluster_name}
-      securityGroupSelector:
-        karpenter.sh/discovery: ${module.eks.cluster_name}
-      tags:
-        karpenter.sh/discovery: ${module.eks.cluster_name}
+        consolidateAfter: 30s
+      template:
+        spec:
+          nodeClassRef:
+            apiVersion: karpenter.k8s.aws/v1beta1
+            kind: EC2NodeClass
+            name: default
   YAML
 
   depends_on = [
@@ -286,6 +242,8 @@ resource "kubectl_manifest" "karpenter_node_class" {
     metadata:
       name: default
     spec:
+      amiFamily: AL2
+      role: ${module.karpenter.role_arn}
       subnetSelectorTerms:
         - tags:
             karpenter.sh/discovery: ${module.eks.cluster_name}
@@ -339,7 +297,7 @@ resource "kubectl_manifest" "karpenter_example_deployment" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   name = local.name
   cidr = local.vpc_cidr

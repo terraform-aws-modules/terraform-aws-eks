@@ -84,12 +84,6 @@ data "aws_iam_policy_document" "irsa" {
       "ec2:DescribeInstanceTypeOfferings",
       "ec2:DescribeAvailabilityZones",
       "ec2:DescribeSpotPriceHistory",
-      "iam:AddRoleToInstanceProfile",
-      "iam:CreateInstanceProfile",
-      "iam:DeleteInstanceProfile",
-      "iam:GetInstanceProfile",
-      "iam:RemoveRoleFromInstanceProfile",
-      "iam:TagInstanceProfile",
       "pricing:GetProducts",
     ]
 
@@ -164,6 +158,24 @@ data "aws_iam_policy_document" "irsa" {
         "sqs:ReceiveMessage",
       ]
       resources = [aws_sqs_queue.this[0].arn]
+    }
+  }
+
+  # TODO - this will be replaced in v20.0 with the scoped policy provided by Karpenter
+  # https://github.com/aws/karpenter/blob/main/website/content/en/docs/upgrading/v1beta1-controller-policy.json
+  dynamic "statement" {
+    for_each = var.enable_karpenter_instance_profile_creation ? [1] : []
+
+    content {
+      actions = [
+        "iam:AddRoleToInstanceProfile",
+        "iam:CreateInstanceProfile",
+        "iam:DeleteInstanceProfile",
+        "iam:GetInstanceProfile",
+        "iam:RemoveRoleFromInstanceProfile",
+        "iam:TagInstanceProfile",
+      ]
+      resources = ["*"]
     }
   }
 }
@@ -374,7 +386,7 @@ locals {
 }
 
 resource "aws_iam_instance_profile" "this" {
-  count = var.create && var.create_instance_profile ? 1 : 0
+  count = var.create && var.create_instance_profile && !var.enable_karpenter_instance_profile_creation ? 1 : 0
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
