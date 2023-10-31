@@ -182,7 +182,7 @@ resource "helm_release" "karpenter" {
   repository_username = data.aws_ecrpublic_authorization_token.token.user_name
   repository_password = data.aws_ecrpublic_authorization_token.token.password
   chart               = "karpenter"
-  version             = "v0.29.0"
+  version             = "v0.32.0"
 
   set {
     name  = "settings.aws.clusterName"
@@ -234,6 +234,31 @@ resource "kubectl_manifest" "karpenter_provisioner" {
   ]
 }
 
+resource "kubectl_manifest" "karpenter_node_pool" {
+  yaml_body = <<-YAML
+    apiVersion: karpenter.sh/v1beta1
+    kind: NodePool
+    metadata:
+      name: default
+    spec:
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: ["spot"]
+      limits:
+        cpu: 1000
+      nodeClassRef:
+        name: default
+      disruption:
+        consolidationPolicy: WhenEmpty
+        consolidationAfter: 30s
+  YAML
+
+  depends_on = [
+    helm_release.karpenter
+  ]
+}
+
 resource "kubectl_manifest" "karpenter_node_template" {
   yaml_body = <<-YAML
     apiVersion: karpenter.k8s.aws/v1alpha1
@@ -245,6 +270,28 @@ resource "kubectl_manifest" "karpenter_node_template" {
         karpenter.sh/discovery: ${module.eks.cluster_name}
       securityGroupSelector:
         karpenter.sh/discovery: ${module.eks.cluster_name}
+      tags:
+        karpenter.sh/discovery: ${module.eks.cluster_name}
+  YAML
+
+  depends_on = [
+    helm_release.karpenter
+  ]
+}
+
+resource "kubectl_manifest" "karpenter_node_class" {
+  yaml_body = <<-YAML
+    apiVersion: karpenter.k8s.aws/v1beta1
+    kind: EC2NodeClass
+    metadata:
+      name: default
+    spec:
+      subnetSelectorTerms:
+        - tags:
+            karpenter.sh/discovery: ${module.eks.cluster_name}
+      securityGroupSelectorTerms:
+        - tags:
+            karpenter.sh/discovery: ${module.eks.cluster_name}
       tags:
         karpenter.sh/discovery: ${module.eks.cluster_name}
   YAML
