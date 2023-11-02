@@ -150,6 +150,7 @@ No modules.
 | <a name="input_create_iam_role"></a> [create\_iam\_role](#input\_create\_iam\_role) | Determines whether an IAM role is created or to use an existing IAM role | `bool` | `true` | no |
 | <a name="input_create_instance_profile"></a> [create\_instance\_profile](#input\_create\_instance\_profile) | Whether to create an IAM instance profile | `bool` | `true` | no |
 | <a name="input_create_irsa"></a> [create\_irsa](#input\_create\_irsa) | Determines whether an IAM role for service accounts is created | `bool` | `true` | no |
+| <a name="input_enable_karpenter_instance_profile_creation"></a> [enable\_karpenter\_instance\_profile\_creation](#input\_enable\_karpenter\_instance\_profile\_creation) | Determines whether Karpenter will be allowed to create the IAM instance profile (v1beta1) or if Terraform will (v1alpha1) | `bool` | `false` | no |
 | <a name="input_enable_spot_termination"></a> [enable\_spot\_termination](#input\_enable\_spot\_termination) | Determines whether to enable native spot termination handling | `bool` | `true` | no |
 | <a name="input_iam_role_additional_policies"></a> [iam\_role\_additional\_policies](#input\_iam\_role\_additional\_policies) | Additional policies to be added to the IAM role | `map(string)` | `{}` | no |
 | <a name="input_iam_role_arn"></a> [iam\_role\_arn](#input\_iam\_role\_arn) | Existing IAM role ARN for the IAM instance profile. Required if `create_iam_role` is set to `false` | `string` | `null` | no |

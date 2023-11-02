@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.18.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.17.4...v19.18.0) (2023-11-01)
+
+
+### Features
+
+* Add Karpenter v1beta1 compatibility ([#2800](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2800)) ([aec2bab](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/aec2bab1d8da89b65b84d11fef77cbc969fccc91))
+
 ### [19.17.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.17.3...v19.17.4) (2023-10-30)
 
 
