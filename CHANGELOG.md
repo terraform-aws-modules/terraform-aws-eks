@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.19.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.18.0...v19.19.0) (2023-11-04)
+
+
+### Features
+
+* Update KMS module to avoid calling data sources when `create_kms_key = false` ([#2804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2804)) ([0732bea](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/0732bea85f46fd2629705f9ee5f87cb695ee95e5))
+
 ## [19.18.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.17.4...v19.18.0) (2023-11-01)
 
 
