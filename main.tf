@@ -122,7 +122,7 @@ resource "aws_cloudwatch_log_group" "this" {
 
 module "kms" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "1.1.0" # Note - be mindful of Terraform/provider version compatibility between modules
+  version = "2.1.0" # Note - be mindful of Terraform/provider version compatibility between modules
 
   create = local.create && var.create_kms_key && local.enable_cluster_encryption_config # not valid on Outposts
 
