@@ -12,7 +12,7 @@ Please consult the `examples` directory for reference example configurations. If
 
 ### Added
 
-   -
+   - A module tag has been added to the cluster and compute resources created
 
 ### Modified
 

@@ -40,7 +40,6 @@ resource "time_sleep" "this" {
 
 ################################################################################
 # EKS IPV6 CNI Policy
-# TODO - hopefully AWS releases a managed policy which can replace this
 # https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html#cni-iam-role-create-ipv6-policy
 ################################################################################
 
@@ -260,7 +259,7 @@ module "fargate_profile" {
   # https://github.com/hashicorp/terraform/issues/31646#issuecomment-1217279031
   iam_role_additional_policies = lookup(each.value, "iam_role_additional_policies", lookup(var.fargate_profile_defaults, "iam_role_additional_policies", {}))
 
-  tags = merge(var.tags, try(each.value.tags, var.fargate_profile_defaults.tags, {}))
+  tags = merge(local.tags, try(each.value.tags, var.fargate_profile_defaults.tags, {}))
 }
 
 ################################################################################
@@ -370,7 +369,7 @@ module "eks_managed_node_group" {
   vpc_security_group_ids            = compact(concat([local.node_security_group_id], try(each.value.vpc_security_group_ids, var.eks_managed_node_group_defaults.vpc_security_group_ids, [])))
   cluster_primary_security_group_id = try(each.value.attach_cluster_primary_security_group, var.eks_managed_node_group_defaults.attach_cluster_primary_security_group, false) ? aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id : null
 
-  tags = merge(var.tags, try(each.value.tags, var.eks_managed_node_group_defaults.tags, {}))
+  tags = merge(local.tags, try(each.value.tags, var.eks_managed_node_group_defaults.tags, {}))
 }
 
 ################################################################################
@@ -503,5 +502,5 @@ module "self_managed_node_group" {
   vpc_security_group_ids            = compact(concat([local.node_security_group_id], try(each.value.vpc_security_group_ids, var.self_managed_node_group_defaults.vpc_security_group_ids, [])))
   cluster_primary_security_group_id = try(each.value.attach_cluster_primary_security_group, var.self_managed_node_group_defaults.attach_cluster_primary_security_group, false) ? aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id : null
 
-  tags = merge(var.tags, try(each.value.tags, var.self_managed_node_group_defaults.tags, {}))
+  tags = merge(local.tags, try(each.value.tags, var.self_managed_node_group_defaults.tags, {}))
 }
