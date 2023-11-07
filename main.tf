@@ -231,7 +231,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
   # Not available on outposts
   count = local.create && var.enable_irsa && !local.create_outposts_local_cluster ? 1 : 0
 
-  client_id_list  = distinct(compact(concat(["sts.${local.dns_suffix}"], var.openid_connect_audiences)))
+  client_id_list  = distinct(compact(concat(["sts.amazonaws.com"], var.openid_connect_audiences)))
   thumbprint_list = concat([data.tls_certificate.this[0].certificates[0].sha1_fingerprint], var.custom_oidc_thumbprints)
   url             = aws_eks_cluster.this[0].identity[0].oidc[0].issuer
 
@@ -251,10 +251,6 @@ locals {
   iam_role_policy_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
 
   cluster_encryption_policy_name = coalesce(var.cluster_encryption_policy_name, "${local.iam_role_name}-ClusterEncryption")
-
-  # TODO - hopefully this can be removed once the AWS endpoint is named properly in China
-  # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1904
-  dns_suffix = coalesce(var.cluster_iam_role_dns_suffix, data.aws_partition.current.dns_suffix)
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
@@ -266,7 +262,7 @@ data "aws_iam_policy_document" "assume_role_policy" {
 
     principals {
       type        = "Service"
-      identifiers = ["eks.${local.dns_suffix}"]
+      identifiers = ["eks.amazonaws.com"]
     }
 
     dynamic "principals" {
@@ -275,7 +271,7 @@ data "aws_iam_policy_document" "assume_role_policy" {
       content {
         type = "Service"
         identifiers = [
-          "ec2.${local.dns_suffix}",
+          "ec2.amazonaws.com",
         ]
       }
     }
