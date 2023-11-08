@@ -305,7 +305,8 @@ module "eks" {
     "888888888888",
   ]
 
-  tags = local.tags
+  tags                    = local.tags
+  cluster_prevent_destroy = true
 }
 
 ################################################################################
