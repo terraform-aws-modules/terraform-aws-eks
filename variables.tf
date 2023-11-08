@@ -132,8 +132,8 @@ variable "cluster_timeouts" {
 
 variable "cluster_prevent_destroy" {
   description = "Sets value for terraform prevent destroy metaargument"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 ################################################################################
