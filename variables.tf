@@ -130,6 +130,12 @@ variable "cluster_timeouts" {
   default     = {}
 }
 
+variable "cluster_prevent_destroy" {
+  description = "Sets value for terraform prevent destroy metaargument"
+  type = bool
+  default = false
+}
+
 ################################################################################
 # KMS Key
 ################################################################################

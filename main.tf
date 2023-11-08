@@ -88,6 +88,9 @@ resource "aws_eks_cluster" "this" {
     aws_cloudwatch_log_group.this,
     aws_iam_policy.cni_ipv6_policy,
   ]
+  lifecycle {
+    prevent_destroy = var.cluster_prevent_destroy
+  }
 }
 
 resource "aws_ec2_tag" "cluster_primary_security_group" {
