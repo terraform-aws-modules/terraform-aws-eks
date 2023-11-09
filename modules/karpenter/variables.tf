@@ -17,92 +17,101 @@ variable "cluster_name" {
 }
 
 ################################################################################
-# IAM Role for Service Account (IRSA)
+# Pod Identity IAM Role
 ################################################################################
 
-variable "create_irsa" {
-  description = "Determines whether an IAM role for service accounts is created"
+variable "create_pod_identity_role" {
+  description = "Determines whether a Pod Identity IAM role is created"
   type        = bool
   default     = true
 }
 
-variable "irsa_name" {
-  description = "Name of IAM role for service accounts"
+variable "pod_identity_role_name" {
+  description = "Name of the Pod Identity IAM role"
   type        = string
-  default     = null
+  default     = "KarpenterController"
 }
 
-variable "irsa_policy_name" {
-  description = "Name of IAM policy for service accounts"
-  type        = string
-  default     = null
-}
-
-variable "irsa_use_name_prefix" {
-  description = "Determines whether the IAM role for service accounts name (`irsa_name`) is used as a prefix"
+variable "pod_identity_role_use_name_prefix" {
+  description = "Determines whether the name of the Pod Identity IAM role is used as a prefix"
   type        = bool
   default     = true
 }
 
-variable "irsa_path" {
-  description = "Path of IAM role for service accounts"
+variable "pod_identity_role_path" {
+  description = "Path of the Pod Identity IAM role"
   type        = string
   default     = "/"
 }
 
-variable "irsa_description" {
-  description = "IAM role for service accounts description"
+variable "pod_identity_role_description" {
+  description = "Pod Identity IAM role description"
   type        = string
-  default     = "Karpenter IAM role for service account"
+  default     = "Karpenter controller Pod Identity IAM role"
 }
 
-variable "irsa_max_session_duration" {
+variable "pod_identity_role_max_session_duration" {
   description = "Maximum API session duration in seconds between 3600 and 43200"
   type        = number
   default     = null
 }
 
-variable "irsa_permissions_boundary_arn" {
-  description = "Permissions boundary ARN to use for IAM role for service accounts"
+variable "pod_identity_role_permissions_boundary_arn" {
+  description = "Permissions boundary ARN to use for the Pod Identity IAM role"
   type        = string
   default     = null
 }
 
-variable "irsa_tags" {
-  description = "A map of additional tags to add the the IAM role for service accounts"
+variable "pod_identity_role_tags" {
+  description = "A map of additional tags to add the the Pod Identity IAM role"
   type        = map(any)
   default     = {}
 }
 
-variable "policies" {
-  description = "Policies to attach to the IAM role in `{'static_name' = 'policy_arn'}` format"
+variable "pod_identity_policy_name" {
+  description = "Name of the Pod Identity IAM policy"
+  type        = string
+  default     = "KarpenterController"
+}
+
+variable "pod_identity_policy_use_name_prefix" {
+  description = "Determines whether the name of the Pod Identity IAM policy is used as a prefix"
+  type        = bool
+  default     = true
+}
+
+variable "pod_identity_policy_path" {
+  description = "Path of the Pod Identity IAM policy"
+  type        = string
+  default     = "/"
+}
+
+variable "pod_identity_policy_description" {
+  description = "Pod Identity IAM policy description"
+  type        = string
+  default     = "Karpenter controller Pod Identity IAM policy"
+}
+
+variable "pod_identity_role_policies" {
+  description = "Policies to attach to the Pod Identity IAM role in `{'static_name' = 'policy_arn'}` format"
   type        = map(string)
   default     = {}
 }
 
-variable "irsa_tag_key" {
-  description = "Tag key (`{key = value}`) applied to resources launched by Karpenter through the Karpenter provisioner"
-  type        = string
-  default     = "karpenter.sh/discovery"
-}
-
-variable "irsa_tag_values" {
-  description = "Tag values (`{key = value}`) applied to resources launched by Karpenter through the Karpenter provisioner. Defaults to cluster name when not set."
+variable "ami_id_ssm_parameter_arns" {
+  description = "List of SSM Parameter ARNs that Karpenter controller is allowed read access (for retrieving AMI IDs)"
   type        = list(string)
-  default     = []
+  default     = ["arn:aws:ssm:*:*:parameter/aws/service/*"]
 }
 
-variable "irsa_ssm_parameter_arns" {
-  description = "List of SSM Parameter ARNs that contain AMI IDs launched by Karpenter"
-  type        = list(string)
-  # https://github.com/aws/karpenter/blob/ed9473a9863ca949b61b9846c8b9f33f35b86dbd/pkg/cloudprovider/aws/ami.go#L105-L123
-  default = ["arn:aws:ssm:*:*:parameter/aws/service/*"]
-}
+################################################################################
+# IAM Role for Service Account (IRSA)
+################################################################################
 
-variable "irsa_subnet_account_id" {
-  description = "Account ID of where the subnets Karpenter will utilize resides. Used when subnets are shared from another account"
-  type        = string
-  default     = ""
+variable "enable_irsa" {
+  description = "Determines whether to enable support IAM role for service account"
+  type        = bool
+  default     = true
 }
 
 variable "irsa_oidc_provider_arn" {
@@ -121,12 +130,6 @@ variable "irsa_assume_role_condition_test" {
   description = "Name of the [IAM condition operator](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition_operators.html) to evaluate when assuming the role"
   type        = string
   default     = "StringEquals"
-}
-
-variable "enable_karpenter_instance_profile_creation" {
-  description = "Determines whether Karpenter will be allowed to create the IAM instance profile (v1beta1) or if Terraform will (v1alpha1)"
-  type        = bool
-  default     = false
 }
 
 ################################################################################
@@ -164,7 +167,7 @@ variable "queue_kms_data_key_reuse_period_seconds" {
 }
 
 ################################################################################
-# Node IAM Role & Instance Profile
+# Node IAM Role
 ################################################################################
 
 variable "create_iam_role" {
@@ -174,7 +177,7 @@ variable "create_iam_role" {
 }
 
 variable "cluster_ip_family" {
-  description = "The IP family used to assign Kubernetes pod and service addresses. Valid values are `ipv4` (default) and `ipv6`"
+  description = "The IP family used to assign Kubernetes pod and service addresses. Valid values are `ipv4` (default) and `ipv6`. Note: If `ipv6` is specified, the `AmazonEKS_CNI_IPv6_Policy` must exist in the account. This policy is created by the EKS module with `create_cni_ipv6_iam_policy = true`"
   type        = string
   default     = null
 }
@@ -246,7 +249,7 @@ variable "iam_role_tags" {
 variable "create_instance_profile" {
   description = "Whether to create an IAM instance profile"
   type        = bool
-  default     = true
+  default     = false
 }
 
 ################################################################################

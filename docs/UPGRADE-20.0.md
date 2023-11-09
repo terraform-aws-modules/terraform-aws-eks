@@ -7,6 +7,7 @@ Please consult the `examples` directory for reference example configurations. If
 - Minium supported AWS provider version increased to `v5.0`
 - The `resolve_conflicts` argument within the `cluster_addons` configuration has been replaced with `resolve_conflicts_on_create` and `resolve_conflicts_on_delete` now that `resolve_conflicts` is deprecated
 - The `cluster_addons` `preserve` argument default/fallback value is now set to `true`. This has shown to be useful for users deprovisioning clusters while avoiding the situation where the CNI is deleted too early and causes resources to be left orphaned which results in conflicts.
+- The Karpenter sub-module's use of the `irsa` naming convention has been replaced with `pod-identity` along with an update to the Karpenter controller IAM policy to align with the `v1beta1`/`v0.32` changes
 
 ## Additional changes
 
@@ -26,11 +27,27 @@ Please consult the `examples` directory for reference example configurations. If
 
 1. Removed variables:
 
-   -
+   - Karpenter
+      - `irsa_tag_key`
+      - `irsa_tag_values`
+      - `irsa_subnet_account_id`
+      - `enable_karpenter_instance_profile_creation`
 
 2. Renamed variables:
 
-   -
+   - Karpenter
+      - `create_irsa` -> `create_pod_identity`
+      - `irsa_name` -> `pod_identity_role_name`
+      - `irsa_use_name_prefix` -> `pod_identity_role_name_prefix`
+      - `irsa_path` -> `pod_identity_role_path`
+      - `irsa_description` -> `pod_identity_role_description`
+      - `irsa_max_session_duration` -> `pod_identity_role_max_session_duration`
+      - `irsa_permissions_boundary_arn` -> `pod_identity_role_permissions_boundary_arn`
+      - `irsa_tags` -> `pod_identity_role_tags`
+      - `policies` -> `pod_identity_role_policies`
+      - `irsa_policy_name` -> `pod_identity_policy_name`
+      - `irsa_ssm_parameter_arns` -> `ami_id_ssm_parameter_arns`
+
 
 3. Added variables:
 
@@ -42,7 +59,10 @@ Please consult the `examples` directory for reference example configurations. If
 
 5. Renamed outputs:
 
-   -
+   - Karpenter
+      - `irsa_name` -> `pod_identity_role_name`
+      - `irsa_arn` -> `pod_identity_role_arn`
+      - `irsa_unique_id` -> `pod_identity_role_unique_id`
 
 6. Added outputs:
 

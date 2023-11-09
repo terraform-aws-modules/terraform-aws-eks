@@ -76,7 +76,7 @@ output "node_security_group_id" {
 }
 
 ################################################################################
-# IRSA
+# IRSA OIDC Provider
 ################################################################################
 
 output "oidc_provider" {
@@ -192,22 +192,22 @@ output "aws_auth_configmap_yaml" {
 }
 
 ################################################################################
-# IAM Role for Service Account (IRSA)
+# Pod Identity IAM Role
 ################################################################################
 
-output "karpenter_irsa_name" {
-  description = "The name of the IAM role for service accounts"
-  value       = module.karpenter.irsa_name
+output "pod_identity_role_name" {
+  description = "The name of the Pod Identity IAM role"
+  value       = module.karpenter.pod_identity_role_name
 }
 
-output "karpenter_irsa_arn" {
-  description = "The Amazon Resource Name (ARN) specifying the IAM role for service accounts"
-  value       = module.karpenter.irsa_arn
+output "pod_identity_role_arn" {
+  description = "The Amazon Resource Name (ARN) specifying the Pod Identity IAM role"
+  value       = module.karpenter.pod_identity_role_arn
 }
 
-output "karpenter_irsa_unique_id" {
-  description = "Stable and unique string identifying the IAM role for service accounts"
-  value       = module.karpenter.irsa_unique_id
+output "pod_identity_role_unique_id" {
+  description = "Stable and unique string identifying the Pod Identity IAM role"
+  value       = module.karpenter.pod_identity_role_unique_id
 }
 
 ################################################################################

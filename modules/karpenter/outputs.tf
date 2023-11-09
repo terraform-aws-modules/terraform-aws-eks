@@ -1,20 +1,20 @@
 ################################################################################
-# IAM Role for Service Account (IRSA)
+# Pod Identity IAM Role
 ################################################################################
 
-output "irsa_name" {
-  description = "The name of the IAM role for service accounts"
-  value       = try(aws_iam_role.irsa[0].name, null)
+output "pod_identity_role_name" {
+  description = "The name of the Pod Identity IAM role"
+  value       = try(aws_iam_role.pod_identity[0].name, null)
 }
 
-output "irsa_arn" {
-  description = "The Amazon Resource Name (ARN) specifying the IAM role for service accounts"
-  value       = try(aws_iam_role.irsa[0].arn, null)
+output "pod_identity_role_arn" {
+  description = "The Amazon Resource Name (ARN) specifying the Pod Identity IAM role"
+  value       = try(aws_iam_role.pod_identity[0].arn, null)
 }
 
-output "irsa_unique_id" {
-  description = "Stable and unique string identifying the IAM role for service accounts"
-  value       = try(aws_iam_role.irsa[0].unique_id, null)
+output "pod_identity_role_unique_id" {
+  description = "Stable and unique string identifying the Pod Identity IAM role"
+  value       = try(aws_iam_role.pod_identity[0].unique_id, null)
 }
 
 ################################################################################
