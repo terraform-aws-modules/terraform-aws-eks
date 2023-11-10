@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.19.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.19.0...v19.19.1) (2023-11-10)
+
+
+### Bug Fixes
+
+* Remove additional conditional on Karpenter instance profile creation to support upgrading ([#2812](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2812)) ([c36c8dc](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c36c8dc825aa09e2ded20ff675905aa8857853cf))
+
 ## [19.19.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.18.0...v19.19.0) (2023-11-04)
 
 
