@@ -49,8 +49,9 @@ module "eks" {
     outpost_arns                = [local.outpost_arn]
   }
 
-  # Local clusters will automatically add the node group IAM role to the aws-auth configmap
-  manage_aws_auth_configmap = true
+  # TODO - CAM
+  # # Local clusters will automatically add the node group IAM role to the aws-auth configmap
+  # manage_aws_auth_configmap = true
 
   # Extend cluster security group rules
   cluster_security_group_additional_rules = {

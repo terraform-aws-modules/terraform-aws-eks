@@ -50,12 +50,10 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_disabled_eks"></a> [disabled\_eks](#module\_disabled\_eks) | ../.. | n/a |
 | <a name="module_disabled_eks_managed_node_group"></a> [disabled\_eks\_managed\_node\_group](#module\_disabled\_eks\_managed\_node\_group) | ../../modules/eks-managed-node-group | n/a |
 | <a name="module_disabled_fargate_profile"></a> [disabled\_fargate\_profile](#module\_disabled\_fargate\_profile) | ../../modules/fargate-profile | n/a |
-| <a name="module_disabled_self_managed_node_group"></a> [disabled\_self\_managed\_node\_group](#module\_disabled\_self\_managed\_node\_group) | ../../modules/self-managed-node-group | n/a |
 | <a name="module_eks"></a> [eks](#module\_eks) | ../.. | n/a |
 | <a name="module_eks_managed_node_group"></a> [eks\_managed\_node\_group](#module\_eks\_managed\_node\_group) | ../../modules/eks-managed-node-group | n/a |
 | <a name="module_fargate_profile"></a> [fargate\_profile](#module\_fargate\_profile) | ../../modules/fargate-profile | n/a |
 | <a name="module_kms"></a> [kms](#module\_kms) | terraform-aws-modules/kms/aws | ~> 1.5 |
-| <a name="module_self_managed_node_group"></a> [self\_managed\_node\_group](#module\_self\_managed\_node\_group) | ../../modules/self-managed-node-group | n/a |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 5.0 |
 
 ## Resources
@@ -75,7 +73,6 @@ No inputs.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_aws_auth_configmap_yaml"></a> [aws\_auth\_configmap\_yaml](#output\_aws\_auth\_configmap\_yaml) | Formatted yaml output for base aws-auth configmap containing roles used in cluster node groups/fargate profiles |
 | <a name="output_cloudwatch_log_group_arn"></a> [cloudwatch\_log\_group\_arn](#output\_cloudwatch\_log\_group\_arn) | Arn of cloudwatch log group created |
 | <a name="output_cloudwatch_log_group_name"></a> [cloudwatch\_log\_group\_name](#output\_cloudwatch\_log\_group\_name) | Name of cloudwatch log group created |
 | <a name="output_cluster_addons"></a> [cluster\_addons](#output\_cluster\_addons) | Map of attribute maps for all EKS cluster addons enabled |

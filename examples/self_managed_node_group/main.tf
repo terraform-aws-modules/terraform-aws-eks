@@ -59,9 +59,9 @@ module "eks" {
   subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.intra_subnets
 
-  # Self managed node groups will not automatically create the aws-auth configmap so we need to
-  create_aws_auth_configmap = true
-  manage_aws_auth_configmap = true
+  # TODO - replace with CAM
+  # # Self managed node groups will not automatically create the aws-auth configmap so we need to
+  # manage_aws_auth_configmap = true
 
   self_managed_node_group_defaults = {
     # enable discovery of autoscaling groups by cluster-autoscaler
@@ -300,6 +300,12 @@ module "eks" {
   }
 
   tags = local.tags
+}
+
+module "disabled_self_managed_node_group" {
+  source = "../../modules/self-managed-node-group"
+
+  create = false
 }
 
 ################################################################################

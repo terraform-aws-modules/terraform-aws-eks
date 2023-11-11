@@ -248,63 +248,6 @@ module "eks" {
   #   }
   # }
 
-  # aws-auth configmap
-  manage_aws_auth_configmap = true
-
-  aws_auth_node_iam_role_arns_non_windows = [
-    module.eks_managed_node_group.iam_role_arn,
-    module.self_managed_node_group.iam_role_arn,
-  ]
-  aws_auth_fargate_profile_pod_execution_role_arns = [
-    module.fargate_profile.fargate_profile_pod_execution_role_arn
-  ]
-
-  aws_auth_roles = [
-    {
-      rolearn  = module.eks_managed_node_group.iam_role_arn
-      username = "system:node:{{EC2PrivateDNSName}}"
-      groups = [
-        "system:bootstrappers",
-        "system:nodes",
-      ]
-    },
-    {
-      rolearn  = module.self_managed_node_group.iam_role_arn
-      username = "system:node:{{EC2PrivateDNSName}}"
-      groups = [
-        "system:bootstrappers",
-        "system:nodes",
-      ]
-    },
-    {
-      rolearn  = module.fargate_profile.fargate_profile_pod_execution_role_arn
-      username = "system:node:{{SessionName}}"
-      groups = [
-        "system:bootstrappers",
-        "system:nodes",
-        "system:node-proxier",
-      ]
-    }
-  ]
-
-  aws_auth_users = [
-    {
-      userarn  = "arn:aws:iam::66666666666:user/user1"
-      username = "user1"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::66666666666:user/user2"
-      username = "user2"
-      groups   = ["system:masters"]
-    },
-  ]
-
-  aws_auth_accounts = [
-    "777777777777",
-    "888888888888",
-  ]
-
   tags = local.tags
 }
 
@@ -342,26 +285,6 @@ module "eks_managed_node_group" {
   tags = merge(local.tags, { Separate = "eks-managed-node-group" })
 }
 
-module "self_managed_node_group" {
-  source = "../../modules/self-managed-node-group"
-
-  name                = "separate-self-mng"
-  cluster_name        = module.eks.cluster_name
-  cluster_version     = module.eks.cluster_version
-  cluster_endpoint    = module.eks.cluster_endpoint
-  cluster_auth_base64 = module.eks.cluster_certificate_authority_data
-
-  instance_type = "m5.large"
-
-  subnet_ids = module.vpc.private_subnets
-  vpc_security_group_ids = [
-    module.eks.cluster_primary_security_group_id,
-    module.eks.cluster_security_group_id,
-  ]
-
-  tags = merge(local.tags, { Separate = "self-managed-node-group" })
-}
-
 module "fargate_profile" {
   source = "../../modules/fargate-profile"
 
@@ -394,12 +317,6 @@ module "disabled_fargate_profile" {
 
 module "disabled_eks_managed_node_group" {
   source = "../../modules/eks-managed-node-group"
-
-  create = false
-}
-
-module "disabled_self_managed_node_group" {
-  source = "../../modules/self-managed-node-group"
 
   create = false
 }

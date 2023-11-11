@@ -116,18 +116,19 @@ module "eks" {
   create_cluster_security_group = false
   create_node_security_group    = false
 
-  manage_aws_auth_configmap = true
-  aws_auth_roles = [
-    # We need to add in the Karpenter node IAM role for nodes launched by Karpenter
-    {
-      rolearn  = module.karpenter.role_arn
-      username = "system:node:{{EC2PrivateDNSName}}"
-      groups = [
-        "system:bootstrappers",
-        "system:nodes",
-      ]
-    },
-  ]
+  # TODO - CAM
+  # manage_aws_auth_configmap = true
+  # aws_auth_roles = [
+  #   # We need to add in the Karpenter node IAM role for nodes launched by Karpenter
+  #   {
+  #     rolearn  = module.karpenter.role_arn
+  #     username = "system:node:{{EC2PrivateDNSName}}"
+  #     groups = [
+  #       "system:bootstrappers",
+  #       "system:nodes",
+  #     ]
+  #   },
+  # ]
 
   fargate_profiles = {
     karpenter = {
