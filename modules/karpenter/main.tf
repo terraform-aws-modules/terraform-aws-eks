@@ -324,7 +324,7 @@ locals {
 
   iam_role_name          = coalesce(var.iam_role_name, "Karpenter-${var.cluster_name}")
   iam_role_policy_prefix = "arn:${local.partition}:iam::aws:policy"
-  cni_policy             = var.cluster_ip_family == "ipv6" ? "${local.iam_role_policy_prefix}/AmazonEKS_CNI_IPv6_Policy" : "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
+  cni_policy             = var.cluster_ip_family == "ipv6" ? "arn:${local.partition}:iam::${local.account_id}:policy/AmazonEKS_CNI_IPv6_Policy" : "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
 }
 
 data "aws_iam_policy_document" "assume_role" {
@@ -386,7 +386,7 @@ locals {
 }
 
 resource "aws_iam_instance_profile" "this" {
-  count = var.create && var.create_instance_profile && !var.enable_karpenter_instance_profile_creation ? 1 : 0
+  count = var.create && var.create_instance_profile ? 1 : 0
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null

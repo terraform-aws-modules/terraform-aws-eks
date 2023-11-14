@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.20.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.19.1...v19.20.0) (2023-11-14)
+
+
+### Features
+
+* Allow OIDC root CA thumbprint to be included/excluded ([#2778](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2778)) ([091c680](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/091c68051d9cbf24644121a24c715307f00c44b3))
+
+### [19.19.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.19.0...v19.19.1) (2023-11-10)
+
+
+### Bug Fixes
+
+* Remove additional conditional on Karpenter instance profile creation to support upgrading ([#2812](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2812)) ([c36c8dc](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c36c8dc825aa09e2ded20ff675905aa8857853cf))
+
+## [19.19.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.18.0...v19.19.0) (2023-11-04)
+
+
+### Features
+
+* Update KMS module to avoid calling data sources when `create_kms_key = false` ([#2804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2804)) ([0732bea](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/0732bea85f46fd2629705f9ee5f87cb695ee95e5))
+
 ## [19.18.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.17.4...v19.18.0) (2023-11-01)
 
 

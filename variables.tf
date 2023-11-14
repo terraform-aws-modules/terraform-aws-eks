@@ -358,6 +358,12 @@ variable "openid_connect_audiences" {
   default     = []
 }
 
+variable "include_oidc_root_ca_thumbprint" {
+  description = "Determines whether to include the root CA thumbprint in the OpenID Connect (OIDC) identity provider's server certificate(s)"
+  type        = bool
+  default     = true
+}
+
 variable "custom_oidc_thumbprints" {
   description = "Additional list of server certificate thumbprints for the OpenID Connect (OIDC) identity provider's server certificate(s)"
   type        = list(string)
