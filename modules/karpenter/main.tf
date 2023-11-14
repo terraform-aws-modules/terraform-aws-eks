@@ -160,6 +160,24 @@ data "aws_iam_policy_document" "irsa" {
       resources = [aws_sqs_queue.this[0].arn]
     }
   }
+
+  # TODO - this will be replaced in v20.0 with the scoped policy provided by Karpenter
+  # https://github.com/aws/karpenter/blob/main/website/content/en/docs/upgrading/v1beta1-controller-policy.json
+  dynamic "statement" {
+    for_each = var.enable_karpenter_instance_profile_creation ? [1] : []
+
+    content {
+      actions = [
+        "iam:AddRoleToInstanceProfile",
+        "iam:CreateInstanceProfile",
+        "iam:DeleteInstanceProfile",
+        "iam:GetInstanceProfile",
+        "iam:RemoveRoleFromInstanceProfile",
+        "iam:TagInstanceProfile",
+      ]
+      resources = ["*"]
+    }
+  }
 }
 
 resource "aws_iam_policy" "irsa" {
@@ -306,7 +324,7 @@ locals {
 
   iam_role_name          = coalesce(var.iam_role_name, "Karpenter-${var.cluster_name}")
   iam_role_policy_prefix = "arn:${local.partition}:iam::aws:policy"
-  cni_policy             = var.cluster_ip_family == "ipv6" ? "${local.iam_role_policy_prefix}/AmazonEKS_CNI_IPv6_Policy" : "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
+  cni_policy             = var.cluster_ip_family == "ipv6" ? "arn:${local.partition}:iam::${local.account_id}:policy/AmazonEKS_CNI_IPv6_Policy" : "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
 }
 
 data "aws_iam_policy_document" "assume_role" {

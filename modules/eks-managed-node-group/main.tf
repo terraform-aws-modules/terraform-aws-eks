@@ -179,7 +179,7 @@ resource "aws_launch_template" "this" {
     for_each = length(var.license_specifications) > 0 ? var.license_specifications : {}
 
     content {
-      license_configuration_arn = license_specifications.value.license_configuration_arn
+      license_configuration_arn = license_specification.value.license_configuration_arn
     }
   }
 

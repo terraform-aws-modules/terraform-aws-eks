@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file.
 
+### [19.19.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.19.0...v19.19.1) (2023-11-10)
+
+
+### Bug Fixes
+
+* Remove additional conditional on Karpenter instance profile creation to support upgrading ([#2812](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2812)) ([c36c8dc](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c36c8dc825aa09e2ded20ff675905aa8857853cf))
+
+## [19.19.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.18.0...v19.19.0) (2023-11-04)
+
+
+### Features
+
+* Update KMS module to avoid calling data sources when `create_kms_key = false` ([#2804](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2804)) ([0732bea](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/0732bea85f46fd2629705f9ee5f87cb695ee95e5))
+
+## [19.18.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.17.4...v19.18.0) (2023-11-01)
+
+
+### Features
+
+* Add Karpenter v1beta1 compatibility ([#2800](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2800)) ([aec2bab](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/aec2bab1d8da89b65b84d11fef77cbc969fccc91))
+
+### [19.17.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.17.3...v19.17.4) (2023-10-30)
+
+
+### Bug Fixes
+
+* Updating license_specification result type ([#2798](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2798)) ([ba0ebeb](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ba0ebeb11a64a6400a3666165509975d5cdfea43))
+
+### [19.17.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.17.2...v19.17.3) (2023-10-30)
+
+
+### Bug Fixes
+
+* Correct key used on `license_configuration_arn` ([#2796](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2796)) ([bd4bda2](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/bd4bda266e23635c7ca09b6e9d307b29ef6b8579))
+
 ### [19.17.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.17.1...v19.17.2) (2023-10-10)
 
 
