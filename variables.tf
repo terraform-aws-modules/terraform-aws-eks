@@ -161,7 +161,7 @@ variable "enable_kms_key_rotation" {
 variable "kms_key_enable_default_policy" {
   description = "Specifies whether to enable the default key policy. Defaults to `false`"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "kms_key_owners" {

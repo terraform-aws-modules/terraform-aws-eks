@@ -8,6 +8,7 @@ Please consult the `examples` directory for reference example configurations. If
 - The `resolve_conflicts` argument within the `cluster_addons` configuration has been replaced with `resolve_conflicts_on_create` and `resolve_conflicts_on_delete` now that `resolve_conflicts` is deprecated
 - The `cluster_addons` `preserve` argument default/fallback value is now set to `true`. This has shown to be useful for users deprovisioning clusters while avoiding the situation where the CNI is deleted too early and causes resources to be left orphaned which results in conflicts.
 - The Karpenter sub-module's use of the `irsa` naming convention has been replaced with `pod-identity` along with an update to the Karpenter controller IAM policy to align with the `v1beta1`/`v0.32` changes
+- The `aws-auth` ConfigMap resources have been moved to a standalone sub-module. This removes the Kubernetes provider requirement from the main module and allows for the `aws-auth` ConfigMap to be managed independently of the main module.
 
 ## Additional changes
 
@@ -18,6 +19,8 @@ Please consult the `examples` directory for reference example configurations. If
 ### Modified
 
    - For `sts:AssumeRole` permissions by services, the use of dynamically looking up the DNS suffix has been replaced with the static value of `amazonaws.com`. This does not appear to change by partition and instead requires users to set this manually for non-commercial regions.
+   - The default value for `kms_key_enable_default_policy` has changed from `false` to `true` to align with the default behavior of the `aws_kms_key` resource
+   - The Karpenter default value for `create_instance_profile` has changed from `true` to `false` to align with the changes in Karpenter v0.32
 
 ### Removed
 
@@ -27,6 +30,7 @@ Please consult the `examples` directory for reference example configurations. If
 
 1. Removed variables:
 
+   - `cluster_iam_role_dns_suffix` - replaced with a static string of `amazonaws.com`
    - Karpenter
       - `irsa_tag_key`
       - `irsa_tag_values`
@@ -36,7 +40,7 @@ Please consult the `examples` directory for reference example configurations. If
 2. Renamed variables:
 
    - Karpenter
-      - `create_irsa` -> `create_pod_identity`
+      - `create_irsa` -> `create_pod_identity_role`
       - `irsa_name` -> `pod_identity_role_name`
       - `irsa_use_name_prefix` -> `pod_identity_role_name_prefix`
       - `irsa_path` -> `pod_identity_role_path`
@@ -48,14 +52,16 @@ Please consult the `examples` directory for reference example configurations. If
       - `irsa_policy_name` -> `pod_identity_policy_name`
       - `irsa_ssm_parameter_arns` -> `ami_id_ssm_parameter_arns`
 
-
 3. Added variables:
 
-   -
+   - Karpenter
+      - `pod_identity_policy_use_name_prefix`
+      - `pod_identity_policy_description`
+      - `enable_irsa`
 
 4. Removed outputs:
 
-   -
+   - `aws_auth_configmap_yaml` 
 
 5. Renamed outputs:
 

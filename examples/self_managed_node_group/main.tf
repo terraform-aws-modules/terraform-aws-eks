@@ -19,7 +19,7 @@ data "aws_availability_zones" "available" {}
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.27"
+  cluster_version = "1.28"
   region          = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
@@ -58,6 +58,13 @@ module "eks" {
   vpc_id                   = module.vpc.vpc_id
   subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.intra_subnets
+
+  # External encryption key
+  create_kms_key = false
+  cluster_encryption_config = {
+    resources        = ["secrets"]
+    provider_key_arn = module.kms.key_arn
+  }
 
   # TODO - replace with CAM
   # # Self managed node groups will not automatically create the aws-auth configmap so we need to
@@ -287,12 +294,6 @@ module "eks" {
         additional                         = aws_iam_policy.additional.arn
       }
 
-      timeouts = {
-        create = "80m"
-        update = "80m"
-        delete = "80m"
-      }
-
       tags = {
         ExtraTag = "Self managed node group complete example"
       }
@@ -388,6 +389,18 @@ module "ebs_kms_key" {
 
   # Aliases
   aliases = ["eks/${local.name}/ebs"]
+
+  tags = local.tags
+}
+
+module "kms" {
+  source  = "terraform-aws-modules/kms/aws"
+  version = "~> 2.1"
+
+  aliases               = ["eks/${local.name}"]
+  description           = "${local.name} cluster encryption key"
+  enable_default_policy = true
+  key_owners            = [data.aws_caller_identity.current.arn]
 
   tags = local.tags
 }

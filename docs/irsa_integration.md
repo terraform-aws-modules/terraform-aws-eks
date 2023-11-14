@@ -20,14 +20,6 @@ module "eks" {
   vpc_id     = "vpc-1234556abcdef"
   subnet_ids = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
 
-  eks_managed_node_group_defaults = {
-    # We are using the IRSA created below for permissions
-    # However, we have to provision a new cluster with the policy attached FIRST
-    # before we can disable. Without this initial policy,
-    # the VPC CNI fails to assign IPs and nodes cannot join the new cluster
-    iam_role_attach_cni_policy = true
-  }
-
   eks_managed_node_groups = {
     default = {}
   }

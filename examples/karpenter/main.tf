@@ -54,7 +54,7 @@ data "aws_ecrpublic_authorization_token" "token" {
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.27"
+  cluster_version = "1.28"
   region          = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
@@ -185,7 +185,7 @@ resource "helm_release" "karpenter" {
     settings:
       clusterName: ${module.eks.cluster_name}
       clusterEndpoint: ${module.eks.cluster_endpoint}
-      interruptionQueueName: ${module.karpenter.queue_name}
+      interruptionQueue: ${module.karpenter.queue_name}
     serviceAccount:
       annotations:
         eks.amazonaws.com/role-arn: ${module.karpenter.pod_identity_role_arn}
