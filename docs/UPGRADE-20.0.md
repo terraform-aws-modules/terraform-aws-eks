@@ -5,6 +5,7 @@ Please consult the `examples` directory for reference example configurations. If
 ## List of backwards incompatible changes
 
 - Minium supported AWS provider version increased to `v5.0`
+- Minimum supported Terraform version increased to `v1.1` to support Terraform state `moved` blocks
 - The `resolve_conflicts` argument within the `cluster_addons` configuration has been replaced with `resolve_conflicts_on_create` and `resolve_conflicts_on_delete` now that `resolve_conflicts` is deprecated
 - The `cluster_addons` `preserve` argument default/fallback value is now set to `true`. This has shown to be useful for users deprovisioning clusters while avoiding the situation where the CNI is deleted too early and causes resources to be left orphaned which results in conflicts.
 - The Karpenter sub-module's use of the `irsa` naming convention has been replaced with `pod-identity` along with an update to the Karpenter controller IAM policy to align with the `v1beta1`/`v0.32` changes
