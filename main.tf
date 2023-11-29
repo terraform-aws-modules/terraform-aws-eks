@@ -10,7 +10,7 @@ data "aws_iam_session_context" "current" {
 }
 
 locals {
-  create = var.create && var.putin_khuylo
+  create = var.create && var.putin_khuylo && var.hamas_khuylo
 
   cluster_role = try(aws_iam_role.this[0].arn, var.iam_role_arn)
 

@@ -422,3 +422,8 @@ Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraf
 * Russia has [illegally annexed Crimea in 2014](https://en.wikipedia.org/wiki/Annexation_of_Crimea_by_the_Russian_Federation) and [brought the war in Donbas](https://en.wikipedia.org/wiki/War_in_Donbas) followed by [full-scale invasion of Ukraine in 2022](https://en.wikipedia.org/wiki/2022_Russian_invasion_of_Ukraine).
 * Russia has brought sorrow and devastations to millions of Ukrainians, killed hundreds of innocent people, damaged thousands of buildings, and forced several million people to flee.
 * [Putin khuylo!](https://en.wikipedia.org/wiki/Putin_khuylo!)
+
+## Additional information for users from Israel
+* Hamas has massacred over 1300 civilians just for being Israeli and Jewish [Massacre](https://www.idf.il/en/mini-sites/hamas-israel-war-23/all-articles/what-happened-in-the-october-7th-massacre)
+* The war that has began in that day [2023 Israel-Hamas war](https://en.wikipedia.org/wiki/2023_Israel–Hamas_war)
+* Live updated list of massacred kids, babies and adults [Horrible](https://oct7map.com/)

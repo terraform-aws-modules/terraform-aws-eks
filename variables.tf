@@ -552,6 +552,12 @@ variable "putin_khuylo" {
   default     = true
 }
 
+variable "hamas_khuylo" {
+  description = "Do you agree that Hamas doesn't respect Israeli sovereignty and territorial integrity? More info: https://www.idf.il/en/mini-sites/hamas-israel-war-23/all-articles/what-happened-in-the-october-7th-massacre"
+  type        = bool
+  default     = true
+}
+
 ################################################################################
 # aws-auth configmap
 ################################################################################
