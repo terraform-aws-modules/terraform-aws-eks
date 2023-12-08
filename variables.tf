@@ -418,3 +418,26 @@ variable "logging_stage" {
   type        = string
   description = "Stage (e.g. `prod`, `dev`, `staging`)"
 }
+
+# EFS CSI driver variables
+variable "enable_aws_efs_csi_driver_addon" {
+  description = "Whether or not to install the ebs driver addon in the cluster"
+  type        = bool
+  default     = true
+}
+
+variable "aws_efs_csi_driver_version" {
+  description = "Version of the efs csi driver container to install"
+  type        = string
+}
+
+variable "aws_efs_csi_driver_resolve_conflicts" {
+  description = "Whether or not to force overwrite of the config. Options: NONE, OVERWRITE"
+  type        = string
+  default     = "NONE"
+}
+
+variable "efs_csi_driver_role_arn" {
+  description = "Role for efs csi driver needed by the service accounts to perform ondemand volume resizing"
+  type        = string
+}

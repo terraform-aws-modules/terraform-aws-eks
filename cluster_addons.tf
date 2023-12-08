@@ -32,3 +32,13 @@ resource "aws_eks_addon" "aws_ebs_csi_driver" {
   resolve_conflicts        = var.aws_ebs_csi_driver_resolve_conflicts
   service_account_role_arn = var.ebs_csi_driver_role_arn
 }
+
+# EKS EFS CSI ADD-ON Module
+resource "aws_eks_addon" "aws_efs_csi_driver" {
+  count                    = var.create_eks && var.enable_aws_efs_csi_driver_addon ? 1 : 0
+  cluster_name             = aws_eks_cluster.this[0].name
+  addon_name               = "aws-efs-csi-driver"
+  addon_version            = var.aws_efs_csi_driver_version
+  resolve_conflicts        = var.aws_efs_csi_driver_resolve_conflicts
+  service_account_role_arn = var.efs_csi_driver_role_arn
+}
