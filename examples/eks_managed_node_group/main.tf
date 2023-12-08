@@ -19,10 +19,10 @@ data "aws_availability_zones" "available" {}
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.27"
-  region          = "eu-west-1"
+  cluster_version = "1.28"
+  region          = "us-east-1"
 
-  vpc_cidr = "10.0.0.0/16"
+  vpc_cidr = ""
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
   tags = {
@@ -37,14 +37,15 @@ locals {
 ################################################################################
 
 module "eks" {
-  source = "../.."
+  source = "terraform-aws-modules/eks/aws"
+  version = "19.20.0"
 
   cluster_name                   = local.name
   cluster_version                = local.cluster_version
   cluster_endpoint_public_access = true
 
-  # IPV6
-  cluster_ip_family = "ipv6"
+  # IPV4
+  cluster_ip_family = "ipv4"
 
   # We are using the IRSA created below for permissions
   # However, we have to deploy with the policy attached FIRST (when creating a fresh cluster)
@@ -83,7 +84,7 @@ module "eks" {
 
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
-    instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
+    instance_types = ["t3.medium", "m5.xlarge"]
 
     # We are using the IRSA created below for permissions
     # However, we have to deploy with the policy attached FIRST (when creating a fresh cluster)
@@ -100,7 +101,7 @@ module "eks" {
       # so we need to disable it to use the default template provided by the AWS EKS managed node group service
       use_custom_launch_template = false
 
-      disk_size = 50
+      disk_size = 30
 
       # Remote access cannot be specified with a launch template
       remote_access = {
@@ -109,67 +110,67 @@ module "eks" {
       }
     }
 
-    # Default node group - as provided by AWS EKS using Bottlerocket
-    bottlerocket_default = {
-      # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
-      # so we need to disable it to use the default template provided by the AWS EKS managed node group service
-      use_custom_launch_template = false
+    # # Default node group - as provided by AWS EKS using Bottlerocket
+    # bottlerocket_default = {
+    #   # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,
+    #   # so we need to disable it to use the default template provided by the AWS EKS managed node group service
+    #   use_custom_launch_template = false
 
-      ami_type = "BOTTLEROCKET_x86_64"
-      platform = "bottlerocket"
-    }
+    #   ami_type = "BOTTLEROCKET_x86_64"
+    #   platform = "bottlerocket"
+    # }
 
-    # Adds to the AWS provided user data
-    bottlerocket_add = {
-      ami_type = "BOTTLEROCKET_x86_64"
-      platform = "bottlerocket"
+    # # Adds to the AWS provided user data
+    # bottlerocket_add = {
+    #   ami_type = "BOTTLEROCKET_x86_64"
+    #   platform = "bottlerocket"
 
-      # This will get added to what AWS provides
-      bootstrap_extra_args = <<-EOT
-        # extra args added
-        [settings.kernel]
-        lockdown = "integrity"
-      EOT
-    }
+    #   # This will get added to what AWS provides
+    #   bootstrap_extra_args = <<-EOT
+    #     # extra args added
+    #     [settings.kernel]
+    #     lockdown = "integrity"
+    #   EOT
+    # }
 
-    # Custom AMI, using module provided bootstrap data
-    bottlerocket_custom = {
-      # Current bottlerocket AMI
-      ami_id   = data.aws_ami.eks_default_bottlerocket.image_id
-      platform = "bottlerocket"
+    # # Custom AMI, using module provided bootstrap data
+    # bottlerocket_custom = {
+    #   # Current bottlerocket AMI
+    #   ami_id   = data.aws_ami.eks_default_bottlerocket.image_id
+    #   platform = "bottlerocket"
 
-      # Use module user data template to bootstrap
-      enable_bootstrap_user_data = true
-      # This will get added to the template
-      bootstrap_extra_args = <<-EOT
-        # The admin host container provides SSH access and runs with "superpowers".
-        # It is disabled by default, but can be disabled explicitly.
-        [settings.host-containers.admin]
-        enabled = false
+    #   # Use module user data template to bootstrap
+    #   enable_bootstrap_user_data = true
+    #   # This will get added to the template
+    #   bootstrap_extra_args = <<-EOT
+    #     # The admin host container provides SSH access and runs with "superpowers".
+    #     # It is disabled by default, but can be disabled explicitly.
+    #     [settings.host-containers.admin]
+    #     enabled = false
 
-        # The control host container provides out-of-band access via SSM.
-        # It is enabled by default, and can be disabled if you do not expect to use SSM.
-        # This could leave you with no way to access the API and change settings on an existing node!
-        [settings.host-containers.control]
-        enabled = true
+    #     # The control host container provides out-of-band access via SSM.
+    #     # It is enabled by default, and can be disabled if you do not expect to use SSM.
+    #     # This could leave you with no way to access the API and change settings on an existing node!
+    #     [settings.host-containers.control]
+    #     enabled = true
 
-        # extra args added
-        [settings.kernel]
-        lockdown = "integrity"
+    #     # extra args added
+    #     [settings.kernel]
+    #     lockdown = "integrity"
 
-        [settings.kubernetes.node-labels]
-        label1 = "foo"
-        label2 = "bar"
+    #     [settings.kubernetes.node-labels]
+    #     label1 = "foo"
+    #     label2 = "bar"
 
-        [settings.kubernetes.node-taints]
-        dedicated = "experimental:PreferNoSchedule"
-        special = "true:NoSchedule"
-      EOT
-    }
+    #     [settings.kubernetes.node-taints]
+    #     dedicated = "experimental:PreferNoSchedule"
+    #     special = "true:NoSchedule"
+    #   EOT
+    # }
 
     # Use a custom AMI
     custom_ami = {
-      ami_type = "AL2_ARM_64"
+      ami_type = "AL2_x86_64"
       # Current default AMI used by managed node groups - pseudo "custom"
       ami_id = data.aws_ami.eks_default_arm.image_id
 
@@ -179,7 +180,7 @@ module "eks" {
       # Note: this assumes the AMI provided is an EKS optimized AMI derivative
       enable_bootstrap_user_data = true
 
-      instance_types = ["t4g.medium"]
+      instance_types = ["t3.medium"]
     }
 
     # Complete
@@ -190,8 +191,8 @@ module "eks" {
       subnet_ids = module.vpc.private_subnets
 
       min_size     = 1
-      max_size     = 7
-      desired_size = 1
+      max_size     = 10
+      desired_size = 7
 
       ami_id                     = data.aws_ami.eks_default.image_id
       enable_bootstrap_user_data = true
@@ -204,9 +205,9 @@ module "eks" {
         echo "you are free little kubelet!"
       EOT
 
-      capacity_type        = "SPOT"
+      capacity_type        = "ON_DEMAND"
       force_update_version = true
-      instance_types       = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
+      instance_types       = ["t3.medium", "m5.xlarge"]
       labels = {
         GithubRepo = "terraform-aws-eks"
         GithubOrg  = "terraform-aws-modules"
@@ -235,7 +236,7 @@ module "eks" {
           device_name = "/dev/xvda"
           ebs = {
             volume_size           = 75
-            volume_type           = "gp3"
+            volume_type           = "gp2"
             iops                  = 3000
             throughput            = 150
             encrypted             = true
@@ -264,34 +265,34 @@ module "eks" {
         additional                         = aws_iam_policy.node_additional.arn
       }
 
-      schedules = {
-        scale-up = {
-          min_size     = 2
-          max_size     = "-1" # Retains current max size
-          desired_size = 2
-          start_time   = "2023-03-05T00:00:00Z"
-          end_time     = "2024-03-05T00:00:00Z"
-          time_zone    = "Etc/GMT+0"
-          recurrence   = "0 0 * * *"
-        },
-        scale-down = {
-          min_size     = 0
-          max_size     = "-1" # Retains current max size
-          desired_size = 0
-          start_time   = "2023-03-05T12:00:00Z"
-          end_time     = "2024-03-05T12:00:00Z"
-          time_zone    = "Etc/GMT+0"
-          recurrence   = "0 12 * * *"
-        }
-      }
+      # schedules = {
+      #   scale-up = {
+      #     min_size     = 2
+      #     max_size     = "-1" # Retains current max size
+      #     desired_size = 2
+      #     start_time   = "2023-03-05T00:00:00Z"
+      #     end_time     = "2024-03-05T00:00:00Z"
+      #     time_zone    = "Etc/GMT+0"
+      #     recurrence   = "0 0 * * *"
+      #   },
+      #   scale-down = {
+      #     min_size     = 0
+      #     max_size     = "-1" # Retains current max size
+      #     desired_size = 0
+      #     start_time   = "2023-03-05T12:00:00Z"
+      #     end_time     = "2024-03-05T12:00:00Z"
+      #     time_zone    = "Etc/GMT+0"
+      #     recurrence   = "0 12 * * *"
+      #   }
+      # }
 
-      tags = {
-        ExtraTag = "EKS managed node group complete example"
-      }
+#       tags = {
+#         ExtraTag = "EKS managed node group complete example"
+#       }
     }
   }
 
-  tags = local.tags
+#   tags = local.tags
 }
 
 ################################################################################
