@@ -305,6 +305,18 @@ module "eks" {
     "888888888888",
   ]
 
+
+  enable_pod_identity = true
+  sa_namespace_policies_mapping = {
+    "namespace-1" = {
+      "service-account-1" = "arn:aws:iam::66666666666:policy/AmazonEC2ReadOnlyAccess",
+      "service-account-2" = "arn:aws:iam::66666666666:policy/AmazonS3ReadOnlyAccess"
+    }
+    "namespace-2" = {
+      "service-account-3" = "arn:aws:iam::66666666666:policy/AmazonDynamoDBReadOnlyAccess"
+    }
+  }
+
   tags = local.tags
 }
 

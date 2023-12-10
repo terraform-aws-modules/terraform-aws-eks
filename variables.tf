@@ -603,3 +603,15 @@ variable "aws_auth_accounts" {
   type        = list(any)
   default     = []
 }
+
+variable "sa_namespace_policies_mapping" {
+  description = "A mapping between service accounts and their associated namespace and IAM policy ARN."
+  type        = map(map(string))
+  default     = {}
+}
+
+variable "enable_pod_identity" {
+  description = "Determines whether to create a Pod Identit for EKS"
+  type        = bool
+  default     = false
+}

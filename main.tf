@@ -575,3 +575,64 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
     kubernetes_config_map.aws_auth,
   ]
 }
+
+#######################################################################################
+#  EKS Pod Identity
+#  Defaults follow https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html
+#######################################################################################
+locals {
+  role_name_prefix = var.enable_pod_identity ? "eks-pod-identity" : null
+  flattened_sa_ns_policies = flatten([
+    for ns, ns_policies in var.sa_namespace_policies_mapping : [
+      for sa, policy_arn in ns_policies : {
+        service_account = sa
+        namespace       = ns
+        policy_arn      = policy_arn
+      }
+    ]
+  ])
+}
+
+data "aws_iam_policy_document" "assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["pods.eks.amazonaws.com"]
+    }
+
+    actions = [
+      "sts:AssumeRole",
+      "sts:TagSession"
+    ]
+  }
+}
+resource "aws_iam_role" "eks_pod_identity_roles" {
+  for_each = var.enable_pod_identity ? {
+    for item in local.flattened_sa_ns_policies : "${item.namespace}_${item.service_account}" => item
+  } : {}
+
+  name               = "${local.role_name_prefix}_${each.key}"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+}
+
+resource "aws_iam_role_policy_attachment" "eks_pod_identity_policy_attachment" {
+  for_each = var.enable_pod_identity ? {
+    for item in local.flattened_sa_ns_policies : "${item.namespace}_${item.service_account}" => item
+  } : {}
+
+  policy_arn = each.value.policy_arn
+  role       = aws_iam_role.eks_pod_identity_roles[each.key].name
+}
+
+resource "aws_eks_pod_identity_association" "pod_identity_association" {
+  for_each = var.enable_pod_identity ? {
+    for item in local.flattened_sa_ns_policies : "${item.namespace}_${item.service_account}" => item
+  } : {}
+
+  cluster_name    = var.cluster_name
+  namespace       = each.value.namespace
+  service_account = each.value.service_account
+  role_arn        = aws_iam_role.eks_pod_identity_roles[each.key].arn
+}
