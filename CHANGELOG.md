@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [19.21.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.20.0...v19.21.0) (2023-12-11)
+
+
+### Features
+
+* Add tags for CloudWatch log group only ([#2841](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2841)) ([4c5c97b](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/4c5c97b5d404a4e46945e3b6228d469743669937))
+
 ## [19.20.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.19.1...v19.20.0) (2023-11-14)
 
 
