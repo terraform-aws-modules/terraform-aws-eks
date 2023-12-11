@@ -228,6 +228,12 @@ variable "cloudwatch_log_group_kms_key_id" {
   default     = null
 }
 
+variable "cloudwatch_log_group_tags" {
+  description = "A map of additional tags to add to the cloudwatch log group created"
+  type        = map(string)
+  default     = {}
+}
+
 ################################################################################
 # Cluster Security Group
 ################################################################################

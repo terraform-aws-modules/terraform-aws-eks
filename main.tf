@@ -112,6 +112,7 @@ resource "aws_cloudwatch_log_group" "this" {
 
   tags = merge(
     var.tags,
+    var.cloudwatch_log_group_tags,
     { Name = "/aws/eks/${var.cluster_name}/cluster" }
   )
 }
