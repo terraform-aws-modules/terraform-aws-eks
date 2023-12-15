@@ -394,7 +394,7 @@ resource "aws_eks_addon" "this" {
   cluster_name = aws_eks_cluster.this[0].name
   addon_name   = try(each.value.name, each.key)
 
-  addon_version            = coalesce(try(each.value.addon_version, null), data.aws_eks_addon_version.this[each.key].version)
+  addon_version            = coalesce(try(each.value.addon_version, null), try(data.aws_eks_addon_version.this[each.key].version, null))
   configuration_values     = try(each.value.configuration_values, null)
   preserve                 = try(each.value.preserve, null)
   resolve_conflicts        = try(each.value.resolve_conflicts, "OVERWRITE")
@@ -422,7 +422,7 @@ resource "aws_eks_addon" "before_compute" {
   cluster_name = aws_eks_cluster.this[0].name
   addon_name   = try(each.value.name, each.key)
 
-  addon_version            = coalesce(try(each.value.addon_version, null), data.aws_eks_addon_version.this[each.key].version)
+  addon_version            = coalesce(try(each.value.addon_version, null), try(data.aws_eks_addon_version.this[each.key].version, null))
   configuration_values     = try(each.value.configuration_values, null)
   preserve                 = try(each.value.preserve, null)
   resolve_conflicts        = try(each.value.resolve_conflicts, "OVERWRITE")
@@ -438,7 +438,7 @@ resource "aws_eks_addon" "before_compute" {
 }
 
 data "aws_eks_addon_version" "this" {
-  for_each = { for k, v in var.cluster_addons : k => v if local.create && !local.create_outposts_local_cluster }
+  for_each = { for k, v in var.cluster_addons : k => v if try(v.addon_version == null, true) && local.create && !local.create_outposts_local_cluster }
 
   addon_name         = try(each.value.name, each.key)
   kubernetes_version = coalesce(var.cluster_version, aws_eks_cluster.this[0].version)
