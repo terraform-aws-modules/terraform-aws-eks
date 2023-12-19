@@ -228,6 +228,12 @@ variable "cloudwatch_log_group_kms_key_id" {
   default     = null
 }
 
+variable "cloudwatch_log_group_tags" {
+  description = "A map of additional tags to add to the cloudwatch log group created"
+  type        = map(string)
+  default     = {}
+}
+
 ################################################################################
 # Cluster Security Group
 ################################################################################
@@ -356,6 +362,12 @@ variable "openid_connect_audiences" {
   description = "List of OpenID Connect audience client IDs to add to the IRSA provider"
   type        = list(string)
   default     = []
+}
+
+variable "include_oidc_root_ca_thumbprint" {
+  description = "Determines whether to include the root CA thumbprint in the OpenID Connect (OIDC) identity provider's server certificate(s)"
+  type        = bool
+  default     = true
 }
 
 variable "custom_oidc_thumbprints" {
