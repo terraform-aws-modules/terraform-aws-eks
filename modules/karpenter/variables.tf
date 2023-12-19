@@ -1,5 +1,5 @@
 variable "create" {
-  description = "Determines whether to create EKS managed node group or not"
+  description = "Controls if resources should be created (affects nearly all resources)"
   type        = bool
   default     = true
 }
