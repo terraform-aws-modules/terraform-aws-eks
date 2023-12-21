@@ -414,10 +414,10 @@ variable "egress_custom_allowed" {
   default     = []
 }
 
-variable "logging_stage" {
-  type        = string
-  description = "Stage (e.g. `prod`, `dev`, `staging`)"
-}
+# variable "logging_stage" {
+#   type        = string
+#   description = "Stage (e.g. `prod`, `dev`, `staging`)"
+# }
 
 # EFS CSI driver variables
 variable "enable_aws_efs_csi_driver_addon" {

@@ -107,17 +107,17 @@ output "worker_iam_name" {
   value       = join("", aws_iam_role.workers.*.name)
 }
 
-output "karpenter_node_instance_profile_name" {
-  description = "IAM Instance Profile ARN for Karpenter Node Group"
-  value       = aws_iam_instance_profile.karpenter_node_instance_profile.name
-}
+# output "karpenter_node_instance_profile_name" {
+#   description = "IAM Instance Profile ARN for Karpenter Node Group"
+#   value       = aws_iam_instance_profile.karpenter_node_instance_profile.name
+# }
 
-output "karpenter_node_role_arn" {
-  description = "IAM Instance Profile ARN for Karpenter Node Group"
-  value       = aws_iam_role.karpenter_role[0].arn
-}
+# output "karpenter_node_role_arn" {
+#   description = "IAM Instance Profile ARN for Karpenter Node Group"
+#   value       = aws_iam_role.karpenter_role[0].arn
+# }
 
-output "karpenter_iam_role_name" {
-  description = "value of the IAM role name for Karpenter Node Group"
-  value = aws_iam_role.karpenter_role[0].name
-}
+# output "karpenter_iam_role_name" {
+#   description = "value of the IAM role name for Karpenter Node Group"
+#   value = aws_iam_role.karpenter_role[0].name
+# }
