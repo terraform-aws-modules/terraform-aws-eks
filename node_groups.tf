@@ -170,6 +170,15 @@ locals {
       type                          = "ingress"
       source_cluster_security_group = true
     }
+    # vertical pod autoscaler, vpa-admission-controller webhook
+    vertical_pod_autoscaler_8000_webhook = {
+      description                   = "Cluster API to node 8000/tcp webhook"
+      protocol                      = "tcp"
+      from_port                     = 8000
+      to_port                       = 8000
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }
     egress_all = {
       description      = "Allow all egress"
       protocol         = "-1"
