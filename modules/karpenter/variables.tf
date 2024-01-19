@@ -243,6 +243,22 @@ variable "iam_role_tags" {
 }
 
 ################################################################################
+# Access Entry
+################################################################################
+
+variable "create_access_entry" {
+  description = "Determines whether an access entry is created for the IAM role used by the node IAM role"
+  type        = bool
+  default     = true
+}
+
+variable "access_entry_type" {
+  description = "Type of the access entry. `EC2_LINUX` or `EC2_WINDOWS`; defaults to `EC2_LINUX`"
+  type        = string
+  default     = "EC2_LINUX"
+}
+
+################################################################################
 # Node IAM Instance Profile
 ################################################################################
 

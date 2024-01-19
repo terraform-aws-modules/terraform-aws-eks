@@ -518,22 +518,6 @@ variable "autoscaling_group_tags" {
 }
 
 ################################################################################
-# Autoscaling group schedule
-################################################################################
-
-variable "create_schedule" {
-  description = "Determines whether to create autoscaling group schedule or not"
-  type        = bool
-  default     = true
-}
-
-variable "schedules" {
-  description = "Map of autoscaling group schedule to create"
-  type        = map(any)
-  default     = {}
-}
-
-################################################################################
 # IAM Role
 ################################################################################
 
@@ -600,5 +584,37 @@ variable "iam_role_additional_policies" {
 variable "iam_role_tags" {
   description = "A map of additional tags to add to the IAM role created"
   type        = map(string)
+  default     = {}
+}
+
+################################################################################
+# Access Entry
+################################################################################
+
+variable "create_access_entry" {
+  description = "Determines whether an access entry is created for the IAM role used by the nodegroup"
+  type        = bool
+  default     = true
+}
+
+variable "iam_role_arn" {
+  description = "ARN of the IAM role used by the instance profile. Required when `create_access_entry = true` and `create_iam_instance_profile = false`"
+  type        = string
+  default     = null
+}
+
+################################################################################
+# Autoscaling group schedule
+################################################################################
+
+variable "create_schedule" {
+  description = "Determines whether to create autoscaling group schedule or not"
+  type        = bool
+  default     = true
+}
+
+variable "schedules" {
+  description = "Map of autoscaling group schedule to create"
+  type        = map(any)
   default     = {}
 }

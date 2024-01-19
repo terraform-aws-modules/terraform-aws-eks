@@ -61,7 +61,7 @@ data "aws_iam_policy_document" "cni_ipv6_policy" {
   statement {
     sid       = "CreateTags"
     actions   = ["ec2:CreateTags"]
-    resources = ["arn:${data.aws_partition.current.partition}:ec2:*:*:network-interface/*"]
+    resources = ["arn:${local.partition}:ec2:*:*:network-interface/*"]
   }
 }
 
@@ -259,6 +259,9 @@ module "fargate_profile" {
   # https://github.com/hashicorp/terraform/issues/31646#issuecomment-1217279031
   iam_role_additional_policies = lookup(each.value, "iam_role_additional_policies", lookup(var.fargate_profile_defaults, "iam_role_additional_policies", {}))
 
+  # Access entry
+  create_access_entry = try(each.value.create_access_entry, var.fargate_profile_defaults.create_access_entry, true)
+
   tags = merge(local.tags, try(each.value.tags, var.fargate_profile_defaults.tags, {}))
 }
 
@@ -362,6 +365,10 @@ module "eks_managed_node_group" {
   # https://github.com/hashicorp/terraform/issues/31646#issuecomment-1217279031
   iam_role_additional_policies = lookup(each.value, "iam_role_additional_policies", lookup(var.eks_managed_node_group_defaults, "iam_role_additional_policies", {}))
 
+  # Access entry
+  create_access_entry = try(each.value.create_access_entry, var.eks_managed_node_group_defaults.create_access_entry, true)
+
+  # Autoscaling group schedule
   create_schedule = try(each.value.create_schedule, var.eks_managed_node_group_defaults.create_schedule, true)
   schedules       = try(each.value.schedules, var.eks_managed_node_group_defaults.schedules, {})
 
@@ -427,9 +434,6 @@ module "self_managed_node_group" {
   use_mixed_instances_policy = try(each.value.use_mixed_instances_policy, var.self_managed_node_group_defaults.use_mixed_instances_policy, false)
   mixed_instances_policy     = try(each.value.mixed_instances_policy, var.self_managed_node_group_defaults.mixed_instances_policy, null)
   warm_pool                  = try(each.value.warm_pool, var.self_managed_node_group_defaults.warm_pool, {})
-
-  create_schedule = try(each.value.create_schedule, var.self_managed_node_group_defaults.create_schedule, true)
-  schedules       = try(each.value.schedules, var.self_managed_node_group_defaults.schedules, {})
 
   delete_timeout         = try(each.value.delete_timeout, var.self_managed_node_group_defaults.delete_timeout, null)
   autoscaling_group_tags = try(each.value.autoscaling_group_tags, var.self_managed_node_group_defaults.autoscaling_group_tags, {})
@@ -497,6 +501,14 @@ module "self_managed_node_group" {
   # To better understand why this `lookup()` logic is required, see:
   # https://github.com/hashicorp/terraform/issues/31646#issuecomment-1217279031
   iam_role_additional_policies = lookup(each.value, "iam_role_additional_policies", lookup(var.self_managed_node_group_defaults, "iam_role_additional_policies", {}))
+
+  # Access entry
+  create_access_entry = try(each.value.create_access_entry, var.self_managed_node_group_defaults.create_access_entry, true)
+  iam_role_arn        = try(each.value.iam_role_arn, var.self_managed_node_group_defaults.iam_role_arn, null)
+
+  # Autoscaling group schedule
+  create_schedule = try(each.value.create_schedule, var.self_managed_node_group_defaults.create_schedule, true)
+  schedules       = try(each.value.schedules, var.self_managed_node_group_defaults.schedules, {})
 
   # Security group
   vpc_security_group_ids            = compact(concat([local.node_security_group_id], try(each.value.vpc_security_group_ids, var.self_managed_node_group_defaults.vpc_security_group_ids, [])))

@@ -471,6 +471,16 @@ variable "iam_role_tags" {
 }
 
 ################################################################################
+# Access Entry
+################################################################################
+
+variable "create_access_entry" {
+  description = "Determines whether an access entry is created for the IAM role used by the nodegroup"
+  type        = bool
+  default     = true
+}
+
+################################################################################
 # Autoscaling Group Schedule
 ################################################################################
 

@@ -38,6 +38,12 @@ variable "cluster_enabled_log_types" {
   default     = ["audit", "api", "authenticator"]
 }
 
+variable "authentication_mode" {
+  description = "The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP`"
+  type        = string
+  default     = "API_AND_CONFIG_MAP"
+}
+
 variable "cluster_additional_security_group_ids" {
   description = "List of additional, externally created security group IDs to attach to the cluster control plane"
   type        = list(string)
@@ -128,6 +134,22 @@ variable "cluster_timeouts" {
   description = "Create, update, and delete timeout configurations for the cluster"
   type        = map(string)
   default     = {}
+}
+
+################################################################################
+# Access Entry
+################################################################################
+
+variable "access_entries" {
+  description = "Map of access entries to add to the cluster"
+  type        = any
+  default     = {}
+}
+
+variable "enable_cluster_creator_admin_permissions" {
+  description = "Indicates whether or not to add the cluster creator (the identity used by Terraform) as an administrator via access entry"
+  type        = bool
+  default     = false
 }
 
 ################################################################################

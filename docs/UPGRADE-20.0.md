@@ -4,7 +4,7 @@ Please consult the `examples` directory for reference example configurations. If
 
 ## List of backwards incompatible changes
 
-- Minium supported AWS provider version increased to `v5.0`
+- Minium supported AWS provider version increased to `v5.34`
 - Minimum supported Terraform version increased to `v1.1` to support Terraform state `moved` blocks
 - The `resolve_conflicts` argument within the `cluster_addons` configuration has been replaced with `resolve_conflicts_on_create` and `resolve_conflicts_on_delete` now that `resolve_conflicts` is deprecated
 - The `cluster_addons` `preserve` argument default/fallback value is now set to `true`. This has shown to be useful for users deprovisioning clusters while avoiding the situation where the CNI is deleted too early and causes resources to be left orphaned which results in conflicts.
@@ -15,7 +15,8 @@ Please consult the `examples` directory for reference example configurations. If
 
 ### Added
 
-   - A module tag has been added to the cluster and compute resources created
+   - A module tag has been added to the cluster control plane
+   - Support for cluster access entries. The `bootstrap_cluster_creator_admin_permissions` setting on the control plane has been hardcoded to `false` since this operation is a one time operation only at cluster creation per the EKS API. Instead, users can enable/disable `enable_cluster_creator_admin_permissions` at any time to achieve the same functionality. This takes the identity that Terraform is using to make API calls and maps it into a cluster admin via an access entry. For users on existing clusters, you will need to remove the default cluster administrator that was created by EKS prior to the cluster access entry APIs - see the section [`Removing the default cluster administrator`](https://aws.amazon.com/blogs/containers/a-deep-dive-into-simplified-amazon-eks-access-management-controls/) for more details.
 
 ### Modified
 
@@ -55,6 +56,9 @@ Please consult the `examples` directory for reference example configurations. If
 
 3. Added variables:
 
+   - `enable_cluster_creator_admin_permissions`
+   - `access_entries`
+
    - Karpenter
       - `pod_identity_policy_use_name_prefix`
       - `pod_identity_policy_description`
@@ -73,7 +77,7 @@ Please consult the `examples` directory for reference example configurations. If
 
 6. Added outputs:
 
-   -
+   - `access_entries`
 
 ## Upgrade Migrations
 

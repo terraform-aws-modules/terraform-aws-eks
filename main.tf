@@ -12,6 +12,8 @@ data "aws_iam_session_context" "current" {
 locals {
   create = var.create && var.putin_khuylo
 
+  partition = data.aws_partition.current.partition
+
   cluster_role = try(aws_iam_role.this[0].arn, var.iam_role_arn)
 
   create_outposts_local_cluster    = length(var.outpost_config) > 0
@@ -31,6 +33,17 @@ resource "aws_eks_cluster" "this" {
   role_arn                  = local.cluster_role
   version                   = var.cluster_version
   enabled_cluster_log_types = var.cluster_enabled_log_types
+
+  access_config {
+    authentication_mode = var.authentication_mode
+
+    # See access entries below - this is a one time operation from the EKS API.
+    # Instead, we are hardcoding this to false and if users wish to achieve this
+    # same functionality, we will do that through an access entry which can be
+    # enabled or disabled at any time of their choosing using the variable
+    # var.enable_cluster_creator_admin_permissions
+    bootstrap_cluster_creator_admin_permissions = false
+  }
 
   vpc_config {
     security_group_ids      = compact(distinct(concat(var.cluster_additional_security_group_ids, [local.cluster_security_group_id])))
@@ -78,9 +91,9 @@ resource "aws_eks_cluster" "this" {
   )
 
   timeouts {
-    create = lookup(var.cluster_timeouts, "create", null)
-    update = lookup(var.cluster_timeouts, "update", null)
-    delete = lookup(var.cluster_timeouts, "delete", null)
+    create = try(var.cluster_timeouts.create, null)
+    update = try(var.cluster_timeouts.update, null)
+    delete = try(var.cluster_timeouts.delete, null)
   }
 
   depends_on = [
@@ -117,6 +130,88 @@ resource "aws_cloudwatch_log_group" "this" {
     var.cloudwatch_log_group_tags,
     { Name = "/aws/eks/${var.cluster_name}/cluster" }
   )
+}
+
+################################################################################
+# Access Entry
+################################################################################
+
+locals {
+  # This replaces the one time logic from the EKS API with something that can be
+  # better controlled by users through Terraform
+  bootstrap_cluster_creator_admin_permissions = {
+    cluster_creator_admin = {
+      principal_arn = data.aws_iam_session_context.current.issuer_arn
+      type          = "STANDARD"
+
+      policy_associations = {
+        clustrer_admin = {
+          policy_arn = "arn:${local.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  }
+
+  # Merge the bootstrap behavior with the entries that users provide
+  merged_access_entries = merge(
+    { for k, v in local.bootstrap_cluster_creator_admin_permissions : k => v if var.enable_cluster_creator_admin_permissions },
+    var.access_entries,
+  )
+
+  # Flatten out entries and policy associations so users can specify the policy
+  # associations within a single entry
+  flattened_access_entries = flatten([
+    for entry_key, entry_val in local.merged_access_entries : [
+      for pol_key, pol_val in lookup(entry_val, "policy_associations", {}) :
+      merge(
+        {
+          principal_arn     = entry_val.principal_arn
+          kubernetes_groups = lookup(entry_val, "kubernetes_groups", [])
+          tags              = lookup(entry_val, "tags", {})
+          type              = lookup(entry_val, "type", "STANDARD")
+          user_name         = lookup(entry_val, "user_name", null)
+        },
+        { for k, v in {
+          association_policy_arn              = pol_val.policy_arn
+          association_access_scope_type       = pol_val.access_scope.type
+          association_access_scope_namespaces = lookup(pol_val.access_scope, "namespaces", [])
+        } : k => v if !contains(["EC2_LINUX", "EC2_WINDOWS", "FARGATE_LINUX"], lookup(entry_val, "type", "STANDARD")) },
+        {
+          entry_key = entry_key
+          pol_key   = pol_key
+        }
+      )
+    ]
+  ])
+}
+
+resource "aws_eks_access_entry" "this" {
+  for_each = { for k, v in local.flattened_access_entries : k => v if local.create }
+
+  cluster_name      = aws_eks_cluster.this[0].name
+  kubernetes_groups = try(each.value.kubernetes_groups, [])
+  principal_arn     = each.value.principal_arn
+  type              = try(each.value.type, "STANDARD")
+  user_name         = try(each.value.user_name, null)
+
+  tags = merge(var.tags, try(each.value.tags, {}))
+}
+
+resource "aws_eks_access_policy_association" "this" {
+  for_each = { for k, v in local.flattened_access_entries : k => v if local.create }
+
+  access_scope {
+    namespaces = try(each.value.association_access_scope_namespaces, [])
+    type       = each.value.association_access_scope_type
+  }
+
+  cluster_name = aws_eks_cluster.this[0].name
+
+  policy_arn    = each.value.association_policy_arn
+  principal_arn = each.value.principal_arn
 }
 
 ################################################################################
@@ -258,7 +353,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 locals {
   create_iam_role        = local.create && var.create_iam_role
   iam_role_name          = coalesce(var.iam_role_name, "${var.cluster_name}-cluster")
-  iam_role_policy_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
+  iam_role_policy_prefix = "arn:${local.partition}:iam::aws:policy"
 
   cluster_encryption_policy_name = coalesce(var.cluster_encryption_policy_name, "${local.iam_role_name}-ClusterEncryption")
 }

@@ -687,28 +687,6 @@ resource "aws_autoscaling_group" "this" {
 }
 
 ################################################################################
-# Autoscaling group schedule
-################################################################################
-
-resource "aws_autoscaling_schedule" "this" {
-  for_each = { for k, v in var.schedules : k => v if var.create && var.create_schedule }
-
-  scheduled_action_name  = each.key
-  autoscaling_group_name = aws_autoscaling_group.this[0].name
-
-  min_size         = try(each.value.min_size, null)
-  max_size         = try(each.value.max_size, null)
-  desired_capacity = try(each.value.desired_size, null)
-  start_time       = try(each.value.start_time, null)
-  end_time         = try(each.value.end_time, null)
-  time_zone        = try(each.value.time_zone, null)
-
-  # [Minute] [Hour] [Day_of_Month] [Month_of_Year] [Day_of_Week]
-  # Cron examples: https://crontab.guru/examples.html
-  recurrence = try(each.value.recurrence, null)
-}
-
-################################################################################
 # IAM Role
 ################################################################################
 
@@ -779,4 +757,38 @@ resource "aws_iam_instance_profile" "this" {
   lifecycle {
     create_before_destroy = true
   }
+}
+
+################################################################################
+# Access Entry
+################################################################################
+
+resource "aws_eks_access_entry" "this" {
+  count = var.create && var.create_access_entry ? 1 : 0
+
+  cluster_name  = var.cluster_name
+  principal_arn = var.create_iam_instance_profile ? aws_iam_role.this[0].arn : var.iam_role_arn
+  type          = var.platform == "windows" ? "EC2_WINDOWS" : "EC2_LINUX"
+}
+
+################################################################################
+# Autoscaling group schedule
+################################################################################
+
+resource "aws_autoscaling_schedule" "this" {
+  for_each = { for k, v in var.schedules : k => v if var.create && var.create_schedule }
+
+  scheduled_action_name  = each.key
+  autoscaling_group_name = aws_autoscaling_group.this[0].name
+
+  min_size         = try(each.value.min_size, null)
+  max_size         = try(each.value.max_size, null)
+  desired_capacity = try(each.value.desired_size, null)
+  start_time       = try(each.value.start_time, null)
+  end_time         = try(each.value.end_time, null)
+  time_zone        = try(each.value.time_zone, null)
+
+  # [Minute] [Hour] [Day_of_Month] [Month_of_Year] [Day_of_Week]
+  # Cron examples: https://crontab.guru/examples.html
+  recurrence = try(each.value.recurrence, null)
 }

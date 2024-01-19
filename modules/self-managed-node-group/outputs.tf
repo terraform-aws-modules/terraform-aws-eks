@@ -82,15 +82,6 @@ output "autoscaling_group_vpc_zone_identifier" {
 }
 
 ################################################################################
-# Autoscaling Group Schedule
-################################################################################
-
-output "autoscaling_group_schedule_arns" {
-  description = "ARNs of autoscaling group schedules"
-  value       = { for k, v in aws_autoscaling_schedule.this : k => v.arn }
-}
-
-################################################################################
 # IAM Role
 ################################################################################
 
@@ -126,6 +117,24 @@ output "iam_instance_profile_id" {
 output "iam_instance_profile_unique" {
   description = "Stable and unique string identifying the IAM instance profile"
   value       = try(aws_iam_instance_profile.this[0].unique_id, null)
+}
+
+################################################################################
+# Access Entry
+################################################################################
+
+output "access_entry_arn" {
+  description = "Amazon Resource Name (ARN) of the Access Entry"
+  value       = try(aws_eks_access_entry.this[0].access_entry_arn, null)
+}
+
+################################################################################
+# Autoscaling Group Schedule
+################################################################################
+
+output "autoscaling_group_schedule_arns" {
+  description = "ARNs of autoscaling group schedules"
+  value       = { for k, v in aws_autoscaling_schedule.this : k => v.arn }
 }
 
 ################################################################################
