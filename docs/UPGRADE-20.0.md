@@ -17,6 +17,7 @@ Please consult the `examples` directory for reference example configurations. If
 
    - A module tag has been added to the cluster control plane
    - Support for cluster access entries. The `bootstrap_cluster_creator_admin_permissions` setting on the control plane has been hardcoded to `false` since this operation is a one time operation only at cluster creation per the EKS API. Instead, users can enable/disable `enable_cluster_creator_admin_permissions` at any time to achieve the same functionality. This takes the identity that Terraform is using to make API calls and maps it into a cluster admin via an access entry. For users on existing clusters, you will need to remove the default cluster administrator that was created by EKS prior to the cluster access entry APIs - see the section [`Removing the default cluster administrator`](https://aws.amazon.com/blogs/containers/a-deep-dive-into-simplified-amazon-eks-access-management-controls/) for more details.
+   - Added support for specifying the CloudWatch log group class (standard or infrequenet access)
 
 ### Modified
 
@@ -58,6 +59,7 @@ Please consult the `examples` directory for reference example configurations. If
 
    - `enable_cluster_creator_admin_permissions`
    - `access_entries`
+   - `cloudwatch_log_group_class`
 
    - Karpenter
       - `pod_identity_policy_use_name_prefix`
