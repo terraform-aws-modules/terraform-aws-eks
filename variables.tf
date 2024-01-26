@@ -175,13 +175,13 @@ variable "kms_key_deletion_window_in_days" {
 }
 
 variable "enable_kms_key_rotation" {
-  description = "Specifies whether key rotation is enabled. Defaults to `true`"
+  description = "Specifies whether key rotation is enabled"
   type        = bool
   default     = true
 }
 
 variable "kms_key_enable_default_policy" {
-  description = "Specifies whether to enable the default key policy. Defaults to `false`"
+  description = "Specifies whether to enable the default key policy"
   type        = bool
   default     = true
 }
