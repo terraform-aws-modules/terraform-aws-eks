@@ -67,6 +67,8 @@ resource "aws_eks_access_entry" "this" {
   cluster_name  = var.cluster_name
   principal_arn = var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
   type          = "FARGATE_LINUX"
+
+  tags = var.tags
 }
 
 ################################################################################

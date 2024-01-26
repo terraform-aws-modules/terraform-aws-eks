@@ -769,6 +769,8 @@ resource "aws_eks_access_entry" "this" {
   cluster_name  = var.cluster_name
   principal_arn = var.create_iam_instance_profile ? aws_iam_role.this[0].arn : var.iam_role_arn
   type          = var.platform == "windows" ? "EC2_WINDOWS" : "EC2_LINUX"
+
+  tags = var.tags
 }
 
 ################################################################################

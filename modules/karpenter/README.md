@@ -15,7 +15,6 @@ In the following example, the Karpenter module will create:
 module "eks" {
   source = "terraform-aws-modules/eks"
 
-  # TODO - CAM
   ...
 }
 
@@ -23,8 +22,6 @@ module "karpenter" {
   source = "terraform-aws-modules/eks/aws//modules/karpenter"
 
   cluster_name = module.eks.cluster_name
-
-  # TODO - CAM
 
   # Attach additional IAM policies to the Karpenter node IAM role
   iam_role_additional_policies = {
@@ -67,8 +64,6 @@ module "karpenter" {
   source = "terraform-aws-modules/eks/aws//modules/karpenter"
 
   cluster_name = module.eks.cluster_name
-
-  # TODO - CAM
 
   create_iam_role = false
   iam_role_arn    = module.eks.eks_managed_node_groups["initial"].iam_role_arn

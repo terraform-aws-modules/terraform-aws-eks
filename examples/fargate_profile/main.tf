@@ -6,7 +6,7 @@ data "aws_availability_zones" "available" {}
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.28"
+  cluster_version = "1.29"
   region          = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
@@ -29,6 +29,9 @@ module "eks" {
   cluster_name                   = local.name
   cluster_version                = local.cluster_version
   cluster_endpoint_public_access = true
+
+  # Gives Terraform identity admin access to cluster
+  enable_cluster_creator_admin_permissions = true
 
   cluster_addons = {
     kube-proxy = {}

@@ -455,9 +455,12 @@ resource "aws_iam_role_policy_attachment" "additional" {
 resource "aws_eks_access_entry" "this" {
   count = var.create && var.create_access_entry ? 1 : 0
 
-  cluster_name  = var.cluster_name
-  principal_arn = var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
-  type          = var.platform == "windows" ? "EC2_WINDOWS" : "EC2_LINUX"
+  cluster_name      = var.cluster_name
+  principal_arn     = var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
+  kubernetes_groups = null
+  type              = var.platform == "windows" ? "EC2_WINDOWS" : "EC2_LINUX"
+
+  tags = var.tags
 }
 
 ################################################################################

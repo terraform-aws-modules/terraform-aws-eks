@@ -2,24 +2,12 @@ provider "aws" {
   region = local.region
 }
 
-provider "kubernetes" {
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
-  }
-}
-
 data "aws_caller_identity" "current" {}
 data "aws_availability_zones" "available" {}
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.28"
+  cluster_version = "1.29"
   region          = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
@@ -43,6 +31,9 @@ module "eks" {
   cluster_version                = local.cluster_version
   cluster_endpoint_public_access = true
 
+  # Gives Terraform identity admin access to cluster
+  enable_cluster_creator_admin_permissions = true
+
   cluster_addons = {
     coredns = {
       most_recent = true
@@ -65,10 +56,6 @@ module "eks" {
     resources        = ["secrets"]
     provider_key_arn = module.kms.key_arn
   }
-
-  # TODO - replace with CAM
-  # # Self managed node groups will not automatically create the aws-auth configmap so we need to
-  # manage_aws_auth_configmap = true
 
   self_managed_node_group_defaults = {
     # enable discovery of autoscaling groups by cluster-autoscaler
@@ -146,36 +133,6 @@ module "eks" {
           },
         ]
       }
-    }
-
-    efa = {
-      min_size     = 1
-      max_size     = 2
-      desired_size = 1
-
-      # aws ec2 describe-instance-types --region eu-west-1 --filters Name=network-info.efa-supported,Values=true --query "InstanceTypes[*].[InstanceType]" --output text | sort
-      instance_type = "c5n.9xlarge"
-
-      post_bootstrap_user_data = <<-EOT
-        # Install EFA
-        curl -O https://efa-installer.amazonaws.com/aws-efa-installer-latest.tar.gz
-        tar -xf aws-efa-installer-latest.tar.gz && cd aws-efa-installer
-        ./efa_installer.sh -y --minimal
-        fi_info -p efa -t FI_EP_RDM
-
-        # Disable ptrace
-        sysctl -w kernel.yama.ptrace_scope=0
-      EOT
-
-      network_interfaces = [
-        {
-          description                 = "EFA interface example"
-          delete_on_termination       = true
-          device_index                = 0
-          associate_public_ip_address = false
-          interface_type              = "efa"
-        }
-      ]
     }
 
     # Complete

@@ -7,18 +7,6 @@ provider "aws" {
   alias  = "virginia"
 }
 
-provider "kubernetes" {
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
-  }
-}
-
 provider "helm" {
   kubernetes {
     host                   = module.eks.cluster_endpoint
@@ -54,7 +42,7 @@ data "aws_ecrpublic_authorization_token" "token" {
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.28"
+  cluster_version = "1.29"
   region          = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
@@ -77,6 +65,9 @@ module "eks" {
   cluster_name                   = local.name
   cluster_version                = local.cluster_version
   cluster_endpoint_public_access = true
+
+  # Gives Terraform identity admin access to cluster
+  enable_cluster_creator_admin_permissions = true
 
   cluster_addons = {
     kube-proxy = {}
@@ -115,20 +106,6 @@ module "eks" {
   # Fargate profiles use the cluster primary security group so these are not utilized
   create_cluster_security_group = false
   create_node_security_group    = false
-
-  # TODO - CAM
-  # manage_aws_auth_configmap = true
-  # aws_auth_roles = [
-  #   # We need to add in the Karpenter node IAM role for nodes launched by Karpenter
-  #   {
-  #     rolearn  = module.karpenter.role_arn
-  #     username = "system:node:{{EC2PrivateDNSName}}"
-  #     groups = [
-  #       "system:bootstrappers",
-  #       "system:nodes",
-  #     ]
-  #   },
-  # ]
 
   fargate_profiles = {
     karpenter = {

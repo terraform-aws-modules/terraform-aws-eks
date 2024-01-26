@@ -189,7 +189,7 @@ locals {
 }
 
 resource "aws_eks_access_entry" "this" {
-  for_each = { for k, v in local.flattened_access_entries : k => v if local.create }
+  for_each = { for k, v in local.flattened_access_entries : "${v.entry_key}-${v.pol_key}" => v if local.create }
 
   cluster_name      = aws_eks_cluster.this[0].name
   kubernetes_groups = try(each.value.kubernetes_groups, [])
@@ -201,7 +201,7 @@ resource "aws_eks_access_entry" "this" {
 }
 
 resource "aws_eks_access_policy_association" "this" {
-  for_each = { for k, v in local.flattened_access_entries : k => v if local.create }
+  for_each = { for k, v in local.flattened_access_entries : "${v.entry_key}-${v.pol_key}" => v if local.create }
 
   access_scope {
     namespaces = try(each.value.association_access_scope_namespaces, [])
@@ -212,6 +212,10 @@ resource "aws_eks_access_policy_association" "this" {
 
   policy_arn    = each.value.association_policy_arn
   principal_arn = each.value.principal_arn
+
+  depends_on = [
+    aws_eks_access_entry.this,
+  ]
 }
 
 ################################################################################

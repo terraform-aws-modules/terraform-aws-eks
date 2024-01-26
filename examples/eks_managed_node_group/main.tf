@@ -2,24 +2,12 @@ provider "aws" {
   region = local.region
 }
 
-provider "kubernetes" {
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
-  }
-}
-
 data "aws_caller_identity" "current" {}
 data "aws_availability_zones" "available" {}
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.28"
+  cluster_version = "1.29"
   region          = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
@@ -42,6 +30,9 @@ module "eks" {
   cluster_name                   = local.name
   cluster_version                = local.cluster_version
   cluster_endpoint_public_access = true
+
+  # Gives Terraform identity admin access to cluster
+  enable_cluster_creator_admin_permissions = true
 
   # IPV6
   cluster_ip_family          = "ipv6"
@@ -246,27 +237,6 @@ module "eks" {
       iam_role_additional_policies = {
         AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
         additional                         = aws_iam_policy.node_additional.arn
-      }
-
-      schedules = {
-        scale-up = {
-          min_size     = 2
-          max_size     = "-1" # Retains current max size
-          desired_size = 2
-          start_time   = "2023-03-05T00:00:00Z"
-          end_time     = "2024-03-05T00:00:00Z"
-          time_zone    = "Etc/GMT+0"
-          recurrence   = "0 0 * * *"
-        },
-        scale-down = {
-          min_size     = 0
-          max_size     = "-1" # Retains current max size
-          desired_size = 0
-          start_time   = "2023-03-05T12:00:00Z"
-          end_time     = "2024-03-05T12:00:00Z"
-          time_zone    = "Etc/GMT+0"
-          recurrence   = "0 12 * * *"
-        }
       }
 
       tags = {
