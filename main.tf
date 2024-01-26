@@ -70,6 +70,15 @@ resource "aws_eks_cluster" "this" {
     }
   }
 
+  dynamic "access_config" {
+    for_each = var.cluster_access_config != null ? { enable = true } : {}
+
+    content {
+      authentication_mode                         = lookup(var.cluster_access_config, "authentication_mode", null)
+      bootstrap_cluster_creator_admin_permissions = lookup(var.cluster_access_config, "bootstrap_cluster_creator_admin_permissions", null)
+    }
+  }
+
   tags = merge(
     var.tags,
     var.cluster_tags,

@@ -106,6 +106,12 @@ variable "cluster_encryption_config" {
   }
 }
 
+variable "cluster_access_config" {
+  description = "Configuration block for the access config associated with your cluster"
+  type        = any
+  default     = null
+}
+
 variable "attach_cluster_encryption_policy" {
   description = "Indicates whether or not to attach an additional policy for the cluster IAM role to utilize the encryption key provided"
   type        = bool
