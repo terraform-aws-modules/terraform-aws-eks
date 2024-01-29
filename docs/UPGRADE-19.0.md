@@ -58,7 +58,7 @@ Please consult the `examples` directory for reference example configurations. If
 ### Variable and output changes
 
 1. Removed variables:
- 
+
    - `node_security_group_ntp_ipv4_cidr_block` - default security group settings have an egress rule for ALL to `0.0.0.0/0`/`::/0`
    - `node_security_group_ntp_ipv6_cidr_block` - default security group settings have an egress rule for ALL to `0.0.0.0/0`/`::/0`
    - Self-managed node groups:

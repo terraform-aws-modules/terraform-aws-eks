@@ -4,17 +4,17 @@
 
 output "iam_role_name" {
   description = "The name of the controller IAM role"
-  value       = try(aws_iam_role.this[0].name, null)
+  value       = try(aws_iam_role.controller[0].name, null)
 }
 
 output "iam_role_arn" {
   description = "The Amazon Resource Name (ARN) specifying the controller IAM role"
-  value       = try(aws_iam_role.this[0].arn, null)
+  value       = try(aws_iam_role.controller[0].arn, null)
 }
 
 output "iam_role_unique_id" {
   description = "Stable and unique string identifying the controller IAM role"
-  value       = try(aws_iam_role.this[0].unique_id, null)
+  value       = try(aws_iam_role.controller[0].unique_id, null)
 }
 
 ################################################################################
@@ -61,7 +61,7 @@ output "node_iam_role_arn" {
 
 output "node_iam_role_unique_id" {
   description = "Stable and unique string identifying the node IAM role"
-  value       = try(aws_iam_role.this[0].unique_id, null)
+  value       = try(aws_iam_role.node[0].unique_id, null)
 }
 
 ################################################################################

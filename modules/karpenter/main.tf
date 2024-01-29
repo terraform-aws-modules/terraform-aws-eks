@@ -18,7 +18,7 @@ locals {
   irsa_oidc_provider_url = replace(var.irsa_oidc_provider_arn, "/^(.*provider/)/", "")
 }
 
-data "aws_iam_policy_document" "assume_role" {
+data "aws_iam_policy_document" "controller_assume_role" {
   count = local.create_iam_role ? 1 : 0
 
   # Pod Identity
@@ -62,7 +62,7 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
-resource "aws_iam_role" "this" {
+resource "aws_iam_role" "controller" {
   count = local.create_iam_role ? 1 : 0
 
   name        = var.iam_role_use_name_prefix ? null : var.iam_role_name
@@ -70,7 +70,7 @@ resource "aws_iam_role" "this" {
   path        = var.iam_role_path
   description = var.iam_role_description
 
-  assume_role_policy    = data.aws_iam_policy_document.assume_role[0].json
+  assume_role_policy    = data.aws_iam_policy_document.controller_assume_role[0].json
   max_session_duration  = var.iam_role_max_session_duration
   permissions_boundary  = var.iam_role_permissions_boundary_arn
   force_detach_policies = true
@@ -78,7 +78,7 @@ resource "aws_iam_role" "this" {
   tags = merge(var.tags, var.iam_role_tags)
 }
 
-data "aws_iam_policy_document" "this" {
+data "aws_iam_policy_document" "controller" {
   count = local.create_iam_role ? 1 : 0
 
   statement {
@@ -378,29 +378,29 @@ data "aws_iam_policy_document" "this" {
   }
 }
 
-resource "aws_iam_policy" "this" {
+resource "aws_iam_policy" "controller" {
   count = local.create_iam_role ? 1 : 0
 
   name        = var.iam_policy_use_name_prefix ? null : var.iam_policy_name
   name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}-" : null
   path        = var.iam_policy_path
   description = var.iam_policy_description
-  policy      = data.aws_iam_policy_document.this[0].json
+  policy      = data.aws_iam_policy_document.controller[0].json
 
   tags = var.tags
 }
 
-resource "aws_iam_role_policy_attachment" "this" {
+resource "aws_iam_role_policy_attachment" "controller" {
   count = local.create_iam_role ? 1 : 0
 
-  role       = aws_iam_role.this[0].name
-  policy_arn = aws_iam_policy.this[0].arn
+  role       = aws_iam_role.controller[0].name
+  policy_arn = aws_iam_policy.controller[0].arn
 }
 
-resource "aws_iam_role_policy_attachment" "additional" {
+resource "aws_iam_role_policy_attachment" "controller_additional" {
   for_each = { for k, v in var.iam_role_policies : k => v if local.create_iam_role }
 
-  role       = aws_iam_role.this[0].name
+  role       = aws_iam_role.controller[0].name
   policy_arn = each.value
 }
 
@@ -593,7 +593,7 @@ resource "aws_eks_access_entry" "node" {
 # Node IAM Instance Profile
 # This is used by the nodes launched by Karpenter
 # Starting with Karpenter 0.32 this is no longer required as Karpenter will
-# create the Instance Profile 
+# create the Instance Profile
 ################################################################################
 
 locals {

@@ -264,6 +264,12 @@ resource "kubectl_manifest" "karpenter_example_deployment" {
   ]
 }
 
+module "karpenter_disabled" {
+  source = "../../modules/karpenter"
+
+  create = false
+}
+
 ################################################################################
 # Supporting Resources
 ################################################################################
