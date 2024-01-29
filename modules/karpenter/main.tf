@@ -5,8 +5,6 @@ locals {
   account_id = data.aws_caller_identity.current.account_id
   partition  = data.aws_partition.current.partition
   dns_suffix = data.aws_partition.current.dns_suffix
-
-  tags = merge(var.tags, { terraform-aws-modules = "eks" })
 }
 
 ################################################################################
@@ -62,7 +60,7 @@ resource "aws_iam_role" "pod_identity" {
   permissions_boundary  = var.pod_identity_role_permissions_boundary_arn
   force_detach_policies = true
 
-  tags = merge(local.tags, var.pod_identity_role_tags)
+  tags = merge(var.tags, var.pod_identity_role_tags)
 }
 
 data "aws_iam_policy_document" "pod_identity" {
@@ -337,7 +335,7 @@ resource "aws_iam_policy" "pod_identity" {
   description = var.pod_identity_policy_description
   policy      = data.aws_iam_policy_document.pod_identity[0].json
 
-  tags = local.tags
+  tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "pod_identity" {
@@ -373,7 +371,7 @@ resource "aws_sqs_queue" "this" {
   kms_master_key_id                 = var.queue_kms_master_key_id
   kms_data_key_reuse_period_seconds = var.queue_kms_data_key_reuse_period_seconds
 
-  tags = local.tags
+  tags = var.tags
 }
 
 data "aws_iam_policy_document" "queue" {
@@ -415,7 +413,7 @@ locals {
         detail-type = ["AWS Health Event"]
       }
     }
-    spot_interupt = {
+    spot_interrupt = {
       name        = "SpotInterrupt"
       description = "Karpenter interrupt - EC2 spot instance interruption warning"
       event_pattern = {
@@ -451,7 +449,7 @@ resource "aws_cloudwatch_event_rule" "this" {
 
   tags = merge(
     { "ClusterName" : var.cluster_name },
-    local.tags,
+    var.tags,
   )
 }
 
@@ -503,7 +501,7 @@ resource "aws_iam_role" "this" {
   permissions_boundary  = var.iam_role_permissions_boundary
   force_detach_policies = true
 
-  tags = merge(local.tags, var.iam_role_tags)
+  tags = merge(var.tags, var.iam_role_tags)
 }
 
 # Policies attached ref https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
@@ -558,5 +556,5 @@ resource "aws_iam_instance_profile" "this" {
   path        = var.iam_role_path
   role        = var.create_iam_role ? aws_iam_role.this[0].name : local.external_role_name
 
-  tags = merge(local.tags, var.iam_role_tags)
+  tags = merge(var.tags, var.iam_role_tags)
 }

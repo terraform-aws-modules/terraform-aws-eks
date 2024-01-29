@@ -11,6 +11,13 @@ Please consult the `examples` directory for reference example configurations. If
 - The Karpenter sub-module's use of the `irsa` naming convention has been replaced with `pod-identity` along with an update to the Karpenter controller IAM policy to align with the `v1beta1`/`v0.32` changes
 - The `aws-auth` ConfigMap resources have been moved to a standalone sub-module. This removes the Kubernetes provider requirement from the main module and allows for the `aws-auth` ConfigMap to be managed independently of the main module.
 
+### ⚠️ Upcoming Changes Planned in v21.0 ⚠️
+
+To give users advanced notice and provide some future direction for this module, these are the following changes we will be looking to make in the next major release of this module:
+
+1. The `aws-auth` sub-module will be removed entirely from the project. Since this sub-module is captured in the v20.x releases, users can continue using it even after the module moves forward with the next major version. The long term strategy and direction is cluster access entry and to rely only on the AWS Terraform provider.
+2. The default value for `authentication_mode` will change to `API`. Aligning with point 1 above, this is a one way change, but users are free to specify the value of their choosing in place of this default (when the change is made). This module will proceed with an EKS API first strategy.
+
 ## Additional changes
 
 ### Added

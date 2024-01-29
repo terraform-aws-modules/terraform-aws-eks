@@ -18,8 +18,6 @@ locals {
 
   create_outposts_local_cluster    = length(var.outpost_config) > 0
   enable_cluster_encryption_config = length(var.cluster_encryption_config) > 0 && !local.create_outposts_local_cluster
-
-  tags = merge(var.tags, { terraform-aws-modules = "eks" })
 }
 
 ################################################################################
@@ -86,7 +84,7 @@ resource "aws_eks_cluster" "this" {
   }
 
   tags = merge(
-    local.tags,
+    { terraform-aws-modules = "eks" },
     var.cluster_tags,
   )
 
@@ -250,7 +248,10 @@ module "kms" {
     cluster = { name = "eks/${var.cluster_name}" }
   }
 
-  tags = local.tags
+  tags = merge(
+    { terraform-aws-modules = "eks" },
+    var.tags,
+  )
 }
 
 ################################################################################
