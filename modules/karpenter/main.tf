@@ -1,25 +1,40 @@
+data "aws_region" "current" {}
 data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
 locals {
   account_id = data.aws_caller_identity.current.account_id
-  partition  = data.aws_partition.current.partition
   dns_suffix = data.aws_partition.current.dns_suffix
+  partition  = data.aws_partition.current.partition
+  region     = data.aws_region.current.name
 }
 
 ################################################################################
-# Pod Identity IAM Role
-# This is used by the Karpenter controller
+# Karpenter controller IAM Role
 ################################################################################
 
 locals {
-  create_pod_identity_role = var.create && var.create_pod_identity_role
-  irsa_oidc_provider_url   = replace(var.irsa_oidc_provider_arn, "/^(.*provider/)/", "")
+  create_iam_role        = var.create && var.create_iam_role
+  irsa_oidc_provider_url = replace(var.irsa_oidc_provider_arn, "/^(.*provider/)/", "")
 }
 
-data "aws_iam_policy_document" "pod_identity_assume_role" {
-  count = local.create_pod_identity_role ? 1 : 0
+data "aws_iam_policy_document" "assume_role" {
+  count = local.create_iam_role ? 1 : 0
 
+  # Pod Identity
+  statement {
+    actions = [
+      "sts:AssumeRole",
+      "sts:TagSession",
+    ]
+
+    principals {
+      type        = "Service"
+      identifiers = ["pods.eks.amazonaws.com"]
+    }
+  }
+
+  # IAM Roles for Service Accounts (IRSA)
   dynamic "statement" {
     for_each = var.enable_irsa ? [1] : []
 
@@ -47,24 +62,24 @@ data "aws_iam_policy_document" "pod_identity_assume_role" {
   }
 }
 
-resource "aws_iam_role" "pod_identity" {
-  count = local.create_pod_identity_role ? 1 : 0
+resource "aws_iam_role" "this" {
+  count = local.create_iam_role ? 1 : 0
 
-  name        = var.pod_identity_role_use_name_prefix ? null : var.pod_identity_role_name
-  name_prefix = var.pod_identity_role_use_name_prefix ? "${var.pod_identity_role_name}-" : null
-  path        = var.pod_identity_role_path
-  description = var.pod_identity_role_description
+  name        = var.iam_role_use_name_prefix ? null : var.iam_role_name
+  name_prefix = var.iam_role_use_name_prefix ? "${var.iam_role_name}-" : null
+  path        = var.iam_role_path
+  description = var.iam_role_description
 
-  assume_role_policy    = data.aws_iam_policy_document.pod_identity_assume_role[0].json
-  max_session_duration  = var.pod_identity_role_max_session_duration
-  permissions_boundary  = var.pod_identity_role_permissions_boundary_arn
+  assume_role_policy    = data.aws_iam_policy_document.assume_role[0].json
+  max_session_duration  = var.iam_role_max_session_duration
+  permissions_boundary  = var.iam_role_permissions_boundary_arn
   force_detach_policies = true
 
-  tags = merge(var.tags, var.pod_identity_role_tags)
+  tags = merge(var.tags, var.iam_role_tags)
 }
 
-data "aws_iam_policy_document" "pod_identity" {
-  count = local.create_pod_identity_role ? 1 : 0
+data "aws_iam_policy_document" "this" {
+  count = local.create_iam_role ? 1 : 0
 
   statement {
     sid = "AllowScopedEC2InstanceActions"
@@ -91,6 +106,7 @@ data "aws_iam_policy_document" "pod_identity" {
       "arn:${local.partition}:ec2:*:*:volume/*",
       "arn:${local.partition}:ec2:*:*:network-interface/*",
       "arn:${local.partition}:ec2:*:*:launch-template/*",
+      "arn:${local.partition}:ec2:*:*:spot-instances-request/*",
     ]
     actions = [
       "ec2:RunInstances",
@@ -119,9 +135,9 @@ data "aws_iam_policy_document" "pod_identity" {
       "arn:${local.partition}:ec2:*:*:volume/*",
       "arn:${local.partition}:ec2:*:*:network-interface/*",
       "arn:${local.partition}:ec2:*:*:launch-template/*",
+      "arn:${local.partition}:ec2:*:*:spot-instances-request/*",
     ]
     actions = ["ec2:CreateTags"]
-
 
     condition {
       test     = "StringEquals"
@@ -132,17 +148,17 @@ data "aws_iam_policy_document" "pod_identity" {
     condition {
       test     = "StringEquals"
       variable = "ec2:CreateAction"
-      values   = ["owned"]
-    }
-
-    condition {
-      test     = "StringLike"
-      variable = "aws:RequestTag/karpenter.sh/nodepool"
       values = [
         "RunInstances",
         "CreateFleet",
         "CreateLaunchTemplate",
       ]
+    }
+
+    condition {
+      test     = "StringLike"
+      variable = "aws:RequestTag/karpenter.sh/nodepool"
+      values   = ["*"]
     }
   }
 
@@ -153,13 +169,13 @@ data "aws_iam_policy_document" "pod_identity" {
 
     condition {
       test     = "StringEquals"
-      variable = "aws:RequestTag/kubernetes.io/cluster/${var.cluster_name}"
+      variable = "aws:ResourceTag/kubernetes.io/cluster/${var.cluster_name}"
       values   = ["owned"]
     }
 
     condition {
       test     = "StringLike"
-      variable = "aws:RequestTag/karpenter.sh/nodepool"
+      variable = "aws:ResourceTag/karpenter.sh/nodepool"
       values   = ["*"]
     }
 
@@ -187,19 +203,19 @@ data "aws_iam_policy_document" "pod_identity" {
 
     condition {
       test     = "StringEquals"
-      variable = "aws:RequestTag/kubernetes.io/cluster/${var.cluster_name}"
+      variable = "aws:ResourceTag/kubernetes.io/cluster/${var.cluster_name}"
       values   = ["owned"]
     }
 
     condition {
       test     = "StringLike"
-      variable = "aws:RequestTag/karpenter.sh/nodepool"
+      variable = "aws:ResourceTag/karpenter.sh/nodepool"
       values   = ["*"]
     }
   }
 
   statement {
-    sid       = "AllowDescribeActions"
+    sid       = "AllowRegionalReadActions"
     resources = ["*"]
     actions = [
       "ec2:DescribeAvailabilityZones",
@@ -212,11 +228,17 @@ data "aws_iam_policy_document" "pod_identity" {
       "ec2:DescribeSpotPriceHistory",
       "ec2:DescribeSubnets"
     ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestedRegion"
+      values   = [local.region]
+    }
   }
 
   statement {
     sid       = "AllowSSMReadActions"
-    resources = var.ami_id_ssm_parameter_arns
+    resources = coalescelist(var.ami_id_ssm_parameter_arns, ["arn:${local.partition}:ssm:${local.region}::parameter/aws/service/*"])
     actions   = ["ssm:GetParameter"]
   }
 
@@ -228,7 +250,7 @@ data "aws_iam_policy_document" "pod_identity" {
 
   statement {
     sid       = "AllowInterruptionQueueActions"
-    resources = ["arn:aws:sqs:*:${local.account_id}:${var.cluster_name}"]
+    resources = [aws_sqs_queue.this[0].arn]
     actions = [
       "sqs:DeleteMessage",
       "sqs:GetQueueAttributes",
@@ -239,7 +261,7 @@ data "aws_iam_policy_document" "pod_identity" {
 
   statement {
     sid       = "AllowPassingInstanceRole"
-    resources = ["arn:${local.partition}:iam::*:role/KarpenterNodeRole-${var.cluster_name}"]
+    resources = var.create_node_iam_role ? [aws_iam_role.node[0].arn] : [var.node_iam_role_arn]
     actions   = ["iam:PassRole"]
 
     condition {
@@ -259,6 +281,18 @@ data "aws_iam_policy_document" "pod_identity" {
       variable = "aws:RequestTag/kubernetes.io/cluster/${var.cluster_name}"
       values   = ["owned"]
     }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/topology.kubernetes.io/region"
+      values   = [local.region]
+    }
+
+    condition {
+      test     = "StringLike"
+      variable = "aws:RequestTag/karpenter.k8s.aws/ec2nodeclass"
+      values   = ["*"]
+    }
   }
 
   statement {
@@ -274,8 +308,20 @@ data "aws_iam_policy_document" "pod_identity" {
 
     condition {
       test     = "StringEquals"
+      variable = "aws:ResourceTag/topology.kubernetes.io/region"
+      values   = [local.region]
+    }
+
+    condition {
+      test     = "StringEquals"
       variable = "aws:RequestTag/kubernetes.io/cluster/${var.cluster_name}"
       values   = ["owned"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/topology.kubernetes.io/region"
+      values   = [local.region]
     }
 
     condition {
@@ -307,6 +353,12 @@ data "aws_iam_policy_document" "pod_identity" {
     }
 
     condition {
+      test     = "StringEquals"
+      variable = "aws:ResourceTag/topology.kubernetes.io/region"
+      values   = [local.region]
+    }
+
+    condition {
       test     = "StringLike"
       variable = "aws:ResourceTag/karpenter.k8s.aws/ec2nodeclass"
       values   = ["*"]
@@ -321,34 +373,34 @@ data "aws_iam_policy_document" "pod_identity" {
 
   statement {
     sid       = "AllowAPIServerEndpointDiscovery"
-    resources = ["arn:${local.partition}:eks:*:${local.account_id}:cluster/${var.cluster_name}"]
+    resources = ["arn:${local.partition}:eks:${local.region}:${local.account_id}:cluster/${var.cluster_name}"]
     actions   = ["eks:DescribeCluster"]
   }
 }
 
-resource "aws_iam_policy" "pod_identity" {
-  count = local.create_pod_identity_role ? 1 : 0
+resource "aws_iam_policy" "this" {
+  count = local.create_iam_role ? 1 : 0
 
-  name        = var.pod_identity_policy_use_name_prefix ? null : var.pod_identity_policy_name
-  name_prefix = var.pod_identity_policy_use_name_prefix ? "${var.pod_identity_policy_name}-" : null
-  path        = var.pod_identity_policy_path
-  description = var.pod_identity_policy_description
-  policy      = data.aws_iam_policy_document.pod_identity[0].json
+  name        = var.iam_policy_use_name_prefix ? null : var.iam_policy_name
+  name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}-" : null
+  path        = var.iam_policy_path
+  description = var.iam_policy_description
+  policy      = data.aws_iam_policy_document.this[0].json
 
   tags = var.tags
 }
 
-resource "aws_iam_role_policy_attachment" "pod_identity" {
-  count = local.create_pod_identity_role ? 1 : 0
+resource "aws_iam_role_policy_attachment" "this" {
+  count = local.create_iam_role ? 1 : 0
 
-  role       = aws_iam_role.pod_identity[0].name
-  policy_arn = aws_iam_policy.pod_identity[0].arn
+  role       = aws_iam_role.this[0].name
+  policy_arn = aws_iam_policy.this[0].arn
 }
 
-resource "aws_iam_role_policy_attachment" "pod_identity_additional" {
-  for_each = { for k, v in var.pod_identity_role_policies : k => v if local.create_pod_identity_role }
+resource "aws_iam_role_policy_attachment" "additional" {
+  for_each = { for k, v in var.iam_role_policies : k => v if local.create_iam_role }
 
-  role       = aws_iam_role.pod_identity[0].name
+  role       = aws_iam_role.this[0].name
   policy_arn = each.value
 }
 
@@ -467,15 +519,15 @@ resource "aws_cloudwatch_event_target" "this" {
 ################################################################################
 
 locals {
-  create_iam_role = var.create && var.create_iam_role
+  create_node_iam_role = var.create && var.create_node_iam_role
 
-  iam_role_name          = coalesce(var.iam_role_name, "Karpenter-${var.cluster_name}")
-  iam_role_policy_prefix = "arn:${local.partition}:iam::aws:policy"
-  cni_policy             = var.cluster_ip_family == "ipv6" ? "arn:${local.partition}:iam::${local.account_id}:policy/AmazonEKS_CNI_IPv6_Policy" : "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
+  node_iam_role_name          = coalesce(var.node_iam_role_name, "Karpenter-${var.cluster_name}")
+  node_iam_role_policy_prefix = "arn:${local.partition}:iam::aws:policy"
+  cni_policy                  = var.cluster_ip_family == "ipv6" ? "arn:${local.partition}:iam::${local.account_id}:policy/AmazonEKS_CNI_IPv6_Policy" : "${local.node_iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
 }
 
-data "aws_iam_policy_document" "assume_role" {
-  count = local.create_iam_role ? 1 : 0
+data "aws_iam_policy_document" "node_assume_role" {
+  count = local.create_node_iam_role ? 1 : 0
 
   statement {
     sid     = "EKSNodeAssumeRole"
@@ -488,50 +540,50 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
-resource "aws_iam_role" "this" {
-  count = local.create_iam_role ? 1 : 0
+resource "aws_iam_role" "node" {
+  count = local.create_node_iam_role ? 1 : 0
 
-  name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
-  name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
-  path        = var.iam_role_path
-  description = var.iam_role_description
+  name        = var.node_iam_role_use_name_prefix ? null : local.node_iam_role_name
+  name_prefix = var.node_iam_role_use_name_prefix ? "${local.node_iam_role_name}-" : null
+  path        = var.node_iam_role_path
+  description = var.node_iam_role_description
 
-  assume_role_policy    = data.aws_iam_policy_document.assume_role[0].json
-  max_session_duration  = var.iam_role_max_session_duration
-  permissions_boundary  = var.iam_role_permissions_boundary
+  assume_role_policy    = data.aws_iam_policy_document.node_assume_role[0].json
+  max_session_duration  = var.node_iam_role_max_session_duration
+  permissions_boundary  = var.node_iam_role_permissions_boundary
   force_detach_policies = true
 
-  tags = merge(var.tags, var.iam_role_tags)
+  tags = merge(var.tags, var.node_iam_role_tags)
 }
 
 # Policies attached ref https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
-resource "aws_iam_role_policy_attachment" "this" {
+resource "aws_iam_role_policy_attachment" "node" {
   for_each = { for k, v in toset(compact([
-    "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy",
-    "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly",
-    var.iam_role_attach_cni_policy ? local.cni_policy : "",
-  ])) : k => v if local.create_iam_role }
+    "${local.node_iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy",
+    "${local.node_iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly",
+    var.node_iam_role_attach_cni_policy ? local.cni_policy : "",
+  ])) : k => v if local.create_node_iam_role }
 
   policy_arn = each.value
-  role       = aws_iam_role.this[0].name
+  role       = aws_iam_role.node[0].name
 }
 
-resource "aws_iam_role_policy_attachment" "additional" {
-  for_each = { for k, v in var.iam_role_additional_policies : k => v if local.create_iam_role }
+resource "aws_iam_role_policy_attachment" "node_additional" {
+  for_each = { for k, v in var.node_iam_role_additional_policies : k => v if local.create_node_iam_role }
 
   policy_arn = each.value
-  role       = aws_iam_role.this[0].name
+  role       = aws_iam_role.node[0].name
 }
 
 ################################################################################
 # Access Entry
 ################################################################################
 
-resource "aws_eks_access_entry" "this" {
+resource "aws_eks_access_entry" "node" {
   count = var.create && var.create_access_entry ? 1 : 0
 
   cluster_name  = var.cluster_name
-  principal_arn = var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
+  principal_arn = var.create_node_iam_role ? aws_iam_role.node[0].arn : var.node_iam_role_arn
   type          = var.access_entry_type
 
   tags = var.tags
@@ -545,16 +597,16 @@ resource "aws_eks_access_entry" "this" {
 ################################################################################
 
 locals {
-  external_role_name = try(replace(var.iam_role_arn, "/^(.*role/)/", ""), null)
+  external_role_name = try(replace(var.node_iam_role_arn, "/^(.*role/)/", ""), null)
 }
 
 resource "aws_iam_instance_profile" "this" {
   count = var.create && var.create_instance_profile ? 1 : 0
 
-  name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
-  name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
-  path        = var.iam_role_path
-  role        = var.create_iam_role ? aws_iam_role.this[0].name : local.external_role_name
+  name        = var.node_iam_role_use_name_prefix ? null : local.node_iam_role_name
+  name_prefix = var.node_iam_role_use_name_prefix ? "${local.node_iam_role_name}-" : null
+  path        = var.node_iam_role_path
+  role        = var.create_node_iam_role ? aws_iam_role.node[0].name : local.external_role_name
 
-  tags = merge(var.tags, var.iam_role_tags)
+  tags = merge(var.tags, var.node_iam_role_tags)
 }

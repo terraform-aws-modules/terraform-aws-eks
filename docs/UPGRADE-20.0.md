@@ -7,9 +7,10 @@ Please consult the `examples` directory for reference example configurations. If
 - Minium supported AWS provider version increased to `v5.34`
 - Minimum supported Terraform version increased to `v1.3` to support Terraform state `moved` blocks as well as other advanced features
 - The `resolve_conflicts` argument within the `cluster_addons` configuration has been replaced with `resolve_conflicts_on_create` and `resolve_conflicts_on_delete` now that `resolve_conflicts` is deprecated
-- The `cluster_addons` `preserve` argument default/fallback value is now set to `true`. This has shown to be useful for users deprovisioning clusters while avoiding the situation where the CNI is deleted too early and causes resources to be left orphaned which results in conflicts.
-- The Karpenter sub-module's use of the `irsa` naming convention has been replaced with `pod-identity` along with an update to the Karpenter controller IAM policy to align with the `v1beta1`/`v0.32` changes
-- The `aws-auth` ConfigMap resources have been moved to a standalone sub-module. This removes the Kubernetes provider requirement from the main module and allows for the `aws-auth` ConfigMap to be managed independently of the main module.
+- The default/fallback value for the `preserve` argument of `cluster_addons`is now set to `true`. This has shown to be useful for users deprovisioning clusters while avoiding the situation where the CNI is deleted too early and causes resources to be left orphaned resulting in conflicts.
+- The Karpenter sub-module's use of the `irsa` naming convention has been removed, along with an update to the Karpenter controller IAM policy to align with Karpenter's `v1beta1`/`v0.32` changes. Instead of referring to the role as `irsa` or `pod_identity`, its simply just an IAM role used by the Karpenter controller and there is support for use with either IRSA and/or Pod Identity (default) at this time
+- The `aws-auth` ConfigMap resources have been moved to a standalone sub-module. This removes the Kubernetes provider requirement from the main module and allows for the `aws-auth` ConfigMap to be managed independently of the main module. This sub-module will be removed entirely in the next major release of the module.
+- Support for cluster access management has been added with the default authentication mode set as `API_AND_CONFIG_MAP`. This is a one way change if applied; if you wish to use `CONFIG_MAP`, you will need to set `authentication_mode = "CONFIG_MAP"` explicitly when upgrading.
 
 ### ⚠️ Upcoming Changes Planned in v21.0 ⚠️
 
@@ -24,7 +25,7 @@ To give users advanced notice and provide some future direction for this module,
 
    - A module tag has been added to the cluster control plane
    - Support for cluster access entries. The `bootstrap_cluster_creator_admin_permissions` setting on the control plane has been hardcoded to `false` since this operation is a one time operation only at cluster creation per the EKS API. Instead, users can enable/disable `enable_cluster_creator_admin_permissions` at any time to achieve the same functionality. This takes the identity that Terraform is using to make API calls and maps it into a cluster admin via an access entry. For users on existing clusters, you will need to remove the default cluster administrator that was created by EKS prior to the cluster access entry APIs - see the section [`Removing the default cluster administrator`](https://aws.amazon.com/blogs/containers/a-deep-dive-into-simplified-amazon-eks-access-management-controls/) for more details.
-   - Added support for specifying the CloudWatch log group class (standard or infrequenet access)
+   - Added support for specifying the CloudWatch log group class (standard or infrequent access)
 
 ### Modified
 
@@ -50,16 +51,16 @@ To give users advanced notice and provide some future direction for this module,
 2. Renamed variables:
 
    - Karpenter
-      - `create_irsa` -> `create_pod_identity_role`
-      - `irsa_name` -> `pod_identity_role_name`
-      - `irsa_use_name_prefix` -> `pod_identity_role_name_prefix`
-      - `irsa_path` -> `pod_identity_role_path`
-      - `irsa_description` -> `pod_identity_role_description`
-      - `irsa_max_session_duration` -> `pod_identity_role_max_session_duration`
-      - `irsa_permissions_boundary_arn` -> `pod_identity_role_permissions_boundary_arn`
-      - `irsa_tags` -> `pod_identity_role_tags`
-      - `policies` -> `pod_identity_role_policies`
-      - `irsa_policy_name` -> `pod_identity_policy_name`
+      - `create_irsa` -> `create_iam_role`
+      - `irsa_name` -> `iam_role_name`
+      - `irsa_use_name_prefix` -> `iam_role_name_prefix`
+      - `irsa_path` -> `iam_role_path`
+      - `irsa_description` -> `iam_role_description`
+      - `irsa_max_session_duration` -> `iam_role_max_session_duration`
+      - `irsa_permissions_boundary_arn` -> `iam_role_permissions_boundary_arn`
+      - `irsa_tags` -> `iam_role_tags`
+      - `policies` -> `iam_role_policies`
+      - `irsa_policy_name` -> `iam_policy_name`
       - `irsa_ssm_parameter_arns` -> `ami_id_ssm_parameter_arns`
 
 3. Added variables:
@@ -69,8 +70,8 @@ To give users advanced notice and provide some future direction for this module,
    - `cloudwatch_log_group_class`
 
    - Karpenter
-      - `pod_identity_policy_use_name_prefix`
-      - `pod_identity_policy_description`
+      - `iam_policy_use_name_prefix`
+      - `iam_policy_description`
       - `enable_irsa`
 
 4. Removed outputs:
@@ -80,9 +81,9 @@ To give users advanced notice and provide some future direction for this module,
 5. Renamed outputs:
 
    - Karpenter
-      - `irsa_name` -> `pod_identity_role_name`
-      - `irsa_arn` -> `pod_identity_role_arn`
-      - `irsa_unique_id` -> `pod_identity_role_unique_id`
+      - `irsa_name` -> `iam_role_name`
+      - `irsa_arn` -> `iam_role_arn`
+      - `irsa_unique_id` -> `iam_role_unique_id`
 
 6. Added outputs:
 

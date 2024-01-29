@@ -116,23 +116,23 @@ No inputs.
 | <a name="output_eks_managed_node_groups_autoscaling_group_names"></a> [eks\_managed\_node\_groups\_autoscaling\_group\_names](#output\_eks\_managed\_node\_groups\_autoscaling\_group\_names) | List of the autoscaling group names created by EKS managed node groups |
 | <a name="output_fargate_profiles"></a> [fargate\_profiles](#output\_fargate\_profiles) | Map of attribute maps for all EKS Fargate Profiles created |
 | <a name="output_karpenter_event_rules"></a> [karpenter\_event\_rules](#output\_karpenter\_event\_rules) | Map of the event rules created and their attributes |
+| <a name="output_karpenter_iam_role_arn"></a> [karpenter\_iam\_role\_arn](#output\_karpenter\_iam\_role\_arn) | The Amazon Resource Name (ARN) specifying the controller IAM role |
+| <a name="output_karpenter_iam_role_name"></a> [karpenter\_iam\_role\_name](#output\_karpenter\_iam\_role\_name) | The name of the controller IAM role |
+| <a name="output_karpenter_iam_role_unique_id"></a> [karpenter\_iam\_role\_unique\_id](#output\_karpenter\_iam\_role\_unique\_id) | Stable and unique string identifying the controller IAM role |
 | <a name="output_karpenter_instance_profile_arn"></a> [karpenter\_instance\_profile\_arn](#output\_karpenter\_instance\_profile\_arn) | ARN assigned by AWS to the instance profile |
 | <a name="output_karpenter_instance_profile_id"></a> [karpenter\_instance\_profile\_id](#output\_karpenter\_instance\_profile\_id) | Instance profile's ID |
 | <a name="output_karpenter_instance_profile_name"></a> [karpenter\_instance\_profile\_name](#output\_karpenter\_instance\_profile\_name) | Name of the instance profile |
 | <a name="output_karpenter_instance_profile_unique"></a> [karpenter\_instance\_profile\_unique](#output\_karpenter\_instance\_profile\_unique) | Stable and unique string identifying the IAM instance profile |
+| <a name="output_karpenter_node_iam_role_arn"></a> [karpenter\_node\_iam\_role\_arn](#output\_karpenter\_node\_iam\_role\_arn) | The Amazon Resource Name (ARN) specifying the IAM role |
+| <a name="output_karpenter_node_iam_role_name"></a> [karpenter\_node\_iam\_role\_name](#output\_karpenter\_node\_iam\_role\_name) | The name of the IAM role |
+| <a name="output_karpenter_node_iam_role_unique_id"></a> [karpenter\_node\_iam\_role\_unique\_id](#output\_karpenter\_node\_iam\_role\_unique\_id) | Stable and unique string identifying the IAM role |
 | <a name="output_karpenter_queue_arn"></a> [karpenter\_queue\_arn](#output\_karpenter\_queue\_arn) | The ARN of the SQS queue |
 | <a name="output_karpenter_queue_name"></a> [karpenter\_queue\_name](#output\_karpenter\_queue\_name) | The name of the created Amazon SQS queue |
 | <a name="output_karpenter_queue_url"></a> [karpenter\_queue\_url](#output\_karpenter\_queue\_url) | The URL for the created Amazon SQS queue |
-| <a name="output_karpenter_role_arn"></a> [karpenter\_role\_arn](#output\_karpenter\_role\_arn) | The Amazon Resource Name (ARN) specifying the IAM role |
-| <a name="output_karpenter_role_name"></a> [karpenter\_role\_name](#output\_karpenter\_role\_name) | The name of the IAM role |
-| <a name="output_karpenter_role_unique_id"></a> [karpenter\_role\_unique\_id](#output\_karpenter\_role\_unique\_id) | Stable and unique string identifying the IAM role |
 | <a name="output_node_security_group_arn"></a> [node\_security\_group\_arn](#output\_node\_security\_group\_arn) | Amazon Resource Name (ARN) of the node shared security group |
 | <a name="output_node_security_group_id"></a> [node\_security\_group\_id](#output\_node\_security\_group\_id) | ID of the node shared security group |
 | <a name="output_oidc_provider"></a> [oidc\_provider](#output\_oidc\_provider) | The OpenID Connect identity provider (issuer URL without leading `https://`) |
 | <a name="output_oidc_provider_arn"></a> [oidc\_provider\_arn](#output\_oidc\_provider\_arn) | The ARN of the OIDC Provider if `enable_irsa = true` |
-| <a name="output_pod_identity_role_arn"></a> [pod\_identity\_role\_arn](#output\_pod\_identity\_role\_arn) | The Amazon Resource Name (ARN) specifying the Pod Identity IAM role |
-| <a name="output_pod_identity_role_name"></a> [pod\_identity\_role\_name](#output\_pod\_identity\_role\_name) | The name of the Pod Identity IAM role |
-| <a name="output_pod_identity_role_unique_id"></a> [pod\_identity\_role\_unique\_id](#output\_pod\_identity\_role\_unique\_id) | Stable and unique string identifying the Pod Identity IAM role |
 | <a name="output_self_managed_node_groups"></a> [self\_managed\_node\_groups](#output\_self\_managed\_node\_groups) | Map of attribute maps for all self managed node groups created |
 | <a name="output_self_managed_node_groups_autoscaling_group_names"></a> [self\_managed\_node\_groups\_autoscaling\_group\_names](#output\_self\_managed\_node\_groups\_autoscaling\_group\_names) | List of the autoscaling group names created by self-managed node groups |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

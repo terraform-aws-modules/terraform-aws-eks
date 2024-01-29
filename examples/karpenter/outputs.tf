@@ -192,22 +192,22 @@ output "self_managed_node_groups_autoscaling_group_names" {
 }
 
 ################################################################################
-# Pod Identity IAM Role
+# Karpenter controller IAM Role
 ################################################################################
 
-output "pod_identity_role_name" {
-  description = "The name of the Pod Identity IAM role"
-  value       = module.karpenter.pod_identity_role_name
+output "karpenter_iam_role_name" {
+  description = "The name of the controller IAM role"
+  value       = module.karpenter.iam_role_name
 }
 
-output "pod_identity_role_arn" {
-  description = "The Amazon Resource Name (ARN) specifying the Pod Identity IAM role"
-  value       = module.karpenter.pod_identity_role_arn
+output "karpenter_iam_role_arn" {
+  description = "The Amazon Resource Name (ARN) specifying the controller IAM role"
+  value       = module.karpenter.iam_role_arn
 }
 
-output "pod_identity_role_unique_id" {
-  description = "Stable and unique string identifying the Pod Identity IAM role"
-  value       = module.karpenter.pod_identity_role_unique_id
+output "karpenter_iam_role_unique_id" {
+  description = "Stable and unique string identifying the controller IAM role"
+  value       = module.karpenter.iam_role_unique_id
 }
 
 ################################################################################
@@ -242,19 +242,19 @@ output "karpenter_event_rules" {
 # Node IAM Role
 ################################################################################
 
-output "karpenter_role_name" {
+output "karpenter_node_iam_role_name" {
   description = "The name of the IAM role"
-  value       = module.karpenter.role_name
+  value       = module.karpenter.node_iam_role_name
 }
 
-output "karpenter_role_arn" {
+output "karpenter_node_iam_role_arn" {
   description = "The Amazon Resource Name (ARN) specifying the IAM role"
-  value       = module.karpenter.role_arn
+  value       = module.karpenter.node_iam_role_arn
 }
 
-output "karpenter_role_unique_id" {
+output "karpenter_node_iam_role_unique_id" {
   description = "Stable and unique string identifying the IAM role"
-  value       = module.karpenter.role_unique_id
+  value       = module.karpenter.node_iam_role_unique_id
 }
 
 ################################################################################

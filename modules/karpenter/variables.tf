@@ -17,83 +17,83 @@ variable "cluster_name" {
 }
 
 ################################################################################
-# Pod Identity IAM Role
+# Karpenter controller IAM Role
 ################################################################################
 
-variable "create_pod_identity_role" {
-  description = "Determines whether a Pod Identity IAM role is created"
+variable "create_iam_role" {
+  description = "Determines whether an IAM role is created"
   type        = bool
   default     = true
 }
 
-variable "pod_identity_role_name" {
-  description = "Name of the Pod Identity IAM role"
+variable "iam_role_name" {
+  description = "Name of the IAM role"
   type        = string
   default     = "KarpenterController"
 }
 
-variable "pod_identity_role_use_name_prefix" {
-  description = "Determines whether the name of the Pod Identity IAM role is used as a prefix"
+variable "iam_role_use_name_prefix" {
+  description = "Determines whether the name of the IAM role (`iam_role_name`) is used as a prefix"
   type        = bool
   default     = true
 }
 
-variable "pod_identity_role_path" {
-  description = "Path of the Pod Identity IAM role"
+variable "iam_role_path" {
+  description = "Path of the IAM role"
   type        = string
   default     = "/"
 }
 
-variable "pod_identity_role_description" {
-  description = "Pod Identity IAM role description"
+variable "iam_role_description" {
+  description = "IAM role description"
   type        = string
-  default     = "Karpenter controller Pod Identity IAM role"
+  default     = "Karpenter controller IAM role"
 }
 
-variable "pod_identity_role_max_session_duration" {
+variable "iam_role_max_session_duration" {
   description = "Maximum API session duration in seconds between 3600 and 43200"
   type        = number
   default     = null
 }
 
-variable "pod_identity_role_permissions_boundary_arn" {
-  description = "Permissions boundary ARN to use for the Pod Identity IAM role"
+variable "iam_role_permissions_boundary_arn" {
+  description = "Permissions boundary ARN to use for the IAM role"
   type        = string
   default     = null
 }
 
-variable "pod_identity_role_tags" {
-  description = "A map of additional tags to add the the Pod Identity IAM role"
+variable "iam_role_tags" {
+  description = "A map of additional tags to add the the IAM role"
   type        = map(any)
   default     = {}
 }
 
-variable "pod_identity_policy_name" {
-  description = "Name of the Pod Identity IAM policy"
+variable "iam_policy_name" {
+  description = "Name of the IAM policy"
   type        = string
   default     = "KarpenterController"
 }
 
-variable "pod_identity_policy_use_name_prefix" {
-  description = "Determines whether the name of the Pod Identity IAM policy is used as a prefix"
+variable "iam_policy_use_name_prefix" {
+  description = "Determines whether the name of the IAM policy (`iam_policy_name`) is used as a prefix"
   type        = bool
   default     = true
 }
 
-variable "pod_identity_policy_path" {
-  description = "Path of the Pod Identity IAM policy"
+variable "iam_policy_path" {
+  description = "Path of the IAM policy"
   type        = string
   default     = "/"
 }
 
-variable "pod_identity_policy_description" {
-  description = "Pod Identity IAM policy description"
+variable "iam_policy_description" {
+  description = "IAM policy description"
   type        = string
-  default     = "Karpenter controller Pod Identity IAM policy"
+  default     = "Karpenter controller IAM policy"
 }
 
-variable "pod_identity_role_policies" {
-  description = "Policies to attach to the Pod Identity IAM role in `{'static_name' = 'policy_arn'}` format"
+variable "iam_role_policies" {
+  description = "Policies to attach to the IAM role in `{'static_name' = 'policy_arn'}` format"
   type        = map(string)
   default     = {}
 }
@@ -101,7 +101,7 @@ variable "pod_identity_role_policies" {
 variable "ami_id_ssm_parameter_arns" {
   description = "List of SSM Parameter ARNs that Karpenter controller is allowed read access (for retrieving AMI IDs)"
   type        = list(string)
-  default     = ["arn:aws:ssm:*:*:parameter/aws/service/*"]
+  default     = []
 }
 
 ################################################################################
@@ -111,7 +111,7 @@ variable "ami_id_ssm_parameter_arns" {
 variable "enable_irsa" {
   description = "Determines whether to enable support IAM role for service account"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "irsa_oidc_provider_arn" {
@@ -170,7 +170,7 @@ variable "queue_kms_data_key_reuse_period_seconds" {
 # Node IAM Role
 ################################################################################
 
-variable "create_iam_role" {
+variable "create_node_iam_role" {
   description = "Determines whether an IAM role is created or to use an existing IAM role"
   type        = bool
   default     = true
@@ -182,61 +182,61 @@ variable "cluster_ip_family" {
   default     = null
 }
 
-variable "iam_role_arn" {
+variable "node_iam_role_arn" {
   description = "Existing IAM role ARN for the IAM instance profile. Required if `create_iam_role` is set to `false`"
   type        = string
   default     = null
 }
 
-variable "iam_role_name" {
+variable "node_iam_role_name" {
   description = "Name to use on IAM role created"
   type        = string
   default     = null
 }
 
-variable "iam_role_use_name_prefix" {
+variable "node_iam_role_use_name_prefix" {
   description = "Determines whether the IAM role name (`iam_role_name`) is used as a prefix"
   type        = bool
   default     = true
 }
 
-variable "iam_role_path" {
+variable "node_iam_role_path" {
   description = "IAM role path"
   type        = string
   default     = "/"
 }
 
-variable "iam_role_description" {
+variable "node_iam_role_description" {
   description = "Description of the role"
   type        = string
   default     = null
 }
 
-variable "iam_role_max_session_duration" {
+variable "node_iam_role_max_session_duration" {
   description = "Maximum API session duration in seconds between 3600 and 43200"
   type        = number
   default     = null
 }
 
-variable "iam_role_permissions_boundary" {
+variable "node_iam_role_permissions_boundary" {
   description = "ARN of the policy that is used to set the permissions boundary for the IAM role"
   type        = string
   default     = null
 }
 
-variable "iam_role_attach_cni_policy" {
+variable "node_iam_role_attach_cni_policy" {
   description = "Whether to attach the `AmazonEKS_CNI_Policy`/`AmazonEKS_CNI_IPv6_Policy` IAM policy to the IAM IAM role. WARNING: If set `false` the permissions must be assigned to the `aws-node` DaemonSet pods via another method or nodes will not be able to join the cluster"
   type        = bool
   default     = true
 }
 
-variable "iam_role_additional_policies" {
+variable "node_iam_role_additional_policies" {
   description = "Additional policies to be added to the IAM role"
   type        = map(string)
   default     = {}
 }
 
-variable "iam_role_tags" {
+variable "node_iam_role_tags" {
   description = "A map of additional tags to add to the IAM role created"
   type        = map(string)
   default     = {}

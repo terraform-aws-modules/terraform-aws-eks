@@ -1,20 +1,20 @@
 ################################################################################
-# Pod Identity IAM Role
+# Karpenter controller IAM Role
 ################################################################################
 
-output "pod_identity_role_name" {
-  description = "The name of the Pod Identity IAM role"
-  value       = try(aws_iam_role.pod_identity[0].name, null)
+output "iam_role_name" {
+  description = "The name of the controller IAM role"
+  value       = try(aws_iam_role.this[0].name, null)
 }
 
-output "pod_identity_role_arn" {
-  description = "The Amazon Resource Name (ARN) specifying the Pod Identity IAM role"
-  value       = try(aws_iam_role.pod_identity[0].arn, null)
+output "iam_role_arn" {
+  description = "The Amazon Resource Name (ARN) specifying the controller IAM role"
+  value       = try(aws_iam_role.this[0].arn, null)
 }
 
-output "pod_identity_role_unique_id" {
-  description = "Stable and unique string identifying the Pod Identity IAM role"
-  value       = try(aws_iam_role.pod_identity[0].unique_id, null)
+output "iam_role_unique_id" {
+  description = "Stable and unique string identifying the controller IAM role"
+  value       = try(aws_iam_role.this[0].unique_id, null)
 }
 
 ################################################################################
@@ -49,18 +49,18 @@ output "event_rules" {
 # Node IAM Role
 ################################################################################
 
-output "role_name" {
-  description = "The name of the IAM role"
-  value       = try(aws_iam_role.this[0].name, null)
+output "node_iam_role_name" {
+  description = "The name of the node IAM role"
+  value       = try(aws_iam_role.node[0].name, null)
 }
 
-output "role_arn" {
-  description = "The Amazon Resource Name (ARN) specifying the IAM role"
-  value       = try(aws_iam_role.this[0].arn, var.iam_role_arn)
+output "node_iam_role_arn" {
+  description = "The Amazon Resource Name (ARN) specifying the node IAM role"
+  value       = try(aws_iam_role.node[0].arn, var.node_iam_role_arn)
 }
 
-output "role_unique_id" {
-  description = "Stable and unique string identifying the IAM role"
+output "node_iam_role_unique_id" {
+  description = "Stable and unique string identifying the node IAM role"
   value       = try(aws_iam_role.this[0].unique_id, null)
 }
 
@@ -68,9 +68,9 @@ output "role_unique_id" {
 # Access Entry
 ################################################################################
 
-output "access_entry_arn" {
-  description = "Amazon Resource Name (ARN) of the Access Entry"
-  value       = try(aws_eks_access_entry.this[0].access_entry_arn, null)
+output "node_access_entry_arn" {
+  description = "Amazon Resource Name (ARN) of the node Access Entry"
+  value       = try(aws_eks_access_entry.node[0].access_entry_arn, null)
 }
 
 ################################################################################

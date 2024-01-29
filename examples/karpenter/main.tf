@@ -70,8 +70,6 @@ module "eks" {
   enable_cluster_creator_admin_permissions = true
 
   cluster_addons = {
-    kube-proxy = {}
-    vpc-cni    = {}
     coredns = {
       configuration_values = jsonencode({
         computeType = "Fargate"
@@ -97,6 +95,8 @@ module "eks" {
         }
       })
     }
+    kube-proxy = {}
+    vpc-cni    = {}
   }
 
   vpc_id                   = module.vpc.vpc_id
@@ -135,11 +135,14 @@ module "eks" {
 module "karpenter" {
   source = "../../modules/karpenter"
 
-  cluster_name           = module.eks.cluster_name
+  cluster_name = module.eks.cluster_name
+
+  # EKS Fargate currently does not support Pod Identity
+  enable_irsa            = true
   irsa_oidc_provider_arn = module.eks.oidc_provider_arn
 
   # Used to attach additional IAM policies to the Karpenter node IAM role
-  iam_role_additional_policies = {
+  node_iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }
 
@@ -147,15 +150,14 @@ module "karpenter" {
 }
 
 resource "helm_release" "karpenter" {
-  namespace        = "karpenter"
-  create_namespace = true
-
+  namespace           = "karpenter"
+  create_namespace    = true
   name                = "karpenter"
   repository          = "oci://public.ecr.aws/karpenter"
   repository_username = data.aws_ecrpublic_authorization_token.token.user_name
   repository_password = data.aws_ecrpublic_authorization_token.token.password
   chart               = "karpenter"
-  version             = "v0.32.1"
+  version             = "v0.33.1"
 
   values = [
     <<-EOT
@@ -165,7 +167,7 @@ resource "helm_release" "karpenter" {
       interruptionQueue: ${module.karpenter.queue_name}
     serviceAccount:
       annotations:
-        eks.amazonaws.com/role-arn: ${module.karpenter.pod_identity_role_arn}
+        eks.amazonaws.com/role-arn: ${module.karpenter.iam_role_arn}
     EOT
   ]
 }
@@ -178,7 +180,7 @@ resource "kubectl_manifest" "karpenter_node_class" {
       name: default
     spec:
       amiFamily: AL2
-      role: ${module.karpenter.role_name}
+      role: ${module.karpenter.node_iam_role_name}
       subnetSelectorTerms:
         - tags:
             karpenter.sh/discovery: ${module.eks.cluster_name}
