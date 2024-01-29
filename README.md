@@ -8,7 +8,6 @@ Terraform module which creates AWS EKS (Kubernetes) resources
 
 - [Frequently Asked Questions](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md)
 - [Compute Resources](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/compute_resources.md)
-- [IRSA Integration](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/irsa_integration.md)
 - [User Data](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/user_data.md)
 - [Network Connectivity](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/network_connectivity.md)
 - Upgrade Guides
@@ -27,47 +26,7 @@ Please note that we strive to provide a comprehensive suite of documentation for
 The examples provided under `examples/` provide a comprehensive suite of configurations that demonstrate nearly all of the possible different configurations and settings that can be used with this module. However, these examples are not representative of clusters that you would normally find in use for production workloads. For reference architectures that utilize this module, please see the following:
 
 - [EKS Reference Architecture](https://github.com/clowdhaus/eks-reference-architecture)
-
-## Available Features
-
-- AWS EKS Cluster Addons
-- AWS EKS Identity Provider Configuration
-- [AWS EKS on Outposts support](https://aws.amazon.com/blogs/aws/deploy-your-amazon-eks-clusters-locally-on-aws-outposts/)
-- All [node types](https://docs.aws.amazon.com/eks/latest/userguide/eks-compute.html) are supported:
-  - [EKS Managed Node Group](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html)
-  - [Self Managed Node Group](https://docs.aws.amazon.com/eks/latest/userguide/worker.html)
-  - [Fargate Profile](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html)
-- Support for creating Karpenter related AWS infrastructure resources (e.g. IAM roles, SQS queue, EventBridge rules, etc.)
-- Support for custom AMI, custom launch template, and custom user data including custom user data template
-- Support for Amazon Linux 2 EKS Optimized AMI, EKS Windows AMI, and EKS Bottlerocket AMI
-- Support for module created security group, bring your own security groups, as well as adding additional security group rules to the module created security group(s)
-- Support for creating node groups/profiles separate from the cluster through the use of sub-modules (same as what is used by root module)
-- Support for node group/profile "default" settings - useful for when creating multiple node groups/Fargate profiles where you want to set a common set of configurations once, and then individually control only select features on certain node groups/profiles
-
-### [IRSA Terraform Module](https://github.com/terraform-aws-modules/terraform-aws-iam/tree/master/modules/iam-role-for-service-accounts-eks)
-
-An IAM role for service accounts (IRSA) sub-module has been created to make deploying common addons/controllers easier. Instead of users having to create a custom IAM role with the necessary federated role assumption required for IRSA plus find and craft the associated policy required for the addon/controller, users can create the IRSA role and policy with a few lines of code. See the [`terraform-aws-iam/examples/iam-role-for-service-accounts`](https://github.com/terraform-aws-modules/terraform-aws-iam/blob/master/examples/iam-role-for-service-accounts-eks/main.tf) directory for examples on how to use the IRSA sub-module in conjunction with this (`terraform-aws-eks`) module.
-
-Some of the addon/controller policies that are currently supported include:
-
-- [Cert-Manager](https://cert-manager.io/docs/configuration/acme/dns01/route53/#set-up-an-iam-role)
-- [Cluster Autoscaler](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md)
-- [EBS CSI Driver](https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/docs/example-iam-policy.json)
-- [EFS CSI Driver](https://github.com/kubernetes-sigs/aws-efs-csi-driver/blob/master/docs/iam-policy-example.json)
-- [External DNS](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md#iam-policy)
-- [External Secrets](https://github.com/external-secrets/kubernetes-external-secrets#add-a-secret)
-- [FSx for Lustre CSI Driver](https://github.com/kubernetes-sigs/aws-fsx-csi-driver/blob/master/docs/README.md)
-- [Karpenter](https://github.com/aws/karpenter/blob/main/website/content/en/docs/getting-started/getting-started-with-karpenter/cloudformation.yaml)
-- [Load Balancer Controller](https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/docs/install/iam_policy.json)
-  - [Load Balancer Controller Target Group Binding Only](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.4/deploy/installation/#iam-permission-subset-for-those-who-use-targetgroupbinding-only-and-dont-plan-to-use-the-aws-load-balancer-controller-to-manage-security-group-rules)
-- [App Mesh Controller](https://github.com/aws/aws-app-mesh-controller-for-k8s/blob/master/config/iam/controller-iam-policy.json)
-  - [App Mesh Envoy Proxy](https://raw.githubusercontent.com/aws/aws-app-mesh-controller-for-k8s/master/config/iam/envoy-iam-policy.json)
-- [Managed Service for Prometheus](https://docs.aws.amazon.com/prometheus/latest/userguide/set-up-irsa.html)
-- [Node Termination Handler](https://github.com/aws/aws-node-termination-handler#5-create-an-iam-role-for-the-pods)
-- [Velero](https://github.com/vmware-tanzu/velero-plugin-for-aws#option-1-set-permissions-with-an-iam-user)
-- [VPC CNI](https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html)
-
-See [terraform-aws-iam/modules/iam-role-for-service-accounts](https://github.com/terraform-aws-modules/terraform-aws-iam/tree/master/modules/iam-role-for-service-accounts-eks) for current list of supported addon/controller policies as more are added to the project.
+- [EKS Blueprints](https://github.com/aws-ia/terraform-aws-eks-blueprints)
 
 ## Usage
 
