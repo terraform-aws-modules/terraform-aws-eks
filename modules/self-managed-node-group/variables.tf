@@ -476,6 +476,12 @@ variable "initial_lifecycle_hooks" {
   default     = []
 }
 
+variable "instance_maintenance_policy" {
+  description = "If this block is configured, add a instance maintenance policy to the specified Auto Scaling group"
+  type        = any
+  default     = {}
+}
+
 variable "instance_refresh" {
   description = "If this block is configured, start an Instance Refresh when this Auto Scaling Group is updated"
   type        = any

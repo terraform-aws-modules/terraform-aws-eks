@@ -438,6 +438,15 @@ resource "aws_autoscaling_group" "this" {
     }
   }
 
+  dynamic "instance_maintenance_policy" {
+    for_each = length(var.instance_maintenance_policy) > 0 ? [var.instance_maintenance_policy] : []
+
+    content {
+      min_healthy_percentage = instance_maintenance_policy.value.min_healthy_percentage
+      max_healthy_percentage = instance_maintenance_policy.value.max_healthy_percentage
+    }
+  }
+
   dynamic "instance_refresh" {
     for_each = length(var.instance_refresh) > 0 ? [var.instance_refresh] : []
 
@@ -446,11 +455,14 @@ resource "aws_autoscaling_group" "this" {
         for_each = try([instance_refresh.value.preferences], [])
 
         content {
-          checkpoint_delay       = try(preferences.value.checkpoint_delay, null)
-          checkpoint_percentages = try(preferences.value.checkpoint_percentages, null)
-          instance_warmup        = try(preferences.value.instance_warmup, null)
-          min_healthy_percentage = try(preferences.value.min_healthy_percentage, null)
-          skip_matching          = try(preferences.value.skip_matching, null)
+          checkpoint_delay             = try(preferences.value.checkpoint_delay, null)
+          checkpoint_percentages       = try(preferences.value.checkpoint_percentages, null)
+          instance_warmup              = try(preferences.value.instance_warmup, null)
+          max_healthy_percentage       = try(preferences.value.max_healthy_percentage, null)
+          min_healthy_percentage       = try(preferences.value.min_healthy_percentage, null)
+          scale_in_protected_instances = try(preferences.value.scale_in_protected_instances, null)
+          skip_matching                = try(preferences.value.skip_matching, null)
+          standby_instances            = try(preferences.value.standby_instances, null)
         }
       }
 
