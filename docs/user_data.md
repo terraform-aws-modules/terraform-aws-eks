@@ -8,6 +8,7 @@ Users can see the various methods of using and providing user data through the [
   - By default, any supplied user data is pre-pended to the user data supplied by the EKS Managed Node Group service
   - If users supply an `ami_id`, the service no longers supplies user data to bootstrap nodes; users can enable `enable_bootstrap_user_data` and use the module provided user data template, or provide their own user data template
   - `bottlerocket` platform user data must be in TOML format
+  - `windows` platform user data must be in powershell/PS1 script format
 - Self Managed Node Groups
   - `linux` platform (default) -> the user data template (bash/shell script) provided by the module is used as the default; users are able to provide their own user data template
   - `bottlerocket` platform -> the user data template (TOML file) provided by the module is used as the default; users are able to provide their own user data template

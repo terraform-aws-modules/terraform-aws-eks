@@ -35,6 +35,10 @@ No providers.
 | <a name="module_eks_mng_linux_custom_ami"></a> [eks\_mng\_linux\_custom\_ami](#module\_eks\_mng\_linux\_custom\_ami) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_linux_custom_template"></a> [eks\_mng\_linux\_custom\_template](#module\_eks\_mng\_linux\_custom\_template) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_linux_no_op"></a> [eks\_mng\_linux\_no\_op](#module\_eks\_mng\_linux\_no\_op) | ../../modules/_user_data | n/a |
+| <a name="module_eks_mng_windows_additional"></a> [eks\_mng\_windows\_additional](#module\_eks\_mng\_windows\_additional) | ../../modules/_user_data | n/a |
+| <a name="module_eks_mng_windows_custom_ami"></a> [eks\_mng\_windows\_custom\_ami](#module\_eks\_mng\_windows\_custom\_ami) | ../../modules/_user_data | n/a |
+| <a name="module_eks_mng_windows_custom_template"></a> [eks\_mng\_windows\_custom\_template](#module\_eks\_mng\_windows\_custom\_template) | ../../modules/_user_data | n/a |
+| <a name="module_eks_mng_windows_no_op"></a> [eks\_mng\_windows\_no\_op](#module\_eks\_mng\_windows\_no\_op) | ../../modules/_user_data | n/a |
 | <a name="module_self_mng_bottlerocket_bootstrap"></a> [self\_mng\_bottlerocket\_bootstrap](#module\_self\_mng\_bottlerocket\_bootstrap) | ../../modules/_user_data | n/a |
 | <a name="module_self_mng_bottlerocket_custom_template"></a> [self\_mng\_bottlerocket\_custom\_template](#module\_self\_mng\_bottlerocket\_custom\_template) | ../../modules/_user_data | n/a |
 | <a name="module_self_mng_bottlerocket_no_op"></a> [self\_mng\_bottlerocket\_no\_op](#module\_self\_mng\_bottlerocket\_no\_op) | ../../modules/_user_data | n/a |
@@ -65,6 +69,10 @@ No inputs.
 | <a name="output_eks_mng_linux_custom_ami"></a> [eks\_mng\_linux\_custom\_ami](#output\_eks\_mng\_linux\_custom\_ami) | Base64 decoded user data rendered for the provided inputs |
 | <a name="output_eks_mng_linux_custom_template"></a> [eks\_mng\_linux\_custom\_template](#output\_eks\_mng\_linux\_custom\_template) | Base64 decoded user data rendered for the provided inputs |
 | <a name="output_eks_mng_linux_no_op"></a> [eks\_mng\_linux\_no\_op](#output\_eks\_mng\_linux\_no\_op) | Base64 decoded user data rendered for the provided inputs |
+| <a name="output_eks_mng_windows_additional"></a> [eks\_mng\_windows\_additional](#output\_eks\_mng\_windows\_additional) | Base64 decoded user data rendered for the provided inputs |
+| <a name="output_eks_mng_windows_custom_ami"></a> [eks\_mng\_windows\_custom\_ami](#output\_eks\_mng\_windows\_custom\_ami) | Base64 decoded user data rendered for the provided inputs |
+| <a name="output_eks_mng_windows_custom_template"></a> [eks\_mng\_windows\_custom\_template](#output\_eks\_mng\_windows\_custom\_template) | Base64 decoded user data rendered for the provided inputs |
+| <a name="output_eks_mng_windows_no_op"></a> [eks\_mng\_windows\_no\_op](#output\_eks\_mng\_windows\_no\_op) | Base64 decoded user data rendered for the provided inputs |
 | <a name="output_self_mng_bottlerocket_bootstrap"></a> [self\_mng\_bottlerocket\_bootstrap](#output\_self\_mng\_bottlerocket\_bootstrap) | Base64 decoded user data rendered for the provided inputs |
 | <a name="output_self_mng_bottlerocket_custom_template"></a> [self\_mng\_bottlerocket\_custom\_template](#output\_self\_mng\_bottlerocket\_custom\_template) | Base64 decoded user data rendered for the provided inputs |
 | <a name="output_self_mng_bottlerocket_no_op"></a> [self\_mng\_bottlerocket\_no\_op](#output\_self\_mng\_bottlerocket\_no\_op) | Base64 decoded user data rendered for the provided inputs |
