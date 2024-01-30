@@ -30,9 +30,6 @@ module "eks" {
   cluster_version                = local.cluster_version
   cluster_endpoint_public_access = true
 
-  # Gives Terraform identity admin access to cluster
-  enable_cluster_creator_admin_permissions = true
-
   cluster_addons = {
     kube-proxy = {}
     vpc-cni    = {}
@@ -92,12 +89,6 @@ module "eks" {
   tags = local.tags
 }
 
-module "disabled_fargate_profile" {
-  source = "../../modules/fargate-profile"
-
-  create = false
-}
-
 ################################################################################
 # Sub-Module Usage on Existing/Separate Cluster
 ################################################################################
@@ -114,6 +105,12 @@ module "fargate_profile" {
   }]
 
   tags = merge(local.tags, { Separate = "fargate-profile" })
+}
+
+module "disabled_fargate_profile" {
+  source = "../../modules/fargate-profile"
+
+  create = false
 }
 
 ################################################################################

@@ -7,7 +7,7 @@ data "aws_availability_zones" "available" {}
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.29"
+  cluster_version = "1.27"
   region          = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
@@ -31,9 +31,6 @@ module "eks" {
   cluster_version                = local.cluster_version
   cluster_endpoint_public_access = true
 
-  # Gives Terraform identity admin access to cluster
-  enable_cluster_creator_admin_permissions = true
-
   # IPV6
   cluster_ip_family          = "ipv6"
   create_cni_ipv6_iam_policy = true
@@ -46,9 +43,8 @@ module "eks" {
       most_recent = true
     }
     vpc-cni = {
-      most_recent              = true
-      before_compute           = true
-      service_account_role_arn = module.vpc_cni_irsa.iam_role_arn
+      most_recent    = true
+      before_compute = true
       configuration_values = jsonencode({
         env = {
           # Reference docs https://docs.aws.amazon.com/eks/latest/userguide/cni-increase-ip-addresses.html
@@ -248,12 +244,6 @@ module "eks" {
   tags = local.tags
 }
 
-module "disabled_eks_managed_node_group" {
-  source = "../../modules/eks-managed-node-group"
-
-  create = false
-}
-
 module "disabled_eks" {
   source = "../.."
 
@@ -294,6 +284,12 @@ module "eks_managed_node_group" {
   tags = merge(local.tags, { Separate = "eks-managed-node-group" })
 }
 
+module "disabled_eks_managed_node_group" {
+  source = "../../modules/eks-managed-node-group"
+
+  create = false
+}
+
 ################################################################################
 # Supporting Resources
 ################################################################################
@@ -328,24 +324,6 @@ module "vpc" {
 
   private_subnet_tags = {
     "kubernetes.io/role/internal-elb" = 1
-  }
-
-  tags = local.tags
-}
-
-module "vpc_cni_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.0"
-
-  role_name_prefix      = "VPC-CNI-IRSA"
-  attach_vpc_cni_policy = true
-  vpc_cni_enable_ipv6   = true
-
-  oidc_providers = {
-    main = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["kube-system:aws-node"]
-    }
   }
 
   tags = local.tags

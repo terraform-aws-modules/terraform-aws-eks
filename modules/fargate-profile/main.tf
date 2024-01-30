@@ -58,20 +58,6 @@ resource "aws_iam_role_policy_attachment" "additional" {
 }
 
 ################################################################################
-# Access Entry
-################################################################################
-
-resource "aws_eks_access_entry" "this" {
-  count = var.create && var.create_access_entry ? 1 : 0
-
-  cluster_name  = var.cluster_name
-  principal_arn = var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
-  type          = "FARGATE_LINUX"
-
-  tags = var.tags
-}
-
-################################################################################
 # Fargate Profile
 ################################################################################
 

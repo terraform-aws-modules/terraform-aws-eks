@@ -5,36 +5,7 @@
 
 locals {
   aws_auth_configmap_data = {
-    mapRoles = yamlencode(concat(
-      [for role_arn in var.aws_auth_node_iam_role_arns_non_windows : {
-        rolearn  = role_arn
-        username = "system:node:{{EC2PrivateDNSName}}"
-        groups = [
-          "system:bootstrappers",
-          "system:nodes",
-        ]
-      }],
-      [for role_arn in var.aws_auth_node_iam_role_arns_windows : {
-        rolearn  = role_arn
-        username = "system:node:{{EC2PrivateDNSName}}"
-        groups = [
-          "eks:kube-proxy-windows",
-          "system:bootstrappers",
-          "system:nodes",
-        ]
-      }],
-      # Fargate profile
-      [for role_arn in var.aws_auth_fargate_profile_pod_execution_role_arns : {
-        rolearn  = role_arn
-        username = "system:node:{{SessionName}}"
-        groups = [
-          "system:bootstrappers",
-          "system:nodes",
-          "system:node-proxier",
-        ]
-      }],
-      var.aws_auth_roles
-    ))
+    mapRoles    = yamlencode(var.aws_auth_roles)
     mapUsers    = yamlencode(var.aws_auth_users)
     mapAccounts = yamlencode(var.aws_auth_accounts)
   }

@@ -42,7 +42,7 @@ data "aws_ecrpublic_authorization_token" "token" {
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.29"
+  cluster_version = "1.28"
   region          = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
@@ -66,7 +66,8 @@ module "eks" {
   cluster_version                = local.cluster_version
   cluster_endpoint_public_access = true
 
-  # Gives Terraform identity admin access to cluster
+  # Gives Terraform identity admin access to cluster which will
+  # allow deploying resources (Karpenter) into the cluster
   enable_cluster_creator_admin_permissions = true
 
   cluster_addons = {
@@ -149,6 +150,17 @@ module "karpenter" {
   tags = local.tags
 }
 
+module "karpenter_disabled" {
+  source = "../../modules/karpenter"
+
+  create = false
+}
+
+################################################################################
+# Karpenter Helm chart & manifests
+# Not required; just to demonstrate functionality of the sub-module
+################################################################################
+
 resource "helm_release" "karpenter" {
   namespace           = "karpenter"
   create_namespace    = true
@@ -158,6 +170,7 @@ resource "helm_release" "karpenter" {
   repository_password = data.aws_ecrpublic_authorization_token.token.password
   chart               = "karpenter"
   version             = "v0.33.1"
+  wait                = false
 
   values = [
     <<-EOT
@@ -262,12 +275,6 @@ resource "kubectl_manifest" "karpenter_example_deployment" {
   depends_on = [
     helm_release.karpenter
   ]
-}
-
-module "karpenter_disabled" {
-  source = "../../modules/karpenter"
-
-  create = false
 }
 
 ################################################################################

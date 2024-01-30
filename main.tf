@@ -140,12 +140,12 @@ locals {
   # This replaces the one time logic from the EKS API with something that can be
   # better controlled by users through Terraform
   bootstrap_cluster_creator_admin_permissions = {
-    cluster_creator_admin = {
+    cluster_creator = {
       principal_arn = data.aws_iam_session_context.current.issuer_arn
       type          = "STANDARD"
 
       policy_associations = {
-        clustrer_admin = {
+        admin = {
           policy_arn = "arn:${local.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
           access_scope = {
             type = "cluster"
@@ -189,7 +189,7 @@ locals {
 }
 
 resource "aws_eks_access_entry" "this" {
-  for_each = { for k, v in local.flattened_access_entries : "${v.entry_key}-${v.pol_key}" => v if local.create }
+  for_each = { for k, v in local.flattened_access_entries : "${v.entry_key}_${v.pol_key}" => v if local.create }
 
   cluster_name      = aws_eks_cluster.this[0].name
   kubernetes_groups = try(each.value.kubernetes_groups, [])
@@ -201,7 +201,7 @@ resource "aws_eks_access_entry" "this" {
 }
 
 resource "aws_eks_access_policy_association" "this" {
-  for_each = { for k, v in local.flattened_access_entries : "${v.entry_key}-${v.pol_key}" => v if local.create }
+  for_each = { for k, v in local.flattened_access_entries : "${v.entry_key}_${v.pol_key}" => v if local.create }
 
   access_scope {
     namespaces = try(each.value.association_access_scope_namespaces, [])

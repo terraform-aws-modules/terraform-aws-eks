@@ -587,6 +587,11 @@ resource "aws_eks_access_entry" "node" {
   type          = var.access_entry_type
 
   tags = var.tags
+
+  depends_on = [
+    # If we try to add this too quickly, it fails. So .... we wait
+    aws_sqs_queue_policy.this,
+  ]
 }
 
 ################################################################################

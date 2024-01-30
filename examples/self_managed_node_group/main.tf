@@ -31,9 +31,6 @@ module "eks" {
   cluster_version                = local.cluster_version
   cluster_endpoint_public_access = true
 
-  # Gives Terraform identity admin access to cluster
-  enable_cluster_creator_admin_permissions = true
-
   cluster_addons = {
     coredns = {
       most_recent = true

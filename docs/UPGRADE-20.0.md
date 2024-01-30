@@ -19,6 +19,7 @@ To give users advanced notice and provide some future direction for this module,
 
 1. The `aws-auth` sub-module will be removed entirely from the project. Since this sub-module is captured in the v20.x releases, users can continue using it even after the module moves forward with the next major version. The long term strategy and direction is cluster access entry and to rely only on the AWS Terraform provider.
 2. The default value for `authentication_mode` will change to `API`. Aligning with point 1 above, this is a one way change, but users are free to specify the value of their choosing in place of this default (when the change is made). This module will proceed with an EKS API first strategy.
+3. The launch template and autoscaling group usage contained within the EKS managed nodegroup and self-managed nodegroup sub-modules *might be replaced with the [`terraform-aws-autoscaling`](https://github.com/terraform-aws-modules/terraform-aws-autoscaling) module. At minimum, it makes sense to replace most of functionality in the self-managed nodegroup module with this external module, but its not yet clear if there is any benefit of using it in the EKS managed nodegroup sub-module. The interface that users interact with will stay the same, the changes will be internal to the implementation and we will do everything we can to keep the disruption to a minimum.
 
 ## Additional changes
 
@@ -98,12 +99,6 @@ To give users advanced notice and provide some future direction for this module,
    - `access_entries`
    - `cloudwatch_log_group_class`
 
-   - EKS managed nodegroup
-      - `create_access_entry`
-
-   - Fargate Profile
-      - `create_access_entry`
-
    - Karpenter
       - `iam_policy_name`
       - `iam_policy_use_name_prefix`
@@ -136,12 +131,6 @@ To give users advanced notice and provide some future direction for this module,
 
    - `access_entries`
 
-   - EKS managed nodegroup
-      - `access_entry_arn`
-
-   - Fargate Profile
-      - `access_entry_arn`
-
    - Karpenter
       - `node_access_entry_arn`
 
@@ -150,4 +139,124 @@ To give users advanced notice and provide some future direction for this module,
 
 ## Upgrade Migrations
 
+### Diff of Before (v19.21) vs After (v20.0)
+
+```diff
+ module "eks" {
+   source  = "terraform-aws-modules/eks/aws"
+-  version = "~> 19.21"
++  version = "~> 20.0"
+
+# If you want to maintain the current default behavior of v19.x
++  kms_key_enable_default_policy = false
+
+-   manage_aws_auth_configmap = true
+
+-   aws_auth_roles = [
+-     {
+-       rolearn  = "arn:aws:iam::66666666666:role/role1"
+-       username = "role1"
+-       groups   = ["custom-role-group"]
+-     },
+-   ]
+
+-   aws_auth_users = [
+-     {
+-       userarn  = "arn:aws:iam::66666666666:user/user1"
+-       username = "user1"
+-       groups   = ["custom-users-group"]
+-     },
+-   ]
+}
+
++ module "eks" {
++   source  = "terraform-aws-modules/eks/aws//modules/aws-auth"
++   version = "~> 20.0"
+
++   manage_aws_auth_configmap = true
+
++   aws_auth_roles = [
++     {
++       rolearn  = "arn:aws:iam::66666666666:role/role1"
++       username = "role1"
++       groups   = ["custom-role-group"]
++     },
++   ]
+
++   aws_auth_users = [
++     {
++       userarn  = "arn:aws:iam::66666666666:user/user1"
++       username = "user1"
++       groups   = ["custom-users-group"]
++     },
++   ]
++ }
+```
+
+### Karpenter Diff of Before (v19.21) vs After (v20.0)
+
+```diff
+ module "eks" {
+   source  = "terraform-aws-modules/eks/aws//modules/karpenter"
+-  version = "~> 19.21"
++  version = "~> 20.0"
+
+# If you wish to maintain the current default behavior of v19.x
++  enable_irsa             = true
++  create_instance_profile = true
+
+# To avoid any resource re-creation
++  iam_role_name          = "KarpenterIRSA-${module.eks.cluster_name}"
++  iam_role_description   = "Karpenter IAM role for service account"
++  iam_policy_name        = "KarpenterIRSA-${module.eks.cluster_name}"
++  iam_policy_description = "Karpenter IAM role for service account"
+}
+```
+
 ## Terraform State Moves
+
+#### ⚠️ Authentication Mode Changes ⚠️
+
+Changing the `authentication_mode` is a one-way decision. See [announcement blog](https://aws.amazon.com/blogs/containers/a-deep-dive-into-simplified-amazon-eks-access-management-controls/) for further details:
+
+> Switching authentication modes on an existing cluster is a one-way operation. You can switch from CONFIG_MAP to API_AND_CONFIG_MAP. You can then switch from API_AND_CONFIG_MAP to API. You cannot revert these operations in the opposite direction. Meaning you cannot switch back to CONFIG_MAP or API_AND_CONFIG_MAP from API. And you cannot switch back to CONFIG_MAP from API_AND_CONFIG_MAP.
+
+### authentication_mode = "CONFIG_MAP"
+
+If using `authentication_mode = "CONFIG_MAP"`, before making any changes, you will first need to remove the configmap from the statefile to avoid any disruptions:
+
+```sh
+terraform state rm 'module.eks.kubernetes_config_map_v1_data.aws_auth[0]'
+terraform state rm 'module.eks.kubernetes_config_map.aws_auth[0]' # include if Terraform created the original configmap
+```
+
+Once the configmap has been removed from the statefile, you can add the new `aws-auth` sub-module and copy the relevant definitions from the EKS module over to the new `aws-auth` sub-module definition (see before after diff above).
+
+#### ⚠️ Node IAM Roles
+
+You will need to add entries for any IAM roles used by nodegroups and/or Fargate profiles - the module no longer handles this in the background on behalf of users.
+
+When you apply the changes with the new sub-module, the configmap in the cluster will get updated with the contents provided in the sub-module definition, so please be sure all of the necessary entries are added before applying the changes.
+
+### authentication_mode = "API_AND_CONFIG_MAP"
+
+When using `authentication_mode = "API_AND_CONFIG_MAP"` and there are entries that will remain in the configmap (entries that cannot be replaced by cluster access entry), you will first need to update the `authentication_mode` on the cluster to `"API_AND_CONFIG_MAP"`. To help make this upgrade process easier, a copy of the changes defined in the [`v20.0.0`](https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2858) PR have been captured [here](https://github.com/clowdhaus/terraform-aws-eks-v20-migrate) but with the `aws-auth` components still provided in the module. This means you get the equivalent of the `v20.0.0` module, but it still includes support for the `aws-auth` configmap. You can follow the provided README on that interim migration module for the order of execution and return here once the `authentication_mode` has been updated to `"API_AND_CONFIG_MAP"`. Note - EKS automatically adds access entries for the roles used by EKS managed nodegroups and Fargate profiles; users do not need to do anything additional for these roles.
+
+Once the `authentication_mode` has been updated, next you will need to remove the configmap from the statefile to avoid any disruptions:
+
+```sh
+terraform state rm 'module.eks.kubernetes_config_map_v1_data.aws_auth[0]'
+terraform state rm 'module.eks.kubernetes_config_map.aws_auth[0]' # include if Terraform created the original configmap
+```
+
+#### ℹ️ Terraform 1.7+ users
+
+If you are using Terraform `v1.7+`, you can utilize the [`remove`](https://developer.hashicorp.com/terraform/language/resources/syntax#removing-resources) to facilitate both the removal of the configmap through code. You can create a fork/clone of the provided [migration module](https://github.com/clowdhaus/terraform-aws-eks-migrate-v19-to-v20) and add the `remove` blocks and apply those changes before proceeding. We do not want to force users onto the bleeding edge with this module, so we have not included `remove` support at this time.
+
+Once the configmap has been removed from the statefile, you can add the new `aws-auth` sub-module and copy the relevant definitions from the EKS module over to the new `aws-auth` sub-module definition (see before after diff above). When you apply the changes with the new sub-module, the configmap in the cluster will get updated with the contents provided in the sub-module definition, so please be sure all of the necessary entries are added before applying the changes. In the before/example above - the configmap would remove any entries for roles used by nodegroups and/or Fargate Profiles, but maintain the custom entries for users and roles passed into the module definition.
+
+### authentication_mode = "API"
+
+In order to switch to `API` only using cluster access entry, you first need to update the `authentication_mode` on the cluster to `API_AND_CONFIG_MAP` without modifying the `aws-auth` configmap. To help make this upgrade process easier, a copy of the changes defined in the [`v20.0.0`](https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2858) PR have been captured [here](https://github.com/clowdhaus/terraform-aws-eks-v20-migrate) but with the `aws-auth` components still provided in the module. This means you get the equivalent of the `v20.0.0` module, but it still includes support for the `aws-auth` configmap. You can follow the provided README on that interim migration module for the order of execution and return here once the `authentication_mode` has been updated to `"API_AND_CONFIG_MAP"`. Note - EKS automatically adds access entries for the roles used by EKS managed nodegroups and Fargate profiles; users do not need to do anything additional for these roles.
+
+Once the `authentication_mode` has been updated, you can update the `authentication_mode` on the cluster to `API` and remove the `aws-auth` configmap components.

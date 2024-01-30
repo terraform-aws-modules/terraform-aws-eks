@@ -29,7 +29,8 @@ module "eks" {
   cluster_endpoint_public_access  = false # Not available on Outpost
   cluster_endpoint_private_access = true
 
-  # Gives Terraform identity admin access to cluster
+  # Gives Terraform identity admin access to cluster which will
+  # allow deploying resources (EBS storage class) into the cluster
   enable_cluster_creator_admin_permissions = true
 
   vpc_id     = data.aws_vpc.this.id

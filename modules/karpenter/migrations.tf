@@ -1,5 +1,5 @@
 ################################################################################
-# Migrations: v19.x -> v20.0
+# Migrations: v19.21 -> v20.0
 ################################################################################
 
 # Node IAM role
@@ -42,4 +42,15 @@ moved {
 moved {
   from = aws_iam_role_policy_attachment.irsa_additional
   to   = aws_iam_role_policy_attachment.controller_additional
+}
+
+# Spelling correction
+moved {
+  from = aws_cloudwatch_event_target.this["spot_interupt"]
+  to   = aws_cloudwatch_event_target.this["spot_interrupt"]
+}
+
+moved {
+  from = aws_cloudwatch_event_rule.this["spot_interupt"]
+  to   = aws_cloudwatch_event_rule.this["spot_interrupt"]
 }

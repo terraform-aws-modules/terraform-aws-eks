@@ -259,9 +259,6 @@ module "fargate_profile" {
   # https://github.com/hashicorp/terraform/issues/31646#issuecomment-1217279031
   iam_role_additional_policies = lookup(each.value, "iam_role_additional_policies", lookup(var.fargate_profile_defaults, "iam_role_additional_policies", {}))
 
-  # Access entry
-  create_access_entry = try(each.value.create_access_entry, var.fargate_profile_defaults.create_access_entry, true)
-
   tags = merge(var.tags, try(each.value.tags, var.fargate_profile_defaults.tags, {}))
 }
 
@@ -364,9 +361,6 @@ module "eks_managed_node_group" {
   # To better understand why this `lookup()` logic is required, see:
   # https://github.com/hashicorp/terraform/issues/31646#issuecomment-1217279031
   iam_role_additional_policies = lookup(each.value, "iam_role_additional_policies", lookup(var.eks_managed_node_group_defaults, "iam_role_additional_policies", {}))
-
-  # Access entry
-  create_access_entry = try(each.value.create_access_entry, var.eks_managed_node_group_defaults.create_access_entry, true)
 
   # Autoscaling group schedule
   create_schedule = try(each.value.create_schedule, var.eks_managed_node_group_defaults.create_schedule, true)
