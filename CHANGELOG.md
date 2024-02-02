@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.21.0...v20.0.0) (2024-02-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* Replace the use of `aws-auth` configmap with EKS cluster access entry (#2858)
+
+### Features
+
+* Replace the use of `aws-auth` configmap with EKS cluster access entry ([#2858](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2858)) ([6b40bdb](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/6b40bdbb1d283d9259f43b03d24dca99cc1eceff))
+
 ## [19.21.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.20.0...v19.21.0) (2023-12-11)
 
 
