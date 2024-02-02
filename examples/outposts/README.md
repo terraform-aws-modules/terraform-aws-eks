@@ -39,7 +39,7 @@ Note that this example may create resources which cost money. Run `terraform des
 ```bash
 # Necessary to avoid removing Terraform's permissions too soon before its finished
 # cleaning up the resources it deployed inside the clsuter
-terraform state rm module.eks.aws_eks_access_entry.this["cluster_creator_admin"] || true
+terraform state rm 'module.eks.aws_eks_access_entry.this["cluster_creator_admin"]' || true
 terraform destroy
 ```
 
