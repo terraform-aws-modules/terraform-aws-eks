@@ -168,28 +168,22 @@ locals {
       for pol_key, pol_val in lookup(entry_val, "policy_associations", {}) :
       merge(
         {
-          principal_arn     = entry_val.principal_arn
-          kubernetes_groups = lookup(entry_val, "kubernetes_groups", [])
-          tags              = lookup(entry_val, "tags", {})
-          type              = lookup(entry_val, "type", "STANDARD")
-          user_name         = lookup(entry_val, "user_name", null)
+          principal_arn = entry_val.principal_arn
+          entry_key     = entry_key
+          pol_key       = pol_key
         },
         { for k, v in {
           association_policy_arn              = pol_val.policy_arn
           association_access_scope_type       = pol_val.access_scope.type
           association_access_scope_namespaces = lookup(pol_val.access_scope, "namespaces", [])
         } : k => v if !contains(["EC2_LINUX", "EC2_WINDOWS", "FARGATE_LINUX"], lookup(entry_val, "type", "STANDARD")) },
-        {
-          entry_key = entry_key
-          pol_key   = pol_key
-        }
       )
     ]
   ])
 }
 
 resource "aws_eks_access_entry" "this" {
-  for_each = { for k, v in local.flattened_access_entries : "${v.entry_key}_${v.pol_key}" => v if local.create }
+  for_each = { for k, v in local.merged_access_entries : k => v if local.create }
 
   cluster_name      = aws_eks_cluster.this[0].name
   kubernetes_groups = try(each.value.kubernetes_groups, [])

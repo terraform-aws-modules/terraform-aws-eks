@@ -72,12 +72,66 @@ module "eks" {
     }
   }
 
+  # Cluster access entry
+  # To add the current caller identity as an administrator
+  enable_cluster_creator_admin_permissions = true
+
+  access_entries = {
+    # One access entry with a policy associated
+    ex-single = {
+      kubernetes_groups = []
+      principal_arn     = "arn:aws:iam::123456789012:role/something"
+
+      policy_associations = {
+        single = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+          access_scope = {
+            namespaces = ["default"]
+            type       = "namespace"
+          }
+        }
+      }
+    }
+
+    # Example of adding multiple policies to a single access entry
+    ex-multiple = {
+      kubernetes_groups = []
+      principal_arn     = "arn:aws:iam::123456789012:role/something-else"
+
+      policy_associations = {
+        ex-one = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSEditPolicy"
+          access_scope = {
+            namespaces = ["default"]
+            type       = "namespace"
+          }
+        }
+        ex-two = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  }
+
   tags = {
     Environment = "dev"
     Terraform   = "true"
   }
 }
 ```
+
+### Cluster Access Entry
+
+When enabling `authentication_mode = "API_AND_CONFIG_MAP"`, EKS will automatically create an access entry for the IAM role(s) used by managed nodegroup(s) and Fargate profile(s). There are no additional actions required by users. For self-managed nodegroups and the Karpenter sub-module, this project automatically adds the access entry on behalf of users so there are no additional actions required by users.
+
+On clusters that were created prior to CAM support, there will be an existing access entry for the cluster creator. This was previously not visible when using `aws-auth` ConfigMap, but will become visible when access entry is enabled.
+
+### Bootstrap Cluster Creator Admin Permissions
+
+Setting the `bootstrap_cluster_creator_admin_permissions` is a one time operation when the cluster is created; it cannot be modified later through the EKS API. In this project we are hardcoding this to `false`. If users wish to achieve the same functionality, we will do that through an access entry which can be enabled or disabled at any time of their choosing using the variable `enable_cluster_creator_admin_permissions`
 
 ## Examples
 
