@@ -2,24 +2,12 @@ provider "aws" {
   region = local.region
 }
 
-provider "kubernetes" {
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
-  }
-}
-
 data "aws_caller_identity" "current" {}
 data "aws_availability_zones" "available" {}
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.27"
+  cluster_version = "1.29"
   region          = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
@@ -59,9 +47,12 @@ module "eks" {
   subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.intra_subnets
 
-  # Self managed node groups will not automatically create the aws-auth configmap so we need to
-  create_aws_auth_configmap = true
-  manage_aws_auth_configmap = true
+  # External encryption key
+  create_kms_key = false
+  cluster_encryption_config = {
+    resources        = ["secrets"]
+    provider_key_arn = module.kms.key_arn
+  }
 
   self_managed_node_group_defaults = {
     # enable discovery of autoscaling groups by cluster-autoscaler
@@ -139,36 +130,6 @@ module "eks" {
           },
         ]
       }
-    }
-
-    efa = {
-      min_size     = 1
-      max_size     = 2
-      desired_size = 1
-
-      # aws ec2 describe-instance-types --region eu-west-1 --filters Name=network-info.efa-supported,Values=true --query "InstanceTypes[*].[InstanceType]" --output text | sort
-      instance_type = "c5n.9xlarge"
-
-      post_bootstrap_user_data = <<-EOT
-        # Install EFA
-        curl -O https://efa-installer.amazonaws.com/aws-efa-installer-latest.tar.gz
-        tar -xf aws-efa-installer-latest.tar.gz && cd aws-efa-installer
-        ./efa_installer.sh -y --minimal
-        fi_info -p efa -t FI_EP_RDM
-
-        # Disable ptrace
-        sysctl -w kernel.yama.ptrace_scope=0
-      EOT
-
-      network_interfaces = [
-        {
-          description                 = "EFA interface example"
-          delete_on_termination       = true
-          device_index                = 0
-          associate_public_ip_address = false
-          interface_type              = "efa"
-        }
-      ]
     }
 
     # Complete
@@ -287,12 +248,6 @@ module "eks" {
         additional                         = aws_iam_policy.additional.arn
       }
 
-      timeouts = {
-        create = "80m"
-        update = "80m"
-        delete = "80m"
-      }
-
       tags = {
         ExtraTag = "Self managed node group complete example"
       }
@@ -302,13 +257,19 @@ module "eks" {
   tags = local.tags
 }
 
+module "disabled_self_managed_node_group" {
+  source = "../../modules/self-managed-node-group"
+
+  create = false
+}
+
 ################################################################################
 # Supporting Resources
 ################################################################################
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   name = local.name
   cidr = local.vpc_cidr
@@ -364,7 +325,7 @@ module "key_pair" {
 
 module "ebs_kms_key" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 1.5"
+  version = "~> 2.0"
 
   description = "Customer managed key to encrypt EKS managed node group volumes"
 
@@ -382,6 +343,18 @@ module "ebs_kms_key" {
 
   # Aliases
   aliases = ["eks/${local.name}/ebs"]
+
+  tags = local.tags
+}
+
+module "kms" {
+  source  = "terraform-aws-modules/kms/aws"
+  version = "~> 2.1"
+
+  aliases               = ["eks/${local.name}"]
+  description           = "${local.name} cluster encryption key"
+  enable_default_policy = true
+  key_owners            = [data.aws_caller_identity.current.arn]
 
   tags = local.tags
 }

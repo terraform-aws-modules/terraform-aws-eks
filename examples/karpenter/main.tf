@@ -7,18 +7,6 @@ provider "aws" {
   alias  = "virginia"
 }
 
-provider "kubernetes" {
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
-  }
-}
-
 provider "helm" {
   kubernetes {
     host                   = module.eks.cluster_endpoint
@@ -54,7 +42,7 @@ data "aws_ecrpublic_authorization_token" "token" {
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.27"
+  cluster_version = "1.28"
   region          = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
@@ -78,9 +66,11 @@ module "eks" {
   cluster_version                = local.cluster_version
   cluster_endpoint_public_access = true
 
+  # Gives Terraform identity admin access to cluster which will
+  # allow deploying resources (Karpenter) into the cluster
+  enable_cluster_creator_admin_permissions = true
+
   cluster_addons = {
-    kube-proxy = {}
-    vpc-cni    = {}
     coredns = {
       configuration_values = jsonencode({
         computeType = "Fargate"
@@ -106,6 +96,8 @@ module "eks" {
         }
       })
     }
+    kube-proxy = {}
+    vpc-cni    = {}
   }
 
   vpc_id                   = module.vpc.vpc_id
@@ -115,19 +107,6 @@ module "eks" {
   # Fargate profiles use the cluster primary security group so these are not utilized
   create_cluster_security_group = false
   create_node_security_group    = false
-
-  manage_aws_auth_configmap = true
-  aws_auth_roles = [
-    # We need to add in the Karpenter node IAM role for nodes launched by Karpenter
-    {
-      rolearn  = module.karpenter.role_arn
-      username = "system:node:{{EC2PrivateDNSName}}"
-      groups = [
-        "system:bootstrappers",
-        "system:nodes",
-      ]
-    },
-  ]
 
   fargate_profiles = {
     karpenter = {
@@ -157,41 +136,51 @@ module "eks" {
 module "karpenter" {
   source = "../../modules/karpenter"
 
-  cluster_name           = module.eks.cluster_name
+  cluster_name = module.eks.cluster_name
+
+  # EKS Fargate currently does not support Pod Identity
+  enable_irsa            = true
   irsa_oidc_provider_arn = module.eks.oidc_provider_arn
 
-  # In v0.32.0/v1beta1, Karpenter now creates the IAM instance profile
-  # so we disable the Terraform creation and add the necessary permissions for Karpenter IRSA
-  enable_karpenter_instance_profile_creation = true
-
   # Used to attach additional IAM policies to the Karpenter node IAM role
-  iam_role_additional_policies = {
+  node_iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }
 
   tags = local.tags
 }
 
-resource "helm_release" "karpenter" {
-  namespace        = "karpenter"
-  create_namespace = true
+module "karpenter_disabled" {
+  source = "../../modules/karpenter"
 
+  create = false
+}
+
+################################################################################
+# Karpenter Helm chart & manifests
+# Not required; just to demonstrate functionality of the sub-module
+################################################################################
+
+resource "helm_release" "karpenter" {
+  namespace           = "karpenter"
+  create_namespace    = true
   name                = "karpenter"
   repository          = "oci://public.ecr.aws/karpenter"
   repository_username = data.aws_ecrpublic_authorization_token.token.user_name
   repository_password = data.aws_ecrpublic_authorization_token.token.password
   chart               = "karpenter"
-  version             = "v0.32.1"
+  version             = "v0.33.1"
+  wait                = false
 
   values = [
     <<-EOT
     settings:
       clusterName: ${module.eks.cluster_name}
       clusterEndpoint: ${module.eks.cluster_endpoint}
-      interruptionQueueName: ${module.karpenter.queue_name}
+      interruptionQueue: ${module.karpenter.queue_name}
     serviceAccount:
       annotations:
-        eks.amazonaws.com/role-arn: ${module.karpenter.irsa_arn} 
+        eks.amazonaws.com/role-arn: ${module.karpenter.iam_role_arn}
     EOT
   ]
 }
@@ -204,7 +193,7 @@ resource "kubectl_manifest" "karpenter_node_class" {
       name: default
     spec:
       amiFamily: AL2
-      role: ${module.karpenter.role_name}
+      role: ${module.karpenter.node_iam_role_name}
       subnetSelectorTerms:
         - tags:
             karpenter.sh/discovery: ${module.eks.cluster_name}

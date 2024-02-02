@@ -121,6 +121,69 @@ module "eks_mng_bottlerocket_custom_template" {
   EOT
 }
 
+# EKS managed node group - windows
+module "eks_mng_windows_no_op" {
+  source = "../../modules/_user_data"
+
+  platform = "windows"
+}
+
+module "eks_mng_windows_additional" {
+  source = "../../modules/_user_data"
+
+  platform = "windows"
+
+  pre_bootstrap_user_data = <<-EOT
+    [string]$Something = 'IDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
+  EOT
+}
+
+module "eks_mng_windows_custom_ami" {
+  source = "../../modules/_user_data"
+
+  platform = "windows"
+
+  cluster_name        = local.name
+  cluster_endpoint    = local.cluster_endpoint
+  cluster_auth_base64 = local.cluster_auth_base64
+
+  enable_bootstrap_user_data = true
+
+  pre_bootstrap_user_data = <<-EOT
+    [string]$Something = 'IDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
+  EOT
+  # I don't know if this is the right way on Windows, but its just a string check here anyways
+  bootstrap_extra_args = "-KubeletExtraArgs --node-labels=node.kubernetes.io/lifecycle=spot"
+
+  post_bootstrap_user_data = <<-EOT
+    [string]$Something = 'IStillDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
+  EOT
+}
+
+module "eks_mng_windows_custom_template" {
+  source = "../../modules/_user_data"
+
+  platform = "windows"
+
+  cluster_name        = local.name
+  cluster_endpoint    = local.cluster_endpoint
+  cluster_auth_base64 = local.cluster_auth_base64
+
+  enable_bootstrap_user_data = true
+
+  user_data_template_path = "${path.module}/templates/windows_custom.tpl"
+
+  pre_bootstrap_user_data = <<-EOT
+    [string]$Something = 'IDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
+  EOT
+  # I don't know if this is the right way on Windows, but its just a string check here anyways
+  bootstrap_extra_args = "-KubeletExtraArgs --node-labels=node.kubernetes.io/lifecycle=spot"
+
+  post_bootstrap_user_data = <<-EOT
+    [string]$Something = 'IStillDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
+  EOT
+}
+
 # Self managed node group - linux
 module "self_mng_linux_no_op" {
   source = "../../modules/_user_data"
@@ -247,7 +310,7 @@ module "self_mng_windows_bootstrap" {
   pre_bootstrap_user_data = <<-EOT
     [string]$Something = 'IDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
   EOT
-  # I don't know if this is the right way on WindowsOS, but its just a string check here anyways
+  # I don't know if this is the right way on Windows, but its just a string check here anyways
   bootstrap_extra_args = "-KubeletExtraArgs --node-labels=node.kubernetes.io/lifecycle=spot"
 
   post_bootstrap_user_data = <<-EOT
@@ -272,7 +335,7 @@ module "self_mng_windows_custom_template" {
   pre_bootstrap_user_data = <<-EOT
     [string]$Something = 'IDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
   EOT
-  # I don't know if this is the right way on WindowsOS, but its just a string check here anyways
+  # I don't know if this is the right way on Windows, but its just a string check here anyways
   bootstrap_extra_args = "-KubeletExtraArgs --node-labels=node.kubernetes.io/lifecycle=spot"
 
   post_bootstrap_user_data = <<-EOT

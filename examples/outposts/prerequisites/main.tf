@@ -23,7 +23,7 @@ locals {
 
 module "ssm_bastion_ec2" {
   source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "~> 4.2"
+  version = "~> 5.5"
 
   name = "${local.name}-bastion"
 
@@ -56,7 +56,7 @@ module "ssm_bastion_ec2" {
     rm terraform_${local.terraform_version}_linux_amd64.zip 2> /dev/null
 
     # Install kubectl
-    curl -LO https://dl.k8s.io/release/v1.27.0/bin/linux/amd64/kubectl
+    curl -LO https://dl.k8s.io/release/v1.29.0/bin/linux/amd64/kubectl
     install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
     # Remove default awscli which is v1 - we want latest v2
@@ -80,7 +80,7 @@ module "ssm_bastion_ec2" {
 
 module "bastion_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   name        = "${local.name}-bastion"
   description = "Security group to allow provisioning ${local.name} EKS local cluster on Outposts"

@@ -38,9 +38,11 @@ locals {
 
     }
     windows = {
-      user_data = var.create && var.platform == "windows" && var.enable_bootstrap_user_data ? base64encode(templatefile(
+      user_data = var.create && var.platform == "windows" && (var.enable_bootstrap_user_data || var.user_data_template_path != "" || var.pre_bootstrap_user_data != "") ? base64encode(templatefile(
         coalesce(var.user_data_template_path, "${path.module}/../../templates/windows_user_data.tpl"),
         {
+          # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
+          enable_bootstrap_user_data = var.enable_bootstrap_user_data
           # Required to bootstrap node
           cluster_name        = var.cluster_name
           cluster_endpoint    = var.cluster_endpoint

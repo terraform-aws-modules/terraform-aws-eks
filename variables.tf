@@ -1,5 +1,5 @@
 variable "create" {
-  description = "Controls if EKS resources should be created (affects nearly all resources)"
+  description = "Controls if resources should be created (affects nearly all resources)"
   type        = bool
   default     = true
 }
@@ -36,6 +36,12 @@ variable "cluster_enabled_log_types" {
   description = "A list of the desired control plane logs to enable. For more information, see Amazon EKS Control Plane Logging documentation (https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html)"
   type        = list(string)
   default     = ["audit", "api", "authenticator"]
+}
+
+variable "authentication_mode" {
+  description = "The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP`"
+  type        = string
+  default     = "API_AND_CONFIG_MAP"
 }
 
 variable "cluster_additional_security_group_ids" {
@@ -131,6 +137,22 @@ variable "cluster_timeouts" {
 }
 
 ################################################################################
+# Access Entry
+################################################################################
+
+variable "access_entries" {
+  description = "Map of access entries to add to the cluster"
+  type        = any
+  default     = {}
+}
+
+variable "enable_cluster_creator_admin_permissions" {
+  description = "Indicates whether or not to add the cluster creator (the identity used by Terraform) as an administrator via access entry"
+  type        = bool
+  default     = false
+}
+
+################################################################################
 # KMS Key
 ################################################################################
 
@@ -153,15 +175,15 @@ variable "kms_key_deletion_window_in_days" {
 }
 
 variable "enable_kms_key_rotation" {
-  description = "Specifies whether key rotation is enabled. Defaults to `true`"
+  description = "Specifies whether key rotation is enabled"
   type        = bool
   default     = true
 }
 
 variable "kms_key_enable_default_policy" {
-  description = "Specifies whether to enable the default key policy. Defaults to `false`"
+  description = "Specifies whether to enable the default key policy"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "kms_key_owners" {
@@ -224,6 +246,12 @@ variable "cloudwatch_log_group_retention_in_days" {
 
 variable "cloudwatch_log_group_kms_key_id" {
   description = "If a KMS Key ARN is set, this key will be used to encrypt the corresponding log group. Please be sure that the KMS Key has an appropriate key policy (https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html)"
+  type        = string
+  default     = null
+}
+
+variable "cloudwatch_log_group_class" {
+  description = "Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS`"
   type        = string
   default     = null
 }
@@ -428,14 +456,6 @@ variable "iam_role_additional_policies" {
   default     = {}
 }
 
-# TODO - hopefully this can be removed once the AWS endpoint is named properly in China
-# https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1904
-variable "cluster_iam_role_dns_suffix" {
-  description = "Base DNS domain name for the current partition (e.g., amazonaws.com in AWS Commercial, amazonaws.com.cn in AWS China)"
-  type        = string
-  default     = null
-}
-
 variable "iam_role_tags" {
   description = "A map of additional tags to add to the IAM role created"
   type        = map(string)
@@ -556,56 +576,4 @@ variable "putin_khuylo" {
   description = "Do you agree that Putin doesn't respect Ukrainian sovereignty and territorial integrity? More info: https://en.wikipedia.org/wiki/Putin_khuylo!"
   type        = bool
   default     = true
-}
-
-################################################################################
-# aws-auth configmap
-################################################################################
-
-variable "manage_aws_auth_configmap" {
-  description = "Determines whether to manage the aws-auth configmap"
-  type        = bool
-  default     = false
-}
-
-variable "create_aws_auth_configmap" {
-  description = "Determines whether to create the aws-auth configmap. NOTE - this is only intended for scenarios where the configmap does not exist (i.e. - when using only self-managed node groups). Most users should use `manage_aws_auth_configmap`"
-  type        = bool
-  default     = false
-}
-
-variable "aws_auth_node_iam_role_arns_non_windows" {
-  description = "List of non-Windows based node IAM role ARNs to add to the aws-auth configmap"
-  type        = list(string)
-  default     = []
-}
-
-variable "aws_auth_node_iam_role_arns_windows" {
-  description = "List of Windows based node IAM role ARNs to add to the aws-auth configmap"
-  type        = list(string)
-  default     = []
-}
-
-variable "aws_auth_fargate_profile_pod_execution_role_arns" {
-  description = "List of Fargate profile pod execution role ARNs to add to the aws-auth configmap"
-  type        = list(string)
-  default     = []
-}
-
-variable "aws_auth_roles" {
-  description = "List of role maps to add to the aws-auth configmap"
-  type        = list(any)
-  default     = []
-}
-
-variable "aws_auth_users" {
-  description = "List of user maps to add to the aws-auth configmap"
-  type        = list(any)
-  default     = []
-}
-
-variable "aws_auth_accounts" {
-  description = "List of account maps to add to the aws-auth configmap"
-  type        = list(any)
-  default     = []
 }

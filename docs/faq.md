@@ -57,14 +57,6 @@ If you require a public endpoint, setting up both (public and private) and restr
 
 The module is configured to ignore this value. Unfortunately, Terraform does not support variables within the `lifecycle` block. The setting is ignored to allow autoscaling via controllers such as cluster autoscaler or Karpenter to work properly and without interference by Terraform. Changing the desired count must be handled outside of Terraform once the node group is created.
 
-### How can I deploy Windows based nodes?
-
-To enable Windows support for your EKS cluster, you will need to apply some configuration manually. See the [Enabling Windows Support (Windows/MacOS/Linux)](https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support).
-
-In addition, Windows based nodes require an additional cluster RBAC role (`eks:kube-proxy-windows`).
-
-Note: Windows based node support is limited to a default user data template that is provided due to the lack of Windows support and manual steps required to provision Windows based EKS nodes.
-
 ### How do I access compute resource attributes?
 
 Examples of accessing the attributes of the compute resource(s) created by the root module are shown below. Note - the assumption is that your cluster module definition is named `eks` as in `module "eks" { ... }`:

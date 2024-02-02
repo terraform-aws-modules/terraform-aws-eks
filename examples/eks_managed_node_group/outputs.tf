@@ -48,6 +48,15 @@ output "cluster_primary_security_group_id" {
 }
 
 ################################################################################
+# Access Entry
+################################################################################
+
+output "access_entries" {
+  description = "Map of access entries created and their attributes"
+  value       = module.eks.access_entries
+}
+
+################################################################################
 # KMS Key
 ################################################################################
 
@@ -199,13 +208,4 @@ output "self_managed_node_groups" {
 output "self_managed_node_groups_autoscaling_group_names" {
   description = "List of the autoscaling group names created by self-managed node groups"
   value       = module.eks.self_managed_node_groups_autoscaling_group_names
-}
-
-################################################################################
-# Additional
-################################################################################
-
-output "aws_auth_configmap_yaml" {
-  description = "Formatted yaml output for base aws-auth configmap containing roles used in cluster node groups/fargate profiles"
-  value       = module.eks.aws_auth_configmap_yaml
 }

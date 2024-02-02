@@ -476,6 +476,12 @@ variable "initial_lifecycle_hooks" {
   default     = []
 }
 
+variable "instance_maintenance_policy" {
+  description = "If this block is configured, add a instance maintenance policy to the specified Auto Scaling group"
+  type        = any
+  default     = {}
+}
+
 variable "instance_refresh" {
   description = "If this block is configured, start an Instance Refresh when this Auto Scaling Group is updated"
   type        = any
@@ -514,22 +520,6 @@ variable "delete_timeout" {
 variable "autoscaling_group_tags" {
   description = "A map of additional tags to add to the autoscaling group created. Tags are applied to the autoscaling group only and are NOT propagated to instances"
   type        = map(string)
-  default     = {}
-}
-
-################################################################################
-# Autoscaling group schedule
-################################################################################
-
-variable "create_schedule" {
-  description = "Determines whether to create autoscaling group schedule or not"
-  type        = bool
-  default     = true
-}
-
-variable "schedules" {
-  description = "Map of autoscaling group schedule to create"
-  type        = map(any)
   default     = {}
 }
 
@@ -600,5 +590,37 @@ variable "iam_role_additional_policies" {
 variable "iam_role_tags" {
   description = "A map of additional tags to add to the IAM role created"
   type        = map(string)
+  default     = {}
+}
+
+################################################################################
+# Access Entry
+################################################################################
+
+variable "create_access_entry" {
+  description = "Determines whether an access entry is created for the IAM role used by the nodegroup"
+  type        = bool
+  default     = true
+}
+
+variable "iam_role_arn" {
+  description = "ARN of the IAM role used by the instance profile. Required when `create_access_entry = true` and `create_iam_instance_profile = false`"
+  type        = string
+  default     = null
+}
+
+################################################################################
+# Autoscaling group schedule
+################################################################################
+
+variable "create_schedule" {
+  description = "Determines whether to create autoscaling group schedule or not"
+  type        = bool
+  default     = true
+}
+
+variable "schedules" {
+  description = "Map of autoscaling group schedule to create"
+  type        = map(any)
   default     = {}
 }

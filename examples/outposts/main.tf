@@ -2,21 +2,9 @@ provider "aws" {
   region = var.region
 }
 
-provider "kubernetes" {
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    #                           Note: `cluster_id` is used with Outposts for auth
-    args = ["eks", "get-token", "--cluster-id", module.eks.cluster_id, "--region", var.region]
-  }
-}
-
 locals {
   name            = "ex-${basename(path.cwd)}"
-  cluster_version = "1.27" # Required by EKS on Outposts
+  cluster_version = "1.29"
 
   outpost_arn   = element(tolist(data.aws_outposts_outposts.this.arns), 0)
   instance_type = element(tolist(data.aws_outposts_outpost_instance_types.this.instance_types), 0)
@@ -41,6 +29,10 @@ module "eks" {
   cluster_endpoint_public_access  = false # Not available on Outpost
   cluster_endpoint_private_access = true
 
+  # Gives Terraform identity admin access to cluster which will
+  # allow deploying resources (EBS storage class) into the cluster
+  enable_cluster_creator_admin_permissions = true
+
   vpc_id     = data.aws_vpc.this.id
   subnet_ids = data.aws_subnets.this.ids
 
@@ -48,9 +40,6 @@ module "eks" {
     control_plane_instance_type = local.instance_type
     outpost_arns                = [local.outpost_arn]
   }
-
-  # Local clusters will automatically add the node group IAM role to the aws-auth configmap
-  manage_aws_auth_configmap = true
 
   # Extend cluster security group rules
   cluster_security_group_additional_rules = {
