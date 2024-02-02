@@ -33,20 +33,6 @@ provider "helm" {
   }
 }
 
-provider "kubectl" {
-  apply_retry_count      = 5
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-  load_config_file       = false
-
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
-  }
-}
-
 data "aws_availability_zones" "available" {}
 data "aws_ecrpublic_authorization_token" "token" {
   provider = aws.virginia
@@ -191,13 +177,13 @@ resource "helm_release" "karpenter" {
       interruptionQueueName: ${module.karpenter.queue_name}
     serviceAccount:
       annotations:
-        eks.amazonaws.com/role-arn: ${module.karpenter.irsa_arn} 
+        eks.amazonaws.com/role-arn: ${module.karpenter.irsa_arn}
     EOT
   ]
 }
 
-resource "kubectl_manifest" "karpenter_node_class" {
-  yaml_body = <<-YAML
+resource "kubernetes_manifest" "karpenter_node_class" {
+  manifest = <<-YAML
     apiVersion: karpenter.k8s.aws/v1beta1
     kind: EC2NodeClass
     metadata:
@@ -220,8 +206,8 @@ resource "kubectl_manifest" "karpenter_node_class" {
   ]
 }
 
-resource "kubectl_manifest" "karpenter_node_pool" {
-  yaml_body = <<-YAML
+resource "kubernetes_manifest" "karpenter_node_pool" {
+  manifest = <<-YAML
     apiVersion: karpenter.sh/v1beta1
     kind: NodePool
     metadata:
@@ -258,8 +244,8 @@ resource "kubectl_manifest" "karpenter_node_pool" {
 
 # Example deployment using the [pause image](https://www.ianlewis.org/en/almighty-pause-container)
 # and starts with zero replicas
-resource "kubectl_manifest" "karpenter_example_deployment" {
-  yaml_body = <<-YAML
+resource "kubernetes_manifest" "karpenter_example_deployment" {
+  manifest = <<-YAML
     apiVersion: apps/v1
     kind: Deployment
     metadata:
