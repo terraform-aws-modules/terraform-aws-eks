@@ -14,7 +14,7 @@ In the following example, the Karpenter module will create:
 
 ```hcl
 module "eks" {
-  source = "terraform-aws-modules/eks"
+  source = "terraform-aws-modules/eks/aws"
 
   ...
 }
