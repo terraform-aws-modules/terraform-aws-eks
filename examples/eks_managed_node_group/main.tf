@@ -35,6 +35,8 @@ module "eks" {
   cluster_ip_family          = "ipv6"
   create_cni_ipv6_iam_policy = true
 
+  enable_cluster_creator_admin_permissions = true
+
   cluster_addons = {
     coredns = {
       most_recent = true
@@ -241,6 +243,46 @@ module "eks" {
     }
   }
 
+  access_entries = {
+    # One access entry with a policy associated
+    ex-single = {
+      kubernetes_groups = []
+      principal_arn     = aws_iam_role.this["single"].arn
+
+      policy_associations = {
+        single = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+          access_scope = {
+            namespaces = ["default"]
+            type       = "namespace"
+          }
+        }
+      }
+    }
+
+    # Example of adding multiple policies to a single access entry
+    ex-multiple = {
+      kubernetes_groups = []
+      principal_arn     = aws_iam_role.this["multiple"].arn
+
+      policy_associations = {
+        ex-one = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSEditPolicy"
+          access_scope = {
+            namespaces = ["default"]
+            type       = "namespace"
+          }
+        }
+        ex-two = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  }
+
   tags = local.tags
 }
 
@@ -435,4 +477,27 @@ data "aws_ami" "eks_default_bottlerocket" {
     name   = "name"
     values = ["bottlerocket-aws-k8s-${local.cluster_version}-x86_64-*"]
   }
+}
+
+resource "aws_iam_role" "this" {
+  for_each = toset(["single", "multiple"])
+
+  name = "ex-${each.key}"
+
+  # Just using for this example
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = "Example"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      },
+    ]
+  })
+
+  tags = local.tags
 }
