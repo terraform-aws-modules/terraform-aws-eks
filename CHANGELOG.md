@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [20.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.0.0...v20.0.1) (2024-02-03)
+
+
+### Bug Fixes
+
+* Correct cluster access entry to create multiple policy associations per access entry ([#2892](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2892)) ([4177913](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/417791374cf72dfb673105359463398eb4a75d6e))
+
 ## [20.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v19.21.0...v20.0.0) (2024-02-02)
 
 
