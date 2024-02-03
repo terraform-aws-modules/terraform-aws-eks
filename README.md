@@ -14,10 +14,12 @@ Terraform module which creates AWS EKS (Kubernetes) resources
   - [Upgrade to v17.x](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/UPGRADE-17.0.md)
   - [Upgrade to v18.x](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/UPGRADE-18.0.md)
   - [Upgrade to v19.x](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/UPGRADE-19.0.md)
+  - [Upgrade to v20.x](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/UPGRADE-19.0.md)
 
 ### External Documentation
 
 Please note that we strive to provide a comprehensive suite of documentation for __*configuring and utilizing the module(s)*__ defined here, and that documentation regarding EKS (including EKS managed node group, self managed node group, and Fargate profile) and/or Kubernetes features, usage, etc. are better left up to their respective sources:
+
 - [AWS EKS Documentation](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
 - [Kubernetes Documentation](https://kubernetes.io/docs/home/)
 
@@ -78,38 +80,16 @@ module "eks" {
 
   access_entries = {
     # One access entry with a policy associated
-    ex-single = {
+    example = {
       kubernetes_groups = []
       principal_arn     = "arn:aws:iam::123456789012:role/something"
 
       policy_associations = {
-        single = {
+        example = {
           policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
           access_scope = {
             namespaces = ["default"]
             type       = "namespace"
-          }
-        }
-      }
-    }
-
-    # Example of adding multiple policies to a single access entry
-    ex-multiple = {
-      kubernetes_groups = []
-      principal_arn     = "arn:aws:iam::123456789012:role/something-else"
-
-      policy_associations = {
-        ex-one = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSEditPolicy"
-          access_scope = {
-            namespaces = ["default"]
-            type       = "namespace"
-          }
-        }
-        ex-two = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
-          access_scope = {
-            type = "cluster"
           }
         }
       }
