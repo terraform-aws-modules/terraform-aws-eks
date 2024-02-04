@@ -186,7 +186,7 @@ resource "aws_eks_access_entry" "this" {
   for_each = { for k, v in local.merged_access_entries : k => v if local.create }
 
   cluster_name      = aws_eks_cluster.this[0].name
-  kubernetes_groups = try(each.value.kubernetes_groups, [])
+  kubernetes_groups = try(each.value.kubernetes_groups, null)
   principal_arn     = each.value.principal_arn
   type              = try(each.value.type, "STANDARD")
   user_name         = try(each.value.user_name, null)
