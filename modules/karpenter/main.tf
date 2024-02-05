@@ -22,15 +22,19 @@ data "aws_iam_policy_document" "controller_assume_role" {
   count = local.create_iam_role ? 1 : 0
 
   # Pod Identity
-  statement {
-    actions = [
-      "sts:AssumeRole",
-      "sts:TagSession",
-    ]
+  dynamic "statement" {
+    for_each = var.enable_pod_identities ? [1] : []
 
-    principals {
-      type        = "Service"
-      identifiers = ["pods.eks.amazonaws.com"]
+    content {
+      actions = [
+        "sts:AssumeRole",
+        "sts:TagSession",
+      ]
+
+      principals {
+        type        = "Service"
+        identifiers = ["pods.eks.amazonaws.com"]
+      }
     }
   }
 
