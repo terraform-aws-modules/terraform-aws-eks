@@ -67,7 +67,7 @@ module "karpenter" {
   cluster_name = module.eks.cluster_name
 
   create_iam_role = false
-  iam_role_arn    = module.eks.eks_managed_node_groups["initial"].iam_role_arn
+  node_iam_role_arn    = module.eks.eks_managed_node_groups["initial"].iam_role_arn
 
   # Since the nodegroup role will already have an access entry
   create_access_entry = false
