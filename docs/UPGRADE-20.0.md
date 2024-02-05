@@ -6,7 +6,7 @@ Please consult the `examples` directory for reference example configurations. If
 
 - Minium supported AWS provider version increased to `v5.34`
 - Minimum supported Terraform version increased to `v1.3` to support Terraform state `moved` blocks as well as other advanced features
-- The `resolve_conflicts` argument within the `cluster_addons` configuration has been replaced with `resolve_conflicts_on_create` and `resolve_conflicts_on_delete` now that `resolve_conflicts` is deprecated
+- The `resolve_conflicts` argument within the `cluster_addons` configuration has been replaced with `resolve_conflicts_on_create` and `resolve_conflicts_on_update` now that `resolve_conflicts` is deprecated
 - The default/fallback value for the `preserve` argument of `cluster_addons`is now set to `true`. This has shown to be useful for users deprovisioning clusters while avoiding the situation where the CNI is deleted too early and causes resources to be left orphaned resulting in conflicts.
 - The Karpenter sub-module's use of the `irsa` naming convention has been removed, along with an update to the Karpenter controller IAM policy to align with Karpenter's `v1beta1`/`v0.32` changes. Instead of referring to the role as `irsa` or `pod_identity`, its simply just an IAM role used by the Karpenter controller and there is support for use with either IRSA and/or Pod Identity (default) at this time
 - The `aws-auth` ConfigMap resources have been moved to a standalone sub-module. This removes the Kubernetes provider requirement from the main module and allows for the `aws-auth` ConfigMap to be managed independently of the main module. This sub-module will be removed entirely in the next major release.
