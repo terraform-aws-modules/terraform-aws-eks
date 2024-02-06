@@ -104,12 +104,18 @@ variable "ami_id_ssm_parameter_arns" {
   default     = []
 }
 
+variable "enable_pod_identity" {
+  description = "Determines whether to enable support for EKS pod identity"
+  type        = bool
+  default     = true
+}
+
 ################################################################################
 # IAM Role for Service Account (IRSA)
 ################################################################################
 
 variable "enable_irsa" {
-  description = "Determines whether to enable support IAM role for service account"
+  description = "Determines whether to enable support for IAM role for service accounts"
   type        = bool
   default     = false
 }
