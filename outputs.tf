@@ -62,7 +62,7 @@ output "access_entries" {
 }
 
 output "access_policy_associations" {
-  description = "Map of eks cluster policy associations created and their attributes"
+  description = "Map of eks cluster access policy associations created and their attributes"
   value       = aws_eks_access_policy_association.this
 }
 
