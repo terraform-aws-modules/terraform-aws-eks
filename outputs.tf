@@ -61,6 +61,11 @@ output "access_entries" {
   value       = aws_eks_access_entry.this
 }
 
+output "access_policy_associations" {
+  description = "Map of eks cluster policy associations created and their attributes"
+  value       = aws_eks_access_policy_association.this
+}
+
 ################################################################################
 # KMS Key
 ################################################################################
