@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [20.1.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.1.0...v20.1.1) (2024-02-06)
+
+
+### Bug Fixes
+
+* Update access entries `kubernetes_groups` default value to `null` ([#2897](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2897)) ([1e32e6a](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/1e32e6a9f8a389b1a4969dde697d34ba4e3c85ac))
+
 ## [20.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.0.1...v20.1.0) (2024-02-06)
 
 
