@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.1.1...v20.2.0) (2024-02-06)
+
+
+### Features
+
+* Allow enable/disable of EKS pod identity for the Karpenter controller ([#2902](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2902)) ([cc6919d](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/cc6919de811f3972815d4ca26e5e0c8f64c2b894))
+
 ### [20.1.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.1.0...v20.1.1) (2024-02-06)
 
 
