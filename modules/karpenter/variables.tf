@@ -104,8 +104,8 @@ variable "ami_id_ssm_parameter_arns" {
   default     = []
 }
 
-variable "enable_pod_identities" {
-  description = "Determines whether to enable support for EKS pod identities"
+variable "enable_pod_identity" {
+  description = "Determines whether to enable support for EKS pod identity"
   type        = bool
   default     = true
 }

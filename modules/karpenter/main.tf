@@ -23,7 +23,7 @@ data "aws_iam_policy_document" "controller_assume_role" {
 
   # Pod Identity
   dynamic "statement" {
-    for_each = var.enable_pod_identities ? [1] : []
+    for_each = var.enable_pod_identity ? [1] : []
 
     content {
       actions = [
