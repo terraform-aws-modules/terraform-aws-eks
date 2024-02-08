@@ -257,7 +257,7 @@ data "aws_iam_policy_document" "controller" {
 
     content {
       sid       = "AllowInterruptionQueueActions"
-      resources = [aws_sqs_queue.this[0].arn]
+      resources = [try(aws_sqs_queue.this[0].arn, null)]
       actions = [
         "sqs:DeleteMessage",
         "sqs:GetQueueAttributes",
