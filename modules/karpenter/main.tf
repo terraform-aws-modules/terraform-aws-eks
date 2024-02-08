@@ -252,15 +252,19 @@ data "aws_iam_policy_document" "controller" {
     actions   = ["pricing:GetProducts"]
   }
 
-  statement {
-    sid       = "AllowInterruptionQueueActions"
-    resources = [aws_sqs_queue.this[0].arn]
-    actions = [
-      "sqs:DeleteMessage",
-      "sqs:GetQueueAttributes",
-      "sqs:GetQueueUrl",
-      "sqs:ReceiveMessage"
-    ]
+  dynamic "statement" {
+    for_each = local.enable_spot_termination ? [1] : []
+
+    content {
+      sid       = "AllowInterruptionQueueActions"
+      resources = [try(aws_sqs_queue.this[0].arn, null)]
+      actions = [
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage"
+      ]
+    }
   }
 
   statement {
