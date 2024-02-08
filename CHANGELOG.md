@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [20.2.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.2.0...v20.2.1) (2024-02-08)
+
+
+### Bug Fixes
+
+* Karpenter `enable_spot_termination = false` should not result in an error ([#2907](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2907)) ([671fc6e](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/671fc6e627d957ada47ef3f33068d715e79d25d6))
+
 ## [20.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.1.1...v20.2.0) (2024-02-06)
 
 
