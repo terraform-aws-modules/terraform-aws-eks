@@ -35,7 +35,7 @@ module "eks" {
     vpc-cni    = {}
     coredns = {
       configuration_values = jsonencode({
-        computeType = "Fargate"
+        computeType = "fargate"
       })
     }
   }
