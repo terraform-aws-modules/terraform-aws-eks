@@ -400,24 +400,24 @@ variable "allow_all_egress" {
 }
 variable "egress_ports_allowed" {
   description = "ports to allow all egress traffic"
-  type        = list
+  type        = list(any)
   default     = []
 }
 variable "egress_cidr_blocks_allowed" {
   description = "cidr blocks to allow all egress traffic"
-  type        = list
+  type        = list(any)
   default     = []
 }
 variable "egress_custom_allowed" {
   description = "cidr custom blocks to allow all egress traffic"
-  type        = list
+  type        = list(any)
   default     = []
 }
 
-# variable "logging_stage" {
-#   type        = string
-#   description = "Stage (e.g. `prod`, `dev`, `staging`)"
-# }
+variable "logging_stage" {
+  type        = string
+  description = "Stage (e.g. `prod`, `dev`, `staging`)"
+}
 
 # EFS CSI driver variables
 variable "enable_aws_efs_csi_driver_addon" {
