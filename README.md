@@ -113,6 +113,22 @@ On clusters that were created prior to CAM support, there will be an existing ac
 
 Setting the `bootstrap_cluster_creator_admin_permissions` is a one time operation when the cluster is created; it cannot be modified later through the EKS API. In this project we are hardcoding this to `false`. If users wish to achieve the same functionality, we will do that through an access entry which can be enabled or disabled at any time of their choosing using the variable `enable_cluster_creator_admin_permissions`
 
+### Enabling EFA Support
+
+When enabling EFA support by setting `enable_efa_support = true`, this will do two things:
+
+1. It will add the EFA required ingress/egress rules to the shared security group created for the nodegroup(s)
+2. It will expose the EFA interfaces on the launch template created by the nodegroup(s)
+
+> [!TIP]
+> Use the [aws-efa-k8s-device-plugin](https://github.com/aws/eks-charts/tree/master/stable/aws-efa-k8s-device-plugin) Helm chart to expose the EFA interfaces on the nodes as an extended resource, and allow pods to request the interfaces be mounted to their containers. 
+> 
+> The EKS AL2 GPU AMI comes pre-installed with the necessary EFA components - you just need to expose the EFA devices on the nodes via their launch templates, ensure the required EFA security group rules are in place, and deploy the `aws-efa-k8s-device-plugin` to start utilize EFA within your cluster. 
+
+However, if you disable the creation and use of the managed nodegroup custom launch template (`create_launch_template = false` and `use_custom_launch_template = false`), this will interfere with the functionality. In addition, if you do not supply an `instance_type` for self-managed nodegroup(s), or `instance_types` for the managed nodegroup(s), this will also interfere with the functionality. 
+
+The logic behind supporting EFA uses a data source to lookup the instance type to retrieve the number of interfaces that the instance supports in order to enumerate and expose those interfaces on the launch template created. For managed nodegroups where a list of instance types are supported, the logic uses the first instance type in the list to retrieve the number of instances supported. This is due to the fact that mixing instance types with varying number of interfaces is not recommended for EFA (or in some cases, mixing instance types in general - i.e. - p5.48xlarge and p4d.24xlarge).
+
 ## Examples
 
 - [EKS Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_managed_node_group): EKS Cluster using EKS managed node groups
@@ -240,6 +256,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | <a name="input_eks_managed_node_group_defaults"></a> [eks\_managed\_node\_group\_defaults](#input\_eks\_managed\_node\_group\_defaults) | Map of EKS managed node group default configurations | `any` | `{}` | no |
 | <a name="input_eks_managed_node_groups"></a> [eks\_managed\_node\_groups](#input\_eks\_managed\_node\_groups) | Map of EKS managed node group definitions to create | `any` | `{}` | no |
 | <a name="input_enable_cluster_creator_admin_permissions"></a> [enable\_cluster\_creator\_admin\_permissions](#input\_enable\_cluster\_creator\_admin\_permissions) | Indicates whether or not to add the cluster creator (the identity used by Terraform) as an administrator via access entry | `bool` | `false` | no |
+| <a name="input_enable_efa_support"></a> [enable\_efa\_support](#input\_enable\_efa\_support) | Determines whether to enable Elastic Fabric Adapter (EFA) support | `bool` | `false` | no |
 | <a name="input_enable_irsa"></a> [enable\_irsa](#input\_enable\_irsa) | Determines whether to create an OpenID Connect Provider for EKS to enable IRSA | `bool` | `true` | no |
 | <a name="input_enable_kms_key_rotation"></a> [enable\_kms\_key\_rotation](#input\_enable\_kms\_key\_rotation) | Specifies whether key rotation is enabled | `bool` | `true` | no |
 | <a name="input_fargate_profile_defaults"></a> [fargate\_profile\_defaults](#input\_fargate\_profile\_defaults) | Map of Fargate Profile default configurations | `any` | `{}` | no |

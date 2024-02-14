@@ -25,6 +25,41 @@ module "user_data" {
 }
 
 ################################################################################
+# EFA Support
+################################################################################
+
+data "aws_ec2_instance_type" "this" {
+  count = var.enable_efa_support ? 1 : 0
+
+  instance_type = local.efa_instance_type
+}
+
+locals {
+  efa_instance_type      = try(element(var.instance_types, 0), "")
+  num_network_interfaces = try(data.aws_ec2_instance_type.this[0].maximum_network_interfaces, 0)
+
+  efa_network_interfaces = contains(["p4d.24xlarge", "p4de.24xlarge", "p5.48xlarge", "trn1.32xlarge", "trn1n.32xlarge"], local.efa_instance_type) ? [
+    for i in range(local.num_network_interfaces) : {
+      associate_public_ip_address = false
+      delete_on_termination       = true
+      device_index                = i == 0 ? 0 : 1
+      network_card_index          = i
+      interface_type              = "efa"
+    }
+    ] : [
+    for i in range(local.num_network_interfaces) : {
+      associate_public_ip_address = false
+      delete_on_termination       = true
+      device_index                = 0
+      network_card_index          = i
+      interface_type              = "efa"
+    }
+  ]
+
+  network_interfaces = var.enable_efa_support ? local.efa_network_interfaces : var.network_interfaces
+}
+
+################################################################################
 # Launch template
 ################################################################################
 
@@ -215,7 +250,8 @@ resource "aws_launch_template" "this" {
   name_prefix = var.launch_template_use_name_prefix ? "${local.launch_template_name}-" : null
 
   dynamic "network_interfaces" {
-    for_each = var.network_interfaces
+    for_each = local.network_interfaces
+
     content {
       associate_carrier_ip_address = try(network_interfaces.value.associate_carrier_ip_address, null)
       associate_public_ip_address  = try(network_interfaces.value.associate_public_ip_address, null)
@@ -280,7 +316,7 @@ resource "aws_launch_template" "this" {
 
   update_default_version = var.update_launch_template_default_version
   user_data              = module.user_data.user_data
-  vpc_security_group_ids = length(var.network_interfaces) > 0 ? [] : local.security_group_ids
+  vpc_security_group_ids = length(local.network_interfaces) > 0 ? [] : local.security_group_ids
 
   tags = var.tags
 
