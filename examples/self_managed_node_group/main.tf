@@ -31,6 +31,12 @@ module "eks" {
   cluster_version                = local.cluster_version
   cluster_endpoint_public_access = true
 
+  enable_cluster_creator_admin_permissions = true
+
+  # Enable EFA support by adding necessary security group rules
+  # to the shared node security group
+  enable_efa_support = true
+
   cluster_addons = {
     coredns = {
       most_recent = true
@@ -251,6 +257,25 @@ module "eks" {
       tags = {
         ExtraTag = "Self managed node group complete example"
       }
+    }
+
+    efa = {
+      # Disabling automatic creation due to instance type/quota availability
+      # Can be enabled when appropriate for testing/validation
+      create = false
+
+      instance_types = ["trn1n.32xlarge"]
+
+      enable_efa_support      = true
+      pre_bootstrap_user_data = <<-EOT
+        # Mount NVME instance store volumes since they are typically
+        # available on instances that support EFA
+        setup-local-disks raid0
+      EOT
+
+      min_size     = 2
+      max_size     = 2
+      desired_size = 2
     }
   }
 
