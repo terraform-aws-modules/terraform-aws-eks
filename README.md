@@ -121,11 +121,11 @@ When enabling EFA support by setting `enable_efa_support = true`, this will do t
 2. It will expose the EFA interfaces on the launch template created by the nodegroup(s)
 
 > [!TIP]
-> Use the [aws-efa-k8s-device-plugin](https://github.com/aws/eks-charts/tree/master/stable/aws-efa-k8s-device-plugin) Helm chart to expose the EFA interfaces on the nodes as an extended resource, and allow pods to request the interfaces be mounted to their containers. 
-> 
-> The EKS AL2 GPU AMI comes pre-installed with the necessary EFA components - you just need to expose the EFA devices on the nodes via their launch templates, ensure the required EFA security group rules are in place, and deploy the `aws-efa-k8s-device-plugin` to start utilize EFA within your cluster. 
+> Use the [aws-efa-k8s-device-plugin](https://github.com/aws/eks-charts/tree/master/stable/aws-efa-k8s-device-plugin) Helm chart to expose the EFA interfaces on the nodes as an extended resource, and allow pods to request the interfaces be mounted to their containers.
+>
+> The EKS AL2 GPU AMI comes pre-installed with the necessary EFA components - you just need to expose the EFA devices on the nodes via their launch templates, ensure the required EFA security group rules are in place, and deploy the `aws-efa-k8s-device-plugin` to start utilize EFA within your cluster.
 
-However, if you disable the creation and use of the managed nodegroup custom launch template (`create_launch_template = false` and `use_custom_launch_template = false`), this will interfere with the functionality. In addition, if you do not supply an `instance_type` for self-managed nodegroup(s), or `instance_types` for the managed nodegroup(s), this will also interfere with the functionality. 
+However, if you disable the creation and use of the managed nodegroup custom launch template (`create_launch_template = false` and `use_custom_launch_template = false`), this will interfere with the functionality. In addition, if you do not supply an `instance_type` for self-managed nodegroup(s), or `instance_types` for the managed nodegroup(s), this will also interfere with the functionality.
 
 The logic behind supporting EFA uses a data source to lookup the instance type to retrieve the number of interfaces that the instance supports in order to enumerate and expose those interfaces on the launch template created. For managed nodegroups where a list of instance types are supported, the logic uses the first instance type in the list to retrieve the number of instances supported. This is due to the fact that mixing instance types with varying number of interfaces is not recommended for EFA (or in some cases, mixing instance types in general - i.e. - p5.48xlarge and p4d.24xlarge).
 

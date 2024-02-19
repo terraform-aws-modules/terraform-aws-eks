@@ -66,6 +66,10 @@ locals {
 locals {
   launch_template_name = coalesce(var.launch_template_name, "${var.name}-eks-node-group")
   security_group_ids   = compact(concat([var.cluster_primary_security_group_id], var.vpc_security_group_ids))
+
+  placement = var.enable_efa_support ? {
+    group_name = aws_placement_group.this[0].name
+  } : var.placement
 }
 
 resource "aws_launch_template" "this" {
@@ -279,7 +283,7 @@ resource "aws_launch_template" "this" {
   }
 
   dynamic "placement" {
-    for_each = length(var.placement) > 0 ? [var.placement] : []
+    for_each = length(local.placement) > 0 ? [local.placement] : []
 
     content {
       affinity                = try(placement.value.affinity, null)
@@ -347,7 +351,7 @@ resource "aws_eks_node_group" "this" {
   # Required
   cluster_name  = var.cluster_name
   node_role_arn = var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
-  subnet_ids    = var.subnet_ids
+  subnet_ids    = var.enable_efa_support ? slice(data.aws_subnets.efa[0].ids, 0, 1) : var.subnet_ids
 
   scaling_config {
     min_size     = var.min_size
@@ -482,6 +486,57 @@ resource "aws_iam_role_policy_attachment" "additional" {
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name
+}
+
+################################################################################
+# Placement Group
+################################################################################
+
+resource "aws_placement_group" "this" {
+  count = var.create && var.enable_efa_support ? 1 : 0
+
+  name     = var.name
+  strategy = "cluster"
+
+  tags = var.tags
+}
+
+################################################################################
+# Instance AZ Lookup
+
+# Instances usually used in placement groups w/ EFA are only available in
+# select availability zones. These data sources will cross reference the availability
+# zones supported by the instance type and those provided by users to ensure a
+# supported availability zone is used for placement.
+################################################################################
+
+# Find the availability zones supported by the instance type
+data "aws_ec2_instance_type_offerings" "this" {
+  count = var.create && var.enable_efa_support ? 1 : 0
+
+  filter {
+    name   = "instance-type"
+    values = [local.efa_instance_type]
+  }
+
+  location_type = "availability-zone"
+}
+
+# Reverse the lookup to find one of the subnets provided based on the availability
+# availability zone ID of the queried instance type (supported)
+data "aws_subnets" "efa" {
+  count = var.create && var.enable_efa_support ? 1 : 0
+
+  filter {
+    name   = "subnet-id"
+    values = var.subnet_ids
+  }
+
+  filter {
+    name   = "availability-zone-id"
+    values = data.aws_ec2_instance_type_offerings.this[0].locations
+
+  }
 }
 
 ################################################################################
