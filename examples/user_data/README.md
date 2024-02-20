@@ -30,6 +30,10 @@ $ terraform apply
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_eks_mng_al2023_additional"></a> [eks\_mng\_al2023\_additional](#module\_eks\_mng\_al2023\_additional) | ../../modules/_user_data | n/a |
+| <a name="module_eks_mng_al2023_custom_ami"></a> [eks\_mng\_al2023\_custom\_ami](#module\_eks\_mng\_al2023\_custom\_ami) | ../../modules/_user_data | n/a |
+| <a name="module_eks_mng_al2023_custom_template"></a> [eks\_mng\_al2023\_custom\_template](#module\_eks\_mng\_al2023\_custom\_template) | ../../modules/_user_data | n/a |
+| <a name="module_eks_mng_al2023_no_op"></a> [eks\_mng\_al2023\_no\_op](#module\_eks\_mng\_al2023\_no\_op) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_al2_additional"></a> [eks\_mng\_al2\_additional](#module\_eks\_mng\_al2\_additional) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_al2_custom_ami"></a> [eks\_mng\_al2\_custom\_ami](#module\_eks\_mng\_al2\_custom\_ami) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_al2_custom_template"></a> [eks\_mng\_al2\_custom\_template](#module\_eks\_mng\_al2\_custom\_template) | ../../modules/_user_data | n/a |
@@ -42,6 +46,9 @@ $ terraform apply
 | <a name="module_eks_mng_windows_custom_ami"></a> [eks\_mng\_windows\_custom\_ami](#module\_eks\_mng\_windows\_custom\_ami) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_windows_custom_template"></a> [eks\_mng\_windows\_custom\_template](#module\_eks\_mng\_windows\_custom\_template) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_windows_no_op"></a> [eks\_mng\_windows\_no\_op](#module\_eks\_mng\_windows\_no\_op) | ../../modules/_user_data | n/a |
+| <a name="module_self_mng_al2023_bootstrap"></a> [self\_mng\_al2023\_bootstrap](#module\_self\_mng\_al2023\_bootstrap) | ../../modules/_user_data | n/a |
+| <a name="module_self_mng_al2023_custom_template"></a> [self\_mng\_al2023\_custom\_template](#module\_self\_mng\_al2023\_custom\_template) | ../../modules/_user_data | n/a |
+| <a name="module_self_mng_al2023_no_op"></a> [self\_mng\_al2023\_no\_op](#module\_self\_mng\_al2023\_no\_op) | ../../modules/_user_data | n/a |
 | <a name="module_self_mng_al2_bootstrap"></a> [self\_mng\_al2\_bootstrap](#module\_self\_mng\_al2\_bootstrap) | ../../modules/_user_data | n/a |
 | <a name="module_self_mng_al2_custom_template"></a> [self\_mng\_al2\_custom\_template](#module\_self\_mng\_al2\_custom\_template) | ../../modules/_user_data | n/a |
 | <a name="module_self_mng_al2_no_op"></a> [self\_mng\_al2\_no\_op](#module\_self\_mng\_al2\_no\_op) | ../../modules/_user_data | n/a |
@@ -56,6 +63,10 @@ $ terraform apply
 
 | Name | Type |
 |------|------|
+| [local_file.eks_mng_al2023_additional](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
+| [local_file.eks_mng_al2023_custom_ami](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
+| [local_file.eks_mng_al2023_custom_template](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
+| [local_file.eks_mng_al2023_no_op](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.eks_mng_al2_additional](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.eks_mng_al2_custom_ami](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.eks_mng_al2_custom_template](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
@@ -68,6 +79,9 @@ $ terraform apply
 | [local_file.eks_mng_windows_custom_ami](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.eks_mng_windows_custom_template](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.eks_mng_windows_no_op](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
+| [local_file.self_mng_al2023_bootstrap](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
+| [local_file.self_mng_al2023_custom_template](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
+| [local_file.self_mng_al2023_no_op](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.self_mng_al2_bootstrap](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.self_mng_al2_custom_template](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.self_mng_al2_no_op](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
