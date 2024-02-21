@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.2.2...v20.3.0) (2024-02-21)
+
+
+### Features
+
+* Add support for addon and identity provider custom tags ([#2938](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2938)) ([f6255c4](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f6255c49e47d44bd62bb2b4e1e448ac80ceb2b3a))
+
 ### [20.2.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.2.1...v20.2.2) (2024-02-21)
 
 
