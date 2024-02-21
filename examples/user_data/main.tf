@@ -7,15 +7,14 @@ locals {
 }
 
 ################################################################################
-# User Data Module
+# EKS managed node group - AL2
 ################################################################################
 
-# EKS managed node group - linux
-module "eks_mng_linux_no_op" {
+module "eks_mng_al2_no_op" {
   source = "../../modules/_user_data"
 }
 
-module "eks_mng_linux_additional" {
+module "eks_mng_al2_additional" {
   source = "../../modules/_user_data"
 
   pre_bootstrap_user_data = <<-EOT
@@ -23,7 +22,7 @@ module "eks_mng_linux_additional" {
   EOT
 }
 
-module "eks_mng_linux_custom_ami" {
+module "eks_mng_al2_custom_ami" {
   source = "../../modules/_user_data"
 
   cluster_name              = local.name
@@ -45,7 +44,7 @@ module "eks_mng_linux_custom_ami" {
 }
 
 
-module "eks_mng_linux_custom_template" {
+module "eks_mng_al2_custom_template" {
   source = "../../modules/_user_data"
 
   cluster_name        = local.name
@@ -66,7 +65,10 @@ module "eks_mng_linux_custom_template" {
   EOT
 }
 
-# EKS managed node group - bottlerocket
+################################################################################
+# EKS managed node group - Bottlerocket
+################################################################################
+
 module "eks_mng_bottlerocket_no_op" {
   source = "../../modules/_user_data"
 
@@ -121,7 +123,10 @@ module "eks_mng_bottlerocket_custom_template" {
   EOT
 }
 
-# EKS managed node group - windows
+################################################################################
+# EKS managed node group - Windows
+################################################################################
+
 module "eks_mng_windows_no_op" {
   source = "../../modules/_user_data"
 
@@ -184,14 +189,17 @@ module "eks_mng_windows_custom_template" {
   EOT
 }
 
-# Self managed node group - linux
-module "self_mng_linux_no_op" {
+################################################################################
+# Self-managed node group - AL2
+################################################################################
+
+module "self_mng_al2_no_op" {
   source = "../../modules/_user_data"
 
   is_eks_managed_node_group = false
 }
 
-module "self_mng_linux_bootstrap" {
+module "self_mng_al2_bootstrap" {
   source = "../../modules/_user_data"
 
   enable_bootstrap_user_data = true
@@ -213,7 +221,7 @@ module "self_mng_linux_bootstrap" {
   EOT
 }
 
-module "self_mng_linux_custom_template" {
+module "self_mng_al2_custom_template" {
   source = "../../modules/_user_data"
 
   enable_bootstrap_user_data = true
@@ -237,7 +245,10 @@ module "self_mng_linux_custom_template" {
   EOT
 }
 
-# Self managed node group - bottlerocket
+################################################################################
+# Self-managed node group - Bottlerocket
+################################################################################
+
 module "self_mng_bottlerocket_no_op" {
   source = "../../modules/_user_data"
 
@@ -286,7 +297,10 @@ module "self_mng_bottlerocket_custom_template" {
   EOT
 }
 
-# Self managed node group - windows
+################################################################################
+# Self-managed node group - Windows
+################################################################################
+
 module "self_mng_windows_no_op" {
   source = "../../modules/_user_data"
 
