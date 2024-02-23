@@ -264,7 +264,7 @@ module "eks" {
       # Can be enabled when appropriate for testing/validation
       create = false
 
-      instance_types = ["trn1n.32xlarge"]
+      instance_type = "trn1n.32xlarge"
 
       enable_efa_support      = true
       pre_bootstrap_user_data = <<-EOT
