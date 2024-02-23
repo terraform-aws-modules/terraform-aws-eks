@@ -86,6 +86,27 @@ module "eks" {
       }
     }
 
+    # AL2023 node group utilizing new user data format which utilizes nodeadm
+    # to join nodes to the cluster (instead of /etc/eks/bootstrap.sh)
+    al2023_nodeadm = {
+      platform = "al2023"
+
+      cloudinit_pre_nodeadm = [{
+        content      = <<-EOT
+      ---
+      apiVersion: node.eks.aws/v1alpha
+      kind: NodeConfig
+      spec:
+        kubelet:
+          config:
+            shutdownGracePeriod: 30s
+            featureGates:
+              DisableKubeletCloudCredentialProviders: true
+    EOT
+        content_type = "application/node.eks.aws"
+      }]
+    }
+
     # Default node group - as provided by AWS EKS using Bottlerocket
     bottlerocket_default = {
       # By default, the module creates a launch template to ensure tags are propagated to instances, etc.,

@@ -1,4 +1,3 @@
-${pre_bootstrap_user_data ~}
 %{ if enable_bootstrap_user_data ~}
 ---
 apiVersion: node.eks.aws/v1alpha1
@@ -12,5 +11,4 @@ spec:
     config: |
       [plugins."io.containerd.grpc.v1.cri".containerd]
       discard_unpacked_layers = false
-${post_bootstrap_user_data ~}
 %{ endif ~}
