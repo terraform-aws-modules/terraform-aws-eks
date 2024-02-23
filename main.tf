@@ -481,6 +481,14 @@ resource "aws_iam_policy" "cluster_encryption" {
 # EKS Addons
 ################################################################################
 
+data "aws_eks_addon_version" "this" {
+  for_each = { for k, v in var.cluster_addons : k => v if local.create && !local.create_outposts_local_cluster }
+
+  addon_name         = try(each.value.name, each.key)
+  kubernetes_version = coalesce(var.cluster_version, aws_eks_cluster.this[0].version)
+  most_recent        = try(each.value.most_recent, null)
+}
+
 resource "aws_eks_addon" "this" {
   # Not supported on outposts
   for_each = { for k, v in var.cluster_addons : k => v if !try(v.before_compute, false) && local.create && !local.create_outposts_local_cluster }
@@ -507,7 +515,7 @@ resource "aws_eks_addon" "this" {
     module.self_managed_node_group,
   ]
 
-  tags = var.tags
+  tags = merge(var.tags, try(each.value.tags, {}))
 }
 
 resource "aws_eks_addon" "before_compute" {
@@ -530,15 +538,7 @@ resource "aws_eks_addon" "before_compute" {
     delete = try(each.value.timeouts.delete, var.cluster_addons_timeouts.delete, null)
   }
 
-  tags = var.tags
-}
-
-data "aws_eks_addon_version" "this" {
-  for_each = { for k, v in var.cluster_addons : k => v if local.create && !local.create_outposts_local_cluster }
-
-  addon_name         = try(each.value.name, each.key)
-  kubernetes_version = coalesce(var.cluster_version, aws_eks_cluster.this[0].version)
-  most_recent        = try(each.value.most_recent, null)
+  tags = merge(var.tags, try(each.value.tags, {}))
 }
 
 ################################################################################
@@ -562,5 +562,5 @@ resource "aws_eks_identity_provider_config" "this" {
     username_prefix               = lookup(each.value, "username_prefix", null)
   }
 
-  tags = var.tags
+  tags = merge(var.tags, try(each.value.tags, {}))
 }

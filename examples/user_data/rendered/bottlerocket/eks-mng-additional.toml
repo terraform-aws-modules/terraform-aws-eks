@@ -1,0 +1,3 @@
+# extra args added
+[settings.kernel]
+lockdown = "integrity"
