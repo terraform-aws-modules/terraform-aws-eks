@@ -36,12 +36,41 @@ module "user_data" {
 }
 
 ################################################################################
+# EFA Support
+################################################################################
+
+data "aws_ec2_instance_type" "this" {
+  count = var.enable_efa_support && local.instance_type_provided ? 1 : 0
+
+  instance_type = var.instance_type
+}
+
+locals {
+  instance_type_provided = var.instance_type != ""
+  num_network_cards      = try(data.aws_ec2_instance_type.this[0].maximum_network_cards, 0)
+
+  efa_network_interfaces = [
+    for i in range(local.num_network_cards) : {
+      associate_public_ip_address = false
+      delete_on_termination       = true
+      device_index                = i == 0 ? 0 : 1
+      network_card_index          = i
+      interface_type              = "efa"
+    }
+  ]
+
+  network_interfaces = var.enable_efa_support && local.instance_type_provided ? local.efa_network_interfaces : var.network_interfaces
+}
+
+################################################################################
 # Launch template
 ################################################################################
 
 locals {
   launch_template_name = coalesce(var.launch_template_name, "${var.name}-node-group")
   security_group_ids   = compact(concat([var.cluster_primary_security_group_id], var.vpc_security_group_ids))
+
+  placement = var.create && var.enable_efa_support ? { group_name = aws_placement_group.this[0].name } : var.placement
 }
 
 resource "aws_launch_template" "this" {
@@ -321,7 +350,8 @@ resource "aws_launch_template" "this" {
   name_prefix = var.launch_template_use_name_prefix ? "${local.launch_template_name}-" : null
 
   dynamic "network_interfaces" {
-    for_each = var.network_interfaces
+    for_each = local.network_interfaces
+
     content {
       associate_carrier_ip_address = try(network_interfaces.value.associate_carrier_ip_address, null)
       associate_public_ip_address  = try(network_interfaces.value.associate_public_ip_address, null)
@@ -347,14 +377,14 @@ resource "aws_launch_template" "this" {
   }
 
   dynamic "placement" {
-    for_each = length(var.placement) > 0 ? [var.placement] : []
+    for_each = length(local.placement) > 0 ? [local.placement] : []
 
     content {
       affinity                = try(placement.value.affinity, null)
-      availability_zone       = try(placement.value.availability_zone, null)
-      group_name              = try(placement.value.group_name, null)
-      host_id                 = try(placement.value.host_id, null)
-      host_resource_group_arn = try(placement.value.host_resource_group_arn, null)
+      availability_zone       = lookup(placement.value, "availability_zone", null)
+      group_name              = lookup(placement.value, "group_name", null)
+      host_id                 = lookup(placement.value, "host_id", null)
+      host_resource_group_arn = lookup(placement.value, "host_resource_group_arn", null)
       partition_number        = try(placement.value.partition_number, null)
       spread_domain           = try(placement.value.spread_domain, null)
       tenancy                 = try(placement.value.tenancy, null)
@@ -384,7 +414,7 @@ resource "aws_launch_template" "this" {
 
   update_default_version = var.update_launch_template_default_version
   user_data              = module.user_data.user_data
-  vpc_security_group_ids = length(var.network_interfaces) > 0 ? [] : local.security_group_ids
+  vpc_security_group_ids = length(local.network_interfaces) > 0 ? [] : local.security_group_ids
 
   tags = var.tags
 
@@ -664,7 +694,7 @@ resource "aws_autoscaling_group" "this" {
 
   target_group_arns         = var.target_group_arns
   termination_policies      = var.termination_policies
-  vpc_zone_identifier       = var.subnet_ids
+  vpc_zone_identifier       = var.enable_efa_support ? data.aws_subnets.efa[0].ids : var.subnet_ids
   wait_for_capacity_timeout = var.wait_for_capacity_timeout
   wait_for_elb_capacity     = var.wait_for_elb_capacity
 
@@ -768,6 +798,56 @@ resource "aws_iam_instance_profile" "this" {
 
   lifecycle {
     create_before_destroy = true
+  }
+}
+
+################################################################################
+# Placement Group
+################################################################################
+
+resource "aws_placement_group" "this" {
+  count = var.create && var.enable_efa_support ? 1 : 0
+
+  name     = "${var.cluster_name}-${var.name}"
+  strategy = "cluster"
+
+  tags = var.tags
+}
+
+################################################################################
+# Instance AZ Lookup
+
+# Instances usually used in placement groups w/ EFA are only available in
+# select availability zones. These data sources will cross reference the availability
+# zones supported by the instance type with the subnets provided to ensure only
+# AZs/subnets that are supported are used.
+################################################################################
+
+# Find the availability zones supported by the instance type
+data "aws_ec2_instance_type_offerings" "this" {
+  count = var.create && var.enable_efa_support ? 1 : 0
+
+  filter {
+    name   = "instance-type"
+    values = [var.instance_type]
+  }
+
+  location_type = "availability-zone-id"
+}
+
+# Reverse the lookup to find one of the subnets provided based on the availability
+# availability zone ID of the queried instance type (supported)
+data "aws_subnets" "efa" {
+  count = var.create && var.enable_efa_support ? 1 : 0
+
+  filter {
+    name   = "subnet-id"
+    values = var.subnet_ids
+  }
+
+  filter {
+    name   = "availability-zone-id"
+    values = data.aws_ec2_instance_type_offerings.this[0].locations
   }
 }
 

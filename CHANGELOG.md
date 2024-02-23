@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.4.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.3.0...v20.4.0) (2024-02-23)
+
+
+### Features
+
+* Add support for enabling EFA resources ([#2936](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2936)) ([7f472ec](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/7f472ec660049d4ca85de039cb3015c1b1d12fb8))
+
 ## [20.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.2.2...v20.3.0) (2024-02-21)
 
 
