@@ -179,6 +179,27 @@ locals {
       ipv6_cidr_blocks = var.cluster_ip_family == "ipv6" ? ["::/0"] : null
     }
   } : k => v if var.node_security_group_enable_recommended_rules }
+
+  efa_security_group_rules = { for k, v in
+    {
+      ingress_all_self_efa = {
+        description = "Node to node EFA"
+        protocol    = "-1"
+        from_port   = 0
+        to_port     = 0
+        type        = "ingress"
+        self        = true
+      }
+      egress_all_self_efa = {
+        description = "Node to node EFA"
+        protocol    = "-1"
+        from_port   = 0
+        to_port     = 0
+        type        = "egress"
+        self        = true
+      }
+    } : k => v if var.enable_efa_support
+  }
 }
 
 resource "aws_security_group" "node" {
@@ -205,6 +226,7 @@ resource "aws_security_group" "node" {
 
 resource "aws_security_group_rule" "node" {
   for_each = { for k, v in merge(
+    local.efa_security_group_rules,
     local.node_security_group_rules,
     local.node_security_group_recommended_rules,
     var.node_security_group_additional_rules,
@@ -343,6 +365,7 @@ module "eks_managed_node_group" {
   license_specifications             = try(each.value.license_specifications, var.eks_managed_node_group_defaults.license_specifications, {})
   metadata_options                   = try(each.value.metadata_options, var.eks_managed_node_group_defaults.metadata_options, local.metadata_options)
   enable_monitoring                  = try(each.value.enable_monitoring, var.eks_managed_node_group_defaults.enable_monitoring, true)
+  enable_efa_support                 = try(each.value.enable_efa_support, var.eks_managed_node_group_defaults.enable_efa_support, false)
   network_interfaces                 = try(each.value.network_interfaces, var.eks_managed_node_group_defaults.network_interfaces, [])
   placement                          = try(each.value.placement, var.eks_managed_node_group_defaults.placement, {})
   maintenance_options                = try(each.value.maintenance_options, var.eks_managed_node_group_defaults.maintenance_options, {})
@@ -478,6 +501,7 @@ module "self_managed_node_group" {
   license_specifications             = try(each.value.license_specifications, var.self_managed_node_group_defaults.license_specifications, {})
   metadata_options                   = try(each.value.metadata_options, var.self_managed_node_group_defaults.metadata_options, local.metadata_options)
   enable_monitoring                  = try(each.value.enable_monitoring, var.self_managed_node_group_defaults.enable_monitoring, true)
+  enable_efa_support                 = try(each.value.enable_efa_support, var.self_managed_node_group_defaults.enable_efa_support, false)
   network_interfaces                 = try(each.value.network_interfaces, var.self_managed_node_group_defaults.network_interfaces, [])
   placement                          = try(each.value.placement, var.self_managed_node_group_defaults.placement, {})
   maintenance_options                = try(each.value.maintenance_options, var.self_managed_node_group_defaults.maintenance_options, {})

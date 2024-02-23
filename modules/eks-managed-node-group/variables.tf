@@ -250,6 +250,12 @@ variable "enable_monitoring" {
   default     = true
 }
 
+variable "enable_efa_support" {
+  description = "Determines whether to enable Elastic Fabric Adapter (EFA) support"
+  type        = bool
+  default     = false
+}
+
 variable "network_interfaces" {
   description = "Customize network interfaces to be attached at instance boot time"
   type        = list(any)

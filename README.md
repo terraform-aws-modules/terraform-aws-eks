@@ -113,6 +113,60 @@ On clusters that were created prior to CAM support, there will be an existing ac
 
 Setting the `bootstrap_cluster_creator_admin_permissions` is a one time operation when the cluster is created; it cannot be modified later through the EKS API. In this project we are hardcoding this to `false`. If users wish to achieve the same functionality, we will do that through an access entry which can be enabled or disabled at any time of their choosing using the variable `enable_cluster_creator_admin_permissions`
 
+### Enabling EFA Support
+
+When enabling EFA support via `enable_efa_support = true`, there are two locations this can be specified - one at the cluster level, and one at the nodegroup level. Enabling at the cluster level will add the EFA required ingress/egress rules to the shared security group created for the nodegroup(s). Enabling at the nodegroup level will do the following (per nodegroup where enabled):
+
+1. All EFA interfaces supported by the instance will be exposed on the launch template used by the nodegroup
+2. A placement group with `strategy = "clustered"` per EFA requirements is created and passed to the launch template used by the nodegroup
+3. Data sources will reverse lookup the availability zones that support the instance type selected based on the subnets provided, ensuring that only the associated subnets are passed to the launch template and therefore used by the placement group. This avoids the placement group being created in an availability zone that does not support the instance type selected.
+
+> [!TIP]
+> Use the [aws-efa-k8s-device-plugin](https://github.com/aws/eks-charts/tree/master/stable/aws-efa-k8s-device-plugin) Helm chart to expose the EFA interfaces on the nodes as an extended resource, and allow pods to request the interfaces be mounted to their containers.
+>
+> The EKS AL2 GPU AMI comes with the necessary EFA components pre-installed - you just need to expose the EFA devices on the nodes via their launch templates, ensure the required EFA security group rules are in place, and deploy the `aws-efa-k8s-device-plugin` in order to start utilizing EFA within your cluster. Your application container will need to have the necessary libraries and runtime in order to utilize communication over the EFA interfaces (NCCL, aws-ofi-nccl, hwloc, libfabric, aws-neuornx-collectives, CUDA, etc.).
+
+If you disable the creation and use of the managed nodegroup custom launch template (`create_launch_template = false` and/or `use_custom_launch_template = false`), this will interfere with the EFA functionality provided. In addition, if you do not supply an `instance_type` for self-managed nodegroup(s), or `instance_types` for the managed nodegroup(s), this will also interfere with the functionality. In order to support the EFA functionality provided by `enable_efa_support = true`, you must utilize the custom launch template created/provided by this module, and supply an `instance_type`/`instance_types` for the respective nodegroup.
+
+The logic behind supporting EFA uses a data source to lookup the instance type to retrieve the number of interfaces that the instance supports in order to enumerate and expose those interfaces on the launch template created. For managed nodegroups where a list of instance types are supported, the first instance type in the list is used to calculate the number of EFA interfaces supported. Mixing instance types with varying number of interfaces is not recommended for EFA (or in some cases, mixing instance types is not supported - i.e. - p5.48xlarge and p4d.24xlarge). In addition to exposing the EFA interfaces and updating the security group rules, a placement group is created per the EFA requirements and only the availability zones that support the instance type selected are used in the subnets provided to the nodegroup.
+
+In order to enable EFA support, you will have to specify `enable_efa_support = true` on both the cluster and each nodegroup that you wish to enable EFA support for:
+
+```hcl
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 20.0"
+
+  # Truncated for brevity ...
+
+  # Adds the EFA required security group rules to the shared
+  # security group created for the nodegroup(s)
+  enable_efa_support = true
+
+  eks_managed_node_groups = {
+    example = {
+      instance_types = ["p5.48xlarge"]
+
+      # Exposes all EFA interfaces on the launch template created by the nodegroup(s)
+      # This would expose all 32 EFA interfaces for the p5.48xlarge instance type
+      enable_efa_support = true
+
+      pre_bootstrap_user_data = <<-EOT
+        # Mount NVME instance store volumes since they are typically
+        # available on instance types that support EFA
+        setup-local-disks raid0
+      EOT
+
+      # EFA should only be enabled when connecting 2 or more nodes
+      # Do not use EFA on a single node workload
+      min_size     = 2
+      max_size     = 10
+      desired_size = 2
+    }
+  }
+}
+```
+
 ## Examples
 
 - [EKS Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_managed_node_group): EKS Cluster using EKS managed node groups
@@ -135,7 +189,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.34 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.38 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9 |
 | <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 3.0 |
 
@@ -143,7 +197,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.34 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.38 |
 | <a name="provider_time"></a> [time](#provider\_time) | >= 0.9 |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | >= 3.0 |
 
@@ -240,6 +294,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | <a name="input_eks_managed_node_group_defaults"></a> [eks\_managed\_node\_group\_defaults](#input\_eks\_managed\_node\_group\_defaults) | Map of EKS managed node group default configurations | `any` | `{}` | no |
 | <a name="input_eks_managed_node_groups"></a> [eks\_managed\_node\_groups](#input\_eks\_managed\_node\_groups) | Map of EKS managed node group definitions to create | `any` | `{}` | no |
 | <a name="input_enable_cluster_creator_admin_permissions"></a> [enable\_cluster\_creator\_admin\_permissions](#input\_enable\_cluster\_creator\_admin\_permissions) | Indicates whether or not to add the cluster creator (the identity used by Terraform) as an administrator via access entry | `bool` | `false` | no |
+| <a name="input_enable_efa_support"></a> [enable\_efa\_support](#input\_enable\_efa\_support) | Determines whether to enable Elastic Fabric Adapter (EFA) support | `bool` | `false` | no |
 | <a name="input_enable_irsa"></a> [enable\_irsa](#input\_enable\_irsa) | Determines whether to create an OpenID Connect Provider for EKS to enable IRSA | `bool` | `true` | no |
 | <a name="input_enable_kms_key_rotation"></a> [enable\_kms\_key\_rotation](#input\_enable\_kms\_key\_rotation) | Specifies whether key rotation is enabled | `bool` | `true` | no |
 | <a name="input_fargate_profile_defaults"></a> [fargate\_profile\_defaults](#input\_fargate\_profile\_defaults) | Map of Fargate Profile default configurations | `any` | `{}` | no |

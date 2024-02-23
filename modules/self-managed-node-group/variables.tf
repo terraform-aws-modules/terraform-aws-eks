@@ -270,6 +270,12 @@ variable "enable_monitoring" {
   default     = true
 }
 
+variable "enable_efa_support" {
+  description = "Determines whether to enable Elastic Fabric Adapter (EFA) support"
+  type        = bool
+  default     = false
+}
+
 variable "metadata_options" {
   description = "Customize the metadata options for the instance"
   type        = map(string)

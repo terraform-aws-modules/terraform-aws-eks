@@ -7,7 +7,7 @@ data "aws_availability_zones" "available" {}
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.27"
+  cluster_version = "1.29"
   region          = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
@@ -36,6 +36,10 @@ module "eks" {
   create_cni_ipv6_iam_policy = true
 
   enable_cluster_creator_admin_permissions = true
+
+  # Enable EFA support by adding necessary security group rules
+  # to the shared node security group
+  enable_efa_support = true
 
   cluster_addons = {
     coredns = {
@@ -240,6 +244,26 @@ module "eks" {
       tags = {
         ExtraTag = "EKS managed node group complete example"
       }
+    }
+
+    efa = {
+      # Disabling automatic creation due to instance type/quota availability
+      # Can be enabled when appropriate for testing/validation
+      create = false
+
+      instance_types = ["trn1n.32xlarge"]
+      ami_type       = "AL2_x86_64_GPU"
+
+      enable_efa_support      = true
+      pre_bootstrap_user_data = <<-EOT
+        # Mount NVME instance store volumes since they are typically
+        # available on instances that support EFA
+        setup-local-disks raid0
+      EOT
+
+      min_size     = 2
+      max_size     = 2
+      desired_size = 2
     }
   }
 

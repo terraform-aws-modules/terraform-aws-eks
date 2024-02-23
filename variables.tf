@@ -376,6 +376,12 @@ variable "node_security_group_tags" {
   default     = {}
 }
 
+variable "enable_efa_support" {
+  description = "Determines whether to enable Elastic Fabric Adapter (EFA) support"
+  type        = bool
+  default     = false
+}
+
 ################################################################################
 # IRSA
 ################################################################################
