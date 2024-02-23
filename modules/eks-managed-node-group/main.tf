@@ -36,9 +36,7 @@ data "aws_ec2_instance_type" "this" {
 
 locals {
   efa_instance_type = try(element(var.instance_types, 0), "")
-  # TOTO - requires v5.38.0 https://github.com/hashicorp/terraform-provider-aws/pull/35840
-  # num_network_cards = try(data.aws_ec2_instance_type.this[0].maximum_network_cards, 0)
-  num_network_cards = try(data.aws_ec2_instance_type.this[0].maximum_network_interfaces, 0)
+  num_network_cards = try(data.aws_ec2_instance_type.this[0].maximum_network_cards, 0)
 
   efa_network_interfaces = [
     for i in range(local.num_network_cards) : {
