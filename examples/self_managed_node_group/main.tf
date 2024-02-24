@@ -77,20 +77,22 @@ module "eks" {
     al2023_nodeadm = {
       platform = "al2023"
 
-      cloudinit_pre_nodeadm = [{
-        content      = <<-EOT
-      ---
-      apiVersion: node.eks.aws/v1alpha
-      kind: NodeConfig
-      spec:
-        kubelet:
-          config:
-            shutdownGracePeriod: 30s
-            featureGates:
-              DisableKubeletCloudCredentialProviders: true
-    EOT
-        content_type = "application/node.eks.aws"
-      }]
+      cloudinit_pre_nodeadm = [
+        {
+          content_type = "application/node.eks.aws"
+          content      = <<-EOT
+            ---
+            apiVersion: node.eks.aws/v1alpha
+            kind: NodeConfig
+            spec:
+              kubelet:
+                config:
+                  shutdownGracePeriod: 30s
+                  featureGates:
+                    DisableKubeletCloudCredentialProviders: true
+          EOT
+        }
+      ]
     }
 
     # Bottlerocket node group
