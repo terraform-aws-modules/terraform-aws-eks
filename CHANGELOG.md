@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.4.0...v20.5.0) (2024-03-01)
+
+
+### Features
+
+* Add support for AL2023 `nodeadm` user data ([#2942](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2942)) ([7c99bb1](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/7c99bb19cdbf1eb4f4543f9b8e6d29c3a6734a55))
+
 ## [20.4.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.3.0...v20.4.0) (2024-02-23)
 
 
