@@ -31,6 +31,30 @@ resource "local_file" "eks_mng_al2_custom_template" {
 }
 
 ################################################################################
+# EKS managed node group - AL2023
+################################################################################
+
+resource "local_file" "eks_mng_al2023_no_op" {
+  content  = base64decode(module.eks_mng_al2023_no_op.user_data)
+  filename = "${path.module}/rendered/al2023/eks-mng-no-op.sh"
+}
+
+resource "local_file" "eks_mng_al2023_additional" {
+  content  = base64decode(module.eks_mng_al2023_additional.user_data)
+  filename = "${path.module}/rendered/al2023/eks-mng-additional.sh"
+}
+
+resource "local_file" "eks_mng_al2023_custom_ami" {
+  content  = base64decode(module.eks_mng_al2023_custom_ami.user_data)
+  filename = "${path.module}/rendered/al2023/eks-mng-custom-ami.sh"
+}
+
+resource "local_file" "eks_mng_al2023_custom_template" {
+  content  = base64decode(module.eks_mng_al2023_custom_template.user_data)
+  filename = "${path.module}/rendered/al2023/eks-mng-custom-template.sh"
+}
+
+################################################################################
 # EKS managed node group - Bottlerocket
 ################################################################################
 
@@ -95,6 +119,25 @@ resource "local_file" "self_mng_al2_bootstrap" {
 resource "local_file" "self_mng_al2_custom_template" {
   content  = base64decode(module.self_mng_al2_custom_template.user_data)
   filename = "${path.module}/rendered/al2/self-mng-custom-template.sh"
+}
+
+################################################################################
+# Self-managed node group - AL2023
+################################################################################
+
+resource "local_file" "self_mng_al2023_no_op" {
+  content  = base64decode(module.self_mng_al2023_no_op.user_data)
+  filename = "${path.module}/rendered/al2023/self-mng-no-op.sh"
+}
+
+resource "local_file" "self_mng_al2023_bootstrap" {
+  content  = base64decode(module.self_mng_al2023_bootstrap.user_data)
+  filename = "${path.module}/rendered/al2023/self-mng-bootstrap.sh"
+}
+
+resource "local_file" "self_mng_al2023_custom_template" {
+  content  = base64decode(module.self_mng_al2023_custom_template.user_data)
+  filename = "${path.module}/rendered/al2023/self-mng-custom-template.sh"
 }
 
 ################################################################################

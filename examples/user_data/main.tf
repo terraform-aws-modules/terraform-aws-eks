@@ -43,7 +43,6 @@ module "eks_mng_al2_custom_ami" {
   EOT
 }
 
-
 module "eks_mng_al2_custom_template" {
   source = "../../modules/_user_data"
 
@@ -66,6 +65,107 @@ module "eks_mng_al2_custom_template" {
 }
 
 ################################################################################
+# EKS managed node group - AL2023
+################################################################################
+
+module "eks_mng_al2023_no_op" {
+  source = "../../modules/_user_data"
+
+  platform = "al2023"
+}
+
+module "eks_mng_al2023_additional" {
+  source = "../../modules/_user_data"
+
+  platform = "al2023"
+
+  cloudinit_pre_nodeadm = [{
+    content      = <<-EOT
+      ---
+      apiVersion: node.eks.aws/v1alpha
+      kind: NodeConfig
+      spec:
+        kubelet:
+          config:
+            shutdownGracePeriod: 30s
+            featureGates:
+              DisableKubeletCloudCredentialProviders: true
+    EOT
+    content_type = "application/node.eks.aws"
+  }]
+}
+
+module "eks_mng_al2023_custom_ami" {
+  source = "../../modules/_user_data"
+
+  platform = "al2023"
+
+  cluster_name              = local.name
+  cluster_endpoint          = local.cluster_endpoint
+  cluster_auth_base64       = local.cluster_auth_base64
+  cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
+
+  enable_bootstrap_user_data = true
+
+  cloudinit_pre_nodeadm = [{
+    content      = <<-EOT
+      ---
+      apiVersion: node.eks.aws/v1alpha
+      kind: NodeConfig
+      spec:
+        kubelet:
+          config:
+            shutdownGracePeriod: 30s
+            featureGates:
+              DisableKubeletCloudCredentialProviders: true
+    EOT
+    content_type = "application/node.eks.aws"
+  }]
+
+  cloudinit_post_nodeadm = [{
+    content      = <<-EOT
+      echo "All done"
+    EOT
+    content_type = "text/x-shellscript; charset=\"us-ascii\""
+  }]
+}
+
+module "eks_mng_al2023_custom_template" {
+  source = "../../modules/_user_data"
+
+  platform = "al2023"
+
+  cluster_name        = local.name
+  cluster_endpoint    = local.cluster_endpoint
+  cluster_auth_base64 = local.cluster_auth_base64
+
+  enable_bootstrap_user_data = true
+  user_data_template_path    = "${path.module}/templates/al2023_custom.tpl"
+
+  cloudinit_pre_nodeadm = [{
+    content      = <<-EOT
+      ---
+      apiVersion: node.eks.aws/v1alpha
+      kind: NodeConfig
+      spec:
+        kubelet:
+          config:
+            shutdownGracePeriod: 30s
+            featureGates:
+              DisableKubeletCloudCredentialProviders: true
+    EOT
+    content_type = "application/node.eks.aws"
+  }]
+
+  cloudinit_post_nodeadm = [{
+    content      = <<-EOT
+      echo "All done"
+    EOT
+    content_type = "text/x-shellscript; charset=\"us-ascii\""
+  }]
+}
+
+################################################################################
 # EKS managed node group - Bottlerocket
 ################################################################################
 
@@ -79,6 +179,9 @@ module "eks_mng_bottlerocket_additional" {
   source = "../../modules/_user_data"
 
   platform = "bottlerocket"
+
+  # Should do nothing
+  cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
 
   bootstrap_extra_args = <<-EOT
     # extra args added
@@ -137,6 +240,9 @@ module "eks_mng_windows_additional" {
   source = "../../modules/_user_data"
 
   platform = "windows"
+
+  # Should do nothing
+  cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
 
   pre_bootstrap_user_data = <<-EOT
     [string]$Something = 'IDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
@@ -246,6 +352,90 @@ module "self_mng_al2_custom_template" {
 }
 
 ################################################################################
+# Self-managed node group - AL2023
+################################################################################
+
+module "self_mng_al2023_no_op" {
+  source = "../../modules/_user_data"
+
+  platform = "al2023"
+
+  is_eks_managed_node_group = false
+}
+
+module "self_mng_al2023_bootstrap" {
+  source = "../../modules/_user_data"
+
+  platform = "al2023"
+
+  enable_bootstrap_user_data = true
+  is_eks_managed_node_group  = false
+
+  cluster_name        = local.name
+  cluster_endpoint    = local.cluster_endpoint
+  cluster_auth_base64 = local.cluster_auth_base64
+
+  cloudinit_pre_nodeadm = [{
+    content      = <<-EOT
+      ---
+      apiVersion: node.eks.aws/v1alpha
+      kind: NodeConfig
+      spec:
+        kubelet:
+          config:
+            shutdownGracePeriod: 30s
+            featureGates:
+              DisableKubeletCloudCredentialProviders: true
+    EOT
+    content_type = "application/node.eks.aws"
+  }]
+
+  cloudinit_post_nodeadm = [{
+    content      = <<-EOT
+      echo "All done"
+    EOT
+    content_type = "text/x-shellscript; charset=\"us-ascii\""
+  }]
+}
+
+module "self_mng_al2023_custom_template" {
+  source = "../../modules/_user_data"
+
+  platform = "al2023"
+
+  enable_bootstrap_user_data = true
+  is_eks_managed_node_group  = false
+
+  cluster_name        = local.name
+  cluster_endpoint    = local.cluster_endpoint
+  cluster_auth_base64 = local.cluster_auth_base64
+
+  user_data_template_path = "${path.module}/templates/al2023_custom.tpl"
+
+  cloudinit_pre_nodeadm = [{
+    content      = <<-EOT
+      ---
+      apiVersion: node.eks.aws/v1alpha
+      kind: NodeConfig
+      spec:
+        kubelet:
+          config:
+            shutdownGracePeriod: 30s
+            featureGates:
+              DisableKubeletCloudCredentialProviders: true
+    EOT
+    content_type = "application/node.eks.aws"
+  }]
+
+  cloudinit_post_nodeadm = [{
+    content      = <<-EOT
+      echo "All done"
+    EOT
+    content_type = "text/x-shellscript; charset=\"us-ascii\""
+  }]
+}
+
+################################################################################
 # Self-managed node group - Bottlerocket
 ################################################################################
 
@@ -268,6 +458,9 @@ module "self_mng_bottlerocket_bootstrap" {
   cluster_name        = local.name
   cluster_endpoint    = local.cluster_endpoint
   cluster_auth_base64 = local.cluster_auth_base64
+
+  # Should do nothing
+  cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
 
   bootstrap_extra_args = <<-EOT
     # extra args added
@@ -320,6 +513,9 @@ module "self_mng_windows_bootstrap" {
   cluster_name        = local.name
   cluster_endpoint    = local.cluster_endpoint
   cluster_auth_base64 = local.cluster_auth_base64
+
+  # Should do nothing
+  cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
 
   pre_bootstrap_user_data = <<-EOT
     [string]$Something = 'IDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
