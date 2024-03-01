@@ -339,7 +339,7 @@ variable "ami_release_version" {
 }
 
 variable "use_latest_ami_release_version" {
-  description = "Determines whether to use the latest AMI release version for the given `ami_type` (except for `CUSTOM`)"
+  description = "Determines whether to use the latest AMI release version for the given `ami_type` (except for `CUSTOM`). Note: `ami_type` and `cluster_version` must be supplied in order to enable this feature"
   type        = bool
   default     = false
 }
@@ -377,7 +377,7 @@ variable "labels" {
 variable "cluster_version" {
   description = "Kubernetes version. Defaults to EKS Cluster Kubernetes version"
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "launch_template_version" {
