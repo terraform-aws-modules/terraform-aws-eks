@@ -330,6 +330,41 @@ resource "aws_launch_template" "this" {
 ################################################################################
 
 locals {
+  # Map the AMI type to the respective SSM param path
+  ssm_ami_type_to_ssm_param = {
+    AL2_x86_64                 = "/aws/service/eks/optimized-ami/${var.cluster_version}/amazon-linux-2/recommended/release_version"
+    AL2_x86_64_GPU             = "/aws/service/eks/optimized-ami/${var.cluster_version}/amazon-linux-2-gpu/recommended/release_version"
+    AL2_ARM_64                 = "/aws/service/eks/optimized-ami/${var.cluster_version}/amazon-linux-2-arm64/recommended/release_version"
+    CUSTOM                     = "NONE"
+    BOTTLEROCKET_ARM_64        = "/aws/service/bottlerocket/aws-k8s-${var.cluster_version}/arm64/latest/image_version"
+    BOTTLEROCKET_x86_64        = "/aws/service/bottlerocket/aws-k8s-${var.cluster_version}/x86_64/latest/image_version"
+    BOTTLEROCKET_ARM_64_NVIDIA = "/aws/service/bottlerocket/aws-k8s-${var.cluster_version}-nvidia/arm64/latest/image_version"
+    BOTTLEROCKET_x86_64_NVIDIA = "/aws/service/bottlerocket/aws-k8s-${var.cluster_version}-nvidia/x86_64/latest/image_version"
+    WINDOWS_CORE_2019_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-EKS_Optimized-${var.cluster_version}"
+    WINDOWS_FULL_2019_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Core-EKS_Optimized-${var.cluster_version}"
+    WINDOWS_CORE_2022_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Full-EKS_Optimized-${var.cluster_version}"
+    WINDOWS_FULL_2022_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Core-EKS_Optimized-${var.cluster_version}"
+    AL2023_x86_64_STANDARD     = "/aws/service/eks/optimized-ami/${var.cluster_version}/amazon-linux-2023/x86_64/standard/recommended/release_version"
+    AL2023_ARM_64_STANDARD     = "/aws/service/eks/optimized-ami/${var.cluster_version}/amazon-linux-2023/arm64/standard/recommended/release_version"
+  }
+
+  # The Windows SSM params currently do not have a release version, so we have to get the full output JSON blob and parse out the release version
+  windows_latest_ami_release_version = var.create && var.use_latest_ami_release_version && startswith(var.ami_type, "WINDOWS") ? jsondecode(data.aws_ssm_parameter.ami[0].value)["release_version"] : null
+  # Based on the steps above, try to get an AMI release version - if not, `null` is returned
+  latest_ami_release_version = startswith(var.ami_type, "WINDOWS") ? local.windows_latest_ami_release_version : try(data.aws_ssm_parameter.ami[0].value, null)
+}
+
+data "aws_ssm_parameter" "ami" {
+  count = var.create && var.use_latest_ami_release_version ? 1 : 0
+
+  name = local.ssm_ami_type_to_ssm_param[var.ami_type]
+}
+
+################################################################################
+# Node Group
+################################################################################
+
+locals {
   launch_template_id = var.create && var.create_launch_template ? try(aws_launch_template.this[0].id, null) : var.launch_template_id
   # Change order to allow users to set version priority before using defaults
   launch_template_version = coalesce(var.launch_template_version, try(aws_launch_template.this[0].default_version, "$Default"))
@@ -355,7 +390,7 @@ resource "aws_eks_node_group" "this" {
 
   # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
   ami_type        = var.ami_id != "" ? null : var.ami_type
-  release_version = var.ami_id != "" ? null : var.ami_release_version
+  release_version = var.ami_id != "" ? null : var.use_latest_ami_release_version ? local.latest_ami_release_version : var.ami_release_version
   version         = var.ami_id != "" ? null : var.cluster_version
 
   capacity_type        = var.capacity_type
