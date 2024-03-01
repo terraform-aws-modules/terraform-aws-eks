@@ -377,7 +377,7 @@ variable "labels" {
 variable "cluster_version" {
   description = "Kubernetes version. Defaults to EKS Cluster Kubernetes version"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "launch_template_version" {
