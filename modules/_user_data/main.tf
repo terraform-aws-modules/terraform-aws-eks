@@ -19,7 +19,7 @@ locals {
       cluster_auth_base64 = var.cluster_auth_base64
 
       # Optional
-      cluster_service_ipv4_cidr = var.cluster_service_ipv4_cidr != null && contains(["linux", "al2023"], var.platform) ? var.cluster_service_ipv4_cidr : ""
+      cluster_service_ipv4_cidr = var.cluster_service_ipv4_cidr != null ? var.cluster_service_ipv4_cidr : ""
       bootstrap_extra_args      = var.bootstrap_extra_args
       pre_bootstrap_user_data   = var.pre_bootstrap_user_data
       post_bootstrap_user_data  = var.post_bootstrap_user_data

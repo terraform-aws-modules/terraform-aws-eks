@@ -180,6 +180,9 @@ module "eks_mng_bottlerocket_additional" {
 
   platform = "bottlerocket"
 
+  # Should do nothing
+  cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
+
   bootstrap_extra_args = <<-EOT
     # extra args added
     [settings.kernel]
@@ -237,6 +240,9 @@ module "eks_mng_windows_additional" {
   source = "../../modules/_user_data"
 
   platform = "windows"
+
+  # Should do nothing
+  cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
 
   pre_bootstrap_user_data = <<-EOT
     [string]$Something = 'IDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
@@ -453,6 +459,9 @@ module "self_mng_bottlerocket_bootstrap" {
   cluster_endpoint    = local.cluster_endpoint
   cluster_auth_base64 = local.cluster_auth_base64
 
+  # Should do nothing
+  cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
+
   bootstrap_extra_args = <<-EOT
     # extra args added
     [settings.kernel]
@@ -504,6 +513,9 @@ module "self_mng_windows_bootstrap" {
   cluster_name        = local.name
   cluster_endpoint    = local.cluster_endpoint
   cluster_auth_base64 = local.cluster_auth_base64
+
+  # Should do nothing
+  cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
 
   pre_bootstrap_user_data = <<-EOT
     [string]$Something = 'IDoNotKnowAnyPowerShell ¯\_(ツ)_/¯'
