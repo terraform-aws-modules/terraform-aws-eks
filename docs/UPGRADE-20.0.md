@@ -142,6 +142,8 @@ To give users advanced notice and provide some future direction for this module,
 
 ### Diff of Before (v19.21) vs After (v20.0)
 
+Note. 0.19.x merged node-group roles with user-supplied roles. 0.20's aws-auth module does not. You're responsible for adding the node-group roles to the modules aws_rale_roles list.
+
 ```diff
  module "eks" {
    source  = "terraform-aws-modules/eks/aws"
