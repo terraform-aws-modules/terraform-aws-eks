@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.5.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.5.1...v20.5.2) (2024-03-07)
+
+
+### Bug Fixes
+
+* Use the `launch_template_tags` on the launch template ([#2957](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2957)) ([0ed32d7](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/0ed32d7b291513f34775ca85b0aa33da085d09fa))
+
 ## [20.5.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.5.0...v20.5.1) (2024-03-07)
 
 
