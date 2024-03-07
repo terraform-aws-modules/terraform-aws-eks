@@ -312,7 +312,10 @@ resource "aws_launch_template" "this" {
   user_data              = module.user_data.user_data
   vpc_security_group_ids = length(local.network_interfaces) > 0 ? [] : local.security_group_ids
 
-  tags = var.tags
+  tags = merge(
+    var.tags,
+    var.launch_template_tags,
+  )
 
   # Prevent premature access of policies by pods that
   # require permissions on create/destroy that depend on nodes
