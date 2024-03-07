@@ -264,6 +264,12 @@ module "eks" {
         additional                         = aws_iam_policy.node_additional.arn
       }
 
+      launch_template_tags = {
+        # enable discovery of autoscaling groups by cluster-autoscaler
+        "k8s.io/cluster-autoscaler/enabled" : true,
+        "k8s.io/cluster-autoscaler/${local.name}" : "owned",
+      }
+
       tags = {
         ExtraTag = "EKS managed node group complete example"
       }
