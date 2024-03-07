@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.5.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.5.0...v20.5.1) (2024-03-07)
+
+
+### Bug Fixes
+
+* Update CI workflow versions to remove deprecated runtime warnings ([#2956](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2956)) ([d14cc92](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/d14cc925c450451b023407d05a2516d7682d1617))
+
 ## [20.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.4.0...v20.5.0) (2024-03-01)
 
 
