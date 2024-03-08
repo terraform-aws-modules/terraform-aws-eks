@@ -16,6 +16,7 @@ module "user_data" {
   cluster_auth_base64 = var.cluster_auth_base64
 
   cluster_service_ipv4_cidr = var.cluster_service_ipv4_cidr
+  cluster_service_cidr      = var.cluster_service_cidr
 
   enable_bootstrap_user_data = var.enable_bootstrap_user_data
   pre_bootstrap_user_data    = var.pre_bootstrap_user_data
@@ -29,7 +30,7 @@ module "user_data" {
 ################################################################################
 
 data "aws_ec2_instance_type" "this" {
-  count = var.enable_efa_support ? 1 : 0
+  count = var.create && var.enable_efa_support ? 1 : 0
 
   instance_type = local.efa_instance_type
 }

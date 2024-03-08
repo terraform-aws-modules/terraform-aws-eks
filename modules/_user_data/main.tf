@@ -18,6 +18,9 @@ locals {
       cluster_endpoint    = var.cluster_endpoint
       cluster_auth_base64 = var.cluster_auth_base64
 
+      # Required by AL2023
+      cluster_service_cidr = var.cluster_service_cidr
+
       # Optional
       cluster_service_ipv4_cidr = var.cluster_service_ipv4_cidr != null ? var.cluster_service_ipv4_cidr : ""
       bootstrap_extra_args      = var.bootstrap_extra_args

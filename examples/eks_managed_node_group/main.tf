@@ -89,6 +89,7 @@ module "eks" {
     # AL2023 node group utilizing new user data format which utilizes nodeadm
     # to join nodes to the cluster (instead of /etc/eks/bootstrap.sh)
     al2023_nodeadm = {
+      ami_type = "AL2023_x86_64_STANDARD"
       platform = "al2023"
 
       cloudinit_pre_nodeadm = [
