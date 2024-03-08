@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.5.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.5.2...v20.5.3) (2024-03-08)
+
+
+### Bug Fixes
+
+* Update AWS provider version to support `AL2023_*` AMI types; ensure AL2023 user data receives cluster service CIDR ([#2960](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2960)) ([dfe4114](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/dfe41141c2385db783d97494792c8f2e227cfc7c))
+
+## [20.5.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.5.1...v20.5.2) (2024-03-07)
+
+
+### Bug Fixes
+
+* Use the `launch_template_tags` on the launch template ([#2957](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2957)) ([0ed32d7](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/0ed32d7b291513f34775ca85b0aa33da085d09fa))
+
+## [20.5.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.5.0...v20.5.1) (2024-03-07)
+
+
+### Bug Fixes
+
+* Update CI workflow versions to remove deprecated runtime warnings ([#2956](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2956)) ([d14cc92](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/d14cc925c450451b023407d05a2516d7682d1617))
+
 ## [20.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.4.0...v20.5.0) (2024-03-01)
 
 

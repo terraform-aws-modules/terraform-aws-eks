@@ -7,7 +7,5 @@ spec:
     name: ${cluster_name}
     apiServerEndpoint: ${cluster_endpoint}
     certificateAuthority: ${cluster_auth_base64}
-%{ if length(cluster_service_ipv4_cidr) > 0 ~}
-    cidr: ${cluster_service_ipv4_cidr}
-%{ endif ~}
+    cidr: ${cluster_service_cidr}
 %{ endif ~}

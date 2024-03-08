@@ -38,6 +38,13 @@ variable "cluster_auth_base64" {
   default     = ""
 }
 
+# Currently only used by AL2023 since it can be IPv4 or IPv6
+variable "cluster_service_cidr" {
+  description = "The CIDR block (IPv4 or IPv6) used by the cluster to assign Kubernetes service IP addresses. This is derived from the cluster itself"
+  type        = string
+  default     = ""
+}
+
 variable "pre_bootstrap_user_data" {
   description = "User data that is injected into the user data script ahead of the EKS bootstrap script. Not used when `platform` = `bottlerocket`"
   type        = string

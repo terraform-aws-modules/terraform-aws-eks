@@ -89,13 +89,10 @@ module "eks" {
     # AL2023 node group utilizing new user data format which utilizes nodeadm
     # to join nodes to the cluster (instead of /etc/eks/bootstrap.sh)
     al2023_nodeadm = {
-      # TODO - need to wait for next relase to see if constant is added in latest SDK version
-      # Provider https://github.com/hashicorp/terraform-provider-aws/pull/36046
-      # SDK https://github.com/aws/aws-sdk-go-v2/blob/release-2024-02-29/service/eks/CHANGELOG.md#v1410-2024-02-29
-      # ami_type = "AL2023_x86_64_STANDARD"
+      ami_type = "AL2023_x86_64_STANDARD"
       platform = "al2023"
 
-      # use_latest_ami_release_version = true
+      use_latest_ami_release_version = true
 
       cloudinit_pre_nodeadm = [
         {
@@ -270,6 +267,12 @@ module "eks" {
       iam_role_additional_policies = {
         AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
         additional                         = aws_iam_policy.node_additional.arn
+      }
+
+      launch_template_tags = {
+        # enable discovery of autoscaling groups by cluster-autoscaler
+        "k8s.io/cluster-autoscaler/enabled" : true,
+        "k8s.io/cluster-autoscaler/${local.name}" : "owned",
       }
 
       tags = {
