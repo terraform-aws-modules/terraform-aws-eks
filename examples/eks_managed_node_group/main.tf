@@ -294,7 +294,19 @@ module "eks" {
       max_size     = 2
       desired_size = 2
     }
+
+    placement_group = {
+
+      enable_managed_placement_group   = true
+      managed_placement_group_strategy = "spread"
+
+      min_size     = 2
+      max_size     = 2
+      desired_size = 2
+    }
+
   }
+
 
   access_entries = {
     # One access entry with a policy associated

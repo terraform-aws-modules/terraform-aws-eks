@@ -268,6 +268,18 @@ variable "placement" {
   default     = {}
 }
 
+variable "enable_managed_placement_group" {
+  description = "Create and manage a placement group for this nodegroup"
+  type        = bool
+  default     = false
+}
+
+variable "managed_placement_group_strategy" {
+  description = "Strategy to use for the managed placement group"
+  type        = string
+  default     = "cluster"
+}
+
 variable "private_dns_name_options" {
   description = "The options for the instance hostname. The default values are inherited from the subnet"
   type        = map(string)

@@ -366,6 +366,8 @@ module "eks_managed_node_group" {
   metadata_options                   = try(each.value.metadata_options, var.eks_managed_node_group_defaults.metadata_options, local.metadata_options)
   enable_monitoring                  = try(each.value.enable_monitoring, var.eks_managed_node_group_defaults.enable_monitoring, true)
   enable_efa_support                 = try(each.value.enable_efa_support, var.eks_managed_node_group_defaults.enable_efa_support, false)
+  enable_managed_placement_group     = try(each.value.enable_managed_placement_group, var.eks_managed_node_group_defaults.enable_managed_placement_group, false)
+  managed_placement_group_strategy   = try(each.value.managed_placement_group_strategy, var.eks_managed_node_group_defaults.managed_placement_group_strategy, "cluster")
   network_interfaces                 = try(each.value.network_interfaces, var.eks_managed_node_group_defaults.network_interfaces, [])
   placement                          = try(each.value.placement, var.eks_managed_node_group_defaults.placement, {})
   maintenance_options                = try(each.value.maintenance_options, var.eks_managed_node_group_defaults.maintenance_options, {})
