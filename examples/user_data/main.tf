@@ -4,6 +4,7 @@ locals {
   cluster_endpoint          = "https://012345678903AB2BAE5D1E0BFE0E2B50.gr7.us-east-1.eks.amazonaws.com"
   cluster_auth_base64       = "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM1ekNDQWMrZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKbXFqQ1VqNGdGR2w3ZW5PeWthWnZ2RjROOTVOUEZCM2o0cGhVZUsrWGFtN2ZSQnZya0d6OGxKZmZEZWF2b2plTwpQK2xOZFlqdHZncmxCUEpYdHZIZmFzTzYxVzdIZmdWQ2EvamdRM2w3RmkvL1dpQmxFOG9oWUZkdWpjc0s1SXM2CnNkbk5KTTNYUWN2TysrSitkV09NT2ZlNzlsSWdncmdQLzgvRU9CYkw3eUY1aU1hS3lsb1RHL1V3TlhPUWt3ZUcKblBNcjdiUmdkQ1NCZTlXYXowOGdGRmlxV2FOditsTDhsODBTdFZLcWVNVlUxbjQyejVwOVpQRTd4T2l6L0xTNQpYV2lXWkVkT3pMN0xBWGVCS2gzdkhnczFxMkI2d1BKZnZnS1NzWllQRGFpZTloT1NNOUJkNFNPY3JrZTRYSVBOCkVvcXVhMlYrUDRlTWJEQzhMUkVWRDdCdVZDdWdMTldWOTBoL3VJUy9WU2VOcEdUOGVScE5DakszSjc2aFlsWm8KWjNGRG5QWUY0MWpWTHhiOXF0U1ROdEp6amYwWXBEYnFWci9xZzNmQWlxbVorMzd3YWM1eHlqMDZ4cmlaRUgzZgpUM002d2lCUEVHYVlGeWN5TmNYTk5aYW9DWDJVL0N1d2JsUHAKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQ=="
   cluster_service_ipv4_cidr = "172.16.0.0/16"
+  cluster_service_cidr      = "192.168.0.0/16"
 }
 
 ################################################################################
@@ -100,9 +101,12 @@ module "eks_mng_al2023_custom_ami" {
 
   platform = "al2023"
 
-  cluster_name              = local.name
-  cluster_endpoint          = local.cluster_endpoint
-  cluster_auth_base64       = local.cluster_auth_base64
+  cluster_name         = local.name
+  cluster_endpoint     = local.cluster_endpoint
+  cluster_auth_base64  = local.cluster_auth_base64
+  cluster_service_cidr = local.cluster_service_cidr
+
+  # Should do nothing
   cluster_service_ipv4_cidr = local.cluster_service_ipv4_cidr
 
   enable_bootstrap_user_data = true
@@ -135,9 +139,10 @@ module "eks_mng_al2023_custom_template" {
 
   platform = "al2023"
 
-  cluster_name        = local.name
-  cluster_endpoint    = local.cluster_endpoint
-  cluster_auth_base64 = local.cluster_auth_base64
+  cluster_name         = local.name
+  cluster_endpoint     = local.cluster_endpoint
+  cluster_auth_base64  = local.cluster_auth_base64
+  cluster_service_cidr = local.cluster_service_cidr
 
   enable_bootstrap_user_data = true
   user_data_template_path    = "${path.module}/templates/al2023_custom.tpl"
@@ -371,9 +376,10 @@ module "self_mng_al2023_bootstrap" {
   enable_bootstrap_user_data = true
   is_eks_managed_node_group  = false
 
-  cluster_name        = local.name
-  cluster_endpoint    = local.cluster_endpoint
-  cluster_auth_base64 = local.cluster_auth_base64
+  cluster_name         = local.name
+  cluster_endpoint     = local.cluster_endpoint
+  cluster_auth_base64  = local.cluster_auth_base64
+  cluster_service_cidr = local.cluster_service_cidr
 
   cloudinit_pre_nodeadm = [{
     content      = <<-EOT
@@ -406,9 +412,10 @@ module "self_mng_al2023_custom_template" {
   enable_bootstrap_user_data = true
   is_eks_managed_node_group  = false
 
-  cluster_name        = local.name
-  cluster_endpoint    = local.cluster_endpoint
-  cluster_auth_base64 = local.cluster_auth_base64
+  cluster_name         = local.name
+  cluster_endpoint     = local.cluster_endpoint
+  cluster_auth_base64  = local.cluster_auth_base64
+  cluster_service_cidr = local.cluster_service_cidr
 
   user_data_template_path = "${path.module}/templates/al2023_custom.tpl"
 
