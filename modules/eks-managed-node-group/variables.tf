@@ -346,6 +346,12 @@ variable "ami_release_version" {
   default     = null
 }
 
+variable "use_latest_ami_release_version" {
+  description = "Determines whether to use the latest AMI release version for the given `ami_type` (except for `CUSTOM`). Note: `ami_type` and `cluster_version` must be supplied in order to enable this feature"
+  type        = bool
+  default     = false
+}
+
 variable "capacity_type" {
   description = "Type of capacity associated with the EKS Node Group. Valid values: `ON_DEMAND`, `SPOT`"
   type        = string
