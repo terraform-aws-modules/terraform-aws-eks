@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.6.0...v20.7.0) (2024-03-09)
+
+
+### Features
+
+* Add supprot for creating placement group for managed node group ([#2959](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2959)) ([3031631](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/30316312f33fe7fd09faf86fdb1b01ab2a377b2a))
+
 ## [20.6.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.5.3...v20.6.0) (2024-03-09)
 
 
