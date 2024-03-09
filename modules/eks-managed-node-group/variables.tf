@@ -276,14 +276,14 @@ variable "placement" {
   default     = {}
 }
 
-variable "enable_managed_placement_group" {
-  description = "Create and manage a placement group for this nodegroup"
+variable "create_placement_group" {
+  description = "Determines whether a placement group is created & used by the nodegroup"
   type        = bool
   default     = false
 }
 
-variable "managed_placement_group_strategy" {
-  description = "Strategy to use for the managed placement group"
+variable "placement_group_strategy" {
+  description = "The placement group strategy"
   type        = string
   default     = "cluster"
 }
