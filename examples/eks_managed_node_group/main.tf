@@ -89,7 +89,10 @@ module "eks" {
     # AL2023 node group utilizing new user data format which utilizes nodeadm
     # to join nodes to the cluster (instead of /etc/eks/bootstrap.sh)
     al2023_nodeadm = {
+      ami_type = "AL2023_x86_64_STANDARD"
       platform = "al2023"
+
+      use_latest_ami_release_version = true
 
       cloudinit_pre_nodeadm = [
         {
@@ -123,6 +126,8 @@ module "eks" {
     bottlerocket_add = {
       ami_type = "BOTTLEROCKET_x86_64"
       platform = "bottlerocket"
+
+      use_latest_ami_release_version = true
 
       # This will get added to what AWS provides
       bootstrap_extra_args = <<-EOT

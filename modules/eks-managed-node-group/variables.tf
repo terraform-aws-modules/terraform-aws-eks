@@ -44,6 +44,14 @@ variable "cluster_auth_base64" {
   default     = ""
 }
 
+# Currently only used by AL2023 since it can be IPv4 or IPv6
+variable "cluster_service_cidr" {
+  description = "The CIDR block (IPv4 or IPv6) used by the cluster to assign Kubernetes service IP addresses. This is derived from the cluster itself"
+  type        = string
+  default     = ""
+}
+
+# Not used by AL2023
 variable "cluster_service_ipv4_cidr" {
   description = "The CIDR block to assign Kubernetes service IP addresses from. If you don't specify a block, Kubernetes assigns addresses from either the 10.100.0.0/16 or 172.20.0.0/16 CIDR blocks"
   type        = string
@@ -348,6 +356,12 @@ variable "ami_release_version" {
   description = "AMI version of the EKS Node Group. Defaults to latest version for Kubernetes version"
   type        = string
   default     = null
+}
+
+variable "use_latest_ami_release_version" {
+  description = "Determines whether to use the latest AMI release version for the given `ami_type` (except for `CUSTOM`). Note: `ami_type` and `cluster_version` must be supplied in order to enable this feature"
+  type        = bool
+  default     = false
 }
 
 variable "capacity_type" {

@@ -30,9 +30,10 @@ resource "time_sleep" "this" {
   create_duration = var.dataplane_wait_duration
 
   triggers = {
-    cluster_name     = aws_eks_cluster.this[0].name
-    cluster_endpoint = aws_eks_cluster.this[0].endpoint
-    cluster_version  = aws_eks_cluster.this[0].version
+    cluster_name         = aws_eks_cluster.this[0].name
+    cluster_endpoint     = aws_eks_cluster.this[0].endpoint
+    cluster_version      = aws_eks_cluster.this[0].version
+    cluster_service_cidr = var.cluster_ip_family == "ipv6" ? aws_eks_cluster.this[0].kubernetes_network_config[0].service_ipv6_cidr : aws_eks_cluster.this[0].kubernetes_network_config[0].service_ipv4_cidr
 
     cluster_certificate_authority_data = aws_eks_cluster.this[0].certificate_authority[0].data
   }
@@ -309,9 +310,10 @@ module "eks_managed_node_group" {
   max_size     = try(each.value.max_size, var.eks_managed_node_group_defaults.max_size, 3)
   desired_size = try(each.value.desired_size, var.eks_managed_node_group_defaults.desired_size, 1)
 
-  ami_id              = try(each.value.ami_id, var.eks_managed_node_group_defaults.ami_id, "")
-  ami_type            = try(each.value.ami_type, var.eks_managed_node_group_defaults.ami_type, null)
-  ami_release_version = try(each.value.ami_release_version, var.eks_managed_node_group_defaults.ami_release_version, null)
+  ami_id                         = try(each.value.ami_id, var.eks_managed_node_group_defaults.ami_id, "")
+  ami_type                       = try(each.value.ami_type, var.eks_managed_node_group_defaults.ami_type, null)
+  ami_release_version            = try(each.value.ami_release_version, var.eks_managed_node_group_defaults.ami_release_version, null)
+  use_latest_ami_release_version = try(each.value.use_latest_ami_release_version, var.eks_managed_node_group_defaults.use_latest_ami_release_version, false)
 
   capacity_type        = try(each.value.capacity_type, var.eks_managed_node_group_defaults.capacity_type, null)
   disk_size            = try(each.value.disk_size, var.eks_managed_node_group_defaults.disk_size, null)
@@ -329,6 +331,7 @@ module "eks_managed_node_group" {
   cluster_endpoint           = try(time_sleep.this[0].triggers["cluster_endpoint"], "")
   cluster_auth_base64        = try(time_sleep.this[0].triggers["cluster_certificate_authority_data"], "")
   cluster_service_ipv4_cidr  = var.cluster_service_ipv4_cidr
+  cluster_service_cidr       = try(time_sleep.this[0].triggers["cluster_service_cidr"], "")
   enable_bootstrap_user_data = try(each.value.enable_bootstrap_user_data, var.eks_managed_node_group_defaults.enable_bootstrap_user_data, false)
   pre_bootstrap_user_data    = try(each.value.pre_bootstrap_user_data, var.eks_managed_node_group_defaults.pre_bootstrap_user_data, "")
   post_bootstrap_user_data   = try(each.value.post_bootstrap_user_data, var.eks_managed_node_group_defaults.post_bootstrap_user_data, "")
@@ -462,6 +465,7 @@ module "self_managed_node_group" {
   platform                 = try(each.value.platform, var.self_managed_node_group_defaults.platform, "linux")
   cluster_endpoint         = try(time_sleep.this[0].triggers["cluster_endpoint"], "")
   cluster_auth_base64      = try(time_sleep.this[0].triggers["cluster_certificate_authority_data"], "")
+  cluster_service_cidr     = try(time_sleep.this[0].triggers["cluster_service_cidr"], "")
   pre_bootstrap_user_data  = try(each.value.pre_bootstrap_user_data, var.self_managed_node_group_defaults.pre_bootstrap_user_data, "")
   post_bootstrap_user_data = try(each.value.post_bootstrap_user_data, var.self_managed_node_group_defaults.post_bootstrap_user_data, "")
   bootstrap_extra_args     = try(each.value.bootstrap_extra_args, var.self_managed_node_group_defaults.bootstrap_extra_args, "")
