@@ -25,6 +25,11 @@ resource "local_file" "eks_mng_al2_custom_ami" {
   filename = "${path.module}/rendered/al2/eks-mng-custom-ami.sh"
 }
 
+resource "local_file" "eks_mng_al2_custom_ami_ipv6" {
+  content  = base64decode(module.eks_mng_al2_custom_ami_ipv6.user_data)
+  filename = "${path.module}/rendered/al2/eks-mng-custom-ami-ipv6.sh"
+}
+
 resource "local_file" "eks_mng_al2_custom_template" {
   content  = base64decode(module.eks_mng_al2_custom_template.user_data)
   filename = "${path.module}/rendered/al2/eks-mng-custom-template.sh"
@@ -114,6 +119,11 @@ resource "local_file" "self_mng_al2_no_op" {
 resource "local_file" "self_mng_al2_bootstrap" {
   content  = base64decode(module.self_mng_al2_bootstrap.user_data)
   filename = "${path.module}/rendered/al2/self-mng-bootstrap.sh"
+}
+
+resource "local_file" "self_mng_al2_bootstrap_ipv6" {
+  content  = base64decode(module.self_mng_al2_bootstrap_ipv6.user_data)
+  filename = "${path.module}/rendered/al2/self-mng-bootstrap-ipv6.sh"
 }
 
 resource "local_file" "self_mng_al2_custom_template" {

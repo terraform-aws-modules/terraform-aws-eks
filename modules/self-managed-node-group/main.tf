@@ -27,6 +27,7 @@ module "user_data" {
   cluster_name         = var.cluster_name
   cluster_endpoint     = var.cluster_endpoint
   cluster_auth_base64  = var.cluster_auth_base64
+  cluster_ip_family    = var.cluster_ip_family
   cluster_service_cidr = var.cluster_service_cidr
 
   enable_bootstrap_user_data = true
@@ -736,7 +737,13 @@ resource "aws_autoscaling_group" "this" {
 locals {
   iam_role_name          = coalesce(var.iam_role_name, "${var.name}-node-group")
   iam_role_policy_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
-  cni_policy             = var.cluster_ip_family == "ipv6" ? "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/AmazonEKS_CNI_IPv6_Policy" : "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
+
+  ipv4_cni_policy = { for k, v in {
+    AmazonEKS_CNI_Policy = "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
+  } : k => v if var.iam_role_attach_cni_policy && var.cluster_ip_family == "ipv4" }
+  ipv6_cni_policy = { for k, v in {
+    AmazonEKS_CNI_IPv6_Policy = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/AmazonEKS_CNI_IPv6_Policy"
+  } : k => v if var.iam_role_attach_cni_policy && var.cluster_ip_family == "ipv6" }
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
@@ -770,12 +777,14 @@ resource "aws_iam_role" "this" {
 
 # Policies attached ref https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
 resource "aws_iam_role_policy_attachment" "this" {
-  for_each = { for k, v in {
-    AmazonEKSWorkerNodePolicy          = "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy"
-    AmazonEC2ContainerRegistryReadOnly = "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly"
-    AmazonEKS_CNI_IPv6_Policy          = var.iam_role_attach_cni_policy && var.cluster_ip_family == "ipv6" ? local.cni_policy : ""
-    AmazonEKS_CNI_Policy               = var.iam_role_attach_cni_policy && var.cluster_ip_family == "ipv4" ? local.cni_policy : ""
-  } : k => v if var.create && var.create_iam_instance_profile && v != "" }
+  for_each = { for k, v in merge(
+    {
+      AmazonEKSWorkerNodePolicy          = "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy"
+      AmazonEC2ContainerRegistryReadOnly = "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly"
+    },
+    local.ipv4_cni_policy,
+    local.ipv6_cni_policy
+  ) : k => v if var.create && var.create_iam_instance_profile }
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name

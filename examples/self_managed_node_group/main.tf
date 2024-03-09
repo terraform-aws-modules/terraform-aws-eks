@@ -309,6 +309,9 @@ module "disabled_self_managed_node_group" {
   source = "../../modules/self-managed-node-group"
 
   create = false
+
+  # Hard requirement
+  cluster_service_cidr = ""
 }
 
 ################################################################################

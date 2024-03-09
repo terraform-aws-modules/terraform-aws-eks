@@ -1,4 +1,3 @@
-
 locals {
   template_path = {
     al2023       = "${path.module}/../../templates/al2023_user_data.tpl"
@@ -6,6 +5,8 @@ locals {
     linux        = "${path.module}/../../templates/linux_user_data.tpl"
     windows      = "${path.module}/../../templates/windows_user_data.tpl"
   }
+
+  cluster_service_cidr = try(coalesce(var.cluster_service_ipv4_cidr, var.cluster_service_cidr), "")
 
   user_data = base64encode(templatefile(
     coalesce(var.user_data_template_path, local.template_path[var.platform]),
@@ -18,14 +19,15 @@ locals {
       cluster_endpoint    = var.cluster_endpoint
       cluster_auth_base64 = var.cluster_auth_base64
 
-      # Required by AL2023
-      cluster_service_cidr = var.cluster_service_cidr
+      cluster_service_cidr = local.cluster_service_cidr
+      cluster_ip_family    = var.cluster_ip_family
+      # Bottlerocket
+      cluster_dns_ip = try(cidrhost(local.cluster_service_cidr, 10), "")
 
       # Optional
-      cluster_service_ipv4_cidr = var.cluster_service_ipv4_cidr != null ? var.cluster_service_ipv4_cidr : ""
-      bootstrap_extra_args      = var.bootstrap_extra_args
-      pre_bootstrap_user_data   = var.pre_bootstrap_user_data
-      post_bootstrap_user_data  = var.post_bootstrap_user_data
+      bootstrap_extra_args     = var.bootstrap_extra_args
+      pre_bootstrap_user_data  = var.pre_bootstrap_user_data
+      post_bootstrap_user_data = var.post_bootstrap_user_data
     }
   ))
 

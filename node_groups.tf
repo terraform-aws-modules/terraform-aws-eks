@@ -17,6 +17,8 @@ locals {
       min_healthy_percentage = 66
     }
   }
+
+  kubernetes_network_config = try(aws_eks_cluster.this[0].kubernetes_network_config[0], {})
 }
 
 # This sleep resource is used to provide a timed gap between the cluster creation and the downstream dependencies
@@ -33,7 +35,7 @@ resource "time_sleep" "this" {
     cluster_name         = aws_eks_cluster.this[0].name
     cluster_endpoint     = aws_eks_cluster.this[0].endpoint
     cluster_version      = aws_eks_cluster.this[0].version
-    cluster_service_cidr = var.cluster_ip_family == "ipv6" ? aws_eks_cluster.this[0].kubernetes_network_config[0].service_ipv6_cidr : aws_eks_cluster.this[0].kubernetes_network_config[0].service_ipv4_cidr
+    cluster_service_cidr = var.cluster_ip_family == "ipv6" ? try(local.kubernetes_network_config.service_ipv6_cidr, "") : try(local.kubernetes_network_config.service_ipv4_cidr, "")
 
     cluster_certificate_authority_data = aws_eks_cluster.this[0].certificate_authority[0].data
   }
@@ -296,9 +298,8 @@ module "eks_managed_node_group" {
 
   create = try(each.value.create, true)
 
-  cluster_name      = time_sleep.this[0].triggers["cluster_name"]
-  cluster_version   = try(each.value.cluster_version, var.eks_managed_node_group_defaults.cluster_version, time_sleep.this[0].triggers["cluster_version"])
-  cluster_ip_family = var.cluster_ip_family
+  cluster_name    = time_sleep.this[0].triggers["cluster_name"]
+  cluster_version = try(each.value.cluster_version, var.eks_managed_node_group_defaults.cluster_version, time_sleep.this[0].triggers["cluster_version"])
 
   # EKS Managed Node Group
   name            = try(each.value.name, each.key)
@@ -331,6 +332,7 @@ module "eks_managed_node_group" {
   cluster_endpoint           = try(time_sleep.this[0].triggers["cluster_endpoint"], "")
   cluster_auth_base64        = try(time_sleep.this[0].triggers["cluster_certificate_authority_data"], "")
   cluster_service_ipv4_cidr  = var.cluster_service_ipv4_cidr
+  cluster_ip_family          = var.cluster_ip_family
   cluster_service_cidr       = try(time_sleep.this[0].triggers["cluster_service_cidr"], "")
   enable_bootstrap_user_data = try(each.value.enable_bootstrap_user_data, var.eks_managed_node_group_defaults.enable_bootstrap_user_data, false)
   pre_bootstrap_user_data    = try(each.value.pre_bootstrap_user_data, var.eks_managed_node_group_defaults.pre_bootstrap_user_data, "")
@@ -412,8 +414,7 @@ module "self_managed_node_group" {
 
   create = try(each.value.create, true)
 
-  cluster_name      = time_sleep.this[0].triggers["cluster_name"]
-  cluster_ip_family = var.cluster_ip_family
+  cluster_name = time_sleep.this[0].triggers["cluster_name"]
 
   # Autoscaling Group
   create_autoscaling_group = try(each.value.create_autoscaling_group, var.self_managed_node_group_defaults.create_autoscaling_group, true)
@@ -466,6 +467,7 @@ module "self_managed_node_group" {
   cluster_endpoint         = try(time_sleep.this[0].triggers["cluster_endpoint"], "")
   cluster_auth_base64      = try(time_sleep.this[0].triggers["cluster_certificate_authority_data"], "")
   cluster_service_cidr     = try(time_sleep.this[0].triggers["cluster_service_cidr"], "")
+  cluster_ip_family        = try(local.kubernetes_network_config.ip_family, var.cluster_ip_family)
   pre_bootstrap_user_data  = try(each.value.pre_bootstrap_user_data, var.self_managed_node_group_defaults.pre_bootstrap_user_data, "")
   post_bootstrap_user_data = try(each.value.post_bootstrap_user_data, var.self_managed_node_group_defaults.post_bootstrap_user_data, "")
   bootstrap_extra_args     = try(each.value.bootstrap_extra_args, var.self_managed_node_group_defaults.bootstrap_extra_args, "")
