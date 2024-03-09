@@ -60,7 +60,7 @@ locals {
   launch_template_name = coalesce(var.launch_template_name, "${var.name}-eks-node-group")
   security_group_ids   = compact(concat([var.cluster_primary_security_group_id], var.vpc_security_group_ids))
 
-  placement = var.create && var.enable_efa_support ? { group_name = aws_placement_group.this[0].name } : var.placement
+  placement = var.create && (var.enable_efa_support || var.create_placement_group) ? { group_name = aws_placement_group.this[0].name } : var.placement
 }
 
 resource "aws_launch_template" "this" {
@@ -526,10 +526,10 @@ resource "aws_iam_role_policy_attachment" "additional" {
 ################################################################################
 
 resource "aws_placement_group" "this" {
-  count = var.create && var.enable_efa_support ? 1 : 0
+  count = var.create && (var.enable_efa_support || var.create_placement_group) ? 1 : 0
 
   name     = "${var.cluster_name}-${var.name}"
-  strategy = "cluster"
+  strategy = var.placement_group_strategy
 
   tags = var.tags
 }

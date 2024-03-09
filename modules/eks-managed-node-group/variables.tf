@@ -276,6 +276,18 @@ variable "placement" {
   default     = {}
 }
 
+variable "create_placement_group" {
+  description = "Determines whether a placement group is created & used by the nodegroup"
+  type        = bool
+  default     = false
+}
+
+variable "placement_group_strategy" {
+  description = "The placement group strategy"
+  type        = string
+  default     = "cluster"
+}
+
 variable "private_dns_name_options" {
   description = "The options for the instance hostname. The default values are inherited from the subnet"
   type        = map(string)
