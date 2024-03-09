@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.6.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.5.3...v20.6.0) (2024-03-09)
+
+
+### Features
+
+* Add support for tracking latest AMI release version on managed nodegroups ([#2951](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2951)) ([393da7e](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/393da7ec0ed158cf783356ab10959d91430c1d80))
+
 ## [20.5.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.5.2...v20.5.3) (2024-03-08)
 
 
