@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.7.0...v20.8.0) (2024-03-10)
+
+
+### Features
+
+* Replace the use of `toset()` with static keys for node IAM role policy attachment ([#2962](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2962)) ([57f5130](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/57f5130132ca11fd3e478a61a8fc082a929540c2))
+
 ## [20.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.6.0...v20.7.0) (2024-03-09)
 
 
