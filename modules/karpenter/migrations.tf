@@ -73,5 +73,5 @@ moved {
 
 moved {
   from = aws_iam_role_policy_attachment.node["arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"]
-  to   = aws_iam_role_policy_attachment.node["AmazonEC2ContainerRegistryReadOnly"]
+  to   = aws_iam_role_policy_attachment.node["AmazonEKS_CNI_Policy"]
 }
