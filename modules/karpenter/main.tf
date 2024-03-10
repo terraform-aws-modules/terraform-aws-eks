@@ -570,7 +570,7 @@ resource "aws_iam_role_policy_attachment" "node" {
     AmazonEC2ContainerRegistryReadOnly = "${local.node_iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly"
     AmazonEKS_CNI_IPv6_Policy          = var.node_iam_role_attach_cni_policy && var.cluster_ip_family == "ipv6" ? local.cni_policy : ""
     AmazonEKS_CNI_Policy               = var.node_iam_role_attach_cni_policy && var.cluster_ip_family == "ipv4" ? local.cni_policy : ""
-  } : k => v if var.create && var.create_iam_role && v != "" }
+  } : k => v if local.create_node_iam_role && v != "" }
 
   policy_arn = each.value
   role       = aws_iam_role.node[0].name
