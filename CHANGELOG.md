@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.8.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.8.0...v20.8.1) (2024-03-10)
+
+
+### Bug Fixes
+
+* Do not attach policy if Karpenter node role is not created by module ([#2964](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2964)) ([3ad19d7](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/3ad19d7435f34600e4872fd131e155583e498cd9))
+
 ## [20.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.7.0...v20.8.0) (2024-03-10)
 
 
