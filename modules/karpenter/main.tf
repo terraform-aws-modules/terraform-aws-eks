@@ -578,7 +578,7 @@ resource "aws_iam_role_policy_attachment" "node" {
     },
     local.ipv4_cni_policy,
     local.ipv6_cni_policy
-  ) : k => v if var.create && var.create_iam_role }
+  ) : k => v if local.create_node_iam_role }
 
   policy_arn = each.value
   role       = aws_iam_role.node[0].name
