@@ -467,6 +467,8 @@ resource "aws_eks_node_group" "this" {
 ################################################################################
 
 locals {
+  create_iam_role = var.create && var.create_iam_role
+
   iam_role_name          = coalesce(var.iam_role_name, "${var.name}-eks-node-group")
   iam_role_policy_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
 
@@ -479,7 +481,7 @@ locals {
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
-  count = var.create && var.create_iam_role ? 1 : 0
+  count = local.create_iam_role ? 1 : 0
 
   statement {
     sid     = "EKSNodeAssumeRole"
@@ -493,7 +495,7 @@ data "aws_iam_policy_document" "assume_role_policy" {
 }
 
 resource "aws_iam_role" "this" {
-  count = var.create && var.create_iam_role ? 1 : 0
+  count = local.create_iam_role ? 1 : 0
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
@@ -516,14 +518,14 @@ resource "aws_iam_role_policy_attachment" "this" {
     },
     local.ipv4_cni_policy,
     local.ipv6_cni_policy
-  ) : k => v if var.create && var.create_iam_role }
+  ) : k => v if local.create_iam_role }
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "additional" {
-  for_each = { for k, v in var.iam_role_additional_policies : k => v if var.create && var.create_iam_role }
+  for_each = { for k, v in var.iam_role_additional_policies : k => v if local.create_iam_role }
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name

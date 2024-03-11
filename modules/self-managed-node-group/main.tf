@@ -42,12 +42,14 @@ module "user_data" {
 ################################################################################
 
 data "aws_ec2_instance_type" "this" {
-  count = var.create && var.enable_efa_support && local.instance_type_provided ? 1 : 0
+  count = local.enable_efa_support ? 1 : 0
 
   instance_type = var.instance_type
 }
 
 locals {
+  enable_efa_support = var.create && var.enable_efa_support && local.instance_type_provided
+
   instance_type_provided = var.instance_type != ""
   num_network_cards      = try(data.aws_ec2_instance_type.this[0].maximum_network_cards, 0)
 
@@ -61,7 +63,7 @@ locals {
     }
   ]
 
-  network_interfaces = var.enable_efa_support && local.instance_type_provided ? local.efa_network_interfaces : var.network_interfaces
+  network_interfaces = local.enable_efa_support ? local.efa_network_interfaces : var.network_interfaces
 }
 
 ################################################################################
@@ -72,7 +74,7 @@ locals {
   launch_template_name = coalesce(var.launch_template_name, "${var.name}-node-group")
   security_group_ids   = compact(concat([var.cluster_primary_security_group_id], var.vpc_security_group_ids))
 
-  placement = var.create && var.enable_efa_support ? { group_name = aws_placement_group.this[0].name } : var.placement
+  placement = local.enable_efa_support ? { group_name = aws_placement_group.this[0].name } : var.placement
 }
 
 resource "aws_launch_template" "this" {
@@ -696,7 +698,7 @@ resource "aws_autoscaling_group" "this" {
 
   target_group_arns         = var.target_group_arns
   termination_policies      = var.termination_policies
-  vpc_zone_identifier       = var.enable_efa_support ? data.aws_subnets.efa[0].ids : var.subnet_ids
+  vpc_zone_identifier       = local.enable_efa_support ? data.aws_subnets.efa[0].ids : var.subnet_ids
   wait_for_capacity_timeout = var.wait_for_capacity_timeout
   wait_for_elb_capacity     = var.wait_for_elb_capacity
 
@@ -735,6 +737,8 @@ resource "aws_autoscaling_group" "this" {
 ################################################################################
 
 locals {
+  create_iam_instance_profile = var.create && var.create_iam_instance_profile
+
   iam_role_name          = coalesce(var.iam_role_name, "${var.name}-node-group")
   iam_role_policy_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
 
@@ -747,7 +751,7 @@ locals {
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
-  count = var.create && var.create_iam_instance_profile ? 1 : 0
+  count = local.create_iam_instance_profile ? 1 : 0
 
   statement {
     sid     = "EKSNodeAssumeRole"
@@ -761,7 +765,7 @@ data "aws_iam_policy_document" "assume_role_policy" {
 }
 
 resource "aws_iam_role" "this" {
-  count = var.create && var.create_iam_instance_profile ? 1 : 0
+  count = local.create_iam_instance_profile ? 1 : 0
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
@@ -784,21 +788,21 @@ resource "aws_iam_role_policy_attachment" "this" {
     },
     local.ipv4_cni_policy,
     local.ipv6_cni_policy
-  ) : k => v if var.create && var.create_iam_instance_profile }
+  ) : k => v if local.create_iam_instance_profile }
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "additional" {
-  for_each = { for k, v in var.iam_role_additional_policies : k => v if var.create && var.create_iam_instance_profile }
+  for_each = { for k, v in var.iam_role_additional_policies : k => v if local.create_iam_instance_profile }
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name
 }
 
 resource "aws_iam_instance_profile" "this" {
-  count = var.create && var.create_iam_instance_profile ? 1 : 0
+  count = local.create_iam_instance_profile ? 1 : 0
 
   role = aws_iam_role.this[0].name
 
@@ -818,7 +822,7 @@ resource "aws_iam_instance_profile" "this" {
 ################################################################################
 
 resource "aws_placement_group" "this" {
-  count = var.create && var.enable_efa_support ? 1 : 0
+  count = local.enable_efa_support ? 1 : 0
 
   name     = "${var.cluster_name}-${var.name}"
   strategy = "cluster"
@@ -837,7 +841,7 @@ resource "aws_placement_group" "this" {
 
 # Find the availability zones supported by the instance type
 data "aws_ec2_instance_type_offerings" "this" {
-  count = var.create && var.enable_efa_support ? 1 : 0
+  count = local.enable_efa_support ? 1 : 0
 
   filter {
     name   = "instance-type"
@@ -850,7 +854,7 @@ data "aws_ec2_instance_type_offerings" "this" {
 # Reverse the lookup to find one of the subnets provided based on the availability
 # availability zone ID of the queried instance type (supported)
 data "aws_subnets" "efa" {
-  count = var.create && var.enable_efa_support ? 1 : 0
+  count = local.enable_efa_support ? 1 : 0
 
   filter {
     name   = "subnet-id"
