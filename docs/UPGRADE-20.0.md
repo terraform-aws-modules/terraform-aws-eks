@@ -176,13 +176,13 @@ To give users advanced notice and provide some future direction for this module,
 
 +   manage_aws_auth_configmap = true
 
-+   aws_auth_roles = [
++   aws_auth_roles = concat([
 +     {
 +       rolearn  = "arn:aws:iam::66666666666:role/role1"
 +       username = "role1"
 +       groups   = ["custom-role-group"]
 +     },
-+   ]
++   ], local.roles)
 
 +   aws_auth_users = [
 +     {
@@ -192,6 +192,19 @@ To give users advanced notice and provide some future direction for this module,
 +     },
 +   ]
 + }
+
++ locals {
++    roles = [for role_arn in module.eks.eks_managed_node_groups : {
++     rolearn  = role_arn.iam_role_arn
++     username = "system:node:{{EC2PrivateDNSName}}"
++     groups = [
++       "system:bootstrappers",
++       "system:nodes"
++     ]
++     }
++   ]
++ }
+
 ```
 
 ### Karpenter Diff of Before (v19.21) vs After (v20.0)
