@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.8.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.8.1...v20.8.2) (2024-03-11)
+
+
+### Bug Fixes
+
+* Ensure a default `ip_family` value is provided to guarantee a CNI policy is attached to nodes ([#2967](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2967)) ([29dcca3](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/29dcca335d80e248c57b8efa2c36aaef2e1b1bd2))
+
 ## [20.8.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.8.0...v20.8.1) (2024-03-10)
 
 
