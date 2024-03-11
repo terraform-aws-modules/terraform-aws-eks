@@ -23,7 +23,7 @@ variable "create_iam_role" {
 variable "cluster_ip_family" {
   description = "The IP family used to assign Kubernetes pod and service addresses. Valid values are `ipv4` (default) and `ipv6`"
   type        = string
-  default     = null
+  default     = "ipv4"
 }
 
 variable "iam_role_arn" {

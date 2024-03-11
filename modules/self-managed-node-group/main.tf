@@ -41,7 +41,7 @@ module "user_data" {
 ################################################################################
 
 data "aws_ec2_instance_type" "this" {
-  count = var.enable_efa_support && local.instance_type_provided ? 1 : 0
+  count = var.create && var.enable_efa_support && local.instance_type_provided ? 1 : 0
 
   instance_type = var.instance_type
 }

@@ -185,7 +185,7 @@ variable "create_node_iam_role" {
 variable "cluster_ip_family" {
   description = "The IP family used to assign Kubernetes pod and service addresses. Valid values are `ipv4` (default) and `ipv6`. Note: If `ipv6` is specified, the `AmazonEKS_CNI_IPv6_Policy` must exist in the account. This policy is created by the EKS module with `create_cni_ipv6_iam_policy = true`"
   type        = string
-  default     = null
+  default     = "ipv4"
 }
 
 variable "node_iam_role_arn" {

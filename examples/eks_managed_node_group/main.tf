@@ -364,7 +364,7 @@ module "eks_managed_node_group" {
   subnet_ids                        = module.vpc.private_subnets
   cluster_primary_security_group_id = module.eks.cluster_primary_security_group_id
   vpc_security_group_ids = [
-    module.eks.cluster_security_group_id,
+    module.eks.node_security_group_id,
   ]
 
   ami_type = "BOTTLEROCKET_x86_64"
