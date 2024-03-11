@@ -43,7 +43,9 @@ kubectl delete node -l karpenter.sh/provisioner-name=default
 ```bash
 # Necessary to avoid removing Terraform's permissions too soon before its finished
 # cleaning up the resources it deployed inside the cluster
-terraform state rm 'module.eks.aws_eks_access_entry.this["cluster_creator_admin"]' || true
+terraform state rm 'module.eks.aws_eks_access_entry.this["cluster_creator"]' || true
+terraform state rm 'module.eks.aws_eks_access_policy_association.this["cluster_creator_admin"]' || true
+
 terraform destroy
 ```
 
