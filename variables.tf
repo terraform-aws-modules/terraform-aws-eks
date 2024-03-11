@@ -83,7 +83,7 @@ variable "cluster_endpoint_public_access_cidrs" {
 variable "cluster_ip_family" {
   description = "The IP family used to assign Kubernetes pod and service addresses. Valid values are `ipv4` (default) and `ipv6`. You can only specify an IP family when you create a cluster, changing this value will force a new cluster to be created"
   type        = string
-  default     = null
+  default     = "ipv4"
 }
 
 variable "cluster_service_ipv4_cidr" {
