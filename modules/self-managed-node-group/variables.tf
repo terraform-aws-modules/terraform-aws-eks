@@ -38,10 +38,10 @@ variable "cluster_auth_base64" {
   default     = ""
 }
 
-# Hard requirement
 variable "cluster_service_cidr" {
   description = "The CIDR block (IPv4 or IPv6) used by the cluster to assign Kubernetes service IP addresses. This is derived from the cluster itself"
   type        = string
+  default     = ""
 }
 
 variable "cluster_ip_family" {

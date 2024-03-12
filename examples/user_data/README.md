@@ -17,7 +17,7 @@ $ terraform apply
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.2 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.4 |
 
 ## Providers
@@ -38,6 +38,7 @@ $ terraform apply
 | <a name="module_eks_mng_al2_custom_ami"></a> [eks\_mng\_al2\_custom\_ami](#module\_eks\_mng\_al2\_custom\_ami) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_al2_custom_ami_ipv6"></a> [eks\_mng\_al2\_custom\_ami\_ipv6](#module\_eks\_mng\_al2\_custom\_ami\_ipv6) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_al2_custom_template"></a> [eks\_mng\_al2\_custom\_template](#module\_eks\_mng\_al2\_custom\_template) | ../../modules/_user_data | n/a |
+| <a name="module_eks_mng_al2_disabled"></a> [eks\_mng\_al2\_disabled](#module\_eks\_mng\_al2\_disabled) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_al2_no_op"></a> [eks\_mng\_al2\_no\_op](#module\_eks\_mng\_al2\_no\_op) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_bottlerocket_additional"></a> [eks\_mng\_bottlerocket\_additional](#module\_eks\_mng\_bottlerocket\_additional) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_bottlerocket_custom_ami"></a> [eks\_mng\_bottlerocket\_custom\_ami](#module\_eks\_mng\_bottlerocket\_custom\_ami) | ../../modules/_user_data | n/a |

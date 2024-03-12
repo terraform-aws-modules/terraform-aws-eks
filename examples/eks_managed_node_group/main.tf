@@ -389,9 +389,6 @@ module "disabled_eks_managed_node_group" {
   source = "../../modules/eks-managed-node-group"
 
   create = false
-
-  # Hard requirement
-  cluster_service_cidr = ""
 }
 
 ################################################################################

@@ -12,6 +12,12 @@ locals {
 # EKS managed node group - AL2
 ################################################################################
 
+module "eks_mng_al2_disabled" {
+  source = "../../modules/_user_data"
+
+  create = false
+}
+
 module "eks_mng_al2_no_op" {
   source = "../../modules/_user_data"
 

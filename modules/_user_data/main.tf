@@ -1,3 +1,16 @@
+# The `cluster_service_cidr` is required when `create == true`
+# This is a hacky way to make that logic work, otherwise Terraform always wants a value
+# and supplying any old value like `""` or `null` is not valid and will silently
+# fail to join nodes to the cluster
+resource "null_resource" "validate_cluster_service_cidr" {
+  lifecycle {
+    precondition {
+      condition     = var.create ? length(local.cluster_service_cidr) > 6 : true # length(local.cluster_service_cidr) == 0
+      error_message = "`cluster_service_cidr` is required when `create = true`."
+    }
+  }
+}
+
 locals {
   template_path = {
     al2023       = "${path.module}/../../templates/al2023_user_data.tpl"
