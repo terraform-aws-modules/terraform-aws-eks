@@ -5,7 +5,9 @@
 resource "null_resource" "validate_cluster_service_cidr" {
   lifecycle {
     precondition {
-      condition     = var.create ? length(local.cluster_service_cidr) > 6 : true # length(local.cluster_service_cidr) == 0
+      # The length 6 is currently arbitrary, but it's a safe bet that the CIDR will be longer than that
+      # The main point is that a value needs to be provided when `create = true`
+      condition     = var.create ? length(local.cluster_service_cidr) > 6 : true
       error_message = "`cluster_service_cidr` is required when `create = true`."
     }
   }
