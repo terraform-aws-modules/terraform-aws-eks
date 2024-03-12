@@ -530,7 +530,13 @@ locals {
 
   node_iam_role_name          = coalesce(var.node_iam_role_name, "Karpenter-${var.cluster_name}")
   node_iam_role_policy_prefix = "arn:${local.partition}:iam::aws:policy"
-  cni_policy                  = var.cluster_ip_family == "ipv6" ? "arn:${local.partition}:iam::${local.account_id}:policy/AmazonEKS_CNI_IPv6_Policy" : "${local.node_iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
+
+  ipv4_cni_policy = { for k, v in {
+    AmazonEKS_CNI_Policy = "${local.node_iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
+  } : k => v if var.node_iam_role_attach_cni_policy && var.cluster_ip_family == "ipv4" }
+  ipv6_cni_policy = { for k, v in {
+    AmazonEKS_CNI_IPv6_Policy = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/AmazonEKS_CNI_IPv6_Policy"
+  } : k => v if var.node_iam_role_attach_cni_policy && var.cluster_ip_family == "ipv6" }
 }
 
 data "aws_iam_policy_document" "node_assume_role" {
@@ -565,12 +571,14 @@ resource "aws_iam_role" "node" {
 
 # Policies attached ref https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
 resource "aws_iam_role_policy_attachment" "node" {
-  for_each = { for k, v in {
-    AmazonEKSWorkerNodePolicy          = "${local.node_iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy"
-    AmazonEC2ContainerRegistryReadOnly = "${local.node_iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly"
-    AmazonEKS_CNI_IPv6_Policy          = var.node_iam_role_attach_cni_policy && var.cluster_ip_family == "ipv6" ? local.cni_policy : ""
-    AmazonEKS_CNI_Policy               = var.node_iam_role_attach_cni_policy && var.cluster_ip_family == "ipv4" ? local.cni_policy : ""
-  } : k => v if local.create_node_iam_role && v != "" }
+  for_each = { for k, v in merge(
+    {
+      AmazonEKSWorkerNodePolicy          = "${local.node_iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy"
+      AmazonEC2ContainerRegistryReadOnly = "${local.node_iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly"
+    },
+    local.ipv4_cni_policy,
+    local.ipv6_cni_policy
+  ) : k => v if local.create_node_iam_role }
 
   policy_arn = each.value
   role       = aws_iam_role.node[0].name

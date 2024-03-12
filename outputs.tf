@@ -52,6 +52,16 @@ output "cluster_primary_security_group_id" {
   value       = try(aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id, null)
 }
 
+output "cluster_service_cidr" {
+  description = "The CIDR block where Kubernetes pod and service IP addresses are assigned from"
+  value       = try(aws_eks_cluster.this[0].kubernetes_network_config[0].service_ipv4_cidr, aws_eks_cluster.this[0].kubernetes_network_config[0].service_ipv6_cidr, null)
+}
+
+output "cluster_ip_family" {
+  description = "The IP family used by the cluster (e.g. `ipv4` or `ipv6`)"
+  value       = try(aws_eks_cluster.this[0].kubernetes_network_config[0].ip_family, null)
+}
+
 ################################################################################
 # Access Entry
 ################################################################################

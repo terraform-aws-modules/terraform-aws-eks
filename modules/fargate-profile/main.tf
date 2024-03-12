@@ -2,9 +2,17 @@ data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
 locals {
+  create_iam_role = var.create && var.create_iam_role
+
   iam_role_name          = coalesce(var.iam_role_name, var.name, "fargate-profile")
   iam_role_policy_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
-  cni_policy             = var.cluster_ip_family == "ipv6" ? "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/AmazonEKS_CNI_IPv6_Policy" : "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
+
+  ipv4_cni_policy = { for k, v in {
+    AmazonEKS_CNI_Policy = "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
+  } : k => v if var.iam_role_attach_cni_policy && var.cluster_ip_family == "ipv4" }
+  ipv6_cni_policy = { for k, v in {
+    AmazonEKS_CNI_IPv6_Policy = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/AmazonEKS_CNI_IPv6_Policy"
+  } : k => v if var.iam_role_attach_cni_policy && var.cluster_ip_family == "ipv6" }
 }
 
 ################################################################################
@@ -12,7 +20,7 @@ locals {
 ################################################################################
 
 data "aws_iam_policy_document" "assume_role_policy" {
-  count = var.create && var.create_iam_role ? 1 : 0
+  count = local.create_iam_role ? 1 : 0
 
   statement {
     effect  = "Allow"
@@ -26,7 +34,7 @@ data "aws_iam_policy_document" "assume_role_policy" {
 }
 
 resource "aws_iam_role" "this" {
-  count = var.create && var.create_iam_role ? 1 : 0
+  count = local.create_iam_role ? 1 : 0
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
@@ -41,17 +49,20 @@ resource "aws_iam_role" "this" {
 }
 
 resource "aws_iam_role_policy_attachment" "this" {
-  for_each = { for k, v in toset(compact([
-    "${local.iam_role_policy_prefix}/AmazonEKSFargatePodExecutionRolePolicy",
-    var.iam_role_attach_cni_policy ? local.cni_policy : "",
-  ])) : k => v if var.create && var.create_iam_role }
+  for_each = { for k, v in merge(
+    {
+      AmazonEKSFargatePodExecutionRolePolicy = "${local.iam_role_policy_prefix}/AmazonEKSFargatePodExecutionRolePolicy"
+    },
+    local.ipv4_cni_policy,
+    local.ipv6_cni_policy
+  ) : k => v if local.create_iam_role }
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "additional" {
-  for_each = { for k, v in var.iam_role_additional_policies : k => v if var.create && var.create_iam_role }
+  for_each = { for k, v in var.iam_role_additional_policies : k => v if local.create_iam_role }
 
   policy_arn = each.value
   role       = aws_iam_role.this[0].name
