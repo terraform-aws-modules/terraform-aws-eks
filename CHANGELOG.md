@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.8.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.8.2...v20.8.3) (2024-03-12)
+
+
+### Bug Fixes
+
+* Ensure the correct service CIDR and IP family is used in the rendered user data ([#2963](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2963)) ([aeb9f0c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/aeb9f0c990b259320a6c3e5ff93be3f064bb9238))
+
 ## [20.8.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.8.1...v20.8.2) (2024-03-11)
 
 
