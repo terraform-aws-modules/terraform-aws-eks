@@ -464,6 +464,27 @@ data "aws_iam_policy_document" "queue" {
       ]
     }
   }
+  statement {
+    sid    = "DenyHTTP"
+    effect = "Deny"
+    actions = [
+      "sqs:*"
+    ]
+    resources = [aws_sqs_queue.this[0].arn]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SecureTransport"
+      values = [
+        "false"
+      ]
+    }
+    principals {
+      type = "*"
+      identifiers = [
+        "*"
+      ]
+    }
+  }
 }
 
 resource "aws_sqs_queue_policy" "this" {
