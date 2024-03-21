@@ -81,6 +81,28 @@ variable "user_data_template_path" {
   default     = ""
 }
 
+variable "cloudinit_pre_nodeadm" {
+  description = "Array of cloud-init document parts that are created before the nodeadm document part"
+  type = list(object({
+    content      = string
+    content_type = optional(string)
+    filename     = optional(string)
+    merge_type   = optional(string)
+  }))
+  default = []
+}
+
+variable "cloudinit_post_nodeadm" {
+  description = "Array of cloud-init document parts that are created after the nodeadm document part"
+  type = list(object({
+    content      = string
+    content_type = optional(string)
+    filename     = optional(string)
+    merge_type   = optional(string)
+  }))
+  default = []
+}
+
 ################################################################################
 # Launch template
 ################################################################################
