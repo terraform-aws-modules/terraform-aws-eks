@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.8.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.8.3...v20.8.4) (2024-03-21)
+
+
+### Bug Fixes
+
+* Pass nodeadm user data variables from root module down to nodegroup sub-modules ([#2981](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2981)) ([84effa0](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/84effa0e30f64ba2fceb7f89c2a822e92f1ee1ea))
+
 ## [20.8.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.8.2...v20.8.3) (2024-03-12)
 
 
