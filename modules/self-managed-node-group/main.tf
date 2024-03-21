@@ -35,6 +35,9 @@ module "user_data" {
   post_bootstrap_user_data   = var.post_bootstrap_user_data
   bootstrap_extra_args       = var.bootstrap_extra_args
   user_data_template_path    = var.user_data_template_path
+
+  cloudinit_pre_nodeadm  = var.cloudinit_pre_nodeadm
+  cloudinit_post_nodeadm = var.cloudinit_post_nodeadm
 }
 
 ################################################################################
