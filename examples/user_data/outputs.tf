@@ -17,7 +17,7 @@ resource "local_file" "eks_mng_al2_no_op" {
 
 resource "local_file" "eks_mng_al2_additional" {
   content  = base64decode(module.eks_mng_al2_additional.user_data)
-  filename = "${path.module}/rendered/al2/eks-mng-additional.sh"
+  filename = "${path.module}/rendered/al2/eks-mng-additional.txt"
 }
 
 resource "local_file" "eks_mng_al2_custom_ami" {
@@ -41,22 +41,22 @@ resource "local_file" "eks_mng_al2_custom_template" {
 
 resource "local_file" "eks_mng_al2023_no_op" {
   content  = base64decode(module.eks_mng_al2023_no_op.user_data)
-  filename = "${path.module}/rendered/al2023/eks-mng-no-op.sh"
+  filename = "${path.module}/rendered/al2023/eks-mng-no-op.txt"
 }
 
 resource "local_file" "eks_mng_al2023_additional" {
   content  = base64decode(module.eks_mng_al2023_additional.user_data)
-  filename = "${path.module}/rendered/al2023/eks-mng-additional.sh"
+  filename = "${path.module}/rendered/al2023/eks-mng-additional.txt"
 }
 
 resource "local_file" "eks_mng_al2023_custom_ami" {
   content  = base64decode(module.eks_mng_al2023_custom_ami.user_data)
-  filename = "${path.module}/rendered/al2023/eks-mng-custom-ami.sh"
+  filename = "${path.module}/rendered/al2023/eks-mng-custom-ami.txt"
 }
 
 resource "local_file" "eks_mng_al2023_custom_template" {
   content  = base64decode(module.eks_mng_al2023_custom_template.user_data)
-  filename = "${path.module}/rendered/al2023/eks-mng-custom-template.sh"
+  filename = "${path.module}/rendered/al2023/eks-mng-custom-template.txt"
 }
 
 ################################################################################
@@ -137,17 +137,17 @@ resource "local_file" "self_mng_al2_custom_template" {
 
 resource "local_file" "self_mng_al2023_no_op" {
   content  = base64decode(module.self_mng_al2023_no_op.user_data)
-  filename = "${path.module}/rendered/al2023/self-mng-no-op.sh"
+  filename = "${path.module}/rendered/al2023/self-mng-no-op.txt"
 }
 
 resource "local_file" "self_mng_al2023_bootstrap" {
   content  = base64decode(module.self_mng_al2023_bootstrap.user_data)
-  filename = "${path.module}/rendered/al2023/self-mng-bootstrap.sh"
+  filename = "${path.module}/rendered/al2023/self-mng-bootstrap.txt"
 }
 
 resource "local_file" "self_mng_al2023_custom_template" {
   content  = base64decode(module.self_mng_al2023_custom_template.user_data)
-  filename = "${path.module}/rendered/al2023/self-mng-custom-template.sh"
+  filename = "${path.module}/rendered/al2023/self-mng-custom-template.txt"
 }
 
 ################################################################################
