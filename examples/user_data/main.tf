@@ -125,7 +125,7 @@ module "eks_mng_al2023_additional" {
   cloudinit_pre_nodeadm = [{
     content      = <<-EOT
       ---
-      apiVersion: node.eks.aws/v1alpha
+      apiVersion: node.eks.aws/v1alpha1
       kind: NodeConfig
       spec:
         kubelet:
@@ -153,7 +153,7 @@ module "eks_mng_al2023_custom_ami" {
   cloudinit_pre_nodeadm = [{
     content      = <<-EOT
       ---
-      apiVersion: node.eks.aws/v1alpha
+      apiVersion: node.eks.aws/v1alpha1
       kind: NodeConfig
       spec:
         kubelet:
@@ -189,7 +189,7 @@ module "eks_mng_al2023_custom_template" {
   cloudinit_pre_nodeadm = [{
     content      = <<-EOT
       ---
-      apiVersion: node.eks.aws/v1alpha
+      apiVersion: node.eks.aws/v1alpha1
       kind: NodeConfig
       spec:
         kubelet:
@@ -467,7 +467,7 @@ module "self_mng_al2023_bootstrap" {
   cloudinit_pre_nodeadm = [{
     content      = <<-EOT
       ---
-      apiVersion: node.eks.aws/v1alpha
+      apiVersion: node.eks.aws/v1alpha1
       kind: NodeConfig
       spec:
         kubelet:
@@ -505,7 +505,7 @@ module "self_mng_al2023_custom_template" {
   cloudinit_pre_nodeadm = [{
     content      = <<-EOT
       ---
-      apiVersion: node.eks.aws/v1alpha
+      apiVersion: node.eks.aws/v1alpha1
       kind: NodeConfig
       spec:
         kubelet:

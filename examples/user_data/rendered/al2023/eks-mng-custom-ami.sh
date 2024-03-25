@@ -7,7 +7,7 @@ Content-Type: application/node.eks.aws
 Mime-Version: 1.0
 
 ---
-apiVersion: node.eks.aws/v1alpha
+apiVersion: node.eks.aws/v1alpha1
 kind: NodeConfig
 spec:
   kubelet:
