@@ -5,16 +5,31 @@
 output "cluster_arn" {
   description = "The Amazon Resource Name (ARN) of the cluster"
   value       = try(aws_eks_cluster.this[0].arn, null)
+
+  depends_on = [
+    aws_eks_access_entry.this,
+    aws_eks_access_policy_association.this,
+  ]
 }
 
 output "cluster_certificate_authority_data" {
   description = "Base64 encoded certificate data required to communicate with the cluster"
   value       = try(aws_eks_cluster.this[0].certificate_authority[0].data, null)
+
+  depends_on = [
+    aws_eks_access_entry.this,
+    aws_eks_access_policy_association.this,
+  ]
 }
 
 output "cluster_endpoint" {
   description = "Endpoint for your Kubernetes API server"
   value       = try(aws_eks_cluster.this[0].endpoint, null)
+
+  depends_on = [
+    aws_eks_access_entry.this,
+    aws_eks_access_policy_association.this,
+  ]
 }
 
 output "cluster_id" {
@@ -25,6 +40,11 @@ output "cluster_id" {
 output "cluster_name" {
   description = "The name of the EKS cluster"
   value       = try(aws_eks_cluster.this[0].name, "")
+
+  depends_on = [
+    aws_eks_access_entry.this,
+    aws_eks_access_policy_association.this,
+  ]
 }
 
 output "cluster_oidc_issuer_url" {
