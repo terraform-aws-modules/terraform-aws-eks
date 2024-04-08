@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.8.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.8.4...v20.8.5) (2024-04-08)
+
+
+### Bug Fixes
+
+* Forces cluster outputs to wait until access entries are complete ([#3000](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3000)) ([e2a39c0](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e2a39c0f261d776e4e18a650aa9068429c4f5ef4))
+
 ## [20.8.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.8.3...v20.8.4) (2024-03-21)
 
 
