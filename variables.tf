@@ -583,3 +583,9 @@ variable "putin_khuylo" {
   type        = bool
   default     = true
 }
+
+variable "primary_security_group_tags" {
+  description = "Map of tag to be included in the primary security group"
+  type = map(string)
+  default = {}
+}
