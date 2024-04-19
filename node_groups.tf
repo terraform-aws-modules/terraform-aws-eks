@@ -339,6 +339,8 @@ module "eks_managed_node_group" {
   post_bootstrap_user_data   = try(each.value.post_bootstrap_user_data, var.eks_managed_node_group_defaults.post_bootstrap_user_data, "")
   bootstrap_extra_args       = try(each.value.bootstrap_extra_args, var.eks_managed_node_group_defaults.bootstrap_extra_args, "")
   user_data_template_path    = try(each.value.user_data_template_path, var.eks_managed_node_group_defaults.user_data_template_path, "")
+  cloudinit_pre_nodeadm      = try(each.value.cloudinit_pre_nodeadm, var.eks_managed_node_group_defaults.cloudinit_pre_nodeadm, [])
+  cloudinit_post_nodeadm     = try(each.value.cloudinit_post_nodeadm, var.eks_managed_node_group_defaults.cloudinit_post_nodeadm, [])
 
   # Launch Template
   create_launch_template                 = try(each.value.create_launch_template, var.eks_managed_node_group_defaults.create_launch_template, true)
@@ -472,6 +474,8 @@ module "self_managed_node_group" {
   post_bootstrap_user_data = try(each.value.post_bootstrap_user_data, var.self_managed_node_group_defaults.post_bootstrap_user_data, "")
   bootstrap_extra_args     = try(each.value.bootstrap_extra_args, var.self_managed_node_group_defaults.bootstrap_extra_args, "")
   user_data_template_path  = try(each.value.user_data_template_path, var.self_managed_node_group_defaults.user_data_template_path, "")
+  cloudinit_pre_nodeadm    = try(each.value.cloudinit_pre_nodeadm, var.self_managed_node_group_defaults.cloudinit_pre_nodeadm, [])
+  cloudinit_post_nodeadm   = try(each.value.cloudinit_post_nodeadm, var.self_managed_node_group_defaults.cloudinit_post_nodeadm, [])
 
   # Launch Template
   create_launch_template                 = try(each.value.create_launch_template, var.self_managed_node_group_defaults.create_launch_template, true)
