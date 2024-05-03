@@ -387,6 +387,7 @@ resource "aws_eks_node_group" "this" {
   # Required
   cluster_name         = var.cluster_name
   node_role_arn        = var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
+  subnet_ids           = var.enable_efa_support ? data.aws_subnets.efa[0].ids : var.subnet_id
   availability_zones    = var.enable_efa_support ? data.aws_subnets.efa[0].ids : var.node_subnet_az_filter
  
   scaling_config {
@@ -573,6 +574,11 @@ data "aws_ec2_instance_type_offerings" "this" {
 # availability zone ID of the queried instance type (supported)
 data "aws_subnets" "efa" {
   count = var.create && var.enable_efa_support ? 1 : 0
+
+  filter {
+    name   = "subnet-id"
+    values = var.subnet_ids
+  }
 
   filter {
     name   = "availability-zones"
