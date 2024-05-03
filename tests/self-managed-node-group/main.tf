@@ -301,6 +301,27 @@ module "eks" {
       max_size     = 2
       desired_size = 2
     }
+
+    subnet_az_filter = {
+      subnet_az_filter = ["eu-west-1a"]
+
+      min_size     = 1
+      max_size     = 2
+      desired_size = 1
+    }
+
+    placement_group_with_az_filter = {
+      name = "pg-with-az-filter"
+
+      create_placement_group   = true
+      placement_group_strategy = "cluster"
+
+      subnet_az_filter = ["eu-west-1a"]
+
+      min_size     = 1
+      max_size     = 2
+      desired_size = 1
+    }
   }
 
   tags = local.tags

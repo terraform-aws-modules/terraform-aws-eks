@@ -118,7 +118,7 @@ locals {
   launch_template_name = coalesce(var.launch_template_name, "${var.name}-node-group")
   security_group_ids   = compact(concat([var.cluster_primary_security_group_id], var.vpc_security_group_ids))
 
-  placement = local.enable_efa_support ? { group_name = aws_placement_group.this[0].name } : var.placement
+  placement = var.create && (var.enable_efa_support || var.create_placement_group) ? { group_name = aws_placement_group.this[0].name } : var.placement
 }
 
 resource "aws_launch_template" "this" {
@@ -464,7 +464,12 @@ resource "aws_launch_template" "this" {
   user_data              = module.user_data.user_data
   vpc_security_group_ids = length(local.network_interfaces) > 0 ? [] : local.security_group_ids
 
-  tags = var.tags
+  tags = merge(
+    var.tags,
+    # tag is added to make sure the placement group is created first before the node group since the 'depends_on' block cannot accept non static conditional variables
+    var.create_placement_group ? { PlacementGroup = aws_placement_group.this[0].id } : {}
+  )
+
 
   # Prevent premature access of policies by pods that
   # require permissions on create/destroy that depend on nodes
@@ -743,7 +748,7 @@ resource "aws_autoscaling_group" "this" {
 
   target_group_arns         = var.target_group_arns
   termination_policies      = var.termination_policies
-  vpc_zone_identifier       = local.enable_efa_support ? data.aws_subnets.efa[0].ids : var.subnet_ids
+  vpc_zone_identifier       = data.aws_subnets.subnets[0].ids
   wait_for_capacity_timeout = var.wait_for_capacity_timeout
   wait_for_elb_capacity     = var.wait_for_elb_capacity
 
@@ -929,12 +934,19 @@ resource "aws_iam_role_policy" "this" {
 ################################################################################
 
 resource "aws_placement_group" "this" {
-  count = local.enable_efa_support ? 1 : 0
+  count = var.create && (var.enable_efa_support || var.create_placement_group) ? 1 : 0
 
   name     = "${var.cluster_name}-${var.name}"
-  strategy = "cluster"
+  strategy = var.placement_group_strategy
 
   tags = var.tags
+
+  lifecycle {
+    precondition {
+      condition     = var.placement_group_strategy == "cluster" ? var.subnet_az_filter != null ? length(var.subnet_az_filter) == 1 : true : true
+      error_message = "Placement group strategy 'cluster' requires a single subnet to be set in subnet_az_filter"
+    }
+  }
 }
 
 ################################################################################
@@ -960,17 +972,30 @@ data "aws_ec2_instance_type_offerings" "this" {
 
 # Reverse the lookup to find one of the subnets provided based on the availability
 # availability zone ID of the queried instance type (supported)
-data "aws_subnets" "efa" {
-  count = local.enable_efa_support ? 1 : 0
+data "aws_subnets" "subnets" {
+  count = var.create ? 1 : 0
 
   filter {
     name   = "subnet-id"
     values = var.subnet_ids
   }
 
-  filter {
-    name   = "availability-zone-id"
-    values = data.aws_ec2_instance_type_offerings.this[0].locations
+  dynamic "filter" {
+    for_each = var.enable_efa_support ? [1] : []
+
+    content {
+      name   = "availability-zone-id"
+      values = data.aws_ec2_instance_type_offerings.this[0].locations
+    }
+  }
+
+  dynamic "filter" {
+    for_each = var.subnet_az_filter != null ? [1] : []
+
+    content {
+      name   = "availability-zone"
+      values = var.subnet_az_filter
+    }
   }
 }
 

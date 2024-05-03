@@ -256,6 +256,18 @@ variable "placement" {
   default     = {}
 }
 
+variable "create_placement_group" {
+  description = "Determines whether a placement group is created & used by the nodegroup"
+  type        = bool
+  default     = true
+}
+
+variable "placement_group_strategy" {
+  description = "The placement group strategy"
+  type        = string
+  default     = "cluster"
+}
+
 variable "private_dns_name_options" {
   description = "The options for the instance hostname. The default values are inherited from the subnet"
   type        = map(string)
@@ -386,6 +398,12 @@ variable "availability_zones" {
 
 variable "subnet_ids" {
   description = "A list of subnet IDs to launch resources in. Subnets automatically determine which availability zones the group will reside. Conflicts with `availability_zones`"
+  type        = list(string)
+  default     = null
+}
+
+variable "subnet_az_filter" {
+  description = "Subnet availability zone filter for subnets where nodegroup nodes are allocated. e.g. ['eu-west-1a', 'eu-west-1b']"
   type        = list(string)
   default     = null
 }

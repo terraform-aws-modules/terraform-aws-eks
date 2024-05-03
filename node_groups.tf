@@ -307,7 +307,8 @@ module "eks_managed_node_group" {
   name            = try(each.value.name, each.key)
   use_name_prefix = try(each.value.use_name_prefix, var.eks_managed_node_group_defaults.use_name_prefix, true)
 
-  subnet_ids = try(each.value.subnet_ids, var.eks_managed_node_group_defaults.subnet_ids, var.subnet_ids)
+  subnet_ids       = try(each.value.subnet_ids, var.eks_managed_node_group_defaults.subnet_ids, var.subnet_ids)
+  subnet_az_filter = try(each.value.subnet_az_filter, var.eks_managed_node_group_defaults.subnet_az_filter, null)
 
   min_size     = try(each.value.min_size, var.eks_managed_node_group_defaults.min_size, 1)
   max_size     = try(each.value.max_size, var.eks_managed_node_group_defaults.max_size, 3)
@@ -430,6 +431,7 @@ module "self_managed_node_group" {
 
   availability_zones = try(each.value.availability_zones, var.self_managed_node_group_defaults.availability_zones, null)
   subnet_ids         = try(each.value.subnet_ids, var.self_managed_node_group_defaults.subnet_ids, var.subnet_ids)
+  subnet_az_filter   = try(each.value.subnet_az_filter, var.self_managed_node_group_defaults.subnet_az_filter, null)
 
   min_size                  = try(each.value.min_size, var.self_managed_node_group_defaults.min_size, 0)
   max_size                  = try(each.value.max_size, var.self_managed_node_group_defaults.max_size, 3)
@@ -520,6 +522,8 @@ module "self_managed_node_group" {
   metadata_options                   = try(each.value.metadata_options, var.self_managed_node_group_defaults.metadata_options, local.metadata_options)
   enable_monitoring                  = try(each.value.enable_monitoring, var.self_managed_node_group_defaults.enable_monitoring, true)
   enable_efa_support                 = try(each.value.enable_efa_support, var.self_managed_node_group_defaults.enable_efa_support, false)
+  create_placement_group             = try(each.value.create_placement_group, var.self_managed_node_group_defaults.create_placement_group, false)
+  placement_group_strategy           = try(each.value.placement_group_strategy, var.self_managed_node_group_defaults.placement_group_strategy, "cluster")
   network_interfaces                 = try(each.value.network_interfaces, var.self_managed_node_group_defaults.network_interfaces, [])
   placement                          = try(each.value.placement, var.self_managed_node_group_defaults.placement, {})
   maintenance_options                = try(each.value.maintenance_options, var.self_managed_node_group_defaults.maintenance_options, {})

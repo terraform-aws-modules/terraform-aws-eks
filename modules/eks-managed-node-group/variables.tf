@@ -337,6 +337,12 @@ variable "subnet_ids" {
   default     = null
 }
 
+variable "subnet_az_filter" {
+  description = "Subnet availability zone filter for subnets where nodegroup nodes are allocated. e.g. ['eu-west-1a', 'eu-west-1b']"
+  type        = list(string)
+  default     = null
+}
+
 variable "min_size" {
   description = "Minimum number of instances/nodes"
   type        = number

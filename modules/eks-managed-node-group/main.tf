@@ -388,7 +388,8 @@ resource "aws_eks_node_group" "this" {
   # Required
   cluster_name  = var.cluster_name
   node_role_arn = var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
-  subnet_ids    = var.enable_efa_support ? data.aws_subnets.efa[0].ids : var.subnet_ids
+
+  subnet_ids = data.aws_subnets.subnets[0].ids
 
   scaling_config {
     min_size     = var.min_size
@@ -463,8 +464,11 @@ resource "aws_eks_node_group" "this" {
 
   tags = merge(
     var.tags,
-    { Name = var.name }
+    { Name = var.name },
+    # tag is added to make sure the placement group is created first before the node group since the 'depends_on' block cannot accept non static conditional variables
+    var.create_placement_group ? { PlacementGroup = aws_placement_group.this[0].id } : {}
   )
+
 }
 
 ################################################################################
@@ -609,6 +613,13 @@ resource "aws_placement_group" "this" {
   strategy = var.placement_group_strategy
 
   tags = var.tags
+
+  lifecycle {
+    precondition {
+      condition     = var.placement_group_strategy == "cluster" ? var.subnet_az_filter != null ? length(var.subnet_az_filter) == 1 : true : true
+      error_message = "Placement group strategy 'cluster' requires a single subnet to be set in subnet_az_filter"
+    }
+  }
 }
 
 ################################################################################
@@ -634,17 +645,30 @@ data "aws_ec2_instance_type_offerings" "this" {
 
 # Reverse the lookup to find one of the subnets provided based on the availability
 # availability zone ID of the queried instance type (supported)
-data "aws_subnets" "efa" {
-  count = var.create && var.enable_efa_support ? 1 : 0
+data "aws_subnets" "subnets" {
+  count = var.create ? 1 : 0
 
   filter {
     name   = "subnet-id"
     values = var.subnet_ids
   }
 
-  filter {
-    name   = "availability-zone-id"
-    values = data.aws_ec2_instance_type_offerings.this[0].locations
+  dynamic "filter" {
+    for_each = var.enable_efa_support ? [1] : []
+
+    content {
+      name   = "availability-zone-id"
+      values = data.aws_ec2_instance_type_offerings.this[0].locations
+    }
+  }
+
+  dynamic "filter" {
+    for_each = var.subnet_az_filter != null ? [1] : []
+
+    content {
+      name   = "availability-zone"
+      values = var.subnet_az_filter
+    }
   }
 }
 
