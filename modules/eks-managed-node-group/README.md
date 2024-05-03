@@ -165,6 +165,7 @@ module "eks_managed_node_group" {
 | <a name="input_name"></a> [name](#input\_name) | Name of the EKS managed node group | `string` | `""` | no |
 | <a name="input_network_interfaces"></a> [network\_interfaces](#input\_network\_interfaces) | Customize network interfaces to be attached at instance boot time | `list(any)` | `[]` | no |
 | <a name="input_placement"></a> [placement](#input\_placement) | The placement of the instance | `map(string)` | `{}` | no |
+| <a name="input_placement_group_az_filter"></a> [placement\_group\_az\_filter](#input\_placement\_group\_az\_filter) | Placement group subnet filter to enable nodegroup update in place. ex. `eu-west-1c` | `string` | `null` | no |
 | <a name="input_placement_group_strategy"></a> [placement\_group\_strategy](#input\_placement\_group\_strategy) | The placement group strategy | `string` | `"cluster"` | no |
 | <a name="input_platform"></a> [platform](#input\_platform) | [DEPRECATED - use `ami_type` instead. Will be removed in `v21.0`] Identifies the OS platform as `bottlerocket`, `linux` (AL2), `al2023`, or `windows` | `string` | `"linux"` | no |
 | <a name="input_post_bootstrap_user_data"></a> [post\_bootstrap\_user\_data](#input\_post\_bootstrap\_user\_data) | User data that is appended to the user data script after of the EKS bootstrap script. Not used when `ami_type` = `BOTTLEROCKET_*` | `string` | `""` | no |

@@ -372,6 +372,12 @@ variable "availability_zones" {
   default     = null
 }
 
+variable "placement_group_az_filter" {
+  description = "Placement group subnet filter to enable nodegroup update in place. ex. `eu-west-1c`"
+  type        = string
+  default     = null
+}
+
 variable "subnet_ids" {
   description = "A list of subnet IDs to launch resources in. Subnets automatically determine which availability zones the group will reside. Conflicts with `availability_zones`"
   type        = list(string)
