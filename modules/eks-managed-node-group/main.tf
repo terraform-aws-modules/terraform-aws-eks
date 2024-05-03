@@ -22,6 +22,7 @@ module "user_data" {
   post_bootstrap_user_data   = var.post_bootstrap_user_data
   bootstrap_extra_args       = var.bootstrap_extra_args
   user_data_template_path    = var.user_data_template_path
+  node_subnet_az_filter      = var.node_subnet_az_filter  
 
   cloudinit_pre_nodeadm  = var.cloudinit_pre_nodeadm
   cloudinit_post_nodeadm = var.cloudinit_post_nodeadm
@@ -386,8 +387,8 @@ resource "aws_eks_node_group" "this" {
   # Required
   cluster_name  = var.cluster_name
   node_role_arn = var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
-  subnet_ids    = var.enable_efa_support ? data.aws_subnets.efa[0].ids : var.subnet_ids
-
+  subnet_ids    = var.enable_efa_support ? data.aws_subnets.efa[0].ids : var.node_subnet_az_filter
+ 
   scaling_config {
     min_size     = var.min_size
     max_size     = var.max_size

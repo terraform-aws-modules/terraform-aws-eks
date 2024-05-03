@@ -81,6 +81,12 @@ variable "user_data_template_path" {
   default     = ""
 }
 
+variable "node_subnet_az_filter" {
+  description = "subnet az filter"
+  type        = string
+  default     = ""
+}
+
 variable "cloudinit_pre_nodeadm" {
   description = "Array of cloud-init document parts that are created before the nodeadm document part"
   type = list(object({

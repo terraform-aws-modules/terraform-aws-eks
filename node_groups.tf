@@ -374,6 +374,7 @@ module "eks_managed_node_group" {
   enable_monitoring                  = try(each.value.enable_monitoring, var.eks_managed_node_group_defaults.enable_monitoring, true)
   enable_efa_support                 = try(each.value.enable_efa_support, var.eks_managed_node_group_defaults.enable_efa_support, false)
   create_placement_group             = try(each.value.create_placement_group, var.eks_managed_node_group_defaults.create_placement_group, false)
+  node_subnet_az_filter              = try(each.value.node_subnet_az_filter, var.eks_managed_node_group_defaults.node_subnet_az_filter, {})
   placement_group_strategy           = try(each.value.placement_group_strategy, var.eks_managed_node_group_defaults.placement_group_strategy, "cluster")
   network_interfaces                 = try(each.value.network_interfaces, var.eks_managed_node_group_defaults.network_interfaces, [])
   placement                          = try(each.value.placement, var.eks_managed_node_group_defaults.placement, {})
