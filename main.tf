@@ -255,7 +255,7 @@ module "kms" {
 ################################################################################
 
 locals {
-  cluster_sg_name   = coalesce(var.cluster_security_group_name, "${var.cluster_name}-cluster")
+  cluster_sg_name   = coalesce(var.cluster_security_group_name, "${var.cluster_name}-eks")
   create_cluster_sg = local.create && var.create_cluster_security_group
 
   cluster_security_group_id = local.create_cluster_sg ? aws_security_group.cluster[0].id : var.cluster_security_group_id
@@ -353,7 +353,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 
 locals {
   create_iam_role        = local.create && var.create_iam_role
-  iam_role_name          = coalesce(var.iam_role_name, "${var.cluster_name}-cluster")
+  iam_role_name          = coalesce(var.iam_role_name, "${var.cluster_name}-eks")
   iam_role_policy_prefix = "arn:${local.partition}:iam::aws:policy"
 
   cluster_encryption_policy_name = coalesce(var.cluster_encryption_policy_name, "${local.iam_role_name}-ClusterEncryption")
