@@ -11,7 +11,7 @@ variable "tags" {
 }
 
 variable "platform" {
-  description = "Identifies if the OS platform is `bottlerocket` or `linux` based; `windows` is not supported"
+  description = "[DEPRECATED - use `ami_type` instead. Will be removed in `v21.0`] Identifies the OS platform as `bottlerocket`, `linux` (AL2), `al2023`, or `windows`"
   type        = string
   default     = "linux"
 }
@@ -58,19 +58,19 @@ variable "cluster_service_ipv4_cidr" {
 }
 
 variable "pre_bootstrap_user_data" {
-  description = "User data that is injected into the user data script ahead of the EKS bootstrap script. Not used when `platform` = `bottlerocket`"
+  description = "User data that is injected into the user data script ahead of the EKS bootstrap script. Not used when `ami_type` = `BOTTLEROCKET_*`"
   type        = string
   default     = ""
 }
 
 variable "post_bootstrap_user_data" {
-  description = "User data that is appended to the user data script after of the EKS bootstrap script. Not used when `platform` = `bottlerocket`"
+  description = "User data that is appended to the user data script after of the EKS bootstrap script. Not used when `ami_type` = `BOTTLEROCKET_*`"
   type        = string
   default     = ""
 }
 
 variable "bootstrap_extra_args" {
-  description = "Additional arguments passed to the bootstrap script. When `platform` = `bottlerocket`; these are additional [settings](https://github.com/bottlerocket-os/bottlerocket#settings) that are provided to the Bottlerocket user data"
+  description = "Additional arguments passed to the bootstrap script. When `ami_type` = `BOTTLEROCKET_*`; these are additional [settings](https://github.com/bottlerocket-os/bottlerocket#settings) that are provided to the Bottlerocket user data"
   type        = string
   default     = ""
 }
@@ -374,7 +374,7 @@ variable "ami_type" {
 }
 
 variable "ami_release_version" {
-  description = "AMI version of the EKS Node Group. Defaults to latest version for Kubernetes version"
+  description = "The AMI version. Defaults to latest AMI release version for the given Kubernetes version and AMI type"
   type        = string
   default     = null
 }

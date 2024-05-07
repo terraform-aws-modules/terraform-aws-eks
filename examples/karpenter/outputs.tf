@@ -47,6 +47,16 @@ output "cluster_primary_security_group_id" {
   value       = module.eks.cluster_primary_security_group_id
 }
 
+output "cluster_service_cidr" {
+  description = "The CIDR block where Kubernetes pod and service IP addresses are assigned from"
+  value       = module.eks.cluster_service_cidr
+}
+
+output "cluster_ip_family" {
+  description = "The IP family used by the cluster (e.g. `ipv4` or `ipv6`)"
+  value       = module.eks.cluster_ip_family
+}
+
 ################################################################################
 # Access Entry
 ################################################################################

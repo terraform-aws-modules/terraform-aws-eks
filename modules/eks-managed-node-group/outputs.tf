@@ -94,6 +94,6 @@ output "iam_role_unique_id" {
 ################################################################################
 
 output "platform" {
-  description = "Identifies if the OS platform is `bottlerocket`, `linux`, or `windows` based"
-  value       = var.platform
+  description = "[DEPRECATED - Will be removed in `v21.0`] Identifies the OS platform as `bottlerocket`, `linux` (AL2), `al2023`, or `windows`"
+  value       = module.user_data.platform
 }

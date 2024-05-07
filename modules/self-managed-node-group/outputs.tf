@@ -142,8 +142,8 @@ output "autoscaling_group_schedule_arns" {
 ################################################################################
 
 output "platform" {
-  description = "Identifies if the OS platform is `bottlerocket`, `linux`, or `windows` based"
-  value       = var.platform
+  description = "[DEPRECATED - Will be removed in `v21.0`] Identifies the OS platform as `bottlerocket`, `linux` (AL2), `al2023`, or `windows`"
+  value       = module.user_data.platform
 }
 
 output "image_id" {
