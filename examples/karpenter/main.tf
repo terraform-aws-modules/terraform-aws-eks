@@ -81,13 +81,6 @@ module "eks" {
   subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.intra_subnets
 
-  # eks_managed_node_group_defaults = {
-  #   ami_type       = "BOTTLEROCKET_x86_64"
-  #   instance_types = ["t3.large", "t3a.large"]
-
-  #   iam_role_attach_cni_policy = true
-  # }
-
   eks_managed_node_groups = {
     initial = {
       instance_types = ["m5.large"]
