@@ -465,7 +465,9 @@ module "self_managed_node_group" {
   autoscaling_group_tags = try(each.value.autoscaling_group_tags, var.self_managed_node_group_defaults.autoscaling_group_tags, {})
 
   # User data
-  platform                 = try(each.value.platform, var.self_managed_node_group_defaults.platform, "linux")
+  platform = try(each.value.platform, var.self_managed_node_group_defaults.platform, "linux")
+  # TODO - update this when `var.platform` is removed in v21.0
+  ami_type                 = try(each.value.ami_type, var.self_managed_node_group_defaults.ami_type, "AL2_x86_64")
   cluster_endpoint         = try(time_sleep.this[0].triggers["cluster_endpoint"], "")
   cluster_auth_base64      = try(time_sleep.this[0].triggers["cluster_certificate_authority_data"], "")
   cluster_service_cidr     = try(time_sleep.this[0].triggers["cluster_service_cidr"], "")

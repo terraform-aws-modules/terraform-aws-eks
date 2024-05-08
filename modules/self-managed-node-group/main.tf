@@ -1,16 +1,56 @@
 data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
-data "aws_ami" "eks_default" {
-  count = var.create && var.create_launch_template ? 1 : 0
+################################################################################
+# AMI SSM Parameter
+################################################################################
 
-  filter {
-    name   = "name"
-    values = ["amazon-eks-node-${var.cluster_version}-v*"]
+locals {
+  # Just to ensure templating doesn't fail when values are not provided
+  ssm_cluster_version = var.cluster_version != null ? var.cluster_version : ""
+
+  # TODO - Temporary stopgap for backwards compatibility until v21.0
+  ami_type_to_user_data_type = {
+    AL2_x86_64                 = "linux"
+    AL2_x86_64_GPU             = "linux"
+    AL2_ARM_64                 = "linux"
+    BOTTLEROCKET_ARM_64        = "bottlerocket"
+    BOTTLEROCKET_x86_64        = "bottlerocket"
+    BOTTLEROCKET_ARM_64_NVIDIA = "bottlerocket"
+    BOTTLEROCKET_x86_64_NVIDIA = "bottlerocket"
+    WINDOWS_CORE_2019_x86_64   = "windows"
+    WINDOWS_FULL_2019_x86_64   = "windows"
+    WINDOWS_CORE_2022_x86_64   = "windows"
+    WINDOWS_FULL_2022_x86_64   = "windows"
+    AL2023_x86_64_STANDARD     = "al2023"
+    AL2023_ARM_64_STANDARD     = "al2023"
   }
+  # Try to use `ami_type` first, but fall back to current, default behavior
+  # TODO - will be removed in v21.0
+  user_data_type = try(local.ami_type_to_user_data_type[var.ami_type], var.platform)
 
-  most_recent = true
-  owners      = ["amazon"]
+  # Map the AMI type to the respective SSM param path
+  ami_type_to_ssm_param = {
+    AL2_x86_64                 = "/aws/service/eks/optimized-ami/${local.ssm_cluster_version}/amazon-linux-2/recommended/image_id"
+    AL2_x86_64_GPU             = "/aws/service/eks/optimized-ami/${local.ssm_cluster_version}/amazon-linux-2-gpu/recommended/image_id"
+    AL2_ARM_64                 = "/aws/service/eks/optimized-ami/${local.ssm_cluster_version}/amazon-linux-2-arm64/recommended/image_id"
+    BOTTLEROCKET_ARM_64        = "/aws/service/bottlerocket/aws-k8s-${local.ssm_cluster_version}/arm64/latest/image_id"
+    BOTTLEROCKET_x86_64        = "/aws/service/bottlerocket/aws-k8s-${local.ssm_cluster_version}/x86_64/latest/image_id"
+    BOTTLEROCKET_ARM_64_NVIDIA = "/aws/service/bottlerocket/aws-k8s-${local.ssm_cluster_version}-nvidia/arm64/latest/image_id"
+    BOTTLEROCKET_x86_64_NVIDIA = "/aws/service/bottlerocket/aws-k8s-${local.ssm_cluster_version}-nvidia/x86_64/latest/image_id"
+    WINDOWS_CORE_2019_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-EKS_Optimized-${local.ssm_cluster_version}/image_id"
+    WINDOWS_FULL_2019_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Core-EKS_Optimized-${local.ssm_cluster_version}/image_id"
+    WINDOWS_CORE_2022_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Full-EKS_Optimized-${local.ssm_cluster_version}/image_id"
+    WINDOWS_FULL_2022_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Core-EKS_Optimized-${local.ssm_cluster_version}/image_id"
+    AL2023_x86_64_STANDARD     = "/aws/service/eks/optimized-ami/${local.ssm_cluster_version}/amazon-linux-2023/x86_64/standard/recommended/image_id"
+    AL2023_ARM_64_STANDARD     = "/aws/service/eks/optimized-ami/${local.ssm_cluster_version}/amazon-linux-2023/arm64/standard/recommended/image_id"
+  }
+}
+
+data "aws_ssm_parameter" "ami" {
+  count = var.create ? 1 : 0
+
+  name = local.ami_type_to_ssm_param[var.ami_type]
 }
 
 ################################################################################
@@ -21,7 +61,8 @@ module "user_data" {
   source = "../_user_data"
 
   create                    = var.create
-  platform                  = var.platform
+  platform                  = local.user_data_type
+  ami_type                  = var.ami_type
   is_eks_managed_node_group = false
 
   cluster_name         = var.cluster_name
@@ -184,7 +225,7 @@ resource "aws_launch_template" "this" {
     arn = var.create_iam_instance_profile ? aws_iam_instance_profile.this[0].arn : var.iam_instance_profile_arn
   }
 
-  image_id                             = coalesce(var.ami_id, data.aws_ami.eks_default[0].image_id)
+  image_id                             = coalesce(var.ami_id, nonsensitive(data.aws_ssm_parameter.ami[0].value))
   instance_initiated_shutdown_behavior = var.instance_initiated_shutdown_behavior
 
   dynamic "instance_market_options" {
@@ -879,7 +920,7 @@ resource "aws_eks_access_entry" "this" {
 
   cluster_name  = var.cluster_name
   principal_arn = var.create_iam_instance_profile ? aws_iam_role.this[0].arn : var.iam_role_arn
-  type          = var.platform == "windows" ? "EC2_WINDOWS" : "EC2_LINUX"
+  type          = local.user_data_type == "windows" ? "EC2_WINDOWS" : "EC2_LINUX"
 
   tags = var.tags
 }

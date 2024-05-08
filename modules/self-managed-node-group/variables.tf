@@ -11,7 +11,7 @@ variable "tags" {
 }
 
 variable "platform" {
-  description = "Identifies if the OS platform is `bottlerocket`, `linux`, or `windows` based"
+  description = "[DEPRECATED - use `ami_type` instead. Will be removed in `v21.0`] Identifies the OS platform as `bottlerocket`, `linux` (AL2), `al2023`, or `windows`"
   type        = string
   default     = "linux"
 }
@@ -51,19 +51,19 @@ variable "cluster_ip_family" {
 }
 
 variable "pre_bootstrap_user_data" {
-  description = "User data that is injected into the user data script ahead of the EKS bootstrap script. Not used when `platform` = `bottlerocket`"
+  description = "User data that is injected into the user data script ahead of the EKS bootstrap script. Not used when `ami_type` = `BOTTLEROCKET_*`"
   type        = string
   default     = ""
 }
 
 variable "post_bootstrap_user_data" {
-  description = "User data that is appended to the user data script after of the EKS bootstrap script. Not used when `platform` = `bottlerocket`"
+  description = "User data that is appended to the user data script after of the EKS bootstrap script. Not used when `ami_type` = `BOTTLEROCKET_*`"
   type        = string
   default     = ""
 }
 
 variable "bootstrap_extra_args" {
-  description = "Additional arguments passed to the bootstrap script. When `platform` = `bottlerocket`; these are additional [settings](https://github.com/bottlerocket-os/bottlerocket#settings) that are provided to the Bottlerocket user data"
+  description = "Additional arguments passed to the bootstrap script. When `ami_type` = `BOTTLEROCKET_*`; these are additional [settings](https://github.com/bottlerocket-os/bottlerocket#settings) that are provided to the Bottlerocket user data"
   type        = string
   default     = ""
 }
@@ -260,6 +260,12 @@ variable "ami_id" {
   description = "The AMI from which to launch the instance"
   type        = string
   default     = ""
+}
+
+variable "ami_type" {
+  description = "Type of Amazon Machine Image (AMI) associated with the node group. See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#AmazonEKS-Type-Nodegroup-amiType) for valid values"
+  type        = string
+  default     = "AL2_x86_64"
 }
 
 variable "cluster_version" {

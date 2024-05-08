@@ -14,6 +14,27 @@ resource "null_resource" "validate_cluster_service_cidr" {
 }
 
 locals {
+  # Converts AMI type into user data type that represents the underlying format (bash, toml, PS1, nodeadm)
+  # TODO - platform will be removed in v21.0 and only `ami_type` will be valid
+  ami_type_to_user_data_type = {
+    AL2_x86_64                 = "linux"
+    AL2_x86_64_GPU             = "linux"
+    AL2_ARM_64                 = "linux"
+    BOTTLEROCKET_ARM_64        = "bottlerocket"
+    BOTTLEROCKET_x86_64        = "bottlerocket"
+    BOTTLEROCKET_ARM_64_NVIDIA = "bottlerocket"
+    BOTTLEROCKET_x86_64_NVIDIA = "bottlerocket"
+    WINDOWS_CORE_2019_x86_64   = "windows"
+    WINDOWS_FULL_2019_x86_64   = "windows"
+    WINDOWS_CORE_2022_x86_64   = "windows"
+    WINDOWS_FULL_2022_x86_64   = "windows"
+    AL2023_x86_64_STANDARD     = "al2023"
+    AL2023_ARM_64_STANDARD     = "al2023"
+  }
+  # Try to use `ami_type` first, but fall back to current, default behavior
+  # TODO - will be removed in v21.0
+  user_data_type = try(local.ami_type_to_user_data_type[var.ami_type], var.platform)
+
   template_path = {
     al2023       = "${path.module}/../../templates/al2023_user_data.tpl"
     bottlerocket = "${path.module}/../../templates/bottlerocket_user_data.tpl"
@@ -24,7 +45,7 @@ locals {
   cluster_service_cidr = try(coalesce(var.cluster_service_ipv4_cidr, var.cluster_service_cidr), "")
 
   user_data = base64encode(templatefile(
-    coalesce(var.user_data_template_path, local.template_path[var.platform]),
+    coalesce(var.user_data_template_path, local.template_path[local.user_data_type]),
     {
       # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
       enable_bootstrap_user_data = var.enable_bootstrap_user_data
@@ -46,18 +67,18 @@ locals {
     }
   ))
 
-  platform = {
+  user_data_type_to_rendered = {
     al2023 = {
       user_data = var.create ? try(data.cloudinit_config.al2023_eks_managed_node_group[0].rendered, local.user_data) : ""
     }
     bottlerocket = {
-      user_data = var.create && var.platform == "bottlerocket" && (var.enable_bootstrap_user_data || var.user_data_template_path != "" || var.bootstrap_extra_args != "") ? local.user_data : ""
+      user_data = var.create && local.user_data_type == "bottlerocket" && (var.enable_bootstrap_user_data || var.user_data_template_path != "" || var.bootstrap_extra_args != "") ? local.user_data : ""
     }
     linux = {
       user_data = var.create ? try(data.cloudinit_config.linux_eks_managed_node_group[0].rendered, local.user_data) : ""
     }
     windows = {
-      user_data = var.create && var.platform == "windows" && (var.enable_bootstrap_user_data || var.user_data_template_path != "" || var.pre_bootstrap_user_data != "") ? local.user_data : ""
+      user_data = var.create && local.user_data_type == "windows" && (var.enable_bootstrap_user_data || var.user_data_template_path != "" || var.pre_bootstrap_user_data != "") ? local.user_data : ""
     }
   }
 }
@@ -70,7 +91,7 @@ locals {
 # See docs for more details -> https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-user-data
 
 data "cloudinit_config" "linux_eks_managed_node_group" {
-  count = var.create && var.platform == "linux" && var.is_eks_managed_node_group && !var.enable_bootstrap_user_data && var.pre_bootstrap_user_data != "" && var.user_data_template_path == "" ? 1 : 0
+  count = var.create && local.user_data_type == "linux" && var.is_eks_managed_node_group && !var.enable_bootstrap_user_data && var.pre_bootstrap_user_data != "" && var.user_data_template_path == "" ? 1 : 0
 
   base64_encode = true
   gzip          = false
@@ -101,7 +122,7 @@ locals {
 }
 
 data "cloudinit_config" "al2023_eks_managed_node_group" {
-  count = var.create && var.platform == "al2023" && length(local.nodeadm_cloudinit) > 0 ? 1 : 0
+  count = var.create && local.user_data_type == "al2023" && length(local.nodeadm_cloudinit) > 0 ? 1 : 0
 
   base64_encode = true
   gzip          = false

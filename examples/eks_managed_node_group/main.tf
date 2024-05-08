@@ -90,7 +90,6 @@ module "eks" {
     # to join nodes to the cluster (instead of /etc/eks/bootstrap.sh)
     al2023_nodeadm = {
       ami_type = "AL2023_x86_64_STANDARD"
-      platform = "al2023"
 
       use_latest_ami_release_version = true
 
@@ -119,13 +118,11 @@ module "eks" {
       use_custom_launch_template = false
 
       ami_type = "BOTTLEROCKET_x86_64"
-      platform = "bottlerocket"
     }
 
     # Adds to the AWS provided user data
     bottlerocket_add = {
       ami_type = "BOTTLEROCKET_x86_64"
-      platform = "bottlerocket"
 
       use_latest_ami_release_version = true
 
@@ -141,7 +138,7 @@ module "eks" {
     bottlerocket_custom = {
       # Current bottlerocket AMI
       ami_id   = data.aws_ami.eks_default_bottlerocket.image_id
-      platform = "bottlerocket"
+      ami_type = "BOTTLEROCKET_x86_64"
 
       # Use module user data template to bootstrap
       enable_bootstrap_user_data = true
@@ -285,8 +282,8 @@ module "eks" {
       # Can be enabled when appropriate for testing/validation
       create = false
 
-      instance_types = ["trn1n.32xlarge"]
       ami_type       = "AL2_x86_64_GPU"
+      instance_types = ["trn1n.32xlarge"]
 
       enable_efa_support      = true
       pre_bootstrap_user_data = <<-EOT
@@ -369,7 +366,6 @@ module "eks_managed_node_group" {
   ]
 
   ami_type = "BOTTLEROCKET_x86_64"
-  platform = "bottlerocket"
 
   # this will get added to what AWS provides
   bootstrap_extra_args = <<-EOT

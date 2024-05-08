@@ -75,7 +75,7 @@ module "eks" {
     # AL2023 node group utilizing new user data format which utilizes nodeadm
     # to join nodes to the cluster (instead of /etc/eks/bootstrap.sh)
     al2023_nodeadm = {
-      platform = "al2023"
+      ami_type = "AL2023_x86_64_STANDARD"
 
       cloudinit_pre_nodeadm = [
         {
@@ -99,7 +99,7 @@ module "eks" {
     bottlerocket = {
       name = "bottlerocket-self-mng"
 
-      platform      = "bottlerocket"
+      ami_type      = "BOTTLEROCKET_x86_64"
       ami_id        = data.aws_ami.eks_default_bottlerocket.id
       instance_type = "m5.large"
       desired_size  = 2
@@ -287,6 +287,7 @@ module "eks" {
       # Can be enabled when appropriate for testing/validation
       create = false
 
+      ami_type      = "AL2_x86_64_GPU"
       instance_type = "trn1n.32xlarge"
 
       enable_efa_support      = true

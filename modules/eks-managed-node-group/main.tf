@@ -10,6 +10,7 @@ module "user_data" {
 
   create   = var.create
   platform = var.platform
+  ami_type = var.ami_type
 
   cluster_name         = var.cluster_name
   cluster_endpoint     = var.cluster_endpoint
