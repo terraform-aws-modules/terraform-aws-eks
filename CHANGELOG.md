@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.9.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.8.5...v20.9.0) (2024-05-08)
+
+
+### Features
+
+* Propagate `ami_type` to self-managed node group; allow using `ami_type` only ([#3030](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3030)) ([74d3918](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/74d39187d855932dd976da6180eda42dcfe09873))
+
 ## [20.8.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.8.4...v20.8.5) (2024-04-08)
 
 
