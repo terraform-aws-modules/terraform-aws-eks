@@ -11,6 +11,7 @@ In the following example, the Karpenter module will create:
 - A Node IAM role that Karpenter will use to create an Instance Profile for the nodes to receive IAM permissions
 - An access entry for the Node IAM role to allow nodes to join the cluster
 - SQS queue and EventBridge event rules for Karpenter to utilize for spot termination handling, capacity re-balancing, etc.
+- A Pod Identity association to grant Karpenter controller access provided by the IAM Role
 
 ```hcl
 module "eks" {
@@ -20,19 +21,19 @@ module "eks" {
 }
 
 module "karpenter" {
-  source = "terraform-aws-modules/eks/aws//modules/karpenter"
+  source = "../../modules/karpenter"
 
   cluster_name = module.eks.cluster_name
 
-  # Attach additional IAM policies to the Karpenter node IAM role
+  enable_pod_identity             = true
+  create_pod_identity_association = true
+
+  # Used to attach additional IAM policies to the Karpenter node IAM role
   node_iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }
 
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
+  tags = local.tags
 }
 ```
 

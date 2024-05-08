@@ -423,7 +423,6 @@ resource "aws_eks_pod_identity_association" "karpenter" {
   role_arn        = aws_iam_role.controller[0].arn
 }
 
-
 ################################################################################
 # Node Termination Queue
 ################################################################################
