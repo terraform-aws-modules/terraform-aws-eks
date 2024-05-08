@@ -71,53 +71,40 @@ module "eks" {
   enable_cluster_creator_admin_permissions = true
 
   cluster_addons = {
-    coredns = {
-      configuration_values = jsonencode({
-        computeType = "Fargate"
-        # Ensure that we fully utilize the minimum amount of resources that are supplied by
-        # Fargate https://docs.aws.amazon.com/eks/latest/userguide/fargate-pod-configuration.html
-        # Fargate adds 256 MB to each pod's memory reservation for the required Kubernetes
-        # components (kubelet, kube-proxy, and containerd). Fargate rounds up to the following
-        # compute configuration that most closely matches the sum of vCPU and memory requests in
-        # order to ensure pods always have the resources that they need to run.
-        resources = {
-          limits = {
-            cpu = "0.25"
-            # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the
-            # request/limit to ensure we can fit within that task
-            memory = "256M"
-          }
-          requests = {
-            cpu = "0.25"
-            # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the
-            # request/limit to ensure we can fit within that task
-            memory = "256M"
-          }
-        }
-      })
-    }
-    kube-proxy = {}
-    vpc-cni    = {}
+    coredns                = {}
+    kube-proxy             = {}
+    vpc-cni                = {}
+    eks-pod-identity-agent = {}
   }
 
   vpc_id                   = module.vpc.vpc_id
   subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.intra_subnets
 
-  # Fargate profiles use the cluster primary security group so these are not utilized
-  create_cluster_security_group = false
-  create_node_security_group    = false
+  # eks_managed_node_group_defaults = {
+  #   ami_type       = "BOTTLEROCKET_x86_64"
+  #   instance_types = ["t3.large", "t3a.large"]
 
-  fargate_profiles = {
-    karpenter = {
-      selectors = [
-        { namespace = "karpenter" }
-      ]
-    }
-    kube-system = {
-      selectors = [
-        { namespace = "kube-system" }
-      ]
+  #   iam_role_attach_cni_policy = true
+  # }
+
+  eks_managed_node_groups = {
+    initial = {
+      instance_types = ["m5.large"]
+
+      min_size     = 1
+      max_size     = 3
+      desired_size = 2
+
+      taints = {
+        # This Taint aims to keep just EKS Addons and Karpenter running on this MNG
+        # The pods that do not tolerate this taint should run on nodes created by Karpenter
+        addons = {
+          key    = "CriticalAddonsOnly"
+          value  = "true"
+          effect = "NO_SCHEDULE"
+        },
+      }
     }
   }
 
@@ -138,9 +125,8 @@ module "karpenter" {
 
   cluster_name = module.eks.cluster_name
 
-  # EKS Fargate currently does not support Pod Identity
-  enable_irsa            = true
-  irsa_oidc_provider_arn = module.eks.oidc_provider_arn
+  enable_pod_identity             = true
+  create_pod_identity_association = true
 
   # Used to attach additional IAM policies to the Karpenter node IAM role
   node_iam_role_additional_policies = {
@@ -162,14 +148,14 @@ module "karpenter_disabled" {
 ################################################################################
 
 resource "helm_release" "karpenter" {
-  namespace           = "karpenter"
+  namespace           = "kube-system"
   create_namespace    = true
   name                = "karpenter"
   repository          = "oci://public.ecr.aws/karpenter"
   repository_username = data.aws_ecrpublic_authorization_token.token.user_name
   repository_password = data.aws_ecrpublic_authorization_token.token.password
   chart               = "karpenter"
-  version             = "0.35.1"
+  version             = "0.36.1"
   wait                = false
 
   values = [
@@ -178,14 +164,6 @@ resource "helm_release" "karpenter" {
       clusterName: ${module.eks.cluster_name}
       clusterEndpoint: ${module.eks.cluster_endpoint}
       interruptionQueue: ${module.karpenter.queue_name}
-    serviceAccount:
-      annotations:
-        eks.amazonaws.com/role-arn: ${module.karpenter.iam_role_arn}
-    tolerations:
-      - key: 'eks.amazonaws.com/compute-type'
-        operator: Equal
-        value: fargate
-        effect: "NoSchedule"
     EOT
   ]
 }
