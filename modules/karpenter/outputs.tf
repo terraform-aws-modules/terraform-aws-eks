@@ -96,3 +96,17 @@ output "instance_profile_unique" {
   description = "Stable and unique string identifying the IAM instance profile"
   value       = try(aws_iam_instance_profile.this[0].unique_id, null)
 }
+
+################################################################################
+# Pod Identity
+################################################################################
+
+output "namespace" {
+  description = "Namespace for the Karpenter Pod Identity association"
+  value       = var.namespace
+}
+
+output "service_account" {
+  description = "Service Account to be associated with Karpenter Pod Identity"
+  value       = var.service_account
+}
