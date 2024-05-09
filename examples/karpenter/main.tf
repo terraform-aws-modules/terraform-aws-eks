@@ -142,7 +142,6 @@ module "karpenter_disabled" {
 
 resource "helm_release" "karpenter" {
   namespace           = "kube-system"
-  create_namespace    = true
   name                = "karpenter"
   repository          = "oci://public.ecr.aws/karpenter"
   repository_username = data.aws_ecrpublic_authorization_token.token.user_name

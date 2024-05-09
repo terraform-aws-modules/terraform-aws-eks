@@ -421,6 +421,8 @@ resource "aws_eks_pod_identity_association" "karpenter" {
   namespace       = var.namespace
   service_account = var.service_account
   role_arn        = aws_iam_role.controller[0].arn
+
+  tags = var.tags
 }
 
 ################################################################################

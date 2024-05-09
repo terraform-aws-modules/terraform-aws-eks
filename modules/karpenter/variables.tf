@@ -149,13 +149,13 @@ variable "create_pod_identity_association" {
 }
 
 variable "namespace" {
-  description = "Namespace where pod identity will be created"
+  description = "Namespace to associate with the Karpenter Pod Identity"
   type        = string
   default     = "kube-system"
 }
 
 variable "service_account" {
-  description = "Service account where pod identity will be created"
+  description = "Service account to associate with the Karpenter Pod Identity"
   type        = string
   default     = "karpenter"
 }

@@ -102,11 +102,11 @@ output "instance_profile_unique" {
 ################################################################################
 
 output "namespace" {
-  description = "Namespace for the Karpenter Pod Identity association"
+  description = "Namespace associated with the Karpenter Pod Identity"
   value       = var.namespace
 }
 
 output "service_account" {
-  description = "Service Account to be associated with Karpenter Pod Identity"
+  description = "Service Account associated with the Karpenter Pod Identity"
   value       = var.service_account
 }
