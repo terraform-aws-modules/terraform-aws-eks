@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.10.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.9.0...v20.10.0) (2024-05-09)
+
+
+### Features
+
+* Add support for Pod Identity assocation on Karpenter sub-module ([#3031](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3031)) ([cfcaf27](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/cfcaf27ac78278916ebf3d51dc64a20fe0d7bf01))
+
 ## [20.9.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.8.5...v20.9.0) (2024-05-08)
 
 
