@@ -61,6 +61,11 @@ variable "subnet_ids" {
   type        = list(string)
   default     = []
 }
+variable "az_filter" {
+  description = "subnet az filter"
+  type        = list(string)
+  default     = []
+}
 
 variable "cluster_endpoint_private_access" {
   description = "Indicates whether or not the Amazon EKS private API server endpoint is enabled"

@@ -306,6 +306,8 @@ module "eks_managed_node_group" {
   use_name_prefix = try(each.value.use_name_prefix, var.eks_managed_node_group_defaults.use_name_prefix, true)
 
   subnet_ids = try(each.value.subnet_ids, var.eks_managed_node_group_defaults.subnet_ids, var.subnet_ids)
+  az_filter  = try(each.value.az_filter, var.self_managed_node_group_defaults.az_filter, var.az_filter)
+
 
   min_size     = try(each.value.min_size, var.eks_managed_node_group_defaults.min_size, 1)
   max_size     = try(each.value.max_size, var.eks_managed_node_group_defaults.max_size, 3)
@@ -374,7 +376,6 @@ module "eks_managed_node_group" {
   enable_monitoring                  = try(each.value.enable_monitoring, var.eks_managed_node_group_defaults.enable_monitoring, true)
   enable_efa_support                 = try(each.value.enable_efa_support, var.eks_managed_node_group_defaults.enable_efa_support, false)
   create_placement_group             = try(each.value.create_placement_group, var.eks_managed_node_group_defaults.create_placement_group, false)
-  node_subnet_az_filter              = try(each.value.node_subnet_az_filter, var.eks_managed_node_group_defaults.node_subnet_az_filter, {})
   placement_group_strategy           = try(each.value.placement_group_strategy, var.eks_managed_node_group_defaults.placement_group_strategy, "cluster")
   network_interfaces                 = try(each.value.network_interfaces, var.eks_managed_node_group_defaults.network_interfaces, [])
   placement                          = try(each.value.placement, var.eks_managed_node_group_defaults.placement, {})

@@ -81,11 +81,6 @@ variable "user_data_template_path" {
   default     = ""
 }
 
-variable "node_subnet_az_filter" {
-  description = "subnet az filter"
-  type        = string
-  default     = ""
-}
 
 variable "cloudinit_pre_nodeadm" {
   description = "Array of cloud-init document parts that are created before the nodeadm document part"
@@ -341,6 +336,12 @@ variable "subnet_ids" {
   description = "Identifiers of EC2 Subnets to associate with the EKS Node Group. These subnets must have the following resource tag: `kubernetes.io/cluster/CLUSTER_NAME`"
   type        = list(string)
   default     = null
+}
+
+variable "az_filter" {
+  description = "subnet az filter"
+  type        = list(string)
+  default     = []
 }
 
 variable "min_size" {
