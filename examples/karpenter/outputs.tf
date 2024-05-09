@@ -165,15 +165,6 @@ output "cloudwatch_log_group_arn" {
 }
 
 ################################################################################
-# Fargate Profile
-################################################################################
-
-output "fargate_profiles" {
-  description = "Map of attribute maps for all EKS Fargate Profiles created"
-  value       = module.eks.fargate_profiles
-}
-
-################################################################################
 # EKS Managed Node Group
 ################################################################################
 
