@@ -41,9 +41,8 @@ data "aws_ecrpublic_authorization_token" "token" {
 }
 
 locals {
-  name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.29"
-  region          = "eu-west-1"
+  name   = "ex-${basename(path.cwd)}"
+  region = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
@@ -62,19 +61,19 @@ locals {
 module "eks" {
   source = "../.."
 
-  cluster_name                   = local.name
-  cluster_version                = local.cluster_version
-  cluster_endpoint_public_access = true
+  cluster_name    = local.name
+  cluster_version = "1.29"
 
   # Gives Terraform identity admin access to cluster which will
   # allow deploying resources (Karpenter) into the cluster
   enable_cluster_creator_admin_permissions = true
+  cluster_endpoint_public_access           = true
 
   cluster_addons = {
     coredns                = {}
+    eks-pod-identity-agent = {}
     kube-proxy             = {}
     vpc-cni                = {}
-    eks-pod-identity-agent = {}
   }
 
   vpc_id                   = module.vpc.vpc_id
@@ -82,10 +81,10 @@ module "eks" {
   control_plane_subnet_ids = module.vpc.intra_subnets
 
   eks_managed_node_groups = {
-    initial = {
+    karpenter = {
       instance_types = ["m5.large"]
 
-      min_size     = 1
+      min_size     = 2
       max_size     = 3
       desired_size = 2
 

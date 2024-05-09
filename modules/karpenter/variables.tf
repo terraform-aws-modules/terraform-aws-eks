@@ -139,9 +139,9 @@ variable "irsa_assume_role_condition_test" {
 }
 
 ################################################################################
-# Pod Identity
+# Pod Identity Association
 ################################################################################
-# TODO: Remove this in the next breaking change
+# TODO - Change default to `true` at next breaking change
 variable "create_pod_identity_association" {
   description = "Determines whether to create pod identity association"
   type        = bool

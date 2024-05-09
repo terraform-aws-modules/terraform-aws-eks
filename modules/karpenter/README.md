@@ -8,10 +8,10 @@ Configuration in this directory creates the AWS resources required by Karpenter
 
 In the following example, the Karpenter module will create:
 - An IAM role for use with Pod Identity and a scoped IAM policy for the Karpenter controller
+- A Pod Identity association to grant Karpenter controller access provided by the IAM Role
 - A Node IAM role that Karpenter will use to create an Instance Profile for the nodes to receive IAM permissions
 - An access entry for the Node IAM role to allow nodes to join the cluster
 - SQS queue and EventBridge event rules for Karpenter to utilize for spot termination handling, capacity re-balancing, etc.
-- A Pod Identity association to grant Karpenter controller access provided by the IAM Role
 
 ```hcl
 module "eks" {
@@ -25,7 +25,7 @@ module "karpenter" {
 
   cluster_name = module.eks.cluster_name
 
-  # Used to attach additional IAM policies to the Karpenter node IAM role
+  # Attach additional IAM policies to the Karpenter node IAM role
   node_iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }

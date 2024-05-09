@@ -1,6 +1,6 @@
 # Karpenter Example
 
-Configuration in this directory creates an AWS EKS cluster with [Karpenter](https://karpenter.sh/) provisioned for managing compute resource scaling. In the example provided, Karpenter is running on Managed Node Groups on top of Amazon EC2 instances.
+Configuration in this directory creates an AWS EKS cluster with [Karpenter](https://karpenter.sh/) provisioned for managing compute resource scaling. In the example provided, Karpenter is provisioned on top of an EKS Managed Node Group.
 
 ## Usage
 
@@ -29,13 +29,20 @@ Validate if the Amazon EKS Addons Pods are running in the Managed Node Group and
 
 ```bash
 kubectl get nodes -L karpenter.sh/registered
+```
+
+```text
 NAME                                        STATUS   ROLES    AGE    VERSION               REGISTERED
 ip-10-0-16-155.eu-west-1.compute.internal   Ready    <none>   100s   v1.29.3-eks-ae9a62a   true
 ip-10-0-3-23.eu-west-1.compute.internal     Ready    <none>   6m1s   v1.29.3-eks-ae9a62a
 ip-10-0-41-2.eu-west-1.compute.internal     Ready    <none>   6m3s   v1.29.3-eks-ae9a62a
+```
 
+```sh
 kubectl get pods -A -o custom-columns=NAME:.metadata.name,NODE:.spec.nodeName
+```
 
+```text
 NAME                           NODE
 inflate-75d744d4c6-nqwz8       ip-10-0-16-155.eu-west-1.compute.internal
 inflate-75d744d4c6-nrqnn       ip-10-0-16-155.eu-west-1.compute.internal
@@ -147,6 +154,7 @@ No inputs.
 | <a name="output_cluster_tls_certificate_sha1_fingerprint"></a> [cluster\_tls\_certificate\_sha1\_fingerprint](#output\_cluster\_tls\_certificate\_sha1\_fingerprint) | The SHA1 fingerprint of the public key of the cluster's certificate |
 | <a name="output_eks_managed_node_groups"></a> [eks\_managed\_node\_groups](#output\_eks\_managed\_node\_groups) | Map of attribute maps for all EKS managed node groups created |
 | <a name="output_eks_managed_node_groups_autoscaling_group_names"></a> [eks\_managed\_node\_groups\_autoscaling\_group\_names](#output\_eks\_managed\_node\_groups\_autoscaling\_group\_names) | List of the autoscaling group names created by EKS managed node groups |
+| <a name="output_fargate_profiles"></a> [fargate\_profiles](#output\_fargate\_profiles) | Map of attribute maps for all EKS Fargate Profiles created |
 | <a name="output_karpenter_event_rules"></a> [karpenter\_event\_rules](#output\_karpenter\_event\_rules) | Map of the event rules created and their attributes |
 | <a name="output_karpenter_iam_role_arn"></a> [karpenter\_iam\_role\_arn](#output\_karpenter\_iam\_role\_arn) | The Amazon Resource Name (ARN) specifying the controller IAM role |
 | <a name="output_karpenter_iam_role_name"></a> [karpenter\_iam\_role\_name](#output\_karpenter\_iam\_role\_name) | The name of the controller IAM role |
