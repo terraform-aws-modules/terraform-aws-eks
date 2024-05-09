@@ -412,6 +412,21 @@ resource "aws_iam_role_policy_attachment" "controller_additional" {
 }
 
 ################################################################################
+# Pod Identity Association
+################################################################################
+
+resource "aws_eks_pod_identity_association" "karpenter" {
+  count = local.create_iam_role && var.enable_pod_identity && var.create_pod_identity_association ? 1 : 0
+
+  cluster_name    = var.cluster_name
+  namespace       = var.namespace
+  service_account = var.service_account
+  role_arn        = aws_iam_role.controller[0].arn
+
+  tags = var.tags
+}
+
+################################################################################
 # Node Termination Queue
 ################################################################################
 

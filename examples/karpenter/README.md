@@ -1,6 +1,6 @@
 # Karpenter Example
 
-Configuration in this directory creates an AWS EKS cluster with [Karpenter](https://karpenter.sh/) provisioned for managing compute resource scaling. In the example provided, Karpenter is running on EKS Fargate yet Karpenter is providing compute in the form of EC2 instances.
+Configuration in this directory creates an AWS EKS cluster with [Karpenter](https://karpenter.sh/) provisioned for managing compute resource scaling. In the example provided, Karpenter is provisioned on top of an EKS Managed Node Group.
 
 ## Usage
 
@@ -22,10 +22,47 @@ aws eks --region eu-west-1 update-kubeconfig --name ex-karpenter
 kubectl scale deployment inflate --replicas 5
 
 # You can watch Karpenter's controller logs with
-kubectl logs -f -n karpenter -l app.kubernetes.io/name=karpenter -c controller
+kubectl logs -f -n kube-system -l app.kubernetes.io/name=karpenter -c controller
 ```
 
-You should see a new node named `karpenter.sh/provisioner-name/default` eventually come up in the console; this was provisioned by Karpenter in response to the scaled deployment above.
+Validate if the Amazon EKS Addons Pods are running in the Managed Node Group and the `inflate` application Pods are running on Karpenter provisioned Nodes.
+
+```bash
+kubectl get nodes -L karpenter.sh/registered
+```
+
+```text
+NAME                                        STATUS   ROLES    AGE    VERSION               REGISTERED
+ip-10-0-16-155.eu-west-1.compute.internal   Ready    <none>   100s   v1.29.3-eks-ae9a62a   true
+ip-10-0-3-23.eu-west-1.compute.internal     Ready    <none>   6m1s   v1.29.3-eks-ae9a62a
+ip-10-0-41-2.eu-west-1.compute.internal     Ready    <none>   6m3s   v1.29.3-eks-ae9a62a
+```
+
+```sh
+kubectl get pods -A -o custom-columns=NAME:.metadata.name,NODE:.spec.nodeName
+```
+
+```text
+NAME                           NODE
+inflate-75d744d4c6-nqwz8       ip-10-0-16-155.eu-west-1.compute.internal
+inflate-75d744d4c6-nrqnn       ip-10-0-16-155.eu-west-1.compute.internal
+inflate-75d744d4c6-sp4dx       ip-10-0-16-155.eu-west-1.compute.internal
+inflate-75d744d4c6-xqzd9       ip-10-0-16-155.eu-west-1.compute.internal
+inflate-75d744d4c6-xr6p5       ip-10-0-16-155.eu-west-1.compute.internal
+aws-node-mnn7r                 ip-10-0-3-23.eu-west-1.compute.internal
+aws-node-rkmvm                 ip-10-0-16-155.eu-west-1.compute.internal
+aws-node-s4slh                 ip-10-0-41-2.eu-west-1.compute.internal
+coredns-68bd859788-7rcfq       ip-10-0-3-23.eu-west-1.compute.internal
+coredns-68bd859788-l78hw       ip-10-0-41-2.eu-west-1.compute.internal
+eks-pod-identity-agent-gbx8l   ip-10-0-41-2.eu-west-1.compute.internal
+eks-pod-identity-agent-s7vt7   ip-10-0-16-155.eu-west-1.compute.internal
+eks-pod-identity-agent-xwgqw   ip-10-0-3-23.eu-west-1.compute.internal
+karpenter-79f59bdfdc-9q5ff     ip-10-0-41-2.eu-west-1.compute.internal
+karpenter-79f59bdfdc-cxvhr     ip-10-0-3-23.eu-west-1.compute.internal
+kube-proxy-7crbl               ip-10-0-41-2.eu-west-1.compute.internal
+kube-proxy-jtzds               ip-10-0-16-155.eu-west-1.compute.internal
+kube-proxy-sm42c               ip-10-0-3-23.eu-west-1.compute.internal
+```
 
 ### Tear Down & Clean-Up
 

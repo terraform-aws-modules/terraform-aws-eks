@@ -139,6 +139,28 @@ variable "irsa_assume_role_condition_test" {
 }
 
 ################################################################################
+# Pod Identity Association
+################################################################################
+# TODO - Change default to `true` at next breaking change
+variable "create_pod_identity_association" {
+  description = "Determines whether to create pod identity association"
+  type        = bool
+  default     = false
+}
+
+variable "namespace" {
+  description = "Namespace to associate with the Karpenter Pod Identity"
+  type        = string
+  default     = "kube-system"
+}
+
+variable "service_account" {
+  description = "Service account to associate with the Karpenter Pod Identity"
+  type        = string
+  default     = "karpenter"
+}
+
+################################################################################
 # Node Termination Queue
 ################################################################################
 
