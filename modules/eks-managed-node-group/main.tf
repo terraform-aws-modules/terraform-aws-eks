@@ -388,7 +388,6 @@ resource "aws_eks_node_group" "this" {
   node_role_arn = var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
   subnet_ids    = var.enable_efa_support ? data.aws_subnets.efa[0].ids : var.subnet_ids
 
-
   scaling_config {
     min_size     = var.min_size
     max_size     = var.max_size
@@ -580,7 +579,7 @@ data "aws_subnets" "efa" {
   }
 
   filter {
-    name   = "availability-zones"
+    name   = "availability-zone"
     values = var.az_filter
   }
 
