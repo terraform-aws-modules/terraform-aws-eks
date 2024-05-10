@@ -338,12 +338,6 @@ variable "subnet_ids" {
   default     = null
 }
 
-variable "az_filter" {
-  description = "subnet az filter"
-  type        = list(string)
-  default     = []
-}
-
 variable "min_size" {
   description = "Minimum number of instances/nodes"
   type        = number

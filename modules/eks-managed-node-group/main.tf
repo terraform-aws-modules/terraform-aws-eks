@@ -572,15 +572,9 @@ data "aws_ec2_instance_type_offerings" "this" {
 # availability zone ID of the queried instance type (supported)
 data "aws_subnets" "efa" {
   count = var.create && var.enable_efa_support ? 1 : 0
-
   filter {
     name   = "subnet-id"
     values = var.subnet_ids
-  }
-
-  filter {
-    name   = "availability-zone"
-    values = var.az_filter
   }
 
   filter {
