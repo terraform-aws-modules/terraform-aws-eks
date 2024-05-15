@@ -583,7 +583,7 @@ data "aws_subnets" "efa" {
   }
 
   dynamic "filter" {
-    for_each = var.placement_group_strategy == "cluster" && var.az_filter != null ? var.az_filter : ""
+    for_each = var.placement_group_strategy == "cluster" && var.az_filter != null ? [var.az_filter] : ""
 
     content {
       name   = "availability-zone"

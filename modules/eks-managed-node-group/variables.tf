@@ -340,7 +340,7 @@ variable "subnet_ids" {
 
 variable "az_filter" {
   description = "subnet az filter"
-  type        = list(string)
+  type        = string
   default     = []
 }
 
