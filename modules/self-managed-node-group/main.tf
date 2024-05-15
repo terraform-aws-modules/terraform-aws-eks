@@ -865,11 +865,6 @@ data "aws_subnets" "efa" {
   }
 
   filter {
-    name   = "availability-zone"
-    values = var.az_filter
-  }
-
-  filter {
     name   = "availability-zone-id"
     values = data.aws_ec2_instance_type_offerings.this[0].locations
   }

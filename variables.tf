@@ -63,8 +63,8 @@ variable "subnet_ids" {
 }
 variable "az_filter" {
   description = "subnet az filter"
-  type        = list(string)
-  default     = []
+  type        = string
+  default     = ""
 }
 
 variable "cluster_endpoint_private_access" {

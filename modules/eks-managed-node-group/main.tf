@@ -571,7 +571,7 @@ data "aws_ec2_instance_type_offerings" "this" {
 # Reverse the lookup to find one of the subnets provided based on the availability
 # availability zone ID of the queried instance type (supported)
 data "aws_subnets" "efa" {
-  count = var.create && (var.enable_efa_support || var.create_placement_group) ? 1 : 0 
+  count = var.create && (var.enable_efa_support || var.create_placement_group) ? 1 : 0
   filter {
     name   = "subnet-id"
     values = var.subnet_ids
@@ -582,9 +582,9 @@ data "aws_subnets" "efa" {
     values = data.aws_ec2_instance_type_offerings.this[0].locations
   }
 
-  dynamic "filter" { 
+  dynamic "filter" {
     for_each = var.placement_group_strategy == "cluster" && var.az_filter != null ? [var.az_filter] : []
-    
+
     content {
       name   = "availability-zone"
       values = filter.key

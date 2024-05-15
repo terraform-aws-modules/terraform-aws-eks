@@ -368,7 +368,7 @@ variable "availability_zones" {
 
 variable "az_filter" {
   description = "A list of one or more availability zones for the group. Used for EC2-Classic and default subnets when not specified with `subnet_ids` argument. Conflicts with `subnet_ids`"
-  type        = list(string)
+  type        = string
   default     = null
 }
 
