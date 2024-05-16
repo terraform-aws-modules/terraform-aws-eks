@@ -40,7 +40,7 @@ module "eks" {
   # Enable EFA support by adding necessary security group rules
   # to the shared node security group
   enable_efa_support = true
-  cluster_az_filter  = ["eu-west-1c"]
+  cluster_az_filter  = "eu-west-1c"
 
   cluster_addons = {
     coredns = {

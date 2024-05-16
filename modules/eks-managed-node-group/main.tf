@@ -585,13 +585,9 @@ data "aws_subnets" "efa" {
     values = data.aws_ec2_instance_type_offerings.this[0].locations
   }
 
-  dynamic "filter" {
-    for_each = var.cluster_az_filter
-
-    content {
-      name   = "availability-zone"
-      values = filter.value
-    }
+  filter {
+    name   = "availability-zone"
+    values = [var.cluster_az_filter]
   }
 }
 
