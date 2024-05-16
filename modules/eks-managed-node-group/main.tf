@@ -588,9 +588,14 @@ data "aws_subnets" "efa" {
   dynamic "filter" {
     for_each = var.placement_group_strategy == "cluster" && var.cluster_az_filter != null ? [var.cluster_az_filter] : []
 
+    # filter not allowed
+    # │ Error: creating EKS Node Group (adaptive-npr-tmp4-cafdev:adaptive-npr-tmp4-cafdev-dpdk2-20240516103604795400000001): 
+    # operation error EKS: CreateNodegroup, https response error StatusCode: 400, RequestID: 6610ff9c-8aee-4f56-aa89-d8c1bb2af48a, 
+    # InvalidRequestException: Instances in the adaptive-npr-tmp4-cafdev-adaptive-npr-tmp4-cafdev-dpdk2 Placement Group must be 
+    # launched in the eu-west-1a Availability Zone. Specify the eu-west-1a Availability Zone and try again.
     content {
       name   = "availability-zone"
-      values = [var.cluster_az_filter]
+      values = [filter.key]
     }
   }
 }
