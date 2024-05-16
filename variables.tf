@@ -61,8 +61,8 @@ variable "subnet_ids" {
   type        = list(string)
   default     = []
 }
-variable "az_filter" {
-  description = "subnet az filter"
+variable "cluster_az_filter" {
+  description = "subnet availability zone filter for cluster"
   type        = list(string)
   default     = null
 }
