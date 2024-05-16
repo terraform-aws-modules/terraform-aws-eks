@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.11.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.10.0...v20.11.0) (2024-05-16)
+
+
+### Features
+
+* Add `SourceArn` condition to Fargate profile trust policy ([#3039](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3039)) ([a070d7b](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/a070d7b2bd92866b91e0963a0f819eec9839ed03))
+
 ## [20.10.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.9.0...v20.10.0) (2024-05-09)
 
 
