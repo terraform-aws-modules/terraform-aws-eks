@@ -581,7 +581,7 @@ data "aws_subnets" "efa" {
   }
 
   dynamic "filter" {
-    for_each = var.enable_efa_support ? [1] : [0]
+    for_each = var.enable_efa_support ? [1] : []
 
     content {
       name   = "availability-zone-id"
