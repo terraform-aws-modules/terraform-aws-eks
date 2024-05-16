@@ -386,7 +386,7 @@ resource "aws_eks_node_group" "this" {
   # Required
   cluster_name  = var.cluster_name
   node_role_arn = var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
-  subnet_ids    = var.enable_efa_support ? data.aws_subnets.efa[0].ids : var.subnet_ids
+  subnet_ids    = (var.enable_efa_support || var.create_placement_group)? data.aws_subnets.efa[0].ids : var.subnet_ids
 
   scaling_config {
     min_size     = var.min_size
