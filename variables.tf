@@ -64,7 +64,7 @@ variable "subnet_ids" {
 variable "cluster_az_filter" {
   description = "subnet availability zone filter for cluster"
   type        = list(string)
-  default     = ["eu-west-1a"]
+  default     = []
 }
 
 variable "cluster_endpoint_private_access" {
