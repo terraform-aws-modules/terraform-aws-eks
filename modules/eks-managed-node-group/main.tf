@@ -590,7 +590,7 @@ data "aws_subnets" "efa" {
 
     content {
       name   = "availability-zone"
-      values = filter
+      values = filter.key
     }
   }
 }
