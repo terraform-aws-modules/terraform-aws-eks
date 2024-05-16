@@ -1,5 +1,6 @@
 data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
 
 locals {
   create_iam_role = var.create && var.create_iam_role
@@ -29,6 +30,15 @@ data "aws_iam_policy_document" "assume_role_policy" {
     principals {
       type        = "Service"
       identifiers = ["eks-fargate-pods.amazonaws.com"]
+    }
+
+    condition {
+      test     = "ArnLike"
+      variable = "aws:SourceArn"
+
+      values = [
+        "arn:${data.aws_partition.current.partition}:eks:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:fargateprofile/${var.cluster_name}/*",
+      ]
     }
   }
 }
