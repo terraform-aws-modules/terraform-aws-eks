@@ -341,7 +341,7 @@ variable "subnet_ids" {
 variable "cluster_az_filter" {
   description = "subnet availability zone filter for cluster"
   type        = list(string)
-  default     = []
+  default     = ["eu-west-1a"]
 }
 
 variable "min_size" {
