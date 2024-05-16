@@ -561,7 +561,7 @@ resource "aws_placement_group" "this" {
 
 # Find the availability zones supported by the instance type
 data "aws_ec2_instance_type_offerings" "this" {
-  count = var.create && (var.enable_efa_support || var.create_placement_group) ? 1 : 0
+  count = var.create && var.enable_efa_support ? 1 : 0
 
   filter {
     name   = "instance-type"
@@ -580,19 +580,19 @@ data "aws_subnets" "efa" {
     values = var.subnet_ids
   }
 
-  filter {
-    name   = "availability-zone-id"
-    values = data.aws_ec2_instance_type_offerings.this[0].locations
+  dynamic "filter" {
+    for_each = var.enable_efa_support ? [1] : [0]
+
+    content {
+      name   = "availability-zone-id"
+      values = data.aws_ec2_instance_type_offerings.this[0].locations      
+    }
+
   }
 
   dynamic "filter" {
     for_each = var.placement_group_strategy == "cluster" && var.cluster_az_filter != null ? [var.cluster_az_filter] : []
 
-    # filter not allowed
-    # │ Error: creating EKS Node Group (adaptive-npr-tmp4-cafdev:adaptive-npr-tmp4-cafdev-dpdk2-20240516103604795400000001): 
-    # operation error EKS: CreateNodegroup, https response error StatusCode: 400, RequestID: 6610ff9c-8aee-4f56-aa89-d8c1bb2af48a, 
-    # InvalidRequestException: Instances in the adaptive-npr-tmp4-cafdev-adaptive-npr-tmp4-cafdev-dpdk2 Placement Group must be 
-    # launched in the eu-west-1a Availability Zone. Specify the eu-west-1a Availability Zone and try again.
     content {
       name   = "availability-zone"
       values = [filter.key]
