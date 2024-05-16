@@ -561,7 +561,7 @@ resource "aws_placement_group" "this" {
 
 # Find the availability zones supported by the instance type
 data "aws_ec2_instance_type_offerings" "this" {
-  count = var.create && var.enable_efa_support ? 1 : 0
+  count = var.create && (var.enable_efa_support || var.create_placement_group) ? 1 : 0
 
   filter {
     name   = "instance-type"
