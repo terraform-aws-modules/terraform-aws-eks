@@ -369,7 +369,7 @@ variable "availability_zones" {
 variable "cluster_az_filter" {
   description = "subnet availability zone filter for cluster"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "subnet_ids" {
