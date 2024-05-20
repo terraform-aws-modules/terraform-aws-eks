@@ -367,6 +367,7 @@ module "eks_managed_node_group" {
   vpc_security_group_ids = [
     module.eks.node_security_group_id,
   ]
+  placement_group_az_filter = "eu-west-1c"
 
   ami_type = "BOTTLEROCKET_x86_64"
   platform = "bottlerocket"

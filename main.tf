@@ -32,7 +32,6 @@ resource "aws_eks_cluster" "this" {
   version                   = var.cluster_version
   enabled_cluster_log_types = var.cluster_enabled_log_types
 
-
   access_config {
     authentication_mode = var.authentication_mode
 
