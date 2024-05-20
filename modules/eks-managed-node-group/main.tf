@@ -464,7 +464,7 @@ resource "aws_eks_node_group" "this" {
     { Name = var.name }
   )
   depends_on = [
-    var.create_placement_group ? aws_placement_group.this : null
+    aws_placement_group.this
   ]
 }
 
