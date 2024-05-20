@@ -864,9 +864,23 @@ data "aws_subnets" "efa" {
     values = var.subnet_ids
   }
 
-  filter {
-    name   = "availability-zone-id"
-    values = data.aws_ec2_instance_type_offerings.this[0].locations
+  dynamic "filter" {
+    for_each = var.enable_efa_support ? [1] : []
+
+    content {
+      name   = "availability-zone-id"
+      values = data.aws_ec2_instance_type_offerings.this[0].locations
+    }
+  }
+
+
+  dynamic "filter" {
+    for_each = var.placement_group_az_filter != null ? [var.placement_group_az_filter] : []
+
+    content {
+      name   = "availability-zone"
+      values = [filter.value]
+    }
   }
 }
 

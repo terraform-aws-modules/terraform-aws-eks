@@ -338,8 +338,8 @@ variable "subnet_ids" {
   default     = null
 }
 
-variable "cluster_az_filter" {
-  description = "subnet availability zone filter for cluster"
+variable "placement_group_az_filter" {
+  description = "Placement group subnet filter to enable nodegroup update in place. ex. `eu-west-1c`"
   type        = string
   default     = null
 }

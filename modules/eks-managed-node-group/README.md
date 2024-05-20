@@ -111,7 +111,6 @@ module "eks_managed_node_group" {
 | <a name="input_cloudinit_post_nodeadm"></a> [cloudinit\_post\_nodeadm](#input\_cloudinit\_post\_nodeadm) | Array of cloud-init document parts that are created after the nodeadm document part | <pre>list(object({<br>    content      = string<br>    content_type = optional(string)<br>    filename     = optional(string)<br>    merge_type   = optional(string)<br>  }))</pre> | `[]` | no |
 | <a name="input_cloudinit_pre_nodeadm"></a> [cloudinit\_pre\_nodeadm](#input\_cloudinit\_pre\_nodeadm) | Array of cloud-init document parts that are created before the nodeadm document part | <pre>list(object({<br>    content      = string<br>    content_type = optional(string)<br>    filename     = optional(string)<br>    merge_type   = optional(string)<br>  }))</pre> | `[]` | no |
 | <a name="input_cluster_auth_base64"></a> [cluster\_auth\_base64](#input\_cluster\_auth\_base64) | Base64 encoded CA of associated EKS cluster | `string` | `""` | no |
-| <a name="input_cluster_az_filter"></a> [cluster\_az\_filter](#input\_cluster\_az\_filter) | subnet availability zone filter for cluster | `string` | `null` | no |
 | <a name="input_cluster_endpoint"></a> [cluster\_endpoint](#input\_cluster\_endpoint) | Endpoint of associated EKS cluster | `string` | `""` | no |
 | <a name="input_cluster_ip_family"></a> [cluster\_ip\_family](#input\_cluster\_ip\_family) | The IP family used to assign Kubernetes pod and service addresses. Valid values are `ipv4` (default) and `ipv6` | `string` | `"ipv4"` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of associated EKS cluster | `string` | `null` | no |
@@ -166,6 +165,7 @@ module "eks_managed_node_group" {
 | <a name="input_name"></a> [name](#input\_name) | Name of the EKS managed node group | `string` | `""` | no |
 | <a name="input_network_interfaces"></a> [network\_interfaces](#input\_network\_interfaces) | Customize network interfaces to be attached at instance boot time | `list(any)` | `[]` | no |
 | <a name="input_placement"></a> [placement](#input\_placement) | The placement of the instance | `map(string)` | `{}` | no |
+| <a name="input_placement_group_az_filter"></a> [placement\_group\_az\_filter](#input\_placement\_group\_az\_filter) | Placement group subnet filter to enable nodegroup update in place. ex. `eu-west-1c` | `string` | `null` | no |
 | <a name="input_placement_group_strategy"></a> [placement\_group\_strategy](#input\_placement\_group\_strategy) | The placement group strategy | `string` | `"cluster"` | no |
 | <a name="input_platform"></a> [platform](#input\_platform) | Identifies if the OS platform is `bottlerocket` or `linux` based; `windows` is not supported | `string` | `"linux"` | no |
 | <a name="input_post_bootstrap_user_data"></a> [post\_bootstrap\_user\_data](#input\_post\_bootstrap\_user\_data) | User data that is appended to the user data script after of the EKS bootstrap script. Not used when `platform` = `bottlerocket` | `string` | `""` | no |
