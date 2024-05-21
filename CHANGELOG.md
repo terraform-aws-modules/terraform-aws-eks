@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.11.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.11.0...v20.11.1) (2024-05-21)
+
+
+### Bug Fixes
+
+* Ignore changes to `bootstrap_cluster_creator_admin_permissions` which is disabled by default  ([#3042](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3042)) ([c65d308](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c65d3085037d9c1c87f4fd3a5be1ca1d732dbf7a))
+
 ## [20.11.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.10.0...v20.11.0) (2024-05-16)
 
 
