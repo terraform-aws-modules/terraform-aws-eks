@@ -5,7 +5,8 @@
 - [Why are nodes not being registered?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#why-are-nodes-not-being-registered)
 - [Why are there no changes when a node group's `desired_size` is modified?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#why-are-there-no-changes-when-a-node-groups-desired_size-is-modified)
 - [How do I access compute resource attributes?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#how-do-i-access-compute-resource-attributes)
-- [How do I discover and configure cluster addons?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#how-do-i-discover-and-configure-cluster-addons)
+- [What add-ons are available?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#what-add-ons-are-available)
+- [What configuration values are available for an add-on?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#what-configuration-values-are-available-for-an-add-on)
 
 ### Setting `disk_size` or `remote_access` does not make any changes
 
@@ -65,7 +66,7 @@ Examples of accessing the attributes of the compute resource(s) created by the r
 
 ```hcl
 eks_managed_role_arns = [for group in module.eks_managed_node_group : group.iam_role_arn]
-````
+```
 
 - Self Managed Node Group attributes
 
@@ -79,29 +80,213 @@ self_managed_role_arns = [for group in module.self_managed_node_group : group.ia
 fargate_profile_pod_execution_role_arns = [for group in module.fargate_profile : group.fargate_profile_pod_execution_role_arn]
 ```
 
-### How do I discover and configure cluster addons?
+### What add-ons are available?
 
-A top level description of all available cluster addons can be [found here](https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html). To simply retrieve a list of all available addons from the API, you can use the following command:
+The available EKS add-ons can be [found here](https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html). You can also retrieve the available addons from the API using:
 
-`aws eks describe-addon-versions --query 'addons[*].addonName'`
-
-If you would like to adjust specific configuration values within the body of an addon, you can obtain the schema with this command:
-
-`aws eks describe-addon-configuration --addon-name <value> --addon-version <value>`
-
-Below is an example of configuration values being set for an addon within the module:
-
+```sh
+aws eks describe-addon-versions --query 'addons[*].addonName'
 ```
-cluster_addons = {
-    vpc-cni = {
-      most_recent    = true
-      before_compute = true
-      configuration_values = jsonencode({
-        env = {
-          ENABLE_PREFIX_DELEGATION = "true"
-          WARM_PREFIX_TARGET       = "1"
+
+### What configuration values are available for an add-on?
+
+You can retrieve the configuration value schema for a given addon using the following command:
+
+```sh
+aws eks describe-addon-configuration --addon-name <value> --addon-version <value> --query 'configurationSchema' --output text | jq
+```
+
+For example:
+
+```sh
+aws eks describe-addon-configuration --addon-name coredns --addon-version v1.11.1-eksbuild.8 --query 'configurationSchema' --output text | jq
+```
+
+Returns (at the time of writing):
+
+```json
+{
+  "$ref": "#/definitions/Coredns",
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "definitions": {
+    "Coredns": {
+      "additionalProperties": false,
+      "properties": {
+        "affinity": {
+          "default": {
+            "affinity": {
+              "nodeAffinity": {
+                "requiredDuringSchedulingIgnoredDuringExecution": {
+                  "nodeSelectorTerms": [
+                    {
+                      "matchExpressions": [
+                        {
+                          "key": "kubernetes.io/os",
+                          "operator": "In",
+                          "values": [
+                            "linux"
+                          ]
+                        },
+                        {
+                          "key": "kubernetes.io/arch",
+                          "operator": "In",
+                          "values": [
+                            "amd64",
+                            "arm64"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "podAntiAffinity": {
+                "preferredDuringSchedulingIgnoredDuringExecution": [
+                  {
+                    "podAffinityTerm": {
+                      "labelSelector": {
+                        "matchExpressions": [
+                          {
+                            "key": "k8s-app",
+                            "operator": "In",
+                            "values": [
+                              "kube-dns"
+                            ]
+                          }
+                        ]
+                      },
+                      "topologyKey": "kubernetes.io/hostname"
+                    },
+                    "weight": 100
+                  }
+                ]
+              }
+            }
+          },
+          "description": "Affinity of the coredns pods",
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "computeType": {
+          "type": "string"
+        },
+        "corefile": {
+          "description": "Entire corefile contents to use with installation",
+          "type": "string"
+        },
+        "nodeSelector": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "podAnnotations": {
+          "properties": {},
+          "title": "The podAnnotations Schema",
+          "type": "object"
+        },
+        "podDisruptionBudget": {
+          "description": "podDisruptionBudget configurations",
+          "enabled": {
+            "default": true,
+            "description": "the option to enable managed PDB",
+            "type": "boolean"
+          },
+          "maxUnavailable": {
+            "anyOf": [
+              {
+                "pattern": ".*%$",
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "default": 1,
+            "description": "minAvailable value for managed PDB, can be either string or integer; if it's string, should end with %"
+          },
+          "minAvailable": {
+            "anyOf": [
+              {
+                "pattern": ".*%$",
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "description": "maxUnavailable value for managed PDB, can be either string or integer; if it's string, should end with %"
+          },
+          "type": "object"
+        },
+        "podLabels": {
+          "properties": {},
+          "title": "The podLabels Schema",
+          "type": "object"
+        },
+        "replicaCount": {
+          "type": "integer"
+        },
+        "resources": {
+          "$ref": "#/definitions/Resources"
+        },
+        "tolerations": {
+          "default": [
+            {
+              "key": "CriticalAddonsOnly",
+              "operator": "Exists"
+            },
+            {
+              "effect": "NoSchedule",
+              "key": "node-role.kubernetes.io/control-plane"
+            }
+          ],
+          "description": "Tolerations of the coredns pod",
+          "items": {
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "topologySpreadConstraints": {
+          "description": "The coredns pod topology spread constraints",
+          "type": "array"
         }
-      })
+      },
+      "title": "Coredns",
+      "type": "object"
+    },
+    "Limits": {
+      "additionalProperties": false,
+      "properties": {
+        "cpu": {
+          "type": "string"
+        },
+        "memory": {
+          "type": "string"
+        }
+      },
+      "title": "Limits",
+      "type": "object"
+    },
+    "Resources": {
+      "additionalProperties": false,
+      "properties": {
+        "limits": {
+          "$ref": "#/definitions/Limits"
+        },
+        "requests": {
+          "$ref": "#/definitions/Limits"
+        }
+      },
+      "title": "Resources",
+      "type": "object"
     }
   }
+}
 ```
+
+> [!NOTE]
+> The available configuration values will vary between add-on versions,
+> typically more configuration values will be added in later versions as functionality is enabled by EKS.
