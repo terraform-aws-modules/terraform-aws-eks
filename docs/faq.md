@@ -85,11 +85,11 @@ A top level description of all available cluster addons can be [found here](http
 
 `aws eks describe-addon-versions --query 'addons[*].addonName'`
 
-If you would like to adjust specific configuration values within the body of an addon, you can obtain the schema with this command: 
+If you would like to adjust specific configuration values within the body of an addon, you can obtain the schema with this command:
 
 `aws eks describe-addon-configuration --addon-name <value> --addon-version <value>`
 
-Below is an example of configuration values being set within the module: 
+Below is an example of configuration values being set within the module:
 
 ```
 cluster_addons = {
@@ -105,4 +105,3 @@ cluster_addons = {
     }
   }
 ```
-
