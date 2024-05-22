@@ -89,7 +89,7 @@ If you would like to adjust specific configuration values within the body of an 
 
 `aws eks describe-addon-configuration --addon-name <value> --addon-version <value>`
 
-Below is an example of configuration values being set within the module:
+Below is an example of configuration values being set for an addon within the module:
 
 ```
 cluster_addons = {

@@ -485,7 +485,6 @@ resource "aws_iam_policy" "cluster_encryption" {
 
 ################################################################################
 # EKS Addons
-# Addon names and configuration ref: https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html
 ################################################################################
 
 data "aws_eks_addon_version" "this" {
