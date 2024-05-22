@@ -4,8 +4,8 @@
 - [I received an error: `expect exactly one securityGroup tagged with kubernetes.io/cluster/<NAME> ...`](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#i-received-an-error-expect-exactly-one-securitygroup-tagged-with-kubernetesioclustername-)
 - [Why are nodes not being registered?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#why-are-nodes-not-being-registered)
 - [Why are there no changes when a node group's `desired_size` is modified?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#why-are-there-no-changes-when-a-node-groups-desired_size-is-modified)
-- [How can I deploy Windows based nodes?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#how-can-i-deploy-windows-based-nodes)
 - [How do I access compute resource attributes?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#how-do-i-access-compute-resource-attributes)
+- [How do I discover and configure cluster addons?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#how-do-i-discover-and-configure-cluster-addons)
 
 ### Setting `disk_size` or `remote_access` does not make any changes
 
@@ -78,3 +78,31 @@ self_managed_role_arns = [for group in module.self_managed_node_group : group.ia
 ```hcl
 fargate_profile_pod_execution_role_arns = [for group in module.fargate_profile : group.fargate_profile_pod_execution_role_arn]
 ```
+
+### How do I discover and configure cluster addons?
+
+A top level description of all available cluster addons can be [found here](https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html). To simply retrieve a list of all available addons from the API, you can use the following command:
+
+`aws eks describe-addon-versions --query 'addons[*].addonName'`
+
+If you would like to adjust specific configuration values within the body of an addon, you can obtain the schema with this command: 
+
+`aws eks describe-addon-configuration --addon-name <value> --addon-version <value>`
+
+Below is an example of configuration values being set within the module: 
+
+```
+cluster_addons = {
+    vpc-cni = {
+      most_recent    = true
+      before_compute = true
+      configuration_values = jsonencode({
+        env = {
+          ENABLE_PREFIX_DELEGATION = "true"
+          WARM_PREFIX_TARGET       = "1"
+        }
+      })
+    }
+  }
+```
+
