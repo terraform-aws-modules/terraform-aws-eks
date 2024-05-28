@@ -42,7 +42,12 @@ locals {
     windows      = "${path.module}/../../templates/windows_user_data.tpl"
   }
 
-  cluster_service_cidr = try(coalesce(var.cluster_service_ipv4_cidr, var.cluster_service_cidr), "")
+  cluster_service_cidr   = try(coalesce(var.cluster_service_ipv4_cidr, var.cluster_service_cidr), "")
+
+  # Additional ips can be provided to the cluster for DNS resolution
+  # The result will render as a list of strings if there are more than one, else just a string
+  cluster_dns_ip         = concat(try(cidrhost(local.cluster_service_cidr, 10), ""), var.additional_cluster_dns_ips)
+  cluster_dns_ips_string = length(local.cluster_dns_ip) > 1 ? "[${join(", ", formatlist("\"%s\"", local.cluster_dns_ip))}]" : local.cluster_dns_ip[0]
 
   user_data = base64encode(templatefile(
     coalesce(var.user_data_template_path, local.template_path[local.user_data_type]),
@@ -57,8 +62,9 @@ locals {
 
       cluster_service_cidr = local.cluster_service_cidr
       cluster_ip_family    = var.cluster_ip_family
+      
       # Bottlerocket
-      cluster_dns_ip = try(cidrhost(local.cluster_service_cidr, 10), "")
+      cluster_dns_ip = local.cluster_dns_ips_string
 
       # Optional
       bootstrap_extra_args     = var.bootstrap_extra_args
