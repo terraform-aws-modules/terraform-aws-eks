@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.12.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.11.1...v20.12.0) (2024-05-28)
+
+
+### Features
+
+* Support additional cluster DNS IPs with Bottlerocket based AMIs ([#3051](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3051)) ([541dbb2](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/541dbb29f12bb763a34b32acdaea9cea12d7f543))
+
 ## [20.11.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.11.0...v20.11.1) (2024-05-21)
 
 
