@@ -43,6 +43,7 @@ locals {
   }
 
   cluster_service_cidr = try(coalesce(var.cluster_service_ipv4_cidr, var.cluster_service_cidr), "")
+  cluster_dns_ips      = flatten(concat([try(cidrhost(local.cluster_service_cidr, 10), "")], var.additional_cluster_dns_ips))
 
   user_data = base64encode(templatefile(
     coalesce(var.user_data_template_path, local.template_path[local.user_data_type]),
@@ -57,8 +58,9 @@ locals {
 
       cluster_service_cidr = local.cluster_service_cidr
       cluster_ip_family    = var.cluster_ip_family
+
       # Bottlerocket
-      cluster_dns_ip = try(cidrhost(local.cluster_service_cidr, 10), "")
+      cluster_dns_ips = "[${join(", ", formatlist("\"%s\"", local.cluster_dns_ips))}]"
 
       # Optional
       bootstrap_extra_args     = var.bootstrap_extra_args

@@ -65,11 +65,12 @@ module "user_data" {
   ami_type                  = var.ami_type
   is_eks_managed_node_group = false
 
-  cluster_name         = var.cluster_name
-  cluster_endpoint     = var.cluster_endpoint
-  cluster_auth_base64  = var.cluster_auth_base64
-  cluster_ip_family    = var.cluster_ip_family
-  cluster_service_cidr = var.cluster_service_cidr
+  cluster_name               = var.cluster_name
+  cluster_endpoint           = var.cluster_endpoint
+  cluster_auth_base64        = var.cluster_auth_base64
+  cluster_ip_family          = var.cluster_ip_family
+  cluster_service_cidr       = var.cluster_service_cidr
+  additional_cluster_dns_ips = var.additional_cluster_dns_ips
 
   enable_bootstrap_user_data = true
   pre_bootstrap_user_data    = var.pre_bootstrap_user_data
