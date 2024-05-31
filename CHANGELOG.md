@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.13.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.12.0...v20.13.0) (2024-05-31)
+
+
+### Features
+
+* Starting with `1.30`, do not use the cluster OIDC issuer URL by default in the identity provider config ([#3055](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3055)) ([00f076a](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/00f076ada4cd78c5c34b8be6e8eba44b628b629a))
+
 ## [20.12.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.11.1...v20.12.0) (2024-05-28)
 
 
