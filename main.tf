@@ -105,7 +105,7 @@ resource "aws_eks_cluster" "this" {
 
   lifecycle {
     ignore_changes = [
-      access_config["bootstrap_cluster_creator_admin_permissions"]
+      access_config[0].bootstrap_cluster_creator_admin_permissions
     ]
   }
 }
