@@ -2,7 +2,7 @@ data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
 data "aws_iam_session_context" "current" {
-  count = var.create && var.enable_cluster_creator_admin_permissions || var.create && var.create_kms_key && local.enable_cluster_encryption_config ? 1 : 0
+  count = (var.create && var.enable_cluster_creator_admin_permissions) || (var.create && var.create_kms_key && local.enable_cluster_encryption_config) ? 1 : 0
   # This data source provides information on the IAM source role of an STS assumed role
   # For non-role ARNs, this data source simply passes the ARN through issuer ARN
   # Ref https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2327#issuecomment-1355581682
