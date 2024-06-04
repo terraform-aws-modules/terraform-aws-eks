@@ -2,6 +2,7 @@ data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
 data "aws_iam_session_context" "current" {
+  count = var.create && var.enable_cluster_creator_admin_permissions || var.create && var.create_kms_key && local.enable_cluster_encryption_config ? 1 : 0
   # This data source provides information on the IAM source role of an STS assumed role
   # For non-role ARNs, this data source simply passes the ARN through issuer ARN
   # Ref https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2327#issuecomment-1355581682
@@ -147,7 +148,7 @@ locals {
   # better controlled by users through Terraform
   bootstrap_cluster_creator_admin_permissions = {
     cluster_creator = {
-      principal_arn = data.aws_iam_session_context.current.issuer_arn
+      principal_arn = data.aws_iam_session_context[0].current.issuer_arn
       type          = "STANDARD"
 
       policy_associations = {
@@ -236,7 +237,7 @@ module "kms" {
   # Policy
   enable_default_policy     = var.kms_key_enable_default_policy
   key_owners                = var.kms_key_owners
-  key_administrators        = coalescelist(var.kms_key_administrators, [data.aws_iam_session_context.current.issuer_arn])
+  key_administrators        = coalescelist(var.kms_key_administrators, [data.aws_iam_session_context[0].current.issuer_arn])
   key_users                 = concat([local.cluster_role], var.kms_key_users)
   key_service_users         = var.kms_key_service_users
   source_policy_documents   = var.kms_key_source_policy_documents
@@ -315,7 +316,7 @@ resource "aws_security_group_rule" "cluster" {
   description              = lookup(each.value, "description", null)
   cidr_blocks              = lookup(each.value, "cidr_blocks", null)
   ipv6_cidr_blocks         = lookup(each.value, "ipv6_cidr_blocks", null)
-  prefix_list_ids          = lookup(each.value, "prefix_list_ids", null)
+  prefix_list_ids          = lookup(each.value, "prefix_list_ids", null)co
   self                     = lookup(each.value, "self", null)
   source_security_group_id = try(each.value.source_node_security_group, false) ? local.node_security_group_id : lookup(each.value, "source_security_group_id", null)
 }
