@@ -57,6 +57,12 @@ variable "cluster_service_ipv4_cidr" {
   default     = null
 }
 
+variable "additional_cluster_dns_ips" {
+  description = "Additional DNS IP addresses to use for the cluster. Only used when `ami_type` = `BOTTLEROCKET_*`"
+  type        = list(string)
+  default     = []
+}
+
 variable "pre_bootstrap_user_data" {
   description = "User data that is injected into the user data script ahead of the EKS bootstrap script. Not used when `ami_type` = `BOTTLEROCKET_*`"
   type        = string

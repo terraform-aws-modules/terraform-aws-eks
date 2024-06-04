@@ -140,6 +140,12 @@ module "eks" {
       ami_id   = data.aws_ami.eks_default_bottlerocket.image_id
       ami_type = "BOTTLEROCKET_x86_64"
 
+      # Add custom dns server to cluster-dns-ip list for node-local-dns as example.
+      additional_cluster_dns_ips = [
+        "169.254.20.10"
+      ]
+      # We have to use custom launch template if we want to bootstrap our own user_data
+      use_custom_launch_template = true
       # Use module user data template to bootstrap
       enable_bootstrap_user_data = true
       # This will get added to the template
