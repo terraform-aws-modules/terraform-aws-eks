@@ -316,7 +316,7 @@ resource "aws_security_group_rule" "cluster" {
   description              = lookup(each.value, "description", null)
   cidr_blocks              = lookup(each.value, "cidr_blocks", null)
   ipv6_cidr_blocks         = lookup(each.value, "ipv6_cidr_blocks", null)
-  prefix_list_ids          = lookup(each.value, "prefix_list_ids", null)co
+  prefix_list_ids          = lookup(each.value, "prefix_list_ids", null)
   self                     = lookup(each.value, "self", null)
   source_security_group_id = try(each.value.source_node_security_group, false) ? local.node_security_group_id : lookup(each.value, "source_security_group_id", null)
 }
