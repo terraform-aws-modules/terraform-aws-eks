@@ -148,7 +148,7 @@ locals {
   # better controlled by users through Terraform
   bootstrap_cluster_creator_admin_permissions = {
     cluster_creator = {
-      principal_arn = data.aws_iam_session_context[0].current.issuer_arn
+      principal_arn = data.aws_iam_session_context.current[0].issuer_arn
       type          = "STANDARD"
 
       policy_associations = {
@@ -237,7 +237,7 @@ module "kms" {
   # Policy
   enable_default_policy     = var.kms_key_enable_default_policy
   key_owners                = var.kms_key_owners
-  key_administrators        = coalescelist(var.kms_key_administrators, [data.aws_iam_session_context[0].current.issuer_arn])
+  key_administrators        = coalescelist(var.kms_key_administrators, [data.aws_iam_session_context.current[0].issuer_arn])
   key_users                 = concat([local.cluster_role], var.kms_key_users)
   key_service_users         = var.kms_key_service_users
   source_policy_documents   = var.kms_key_source_policy_documents
