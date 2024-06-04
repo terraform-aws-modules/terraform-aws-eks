@@ -101,6 +101,7 @@ module "eks_managed_node_group" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_additional_cluster_dns_ips"></a> [additional\_cluster\_dns\_ips](#input\_additional\_cluster\_dns\_ips) | Additional DNS IP addresses to use for the cluster. Only used when `ami_type` = `BOTTLEROCKET_*` | `list(string)` | `[]` | no |
 | <a name="input_ami_id"></a> [ami\_id](#input\_ami\_id) | The AMI from which to launch the instance. If not supplied, EKS will use its own default image | `string` | `""` | no |
 | <a name="input_ami_release_version"></a> [ami\_release\_version](#input\_ami\_release\_version) | The AMI version. Defaults to latest AMI release version for the given Kubernetes version and AMI type | `string` | `null` | no |
 | <a name="input_ami_type"></a> [ami\_type](#input\_ami\_type) | Type of Amazon Machine Image (AMI) associated with the EKS Node Group. See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#AmazonEKS-Type-Nodegroup-amiType) for valid values | `string` | `null` | no |
