@@ -12,11 +12,12 @@ module "user_data" {
   platform = var.platform
   ami_type = var.ami_type
 
-  cluster_name         = var.cluster_name
-  cluster_endpoint     = var.cluster_endpoint
-  cluster_auth_base64  = var.cluster_auth_base64
-  cluster_ip_family    = var.cluster_ip_family
-  cluster_service_cidr = try(coalesce(var.cluster_service_cidr, var.cluster_service_ipv4_cidr), "")
+  cluster_name               = var.cluster_name
+  cluster_endpoint           = var.cluster_endpoint
+  cluster_auth_base64        = var.cluster_auth_base64
+  cluster_ip_family          = var.cluster_ip_family
+  cluster_service_cidr       = try(coalesce(var.cluster_service_cidr, var.cluster_service_ipv4_cidr), "")
+  additional_cluster_dns_ips = var.additional_cluster_dns_ips
 
   enable_bootstrap_user_data = var.enable_bootstrap_user_data
   pre_bootstrap_user_data    = var.pre_bootstrap_user_data

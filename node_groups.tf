@@ -341,6 +341,7 @@ module "eks_managed_node_group" {
   user_data_template_path    = try(each.value.user_data_template_path, var.eks_managed_node_group_defaults.user_data_template_path, "")
   cloudinit_pre_nodeadm      = try(each.value.cloudinit_pre_nodeadm, var.eks_managed_node_group_defaults.cloudinit_pre_nodeadm, [])
   cloudinit_post_nodeadm     = try(each.value.cloudinit_post_nodeadm, var.eks_managed_node_group_defaults.cloudinit_post_nodeadm, [])
+  additional_cluster_dns_ips = try(each.value.additional_cluster_dns_ips, var.eks_managed_node_group_defaults.additional_cluster_dns_ips, [])
 
   # Launch Template
   create_launch_template                 = try(each.value.create_launch_template, var.eks_managed_node_group_defaults.create_launch_template, true)
@@ -467,17 +468,18 @@ module "self_managed_node_group" {
   # User data
   platform = try(each.value.platform, var.self_managed_node_group_defaults.platform, "linux")
   # TODO - update this when `var.platform` is removed in v21.0
-  ami_type                 = try(each.value.ami_type, var.self_managed_node_group_defaults.ami_type, "AL2_x86_64")
-  cluster_endpoint         = try(time_sleep.this[0].triggers["cluster_endpoint"], "")
-  cluster_auth_base64      = try(time_sleep.this[0].triggers["cluster_certificate_authority_data"], "")
-  cluster_service_cidr     = try(time_sleep.this[0].triggers["cluster_service_cidr"], "")
-  cluster_ip_family        = var.cluster_ip_family
-  pre_bootstrap_user_data  = try(each.value.pre_bootstrap_user_data, var.self_managed_node_group_defaults.pre_bootstrap_user_data, "")
-  post_bootstrap_user_data = try(each.value.post_bootstrap_user_data, var.self_managed_node_group_defaults.post_bootstrap_user_data, "")
-  bootstrap_extra_args     = try(each.value.bootstrap_extra_args, var.self_managed_node_group_defaults.bootstrap_extra_args, "")
-  user_data_template_path  = try(each.value.user_data_template_path, var.self_managed_node_group_defaults.user_data_template_path, "")
-  cloudinit_pre_nodeadm    = try(each.value.cloudinit_pre_nodeadm, var.self_managed_node_group_defaults.cloudinit_pre_nodeadm, [])
-  cloudinit_post_nodeadm   = try(each.value.cloudinit_post_nodeadm, var.self_managed_node_group_defaults.cloudinit_post_nodeadm, [])
+  ami_type                   = try(each.value.ami_type, var.self_managed_node_group_defaults.ami_type, "AL2_x86_64")
+  cluster_endpoint           = try(time_sleep.this[0].triggers["cluster_endpoint"], "")
+  cluster_auth_base64        = try(time_sleep.this[0].triggers["cluster_certificate_authority_data"], "")
+  cluster_service_cidr       = try(time_sleep.this[0].triggers["cluster_service_cidr"], "")
+  cluster_ip_family          = var.cluster_ip_family
+  pre_bootstrap_user_data    = try(each.value.pre_bootstrap_user_data, var.self_managed_node_group_defaults.pre_bootstrap_user_data, "")
+  post_bootstrap_user_data   = try(each.value.post_bootstrap_user_data, var.self_managed_node_group_defaults.post_bootstrap_user_data, "")
+  bootstrap_extra_args       = try(each.value.bootstrap_extra_args, var.self_managed_node_group_defaults.bootstrap_extra_args, "")
+  user_data_template_path    = try(each.value.user_data_template_path, var.self_managed_node_group_defaults.user_data_template_path, "")
+  cloudinit_pre_nodeadm      = try(each.value.cloudinit_pre_nodeadm, var.self_managed_node_group_defaults.cloudinit_pre_nodeadm, [])
+  cloudinit_post_nodeadm     = try(each.value.cloudinit_post_nodeadm, var.self_managed_node_group_defaults.cloudinit_post_nodeadm, [])
+  additional_cluster_dns_ips = try(each.value.additional_cluster_dns_ips, var.self_managed_node_group_defaults.additional_cluster_dns_ips, [])
 
   # Launch Template
   create_launch_template                 = try(each.value.create_launch_template, var.self_managed_node_group_defaults.create_launch_template, true)
