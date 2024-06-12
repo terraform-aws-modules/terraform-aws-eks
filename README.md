@@ -38,7 +38,7 @@ module "eks" {
   version = "~> 20.0"
 
   cluster_name    = "my-cluster"
-  cluster_version = "1.29"
+  cluster_version = "1.30"
 
   cluster_endpoint_public_access  = true
 
@@ -65,12 +65,14 @@ module "eks" {
 
   eks_managed_node_groups = {
     example = {
-      min_size     = 1
-      max_size     = 10
-      desired_size = 1
+      # Starting on 1.30, AL2023 is default OS for EKS managed node group
+      ami_type = "AL2023_x86_64_STANDARD"
 
-      instance_types = ["t3.large"]
-      capacity_type  = "SPOT"
+      min_size     = 2
+      max_size     = 10
+      desired_size = 2
+
+      instance_types = ["m5.xlarge"]
     }
   }
 
@@ -169,12 +171,12 @@ module "eks" {
 
 ## Examples
 
-- [EKS Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_managed_node_group): EKS Cluster using EKS managed node groups
-- [Fargate Profile](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/fargate_profile): EKS cluster using [Fargate Profiles](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html)
+- [EKS Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks-managed-node-group): EKS Cluster using EKS managed node groups
+- [Fargate Profile](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/fargate-profile): EKS cluster using [Fargate Profiles](https://docs.aws.amazon.com/eks/latest/userguide/fargate.html)
 - [Karpenter](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/karpenter): EKS Cluster with [Karpenter](https://karpenter.sh/) provisioned for intelligent data plane management
 - [Outposts](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/outposts): EKS local cluster provisioned on [AWS Outposts](https://docs.aws.amazon.com/eks/latest/userguide/eks-outposts.html)
-- [Self Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/self_managed_node_group): EKS Cluster using self-managed node groups
-- [User Data](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/user_data): Various supported methods of providing necessary bootstrap scripts and configuration settings via user data
+- [Self Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/self-managed-node-group): EKS Cluster using self-managed node groups
+- [User Data](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/user-data): Various supported methods of providing necessary bootstrap scripts and configuration settings via user data
 
 ## Contributing
 
