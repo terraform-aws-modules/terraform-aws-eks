@@ -152,7 +152,7 @@ resource "helm_release" "karpenter" {
   values = [
     <<-EOT
     serviceAccount:
-      name: module.karpenter.service_account
+      name: ${module.karpenter.service_account}
     settings:
       clusterName: ${module.eks.cluster_name}
       clusterEndpoint: ${module.eks.cluster_endpoint}
