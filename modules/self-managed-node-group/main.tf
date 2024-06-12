@@ -497,6 +497,7 @@ resource "aws_autoscaling_group" "this" {
   default_cooldown          = var.default_cooldown
   default_instance_warmup   = var.default_instance_warmup
   desired_capacity          = var.desired_size
+  desired_capacity_type     = var.desired_capacity_type
   enabled_metrics           = var.enabled_metrics
   force_delete              = var.force_delete
   force_delete_warm_pool    = var.force_delete_warm_pool

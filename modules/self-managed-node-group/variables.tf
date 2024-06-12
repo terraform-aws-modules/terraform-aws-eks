@@ -402,6 +402,12 @@ variable "desired_size" {
   default     = 1
 }
 
+variable "desired_capacity_type" {
+  description = "The unit of measurement for the value specified for desired_capacity"
+  type        = string
+  default     = "units"
+}
+
 variable "context" {
   description = "Reserved"
   type        = string
