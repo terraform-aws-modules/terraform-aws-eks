@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.14.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.13.1...v20.14.0) (2024-06-13)
+
+
+### Features
+
+* Require users to supply OS via `ami_type` and not via `platform` which is unable to distinquish between the number of variants supported today ([#3068](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3068)) ([ef657bf](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ef657bfcb51296841f14cf514ffefb1066f810ee))
+
 ## [20.13.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.13.0...v20.13.1) (2024-06-04)
 
 
