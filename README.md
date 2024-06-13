@@ -43,15 +43,10 @@ module "eks" {
   cluster_endpoint_public_access  = true
 
   cluster_addons = {
-    coredns = {
-      most_recent = true
-    }
-    kube-proxy = {
-      most_recent = true
-    }
-    vpc-cni = {
-      most_recent = true
-    }
+    coredns                = {}
+    eks-pod-identity-agent = {}
+    kube-proxy             = {}
+    vpc-cni                = {}
   }
 
   vpc_id                   = "vpc-1234556abcdef"
@@ -65,14 +60,13 @@ module "eks" {
 
   eks_managed_node_groups = {
     example = {
-      # Starting on 1.30, AL2023 is default OS for EKS managed node group
-      ami_type = "AL2023_x86_64_STANDARD"
+      # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
+      ami_type       = "AL2023_x86_64_STANDARD"
+      instance_types = ["m5.xlarge"]
 
       min_size     = 2
       max_size     = 10
       desired_size = 2
-
-      instance_types = ["m5.xlarge"]
     }
   }
 

@@ -16,10 +16,10 @@ module "eks_bottlerocket" {
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
-  eks_managed_node_groups = {
+  self_managed_node_groups = {
     example = {
       ami_type       = "BOTTLEROCKET_x86_64"
-      instance_types = ["m6i.large"]
+      instance_type = "m6i.large"
 
       min_size = 2
       max_size = 5
