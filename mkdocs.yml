@@ -6,7 +6,7 @@ repo_url: https://github.com/terraform-aws-modules/terraform-aws-eks
 
 theme:
   name: material
-  logo: assets/terafformaws.png
+  logo: assets/terraform-aws.png
   favicon: assets/logo.png
   font:
     text: ember
