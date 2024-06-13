@@ -7,3 +7,15 @@ Configuration in this directory creates Amazon EKS clusters with self-managed no
 - `eks-bottlerocket.tf` demonstrates an EKS cluster using self-managed node group that utilizes the Bottlerocket EKS optimized AMI
 
 The different cluster configuration examples provided are separated per file and independent of the other cluster configurations.
+
+## Usage
+
+To provision the provided configurations you need to execute:
+
+```bash
+$ terraform init
+$ terraform plan
+$ terraform apply --auto-approve
+```
+
+Note that this example may create resources which cost money. Run `terraform destroy` when you don't need these resources.

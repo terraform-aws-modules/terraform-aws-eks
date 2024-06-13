@@ -18,7 +18,7 @@ module "eks_al2" {
 
   self_managed_node_groups = {
     example = {
-      ami_type       = "AL2_x86_64"
+      ami_type      = "AL2_x86_64"
       instance_type = "m6i.large"
 
       min_size = 2

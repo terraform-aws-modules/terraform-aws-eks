@@ -644,7 +644,7 @@ variable "iam_role_tags" {
 ################################################################################
 
 variable "create_access_entry" {
-  description = "Determines whether an access entry is created for the IAM role used by the nodegroup"
+  description = "Determines whether an access entry is created for the IAM role used by the node group"
   type        = bool
   default     = true
 }
