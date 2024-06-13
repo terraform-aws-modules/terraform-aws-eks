@@ -1,16 +1,4 @@
-# EKS Managed Node Group Example
-
-Configuration in this directory creates an AWS EKS cluster with various EKS Managed Node Groups demonstrating the various methods of configuring/customizing:
-
-- A default, "out of the box" EKS managed node group as supplied by AWS EKS
-- A default, "out of the box" Bottlerocket EKS managed node group as supplied by AWS EKS
-- A Bottlerocket EKS managed node group that supplies additional bootstrap settings
-- A Bottlerocket EKS managed node group that demonstrates many of the configuration/customizations offered by the `eks-managed-node-group` sub-module for the Bottlerocket OS
-- An EKS managed node group created from a launch template created outside of the module
-- An EKS managed node group that utilizes a custom AMI that is an EKS optimized AMI derivative
-- An EKS managed node group that demonstrates nearly all of the configurations/customizations offered by the `eks-managed-node-group` sub-module
-
-See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) for further details.
+# EKS Managed Node Group
 
 ## Usage
 
