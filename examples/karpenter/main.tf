@@ -62,7 +62,7 @@ module "eks" {
   source = "../.."
 
   cluster_name    = local.name
-  cluster_version = "1.29"
+  cluster_version = "1.30"
 
   # Gives Terraform identity admin access to cluster which will
   # allow deploying resources (Karpenter) into the cluster
@@ -82,6 +82,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     karpenter = {
+      ami_type       = "AL2023_x86_64_STANDARD"
       instance_types = ["m5.large"]
 
       min_size     = 2
@@ -146,7 +147,7 @@ resource "helm_release" "karpenter" {
   repository_username = data.aws_ecrpublic_authorization_token.token.user_name
   repository_password = data.aws_ecrpublic_authorization_token.token.password
   chart               = "karpenter"
-  version             = "0.36.1"
+  version             = "0.37.0"
   wait                = false
 
   values = [
@@ -168,7 +169,7 @@ resource "kubectl_manifest" "karpenter_node_class" {
     metadata:
       name: default
     spec:
-      amiFamily: AL2
+      amiFamily: AL2023
       role: ${module.karpenter.node_iam_role_name}
       subnetSelectorTerms:
         - tags:

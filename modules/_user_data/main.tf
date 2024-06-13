@@ -86,7 +86,7 @@ locals {
 }
 
 # https://github.com/aws/containers-roadmap/issues/596#issuecomment-675097667
-# Managed nodegroup data must in MIME multi-part archive format,
+# Managed node group data must in MIME multi-part archive format,
 # as by default, EKS will merge the bootstrapping command required for nodes to join the
 # cluster with your user data. If you use a custom AMI in your launch template,
 # this merging will NOT happen and you are responsible for nodes joining the cluster.

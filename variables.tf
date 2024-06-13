@@ -499,7 +499,7 @@ variable "cluster_encryption_policy_tags" {
 }
 
 variable "dataplane_wait_duration" {
-  description = "Duration to wait after the EKS cluster has become active before creating the dataplane components (EKS managed nodegroup(s), self-managed nodegroup(s), Fargate profile(s))"
+  description = "Duration to wait after the EKS cluster has become active before creating the dataplane components (EKS managed node group(s), self-managed node group(s), Fargate profile(s))"
   type        = string
   default     = "30s"
 }

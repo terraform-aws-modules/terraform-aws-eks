@@ -4,12 +4,12 @@ Configuration in this directory creates an AWS EKS cluster with [Karpenter](http
 
 ## Usage
 
-To run this example you need to execute:
+To provision the provided configurations you need to execute:
 
 ```bash
 $ terraform init
 $ terraform plan
-$ terraform apply
+$ terraform apply --auto-approve
 ```
 
 Once the cluster is up and running, you can check that Karpenter is functioning as intended with the following command:
@@ -78,7 +78,7 @@ kubectl delete node -l karpenter.sh/provisioner-name=default
 2. Remove the resources created by Terraform
 
 ```bash
-terraform destroy
+terraform destroy --auto-approve
 ```
 
 Note that this example may create resources which cost money. Run `terraform destroy` when you don't need these resources.
