@@ -305,7 +305,8 @@ module "eks_managed_node_group" {
   name            = try(each.value.name, each.key)
   use_name_prefix = try(each.value.use_name_prefix, var.eks_managed_node_group_defaults.use_name_prefix, true)
 
-  subnet_ids = try(each.value.subnet_ids, var.eks_managed_node_group_defaults.subnet_ids, var.subnet_ids)
+  subnet_ids                = try(each.value.subnet_ids, var.eks_managed_node_group_defaults.subnet_ids, var.subnet_ids)
+  placement_group_az_filter = try(each.value.placement_group_az_filter, var.eks_managed_node_group_defaults.placement_group_az_filter, null)
 
   min_size     = try(each.value.min_size, var.eks_managed_node_group_defaults.min_size, 1)
   max_size     = try(each.value.max_size, var.eks_managed_node_group_defaults.max_size, 3)
@@ -424,8 +425,9 @@ module "self_managed_node_group" {
   name            = try(each.value.name, each.key)
   use_name_prefix = try(each.value.use_name_prefix, var.self_managed_node_group_defaults.use_name_prefix, true)
 
-  availability_zones = try(each.value.availability_zones, var.self_managed_node_group_defaults.availability_zones, null)
-  subnet_ids         = try(each.value.subnet_ids, var.self_managed_node_group_defaults.subnet_ids, var.subnet_ids)
+  availability_zones        = try(each.value.availability_zones, var.self_managed_node_group_defaults.availability_zones, null)
+  subnet_ids                = try(each.value.subnet_ids, var.self_managed_node_group_defaults.subnet_ids, var.subnet_ids)
+  placement_group_az_filter = try(each.value.placement_group_az_filter, var.self_managed_node_group_defaults.placement_group_az_filter, null)
 
   min_size                  = try(each.value.min_size, var.self_managed_node_group_defaults.min_size, 0)
   max_size                  = try(each.value.max_size, var.self_managed_node_group_defaults.max_size, 3)

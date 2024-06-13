@@ -337,6 +337,12 @@ variable "subnet_ids" {
   default     = null
 }
 
+variable "placement_group_az_filter" {
+  description = "Placement group subnet filter to enable nodegroup update in place. ex. `eu-west-1c`"
+  type        = string
+  default     = null
+}
+
 variable "min_size" {
   description = "Minimum number of instances/nodes"
   type        = number
