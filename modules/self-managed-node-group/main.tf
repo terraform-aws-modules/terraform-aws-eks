@@ -25,9 +25,8 @@ locals {
     AL2023_x86_64_STANDARD     = "al2023"
     AL2023_ARM_64_STANDARD     = "al2023"
   }
-  # Try to use `ami_type` first, but fall back to current, default behavior
-  # TODO - will be removed in v21.0
-  user_data_type = try(local.ami_type_to_user_data_type[var.ami_type], var.platform)
+
+  user_data_type = local.ami_type_to_user_data_type[var.ami_type]
 
   # Map the AMI type to the respective SSM param path
   ami_type_to_ssm_param = {

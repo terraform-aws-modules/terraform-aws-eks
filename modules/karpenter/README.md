@@ -43,7 +43,7 @@ In the following example, the Karpenter module will create:
 - An IAM role for use with Pod Identity and a scoped IAM policy for the Karpenter controller
 - SQS queue and EventBridge event rules for Karpenter to utilize for spot termination handling, capacity re-balancing, etc.
 
-In this scenario, Karpenter will re-use an existing Node IAM role from the EKS managed nodegroup which already has the necessary access entry permissions:
+In this scenario, Karpenter will re-use an existing Node IAM role from the EKS managed node group which already has the necessary access entry permissions:
 
 ```hcl
 module "eks" {
@@ -70,7 +70,7 @@ module "karpenter" {
   create_node_iam_role = false
   node_iam_role_arn    = module.eks.eks_managed_node_groups["initial"].iam_role_arn
 
-  # Since the nodegroup role will already have an access entry
+  # Since the node group role will already have an access entry
   create_access_entry = false
 
   tags = {

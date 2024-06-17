@@ -1,21 +1,13 @@
-# Self Managed Node Groups Example
-
-Configuration in this directory creates an AWS EKS cluster with various Self Managed Node Groups (AutoScaling Groups) demonstrating the various methods of configuring/customizing:
-
-- A default, "out of the box" self managed node group as supplied by the `self-managed-node-group` sub-module
-- A Bottlerocket self managed node group that demonstrates many of the configuration/customizations offered by the `self-manged-node-group` sub-module for the Bottlerocket OS
-- A self managed node group that demonstrates nearly all of the configurations/customizations offered by the `self-managed-node-group` sub-module
-
-See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) for further details.
+# Self-managed Node Group
 
 ## Usage
 
-To run this example you need to execute:
+To provision the provided configurations you need to execute:
 
 ```bash
 $ terraform init
 $ terraform plan
-$ terraform apply
+$ terraform apply --auto-approve
 ```
 
 Note that this example may create resources which cost money. Run `terraform destroy` when you don't need these resources.

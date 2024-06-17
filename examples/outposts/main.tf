@@ -4,7 +4,7 @@ provider "aws" {
 
 locals {
   name            = "ex-${basename(path.cwd)}"
-  cluster_version = "1.29"
+  cluster_version = "1.30"
 
   outpost_arn   = element(tolist(data.aws_outposts_outposts.this.arns), 0)
   instance_type = element(tolist(data.aws_outposts_outpost_instance_types.this.instance_types), 0)

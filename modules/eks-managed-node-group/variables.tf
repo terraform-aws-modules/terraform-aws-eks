@@ -298,7 +298,7 @@ variable "placement" {
 }
 
 variable "create_placement_group" {
-  description = "Determines whether a placement group is created & used by the nodegroup"
+  description = "Determines whether a placement group is created & used by the node group"
   type        = bool
   default     = false
 }
