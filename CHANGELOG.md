@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.15.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.14.0...v20.15.0) (2024-06-27)
+
+
+### Features
+
+* Deny HTTP on Karpenter SQS policy ([#3080](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3080)) ([f6e071c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f6e071cd99faa56b988b63051b22df260e929b03))
+
 ## [20.14.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.13.1...v20.14.0) (2024-06-13)
 
 
