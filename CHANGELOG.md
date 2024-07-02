@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.16.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.15.0...v20.16.0) (2024-07-02)
+
+
+### Features
+
+* Add support for custom IAM role policy ([#3087](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3087)) ([1604c6c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/1604c6cdc8cedcd47b7357c5068dc11d0ed1d7e5))
+
 ## [20.15.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.14.0...v20.15.0) (2024-06-27)
 
 
