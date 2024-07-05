@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.17.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.17.0...v20.17.1) (2024-07-05)
+
+
+### Bug Fixes
+
+* Invoke `aws_iam_session_context` data source only when required ([#3058](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3058)) ([f02df92](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f02df92b66a9776a689a2baf39e7474f3b703d89))
+
 ## [20.17.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.16.0...v20.17.0) (2024-07-05)
 
 
