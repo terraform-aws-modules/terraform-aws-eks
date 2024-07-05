@@ -203,10 +203,11 @@ resource "aws_launch_template" "this" {
     }
   }
 
-  # # Set on node group instead
-  # instance_type = var.launch_template_instance_type
-  kernel_id = var.kernel_id
-  key_name  = var.key_name
+  # Instance type(s) are generally set on the node group,
+  # except when a ML capacity block reseravtion is used
+  instance_type = var.capacity_type == "CAPACITY_BLOCK" ? element(var.instance_types, 0) : null
+  kernel_id     = var.kernel_id
+  key_name      = var.key_name
 
   dynamic "license_specification" {
     for_each = length(var.license_specifications) > 0 ? var.license_specifications : {}
@@ -408,8 +409,9 @@ resource "aws_eks_node_group" "this" {
   capacity_type        = var.capacity_type
   disk_size            = var.use_custom_launch_template ? null : var.disk_size # if using a custom LT, set disk size on custom LT or else it will error here
   force_update_version = var.force_update_version
-  instance_types       = var.instance_types
-  labels               = var.labels
+  # ML capacity block reservation requires instance type to be set on the launch template
+  instance_types = var.capacity_type == "CAPACITY_BLOCK" ? null : var.instance_types
+  labels         = var.labels
 
   dynamic "launch_template" {
     for_each = var.use_custom_launch_template ? [1] : []
