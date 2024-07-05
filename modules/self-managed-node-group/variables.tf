@@ -10,10 +10,16 @@ variable "tags" {
   default     = {}
 }
 
+# tflint-ignore: terraform_unused_declarations
 variable "platform" {
-  description = "[DEPRECATED - use `ami_type` instead. Will be removed in `v21.0`] Identifies the OS platform as `bottlerocket`, `linux` (AL2), `al2023`, or `windows`"
+  description = "[DEPRECATED - must use `ami_type` instead. Will be removed in `v21.0`]"
   type        = string
-  default     = "linux"
+  default     = null
+
+  validation {
+    condition     = var.platform == null
+    error_message = "`platform` is no longer valid due to the number of OS choices. Please provide an [`ami_type`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-amitype) instead."
+  }
 }
 
 ################################################################################
@@ -640,11 +646,27 @@ variable "iam_role_tags" {
 }
 
 ################################################################################
+# IAM Role Policy
+################################################################################
+
+variable "create_iam_role_policy" {
+  description = "Determines whether an IAM role policy is created or not"
+  type        = bool
+  default     = true
+}
+
+variable "iam_role_policy_statements" {
+  description = "A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed"
+  type        = any
+  default     = []
+}
+
+################################################################################
 # Access Entry
 ################################################################################
 
 variable "create_access_entry" {
-  description = "Determines whether an access entry is created for the IAM role used by the nodegroup"
+  description = "Determines whether an access entry is created for the IAM role used by the node group"
   type        = bool
   default     = true
 }

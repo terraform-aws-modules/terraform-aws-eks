@@ -298,7 +298,7 @@ variable "placement" {
 }
 
 variable "create_placement_group" {
-  description = "Determines whether a placement group is created & used by the nodegroup"
+  description = "Determines whether a placement group is created & used by the node group"
   type        = bool
   default     = false
 }
@@ -521,6 +521,22 @@ variable "iam_role_tags" {
   description = "A map of additional tags to add to the IAM role created"
   type        = map(string)
   default     = {}
+}
+
+################################################################################
+# IAM Role Policy
+################################################################################
+
+variable "create_iam_role_policy" {
+  description = "Determines whether an IAM role policy is created or not"
+  type        = bool
+  default     = true
+}
+
+variable "iam_role_policy_statements" {
+  description = "A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed"
+  type        = any
+  default     = []
 }
 
 ################################################################################

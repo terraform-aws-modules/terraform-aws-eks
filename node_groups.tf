@@ -283,6 +283,8 @@ module "fargate_profile" {
   # To better understand why this `lookup()` logic is required, see:
   # https://github.com/hashicorp/terraform/issues/31646#issuecomment-1217279031
   iam_role_additional_policies = lookup(each.value, "iam_role_additional_policies", lookup(var.fargate_profile_defaults, "iam_role_additional_policies", {}))
+  create_iam_role_policy       = try(each.value.create_iam_role_policy, var.fargate_profile_defaults.create_iam_role_policy, true)
+  iam_role_policy_statements   = try(each.value.iam_role_policy_statements, var.fargate_profile_defaults.iam_role_policy_statements, [])
 
   tags = merge(var.tags, try(each.value.tags, var.fargate_profile_defaults.tags, {}))
 }
@@ -393,6 +395,8 @@ module "eks_managed_node_group" {
   # To better understand why this `lookup()` logic is required, see:
   # https://github.com/hashicorp/terraform/issues/31646#issuecomment-1217279031
   iam_role_additional_policies = lookup(each.value, "iam_role_additional_policies", lookup(var.eks_managed_node_group_defaults, "iam_role_additional_policies", {}))
+  create_iam_role_policy       = try(each.value.create_iam_role_policy, var.eks_managed_node_group_defaults.create_iam_role_policy, true)
+  iam_role_policy_statements   = try(each.value.iam_role_policy_statements, var.eks_managed_node_group_defaults.iam_role_policy_statements, [])
 
   # Autoscaling group schedule
   create_schedule = try(each.value.create_schedule, var.eks_managed_node_group_defaults.create_schedule, true)
@@ -465,7 +469,7 @@ module "self_managed_node_group" {
   autoscaling_group_tags = try(each.value.autoscaling_group_tags, var.self_managed_node_group_defaults.autoscaling_group_tags, {})
 
   # User data
-  platform = try(each.value.platform, var.self_managed_node_group_defaults.platform, "linux")
+  platform = try(each.value.platform, var.self_managed_node_group_defaults.platform, null)
   # TODO - update this when `var.platform` is removed in v21.0
   ami_type                 = try(each.value.ami_type, var.self_managed_node_group_defaults.ami_type, "AL2_x86_64")
   cluster_endpoint         = try(time_sleep.this[0].triggers["cluster_endpoint"], "")
@@ -534,6 +538,8 @@ module "self_managed_node_group" {
   # To better understand why this `lookup()` logic is required, see:
   # https://github.com/hashicorp/terraform/issues/31646#issuecomment-1217279031
   iam_role_additional_policies = lookup(each.value, "iam_role_additional_policies", lookup(var.self_managed_node_group_defaults, "iam_role_additional_policies", {}))
+  create_iam_role_policy       = try(each.value.create_iam_role_policy, var.self_managed_node_group_defaults.create_iam_role_policy, true)
+  iam_role_policy_statements   = try(each.value.iam_role_policy_statements, var.self_managed_node_group_defaults.iam_role_policy_statements, [])
 
   # Access entry
   create_access_entry = try(each.value.create_access_entry, var.self_managed_node_group_defaults.create_access_entry, true)

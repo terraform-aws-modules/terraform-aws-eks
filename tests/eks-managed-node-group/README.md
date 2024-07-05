@@ -1,25 +1,13 @@
-# EKS Managed Node Group Example
-
-Configuration in this directory creates an AWS EKS cluster with various EKS Managed Node Groups demonstrating the various methods of configuring/customizing:
-
-- A default, "out of the box" EKS managed node group as supplied by AWS EKS
-- A default, "out of the box" Bottlerocket EKS managed node group as supplied by AWS EKS
-- A Bottlerocket EKS managed node group that supplies additional bootstrap settings
-- A Bottlerocket EKS managed node group that demonstrates many of the configuration/customizations offered by the `eks-managed-node-group` sub-module for the Bottlerocket OS
-- An EKS managed node group created from a launch template created outside of the module
-- An EKS managed node group that utilizes a custom AMI that is an EKS optimized AMI derivative
-- An EKS managed node group that demonstrates nearly all of the configurations/customizations offered by the `eks-managed-node-group` sub-module
-
-See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) for further details.
+# EKS Managed Node Group
 
 ## Usage
 
-To run this example you need to execute:
+To provision the provided configurations you need to execute:
 
 ```bash
 $ terraform init
 $ terraform plan
-$ terraform apply
+$ terraform apply --auto-approve
 ```
 
 Note that this example may create resources which cost money. Run `terraform destroy` when you don't need these resources.
@@ -30,13 +18,13 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.2 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.40 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.57 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.40 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.57 |
 
 ## Modules
 

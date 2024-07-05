@@ -1,21 +1,13 @@
-# Self Managed Node Groups Example
-
-Configuration in this directory creates an AWS EKS cluster with various Self Managed Node Groups (AutoScaling Groups) demonstrating the various methods of configuring/customizing:
-
-- A default, "out of the box" self managed node group as supplied by the `self-managed-node-group` sub-module
-- A Bottlerocket self managed node group that demonstrates many of the configuration/customizations offered by the `self-manged-node-group` sub-module for the Bottlerocket OS
-- A self managed node group that demonstrates nearly all of the configurations/customizations offered by the `self-managed-node-group` sub-module
-
-See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) for further details.
+# Fargate Profile
 
 ## Usage
 
-To run this example you need to execute:
+To provision the provided configurations you need to execute:
 
 ```bash
 $ terraform init
 $ terraform plan
-$ terraform apply
+$ terraform apply --auto-approve
 ```
 
 Note that this example may create resources which cost money. Run `terraform destroy` when you don't need these resources.
@@ -26,23 +18,21 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.2 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.40 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.57 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.40 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.57 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_disabled_self_managed_node_group"></a> [disabled\_self\_managed\_node\_group](#module\_disabled\_self\_managed\_node\_group) | ../../modules/self-managed-node-group | n/a |
-| <a name="module_ebs_kms_key"></a> [ebs\_kms\_key](#module\_ebs\_kms\_key) | terraform-aws-modules/kms/aws | ~> 2.0 |
+| <a name="module_disabled_fargate_profile"></a> [disabled\_fargate\_profile](#module\_disabled\_fargate\_profile) | ../../modules/fargate-profile | n/a |
 | <a name="module_eks"></a> [eks](#module\_eks) | ../.. | n/a |
-| <a name="module_key_pair"></a> [key\_pair](#module\_key\_pair) | terraform-aws-modules/key-pair/aws | ~> 2.0 |
-| <a name="module_kms"></a> [kms](#module\_kms) | terraform-aws-modules/kms/aws | ~> 2.1 |
+| <a name="module_fargate_profile"></a> [fargate\_profile](#module\_fargate\_profile) | ../../modules/fargate-profile | n/a |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 5.0 |
 
 ## Resources
@@ -50,10 +40,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Type |
 |------|------|
 | [aws_iam_policy.additional](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
-| [aws_ami.eks_default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
-| [aws_ami.eks_default_bottlerocket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
-| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 
 ## Inputs
 

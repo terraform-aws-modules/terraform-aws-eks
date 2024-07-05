@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.17.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.16.0...v20.17.0) (2024-07-05)
+
+
+### Features
+
+* Add support for ML capacity block reservations with EKS managed node group(s) ([#3091](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3091)) ([ae3379e](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ae3379e92429ed842f1c1017fd6ee59ec9f297d4))
+
+## [20.16.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.15.0...v20.16.0) (2024-07-02)
+
+
+### Features
+
+* Add support for custom IAM role policy ([#3087](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3087)) ([1604c6c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/1604c6cdc8cedcd47b7357c5068dc11d0ed1d7e5))
+
+## [20.15.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.14.0...v20.15.0) (2024-06-27)
+
+
+### Features
+
+* Deny HTTP on Karpenter SQS policy ([#3080](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3080)) ([f6e071c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f6e071cd99faa56b988b63051b22df260e929b03))
+
+## [20.14.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.13.1...v20.14.0) (2024-06-13)
+
+
+### Features
+
+* Require users to supply OS via `ami_type` and not via `platform` which is unable to distinquish between the number of variants supported today ([#3068](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3068)) ([ef657bf](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ef657bfcb51296841f14cf514ffefb1066f810ee))
+
 ## [20.13.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.13.0...v20.13.1) (2024-06-04)
 
 

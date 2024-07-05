@@ -14,7 +14,7 @@ locals {
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
   tags = {
-    Example    = local.name
+    Test       = local.name
     GithubRepo = "terraform-aws-eks"
     GithubOrg  = "terraform-aws-modules"
   }
@@ -265,6 +265,17 @@ module "eks" {
         AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
         additional                         = aws_iam_policy.node_additional.arn
       }
+      iam_role_policy_statements = [
+        {
+          sid    = "ECRPullThroughCache"
+          effect = "Allow"
+          actions = [
+            "ecr:CreateRepository",
+            "ecr:BatchImportUpstreamImage",
+          ]
+          resources = ["*"]
+        }
+      ]
 
       launch_template_tags = {
         # enable discovery of autoscaling groups by cluster-autoscaler

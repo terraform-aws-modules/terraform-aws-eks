@@ -4,12 +4,12 @@ Configuration in this directory render various user data outputs used for testin
 
 ## Usage
 
-To run this example you need to execute:
+To provision the provided configurations you need to execute:
 
 ```bash
 $ terraform init
 $ terraform plan
-$ terraform apply
+$ terraform apply --auto-approve
 ```
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
