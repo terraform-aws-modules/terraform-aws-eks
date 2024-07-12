@@ -5,6 +5,8 @@ module "eks_al2023" {
   cluster_name    = "${local.name}-al2023"
   cluster_version = "1.30"
 
+  bootstrap_self_managed_addons = false
+
   # EKS Addons
   cluster_addons = {
     coredns                = {}
