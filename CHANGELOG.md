@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.19.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.18.0...v20.19.0) (2024-07-15)
+
+
+### Features
+
+* Pass the `primary_ipv6` argument to the AWS provider. ([#3098](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3098)) ([e1bb8b6](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e1bb8b66617299c6d9972139b1f9355322e7801e))
+
 ## [20.18.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.17.2...v20.18.0) (2024-07-15)
 
 
