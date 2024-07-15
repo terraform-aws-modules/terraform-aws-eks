@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.18.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.17.2...v20.18.0) (2024-07-15)
+
+
+### Features
+
+* Support `bootstrap_self_managed_addons` ([#3099](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3099)) ([af88e7d](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/af88e7d2f835b3dfde242157ba3dd98b749bbc0b))
+
 ## [20.17.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.17.1...v20.17.2) (2024-07-05)
 
 
