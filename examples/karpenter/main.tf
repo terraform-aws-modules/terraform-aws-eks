@@ -69,8 +69,6 @@ module "eks" {
   enable_cluster_creator_admin_permissions = true
   cluster_endpoint_public_access           = true
 
-  bootstrap_self_managed_addons = false
-
   cluster_addons = {
     coredns                = {}
     eks-pod-identity-agent = {}
