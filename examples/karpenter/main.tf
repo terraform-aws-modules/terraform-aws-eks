@@ -113,6 +113,8 @@ module "eks" {
     # (i.e. - at most, only one security group should have this tag in your account)
     "karpenter.sh/discovery" = local.name
   })
+
+  tags = local.tags
 }
 
 ################################################################################
