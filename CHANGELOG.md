@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.20.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.19.0...v20.20.0) (2024-07-19)
+
+
+### Features
+
+* Enable support for ignore_failed_scaling_activities ([#3104](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3104)) ([532226e](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/532226e64e61328b25426cabc27e4009e085154f))
+
 ## [20.19.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.18.0...v20.19.0) (2024-07-15)
 
 
