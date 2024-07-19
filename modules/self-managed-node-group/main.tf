@@ -565,6 +565,8 @@ resource "aws_autoscaling_group" "this" {
   min_elb_capacity      = var.min_elb_capacity
   min_size              = var.min_size
 
+  ignore_failed_scaling_activities = var.ignore_failed_scaling_activities
+
   dynamic "mixed_instances_policy" {
     for_each = var.use_mixed_instances_policy ? [var.mixed_instances_policy] : []
 

@@ -448,6 +448,8 @@ module "self_managed_node_group" {
   health_check_type         = try(each.value.health_check_type, var.self_managed_node_group_defaults.health_check_type, null)
   health_check_grace_period = try(each.value.health_check_grace_period, var.self_managed_node_group_defaults.health_check_grace_period, null)
 
+  ignore_failed_scaling_activities = try(each.value.ignore_failed_scaling_activities, var.self_managed_node_group_defaults.ignore_failed_scaling_activities, null)
+
   force_delete           = try(each.value.force_delete, var.self_managed_node_group_defaults.force_delete, null)
   force_delete_warm_pool = try(each.value.force_delete_warm_pool, var.self_managed_node_group_defaults.force_delete_warm_pool, null)
   termination_policies   = try(each.value.termination_policies, var.self_managed_node_group_defaults.termination_policies, [])

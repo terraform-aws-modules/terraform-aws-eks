@@ -408,6 +408,12 @@ variable "desired_size" {
   default     = 1
 }
 
+variable "ignore_failed_scaling_activities" {
+  description = "Whether to ignore failed Auto Scaling scaling activities while waiting for capacity."
+  type        = bool
+  default     = null
+}
+
 variable "context" {
   description = "Reserved"
   type        = string
