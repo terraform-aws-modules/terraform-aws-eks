@@ -411,7 +411,7 @@ variable "desired_size" {
 variable "ignore_failed_scaling_activities" {
   description = "Whether to ignore failed Auto Scaling scaling activities while waiting for capacity."
   type        = bool
-  default     = false
+  default     = null
 }
 
 variable "context" {
