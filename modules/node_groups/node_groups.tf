@@ -1,7 +1,12 @@
 resource "aws_eks_node_group" "workers" {
   for_each = nonsensitive(local.node_groups_expanded)
 
-  node_group_name = "${var.is_default ? "" : "${var.cluster_name}_"}${each.value["name"]}"
+  # Calculate the prefix and ensure it does not exceed 37 characters
+  node_group_name_prefix = substr(
+    "${var.is_default ? "" : "${var.cluster_name}_"}${each.value["name"]}",
+    0,
+    37
+  )
   version         = lookup(each.value, "version", null)
   capacity_type   = each.value["capacity_type"] # SPOT or ON_DEMAND
 
