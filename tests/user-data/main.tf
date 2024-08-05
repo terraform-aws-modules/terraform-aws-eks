@@ -244,6 +244,9 @@ module "eks_mng_bottlerocket_custom_ami" {
   cluster_endpoint     = local.cluster_endpoint
   cluster_auth_base64  = local.cluster_auth_base64
   cluster_service_cidr = local.cluster_service_cidr
+  additional_cluster_dns_ips = [
+    "169.254.20.10"
+  ]
 
   enable_bootstrap_user_data = true
 

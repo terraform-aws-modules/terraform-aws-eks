@@ -81,6 +81,22 @@ variable "iam_role_tags" {
 }
 
 ################################################################################
+# IAM Role Policy
+################################################################################
+
+variable "create_iam_role_policy" {
+  description = "Determines whether an IAM role policy is created or not"
+  type        = bool
+  default     = true
+}
+
+variable "iam_role_policy_statements" {
+  description = "A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed"
+  type        = any
+  default     = []
+}
+
+################################################################################
 # Fargate Profile
 ################################################################################
 

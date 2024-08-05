@@ -58,6 +58,12 @@ variable "cluster_ip_family" {
   default     = "ipv4"
 }
 
+variable "additional_cluster_dns_ips" {
+  description = "Additional DNS IP addresses to use for the cluster. Only used when `ami_type` = `BOTTLEROCKET_*`"
+  type        = list(string)
+  default     = []
+}
+
 # TODO - remove at next breaking change
 variable "cluster_service_ipv4_cidr" {
   description = "[Deprecated] The CIDR block to assign Kubernetes service IP addresses from. If you don't specify a block, Kubernetes assigns addresses from either the 10.100.0.0/16 or 172.20.0.0/16 CIDR blocks"

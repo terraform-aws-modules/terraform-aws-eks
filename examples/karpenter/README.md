@@ -4,12 +4,12 @@ Configuration in this directory creates an AWS EKS cluster with [Karpenter](http
 
 ## Usage
 
-To run this example you need to execute:
+To provision the provided configurations you need to execute:
 
 ```bash
 $ terraform init
 $ terraform plan
-$ terraform apply
+$ terraform apply --auto-approve
 ```
 
 Once the cluster is up and running, you can check that Karpenter is functioning as intended with the following command:
@@ -78,7 +78,7 @@ kubectl delete node -l karpenter.sh/provisioner-name=default
 2. Remove the resources created by Terraform
 
 ```bash
-terraform destroy
+terraform destroy --auto-approve
 ```
 
 Note that this example may create resources which cost money. Run `terraform destroy` when you don't need these resources.
@@ -89,7 +89,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.2 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.40 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.61 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.7 |
 | <a name="requirement_kubectl"></a> [kubectl](#requirement\_kubectl) | >= 2.0 |
 
@@ -97,8 +97,8 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.40 |
-| <a name="provider_aws.virginia"></a> [aws.virginia](#provider\_aws.virginia) | >= 5.40 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.61 |
+| <a name="provider_aws.virginia"></a> [aws.virginia](#provider\_aws.virginia) | >= 5.61 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.7 |
 | <a name="provider_kubectl"></a> [kubectl](#provider\_kubectl) | >= 2.0 |
 

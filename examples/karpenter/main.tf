@@ -62,7 +62,7 @@ module "eks" {
   source = "../.."
 
   cluster_name    = local.name
-  cluster_version = "1.29"
+  cluster_version = "1.30"
 
   # Gives Terraform identity admin access to cluster which will
   # allow deploying resources (Karpenter) into the cluster
@@ -82,6 +82,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     karpenter = {
+      ami_type       = "AL2023_x86_64_STANDARD"
       instance_types = ["m5.large"]
 
       min_size     = 2
@@ -100,12 +101,20 @@ module "eks" {
     }
   }
 
-  tags = merge(local.tags, {
+  # cluster_tags = merge(local.tags, {
+  #   NOTE - only use this option if you are using "attach_cluster_primary_security_group"
+  #   and you know what you're doing. In this case, you can remove the "node_security_group_tags" below.
+  #  "karpenter.sh/discovery" = local.name
+  # })
+
+  node_security_group_tags = merge(local.tags, {
     # NOTE - if creating multiple security groups with this module, only tag the
     # security group that Karpenter should utilize with the following tag
     # (i.e. - at most, only one security group should have this tag in your account)
     "karpenter.sh/discovery" = local.name
   })
+
+  tags = local.tags
 }
 
 ################################################################################
@@ -146,11 +155,13 @@ resource "helm_release" "karpenter" {
   repository_username = data.aws_ecrpublic_authorization_token.token.user_name
   repository_password = data.aws_ecrpublic_authorization_token.token.password
   chart               = "karpenter"
-  version             = "0.36.1"
+  version             = "0.37.0"
   wait                = false
 
   values = [
     <<-EOT
+    serviceAccount:
+      name: ${module.karpenter.service_account}
     settings:
       clusterName: ${module.eks.cluster_name}
       clusterEndpoint: ${module.eks.cluster_endpoint}
@@ -166,7 +177,7 @@ resource "kubectl_manifest" "karpenter_node_class" {
     metadata:
       name: default
     spec:
-      amiFamily: AL2
+      amiFamily: AL2023
       role: ${module.karpenter.node_iam_role_name}
       subnetSelectorTerms:
         - tags:
