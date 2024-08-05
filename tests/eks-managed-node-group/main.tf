@@ -7,7 +7,7 @@ data "aws_availability_zones" "available" {}
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.29"
+  cluster_version = "1.30"
   region          = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
@@ -59,6 +59,10 @@ module "eks" {
         }
       })
     }
+  }
+
+  cluster_upgrade_policy = {
+    support_type = "STANDARD"
   }
 
   vpc_id                   = module.vpc.vpc_id
