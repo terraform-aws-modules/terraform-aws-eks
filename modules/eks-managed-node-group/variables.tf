@@ -303,6 +303,7 @@ variable "create_placement_group" {
   default     = false
 }
 
+# TODO - remove at next breaking change
 variable "placement_group_strategy" {
   description = "The placement group strategy"
   type        = string
@@ -337,8 +338,8 @@ variable "subnet_ids" {
   default     = null
 }
 
-variable "placement_group_az_filter" {
-  description = "Placement group subnet filter to enable nodegroup update in place. ex. `eu-west-1c`"
+variable "placement_group_az" {
+  description = "Availability zone where placement group is created (ex. `eu-west-1c`)"
   type        = string
   default     = null
 }

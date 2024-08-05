@@ -39,6 +39,8 @@ data "aws_ec2_instance_type" "this" {
 }
 
 locals {
+  enable_efa_support = var.create && var.enable_efa_support
+
   efa_instance_type = try(element(var.instance_types, 0), "")
   num_network_cards = try(data.aws_ec2_instance_type.this[0].maximum_network_cards, 0)
 
@@ -52,7 +54,7 @@ locals {
     }
   ]
 
-  network_interfaces = var.enable_efa_support ? local.efa_network_interfaces : var.network_interfaces
+  network_interfaces = local.enable_efa_support ? local.efa_network_interfaces : var.network_interfaces
 }
 
 ################################################################################
@@ -63,7 +65,7 @@ locals {
   launch_template_name = coalesce(var.launch_template_name, "${var.name}-eks-node-group")
   security_group_ids   = compact(concat([var.cluster_primary_security_group_id], var.vpc_security_group_ids))
 
-  placement = var.create && (var.enable_efa_support || var.create_placement_group) ? { group_name = aws_placement_group.this[0].name } : var.placement
+  placement = local.create_placement_group ? { group_name = aws_placement_group.this[0].name } : var.placement
 }
 
 resource "aws_launch_template" "this" {
@@ -390,7 +392,7 @@ resource "aws_eks_node_group" "this" {
   # Required
   cluster_name  = var.cluster_name
   node_role_arn = var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
-  subnet_ids    = (var.enable_efa_support || var.create_placement_group) ? data.aws_subnets.efa[0].ids : var.subnet_ids
+  subnet_ids    = local.create_placement_group ? data.aws_subnets.placement_group[0].ids : var.subnet_ids
 
   scaling_config {
     min_size     = var.min_size
@@ -466,11 +468,8 @@ resource "aws_eks_node_group" "this" {
 
   tags = merge(
     var.tags,
-    { Name = var.name },
-    # tag is added to make sure the placement group is created first before the node group since the 'depends_on' block cannot accept non static conditional variables
-    var.create_placement_group ? { PlacementGroup = aws_placement_group.this[0].id } : {}
+    { Name = var.name }
   )
-
 }
 
 ################################################################################
@@ -608,8 +607,12 @@ resource "aws_iam_role_policy" "this" {
 # Placement Group
 ################################################################################
 
+locals {
+  create_placement_group = var.create && (local.enable_efa_support || var.create_placement_group)
+}
+
 resource "aws_placement_group" "this" {
-  count = var.create && (var.enable_efa_support || var.create_placement_group) ? 1 : 0
+  count = local.create_placement_group ? 1 : 0
 
   name     = "${var.cluster_name}-${var.name}"
   strategy = var.placement_group_strategy
@@ -627,8 +630,11 @@ resource "aws_placement_group" "this" {
 ################################################################################
 
 # Find the availability zones supported by the instance type
+# TODO - remove at next breaking change
+# Force users to be explicit about which AZ to use when using placement groups,
+# with or without EFA support
 data "aws_ec2_instance_type_offerings" "this" {
-  count = var.create && var.enable_efa_support ? 1 : 0
+  count = local.enable_efa_support ? 1 : 0
 
   filter {
     name   = "instance-type"
@@ -640,26 +646,26 @@ data "aws_ec2_instance_type_offerings" "this" {
 
 # Reverse the lookup to find one of the subnets provided based on the availability
 # availability zone ID of the queried instance type (supported)
-data "aws_subnets" "efa" {
-  count = var.create && (var.enable_efa_support || var.create_placement_group) ? 1 : 0
+data "aws_subnets" "placement_group" {
+  count = local.create_placement_group ? 1 : 0
+
   filter {
     name   = "subnet-id"
     values = var.subnet_ids
   }
 
+  # The data source can lookup the first available AZ or you can specify an AZ (next filter)
   dynamic "filter" {
-    for_each = var.enable_efa_support ? [1] : []
+    for_each = var.enable_efa_support && var.placement_group_az == null ? [1] : []
 
     content {
       name   = "availability-zone-id"
       values = data.aws_ec2_instance_type_offerings.this[0].locations
     }
-
   }
 
   dynamic "filter" {
-    # node_az_filter
-    for_each = var.placement_group_strategy == "cluster" && var.placement_group_az_filter != null ? [var.placement_group_az_filter] : []
+    for_each = var.placement_group_az != null ? [var.placement_group_az] : []
 
     content {
       name   = "availability-zone"

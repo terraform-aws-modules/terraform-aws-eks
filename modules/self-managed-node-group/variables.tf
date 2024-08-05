@@ -256,6 +256,12 @@ variable "placement" {
   default     = {}
 }
 
+variable "create_placement_group" {
+  description = "Determines whether a placement group is created & used by the node group"
+  type        = bool
+  default     = false
+}
+
 variable "private_dns_name_options" {
   description = "The options for the instance hostname. The default values are inherited from the subnet"
   type        = map(string)
@@ -384,8 +390,8 @@ variable "availability_zones" {
   default     = null
 }
 
-variable "placement_group_az_filter" {
-  description = "Placement group subnet filter to enable nodegroup update in place. ex. `eu-west-1c`"
+variable "placement_group_az" {
+  description = "Availability zone where placement group is created (ex. `eu-west-1c`)"
   type        = string
   default     = null
 }
