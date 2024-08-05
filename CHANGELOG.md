@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.21.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.20.0...v20.21.0) (2024-08-05)
+
+
+### Features
+
+* Add support for `upgrade_policy` ([#3112](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3112)) ([e12ab7a](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e12ab7a5de4ac82968aaede419752ce2bbb6a93d))
+
 ## [20.20.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.19.0...v20.20.0) (2024-07-19)
 
 
