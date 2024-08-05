@@ -745,7 +745,7 @@ resource "aws_autoscaling_group" "this" {
 
   target_group_arns         = var.target_group_arns
   termination_policies      = var.termination_policies
-  vpc_zone_identifier       = local.enable_efa_support ? data.aws_subnets.efa[0].ids : var.subnet_ids
+  vpc_zone_identifier       = local.enable_efa_support ? data.aws_subnets.placement_group[0].ids : var.subnet_ids
   wait_for_capacity_timeout = var.wait_for_capacity_timeout
   wait_for_elb_capacity     = var.wait_for_elb_capacity
 
@@ -930,8 +930,12 @@ resource "aws_iam_role_policy" "this" {
 # Placement Group
 ################################################################################
 
+locals {
+  create_placement_group = var.create && (local.enable_efa_support || var.create_placement_group)
+}
+
 resource "aws_placement_group" "this" {
-  count = local.enable_efa_support ? 1 : 0
+  count = local.create_placement_group ? 1 : 0
 
   name     = "${var.cluster_name}-${var.name}"
   strategy = "cluster"
@@ -949,6 +953,9 @@ resource "aws_placement_group" "this" {
 ################################################################################
 
 # Find the availability zones supported by the instance type
+# TODO - remove at next breaking change
+# Force users to be explicit about which AZ to use when using placement groups,
+# with or without EFA support
 data "aws_ec2_instance_type_offerings" "this" {
   count = local.enable_efa_support ? 1 : 0
 
@@ -962,17 +969,31 @@ data "aws_ec2_instance_type_offerings" "this" {
 
 # Reverse the lookup to find one of the subnets provided based on the availability
 # availability zone ID of the queried instance type (supported)
-data "aws_subnets" "efa" {
-  count = local.enable_efa_support ? 1 : 0
+data "aws_subnets" "placement_group" {
+  count = local.create_placement_group ? 1 : 0
 
   filter {
     name   = "subnet-id"
     values = var.subnet_ids
   }
 
-  filter {
-    name   = "availability-zone-id"
-    values = data.aws_ec2_instance_type_offerings.this[0].locations
+  # The data source can lookup the first available AZ or you can specify an AZ (next filter)
+  dynamic "filter" {
+    for_each = local.create_placement_group && var.placement_group_az == null ? [1] : []
+
+    content {
+      name   = "availability-zone-id"
+      values = data.aws_ec2_instance_type_offerings.this[0].locations
+    }
+  }
+
+  dynamic "filter" {
+    for_each = var.placement_group_az != null ? [var.placement_group_az] : []
+
+    content {
+      name   = "availability-zone"
+      values = [filter.value]
+    }
   }
 }
 

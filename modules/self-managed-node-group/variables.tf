@@ -256,6 +256,12 @@ variable "placement" {
   default     = {}
 }
 
+variable "create_placement_group" {
+  description = "Determines whether a placement group is created & used by the node group"
+  type        = bool
+  default     = false
+}
+
 variable "private_dns_name_options" {
   description = "The options for the instance hostname. The default values are inherited from the subnet"
   type        = map(string)
@@ -381,6 +387,12 @@ variable "launch_template_version" {
 variable "availability_zones" {
   description = "A list of one or more availability zones for the group. Used for EC2-Classic and default subnets when not specified with `subnet_ids` argument. Conflicts with `subnet_ids`"
   type        = list(string)
+  default     = null
+}
+
+variable "placement_group_az" {
+  description = "Availability zone where placement group is created (ex. `eu-west-1c`)"
+  type        = string
   default     = null
 }
 

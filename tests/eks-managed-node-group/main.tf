@@ -90,11 +90,16 @@ module "eks" {
       }
     }
 
+    placement_group = {
+      create_placement_group = true
+      # forces the subnet lookup to be restricted to this availability zone
+      placement_group_az = element(local.azs, 3)
+    }
+
     # AL2023 node group utilizing new user data format which utilizes nodeadm
     # to join nodes to the cluster (instead of /etc/eks/bootstrap.sh)
     al2023_nodeadm = {
-      ami_type = "AL2023_x86_64_STANDARD"
-
+      ami_type                       = "AL2023_x86_64_STANDARD"
       use_latest_ami_release_version = true
 
       cloudinit_pre_nodeadm = [
@@ -376,9 +381,7 @@ module "eks_managed_node_group" {
 
   subnet_ids                        = module.vpc.private_subnets
   cluster_primary_security_group_id = module.eks.cluster_primary_security_group_id
-  vpc_security_group_ids = [
-    module.eks.node_security_group_id,
-  ]
+  vpc_security_group_ids            = [module.eks.node_security_group_id]
 
   ami_type = "BOTTLEROCKET_x86_64"
 
