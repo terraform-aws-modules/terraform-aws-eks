@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.22.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.21.0...v20.22.0) (2024-08-05)
+
+
+### Features
+
+* Enable update in place for node groups with cluster placement group strategy ([#3045](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3045)) ([75db486](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/75db486530459a04ce6eb2e4ed44b29d062de1b3))
+
 ## [20.21.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.20.0...v20.21.0) (2024-08-05)
 
 
