@@ -470,6 +470,8 @@ resource "aws_eks_node_group" "this" {
     var.tags,
     { Name = var.name }
   )
+
+  depends_on = [var.module_depends_on]
 }
 
 ################################################################################

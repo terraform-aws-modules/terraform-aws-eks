@@ -460,6 +460,12 @@ variable "timeouts" {
   default     = {}
 }
 
+variable "module_depends_on" {
+  type        = any
+  default     = null
+  description = "Can be any value desired. Module will wait for this value to be computed before creating node group."
+}
+
 ################################################################################
 # IAM Role
 ################################################################################

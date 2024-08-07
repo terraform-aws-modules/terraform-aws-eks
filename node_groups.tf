@@ -408,6 +408,8 @@ module "eks_managed_node_group" {
   cluster_primary_security_group_id = try(each.value.attach_cluster_primary_security_group, var.eks_managed_node_group_defaults.attach_cluster_primary_security_group, false) ? aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id : null
 
   tags = merge(var.tags, try(each.value.tags, var.eks_managed_node_group_defaults.tags, {}))
+
+  module_depends_on = [aws_eks_addon.before_compute]
 }
 
 ################################################################################
