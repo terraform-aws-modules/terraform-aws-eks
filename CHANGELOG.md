@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.22.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.22.0...v20.22.1) (2024-08-09)
+
+
+### Bug Fixes
+
+* Eliminates null check on tag values to fix for_each error about unknown *keys* ([#3119](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3119)) ([6124a08](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/6124a08578d6c6bca1851df4c82cb7e2126e460a)), closes [#3118](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3118) [#2760](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2760) [#2681](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2681) [#2337](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2337)
+
 ## [20.22.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.21.0...v20.22.0) (2024-08-05)
 
 
