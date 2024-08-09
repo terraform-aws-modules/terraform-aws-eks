@@ -1,3 +1,7 @@
+locals {
+  dualstack_oidc_issuer_url = try(replace(replace(aws_eks_cluster.this[0].identity[0].oidc[0].issuer, "https://oidc.eks.", "https://oidc-eks."), ".amazonaws.com/", ".api.aws/"), null)
+}
+
 ################################################################################
 # Cluster
 ################################################################################
@@ -50,6 +54,11 @@ output "cluster_name" {
 output "cluster_oidc_issuer_url" {
   description = "The URL on the EKS cluster for the OpenID Connect identity provider"
   value       = try(aws_eks_cluster.this[0].identity[0].oidc[0].issuer, null)
+}
+
+output "cluster_dualstack_oidc_issuer_url" {
+  description = "Dual-stack compatible URL on the EKS cluster for the OpenID Connect identity provider"
+  value       = local.dualstack_oidc_issuer_url
 }
 
 output "cluster_version" {
