@@ -32,6 +32,11 @@ output "cluster_oidc_issuer_url" {
   value       = module.eks.cluster_oidc_issuer_url
 }
 
+output "cluster_dualstack_oidc_issuer_url" {
+  description = "Dual-stack compatible URL on the EKS cluster for the OpenID Connect identity provider"
+  value       = module.eks.cluster_dualstack_oidc_issuer_url
+}
+
 output "cluster_platform_version" {
   description = "Platform version for the cluster"
   value       = module.eks.cluster_platform_version
@@ -120,6 +125,11 @@ output "node_security_group_id" {
 output "oidc_provider" {
   description = "The OpenID Connect identity provider (issuer URL without leading `https://`)"
   value       = module.eks.oidc_provider
+}
+
+output "dualstack_oidc_provider" {
+  description = "Dual-stack compatible OpenID Connect identity provider (issuer URL without leading `https://`)"
+  value       = module.eks.dualstack_oidc_provider
 }
 
 output "oidc_provider_arn" {
