@@ -1,6 +1,5 @@
 locals {
-  # Only commercial regions are supported - China and GovCloud are not supported at this time
-  dualstack_oidc_issuer_url = local.partition == "aws" ? try(replace(replace(aws_eks_cluster.this[0].identity[0].oidc[0].issuer, "https://oidc.eks.", "https://oidc-eks."), ".amazonaws.com/", ".api.aws/"), null) : null
+  dualstack_oidc_issuer_url = try(replace(replace(aws_eks_cluster.this[0].identity[0].oidc[0].issuer, "https://oidc.eks.", "https://oidc-eks."), ".amazonaws.com/", ".api.aws/"), null)
 }
 
 ################################################################################
