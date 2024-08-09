@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.23.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.22.1...v20.23.0) (2024-08-09)
+
+
+### Features
+
+* Add new output values for OIDC issuer URL and provider that are dual-stack compatible ([#3120](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3120)) ([72668ac](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/72668ac04a2879fd3294e6059238b4aed57278fa))
+
 ## [20.22.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.22.0...v20.22.1) (2024-08-09)
 
 
