@@ -85,7 +85,7 @@ data "aws_iam_policy_document" "controller" {
   count = local.create_iam_role ? 1 : 0
 
   statement {
-    sid = "AllowScopedEC2InstanceActions"
+    sid = "AllowScopedEC2InstanceAccessActions"
     resources = [
       "arn:${local.partition}:ec2:*::image/*",
       "arn:${local.partition}:ec2:*::snapshot/*",
@@ -101,6 +101,29 @@ data "aws_iam_policy_document" "controller" {
     ]
   }
 
+  statement {
+    sid = "AllowScopedEC2LaunchTemplateAccessActions"
+    resources = [
+      "arn:${local.partition}:ec2:*:*:launch-template/*"
+    ]
+
+    actions = [
+      "ec2:RunInstances",
+      "ec2:CreateFleet"
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/kubernetes.io/cluster/${var.cluster_name}"
+      values   = ["owned"]
+    }
+
+    condition {
+      test     = "StringLike"
+      variable = "aws:RequestTag/karpenter.sh/nodepool"
+      values   = ["*"]
+    }
+  }
   statement {
     sid = "AllowScopedEC2InstanceActionsWithTags"
     resources = [
@@ -121,6 +144,12 @@ data "aws_iam_policy_document" "controller" {
       test     = "StringEquals"
       variable = "aws:RequestTag/kubernetes.io/cluster/${var.cluster_name}"
       values   = ["owned"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/eks:eks-cluster-name"
+      values   = [var.cluster_name]
     }
 
     condition {
@@ -146,6 +175,12 @@ data "aws_iam_policy_document" "controller" {
       test     = "StringEquals"
       variable = "aws:RequestTag/kubernetes.io/cluster/${var.cluster_name}"
       values   = ["owned"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/eks:eks-cluster-name"
+      values   = [var.cluster_name]
     }
 
     condition {
@@ -183,9 +218,16 @@ data "aws_iam_policy_document" "controller" {
     }
 
     condition {
+      test     = "StringEqualsIfExists"
+      variable = "aws:RequestTag/eks:eks-cluster-name"
+      values   = [var.cluster_name]
+    }
+
+    condition {
       test     = "ForAllValues:StringEquals"
       variable = "aws:TagKeys"
       values = [
+        "eks:eks-cluster-name",
         "karpenter.sh/nodeclaim",
         "Name",
       ]
@@ -259,7 +301,6 @@ data "aws_iam_policy_document" "controller" {
       resources = [try(aws_sqs_queue.this[0].arn, null)]
       actions = [
         "sqs:DeleteMessage",
-        "sqs:GetQueueAttributes",
         "sqs:GetQueueUrl",
         "sqs:ReceiveMessage"
       ]
@@ -280,13 +321,19 @@ data "aws_iam_policy_document" "controller" {
 
   statement {
     sid       = "AllowScopedInstanceProfileCreationActions"
-    resources = ["*"]
+    resources = ["arn:${local.partition}:iam::${local.account_id}:instance-profile/*"]
     actions   = ["iam:CreateInstanceProfile"]
 
     condition {
       test     = "StringEquals"
       variable = "aws:RequestTag/kubernetes.io/cluster/${var.cluster_name}"
       values   = ["owned"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/eks:eks-cluster-name"
+      values   = [var.cluster_name]
     }
 
     condition {
@@ -304,7 +351,7 @@ data "aws_iam_policy_document" "controller" {
 
   statement {
     sid       = "AllowScopedInstanceProfileTagActions"
-    resources = ["*"]
+    resources = ["arn:${local.partition}:iam::${local.account_id}:instance-profile/*"]
     actions   = ["iam:TagInstanceProfile"]
 
     condition {
@@ -327,7 +374,13 @@ data "aws_iam_policy_document" "controller" {
 
     condition {
       test     = "StringEquals"
-      variable = "aws:ResourceTag/topology.kubernetes.io/region"
+      variable = "aws:RequestTag/eks:eks-cluster-name"
+      values   = [var.cluster_name]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestTag/topology.kubernetes.io/region"
       values   = [local.region]
     }
 
@@ -346,7 +399,7 @@ data "aws_iam_policy_document" "controller" {
 
   statement {
     sid       = "AllowScopedInstanceProfileActions"
-    resources = ["*"]
+    resources = ["arn:${local.partition}:iam::${local.account_id}:instance-profile/*"]
     actions = [
       "iam:AddRoleToInstanceProfile",
       "iam:RemoveRoleFromInstanceProfile",
@@ -374,7 +427,7 @@ data "aws_iam_policy_document" "controller" {
 
   statement {
     sid       = "AllowInstanceProfileReadActions"
-    resources = ["*"]
+    resources = ["arn:${local.partition}:iam::${local.account_id}:instance-profile/*"]
     actions   = ["iam:GetInstanceProfile"]
   }
 
