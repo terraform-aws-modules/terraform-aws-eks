@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.24.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.23.0...v20.24.0) (2024-08-19)
+
+
+### Features
+
+* Add support for Karpenter v1 controller IAM role permissions ([#3126](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3126)) ([e317651](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e31765153570631c1978e11cfd1d28e5fc349d8f))
+
 ## [20.23.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.22.1...v20.23.0) (2024-08-09)
 
 
