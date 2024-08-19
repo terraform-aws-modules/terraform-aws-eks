@@ -188,6 +188,7 @@ data "aws_iam_policy_document" "controller" {
       values = [
         "karpenter.sh/nodeclaim",
         "Name",
+        "eks:eks-cluster-name",
       ]
     }
   }
