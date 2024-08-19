@@ -116,6 +116,13 @@ variable "enable_pod_identity" {
   default     = true
 }
 
+# TODO - make v1 permssions the default policy at next breaking change
+variable "enable_v1_permissions" {
+  description = "Determines whether to enable permissions suitable for v1+ (`true`) or for v0.33.x-v0.37.x (`false`)"
+  type        = bool
+  default     = false
+}
+
 ################################################################################
 # IAM Role for Service Account (IRSA)
 ################################################################################
