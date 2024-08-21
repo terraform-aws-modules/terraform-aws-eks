@@ -45,6 +45,8 @@ module "eks_bottlerocket" {
         [settings.kernel]
         lockdown = "integrity"
       EOT
+
+      instance_refresh = {}
     }
   }
 

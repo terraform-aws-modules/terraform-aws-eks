@@ -527,7 +527,10 @@ resource "aws_autoscaling_group" "this" {
   }
 
   dynamic "instance_refresh" {
-    for_each = try(length(var.instance_refresh),0) > 0 ? [var.instance_refresh] : []
+    for_each = alltrue([
+      length(var.instance_refresh) > 0,
+      var.instance_refresh != {}
+    ]) ? [var.instance_refresh] : []
 
     content {
       dynamic "preferences" {
