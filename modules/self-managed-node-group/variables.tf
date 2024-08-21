@@ -567,6 +567,7 @@ variable "instance_refresh" {
       min_healthy_percentage = 66
     }
   }
+  nullable = true
 }
 
 variable "use_mixed_instances_policy" {
