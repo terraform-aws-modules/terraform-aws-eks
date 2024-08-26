@@ -125,7 +125,7 @@ resource "aws_eks_pod_identity_association" "karpenter" {
   service_account = var.service_account
   role_arn        = aws_iam_role.controller[0].arn
 
-  tags = var.tags
+  tags = length(keys(var.tags)) > 0 ? var.tags : null
 }
 
 ################################################################################
