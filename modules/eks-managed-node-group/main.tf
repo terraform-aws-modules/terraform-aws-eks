@@ -463,6 +463,9 @@ resource "aws_eks_node_group" "this" {
     create_before_destroy = true
     ignore_changes = [
       scaling_config[0].desired_size,
+      # status is reported by AWS, but cannot be set.
+      # See https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3150
+      status,
     ]
   }
 
