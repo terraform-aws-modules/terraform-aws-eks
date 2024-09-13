@@ -160,7 +160,6 @@ module "eks" {
 
 - [EKS Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks-managed-node-group): EKS Cluster using EKS managed node groups
 - [Karpenter](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/karpenter): EKS Cluster with [Karpenter](https://karpenter.sh/) provisioned for intelligent data plane management
-- [Outposts](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/outposts): EKS local cluster provisioned on [AWS Outposts](https://docs.aws.amazon.com/eks/latest/userguide/eks-outposts.html)
 - [Self Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/self-managed-node-group): EKS Cluster using self-managed node groups
 
 ## Contributing
@@ -170,7 +169,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 - [Code of Conduct](https://github.com/terraform-aws-modules/.github/blob/master/CODE_OF_CONDUCT.md)
 - [Contributing Guide](https://github.com/terraform-aws-modules/.github/blob/master/CONTRIBUTING.md)
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -365,7 +364,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | <a name="output_oidc_provider_arn"></a> [oidc\_provider\_arn](#output\_oidc\_provider\_arn) | The ARN of the OIDC Provider if `enable_irsa = true` |
 | <a name="output_self_managed_node_groups"></a> [self\_managed\_node\_groups](#output\_self\_managed\_node\_groups) | Map of attribute maps for all self managed node groups created |
 | <a name="output_self_managed_node_groups_autoscaling_group_names"></a> [self\_managed\_node\_groups\_autoscaling\_group\_names](#output\_self\_managed\_node\_groups\_autoscaling\_group\_names) | List of the autoscaling group names created by self-managed node groups |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
 
 ## License
 
