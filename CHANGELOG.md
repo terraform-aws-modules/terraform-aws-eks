@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.24.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.24.0...v20.24.1) (2024-09-16)
+
+
+### Bug Fixes
+
+* Correct Karpenter EC2 service principal DNS suffix in non-commercial regions ([#3157](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3157)) ([47ab3eb](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/47ab3eb884ab243a99322998445127ea6802fcaf))
+
 ## [20.24.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.23.0...v20.24.0) (2024-08-19)
 
 
