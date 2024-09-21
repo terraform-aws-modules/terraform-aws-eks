@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.24.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.24.1...v20.24.2) (2024-09-21)
+
+
+### Bug Fixes
+
+* Remove deprecated `inline_policy` from cluster role ([#3163](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3163)) ([8b90872](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/8b90872983b9c349ff2e0a71678d687dc32ed626))
+
 ## [20.24.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.24.0...v20.24.1) (2024-09-16)
 
 
