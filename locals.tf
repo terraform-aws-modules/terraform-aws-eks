@@ -8,6 +8,7 @@ locals {
   cluster_auth_base64               = coalescelist(aws_eks_cluster.this[*].certificate_authority[0].data, [""])[0]
   cluster_oidc_issuer_url           = flatten(concat(aws_eks_cluster.this[*].identity[*].oidc[0].issuer, [""]))[0]
   cluster_primary_security_group_id = coalescelist(aws_eks_cluster.this[*].vpc_config[0].cluster_security_group_id, [""])[0]
+  cluster_service_cidr              = coalescelist(aws_eks_cluster.this[*].kubernetes_network_config.service_ipv4_cidr, [""])[0]
 
   cluster_security_group_id = var.cluster_create_security_group ? join("", aws_security_group.cluster.*.id) : var.cluster_security_group_id
   cluster_iam_role_name     = var.manage_cluster_iam_resources ? join("", aws_iam_role.cluster.*.name) : var.cluster_iam_role_name
@@ -180,6 +181,8 @@ locals {
         "userdata_template_file",
         lookup(var.worker_groups[index], "platform", local.workers_group_defaults["platform"]) == "windows"
         ? "${path.module}/templates/userdata_windows.tpl"
+        : lookup(var.worker_groups[index], "platform", local.workers_group_defaults["platform"]) == "al2023"
+        ? "${path.module}/templates/userdata_al2023.tpl"
         : "${path.module}/templates/userdata.sh.tpl"
       ),
       merge({
@@ -187,6 +190,7 @@ locals {
         cluster_name        = local.cluster_name
         endpoint            = local.cluster_endpoint
         cluster_auth_base64 = local.cluster_auth_base64
+        cluster_service_cidr = local.cluster_service_cidr
         pre_userdata = lookup(
           var.worker_groups[index],
           "pre_userdata",
