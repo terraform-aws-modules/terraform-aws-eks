@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.24.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.24.2...v20.24.3) (2024-10-03)
+
+
+### Bug Fixes
+
+* Add `primary_ipv6` parameter to self-managed-node-group ([#3169](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3169)) ([fef6555](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/fef655585b33d717c1665bf8151f0573a17dedc2))
+
 ## [20.24.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.24.1...v20.24.2) (2024-09-21)
 
 
