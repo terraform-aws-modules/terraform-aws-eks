@@ -35,10 +35,13 @@ resource "aws_launch_template" "workers" {
     ebs {
       volume_size           = lookup(each.value, "disk_size", null)
       volume_type           = lookup(each.value, "disk_type", null)
-      encrypted = lookup(each.value, "root_encrypted", null)
-      kms_key_id = lookup(each.value, "root_kms_key_id", null)
+      encrypted             = lookup(each.value, "root_encrypted", null)
+      kms_key_id            = lookup(each.value, "root_kms_key_id", null)
       delete_on_termination = true
     }
+  }
+  metadata_options {
+    http_put_response_hop_limit = 2
   }
 
   # iam_instance_profile {
