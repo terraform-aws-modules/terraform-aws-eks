@@ -108,7 +108,7 @@ variable "cloudinit_post_nodeadm" {
 ################################################################################
 
 variable "create_launch_template" {
-  description = "Determines whether to create a launch template or not. If set to `false`, EKS will use its own default launch template"
+  description = "Determines whether to create a launch template or not. If set to `false`, EKS will use the launch template provided by `launch_template_id`"
   type        = bool
   default     = true
 }
