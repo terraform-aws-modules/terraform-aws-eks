@@ -24,7 +24,7 @@ repos:
           - '--args=--only=terraform_unused_required_providers'
       - id: terraform_validate
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: check-merge-conflict
       - id: end-of-file-fixer

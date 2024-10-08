@@ -170,7 +170,7 @@ To give users advanced notice and provide some future direction for this module,
 -   ]
 }
 
-+ module "eks" {
++ module "eks_aws_auth" {
 +   source  = "terraform-aws-modules/eks/aws//modules/aws-auth"
 +   version = "~> 20.0"
 
@@ -197,7 +197,7 @@ To give users advanced notice and provide some future direction for this module,
 ### Karpenter Diff of Before (v19.21) vs After (v20.0)
 
 ```diff
- module "eks" {
+ module "eks_karpenter" {
    source  = "terraform-aws-modules/eks/aws//modules/karpenter"
 -  version = "~> 19.21"
 +  version = "~> 20.0"
