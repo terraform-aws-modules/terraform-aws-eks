@@ -21,7 +21,6 @@ repos:
           - '--args=--only=terraform_required_providers'
           - '--args=--only=terraform_standard_module_structure'
           - '--args=--only=terraform_workspace_remote'
-          - '--args=--only=terraform_unused_required_providers'
       - id: terraform_validate
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
