@@ -7,7 +7,7 @@ data "aws_availability_zones" "available" {}
 
 locals {
   name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.29"
+  cluster_version = "1.31"
   region          = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
@@ -138,6 +138,7 @@ module "eks" {
       max_size     = 5
       desired_size = 2
 
+      ami_type             = "AL2_x86_64"
       bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
 
       use_mixed_instances_policy = true
@@ -172,7 +173,8 @@ module "eks" {
       max_size     = 7
       desired_size = 1
 
-      ami_id = data.aws_ami.eks_default.id
+      ami_id   = data.aws_ami.eks_default.id
+      ami_type = "AL2_x86_64"
 
       pre_bootstrap_user_data = <<-EOT
         export FOO=bar
@@ -213,6 +215,7 @@ module "eks" {
         max_size     = 2
         desired_size = 1
 
+        ami_type             = "AL2_x86_64"
         bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
 
         instance_type = null
