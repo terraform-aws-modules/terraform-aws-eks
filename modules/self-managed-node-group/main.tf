@@ -90,7 +90,7 @@ module "user_data" {
 ################################################################################
 
 data "aws_ec2_instance_type" "this" {
-  count = local.enable_efa_support ? 1 : 0
+  count = var.create && var.enable_efa_support ? 1 : 0
 
   instance_type = var.instance_type
 }
@@ -101,13 +101,14 @@ locals {
   instance_type_provided = var.instance_type != ""
   num_network_cards      = try(data.aws_ec2_instance_type.this[0].maximum_network_cards, 0)
 
+  # Primary network interface must be EFA, remaining can be EFA or EFA-only
   efa_network_interfaces = [
     for i in range(local.num_network_cards) : {
       associate_public_ip_address = false
       delete_on_termination       = true
       device_index                = i == 0 ? 0 : 1
       network_card_index          = i
-      interface_type              = "efa"
+      interface_type              = var.enable_efa_only ? contains(concat([0], var.efa_indices), i) ? "efa" : "efa-only" : "efa"
     }
   ]
 

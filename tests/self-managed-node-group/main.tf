@@ -61,6 +61,9 @@ module "eks" {
   }
 
   self_managed_node_group_defaults = {
+    ami_type = "AL2023_x86_64_STANDARD"
+    ami_id   = data.aws_ami.eks_default.image_id
+
     # enable discovery of autoscaling groups by cluster-autoscaler
     autoscaling_group_tags = {
       "k8s.io/cluster-autoscaler/enabled" : true,
@@ -71,29 +74,6 @@ module "eks" {
   self_managed_node_groups = {
     # Default node group - as provisioned by the module defaults
     default_node_group = {}
-
-    # AL2023 node group utilizing new user data format which utilizes nodeadm
-    # to join nodes to the cluster (instead of /etc/eks/bootstrap.sh)
-    al2023_nodeadm = {
-      ami_type = "AL2023_x86_64_STANDARD"
-
-      cloudinit_pre_nodeadm = [
-        {
-          content_type = "application/node.eks.aws"
-          content      = <<-EOT
-            ---
-            apiVersion: node.eks.aws/v1alpha1
-            kind: NodeConfig
-            spec:
-              kubelet:
-                config:
-                  shutdownGracePeriod: 30s
-                  featureGates:
-                    DisableKubeletCloudCredentialProviders: true
-          EOT
-        }
-      ]
-    }
 
     # Bottlerocket node group
     bottlerocket = {
@@ -138,8 +118,18 @@ module "eks" {
       max_size     = 5
       desired_size = 2
 
-      ami_type             = "AL2_x86_64"
-      bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+      cloudinit_pre_nodeadm = [{
+        content      = <<-EOT
+          ---
+          apiVersion: node.eks.aws/v1alpha1
+          kind: NodeConfig
+          spec:
+            kubelet:
+              flags:
+                - --node-labels=node.kubernetes.io/lifecycle=spot
+        EOT
+        content_type = "application/node.eks.aws"
+      }]
 
       use_mixed_instances_policy = true
       mixed_instances_policy = {
@@ -173,16 +163,18 @@ module "eks" {
       max_size     = 7
       desired_size = 1
 
-      ami_id   = data.aws_ami.eks_default.id
-      ami_type = "AL2_x86_64"
-
-      pre_bootstrap_user_data = <<-EOT
-        export FOO=bar
-      EOT
-
-      post_bootstrap_user_data = <<-EOT
-        echo "you are free little kubelet!"
-      EOT
+      cloudinit_pre_nodeadm = [{
+        content      = <<-EOT
+          ---
+          apiVersion: node.eks.aws/v1alpha1
+          kind: NodeConfig
+          spec:
+            kubelet:
+              flags:
+                - --node-labels=node.kubernetes.io/lifecycle=spot
+        EOT
+        content_type = "application/node.eks.aws"
+      }]
 
       instance_type = "m6i.large"
 
@@ -215,8 +207,22 @@ module "eks" {
         max_size     = 2
         desired_size = 1
 
-        ami_type             = "AL2_x86_64"
         bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+
+        cloudinit_pre_nodeadm = [{
+          content      = <<-EOT
+          ---
+          apiVersion: node.eks.aws/v1alpha1
+          kind: NodeConfig
+          spec:
+            kubelet:
+              config:
+                shutdownGracePeriod: 30s
+                featureGates:
+                  DisableKubeletCloudCredentialProviders: true
+        EOT
+          content_type = "application/node.eks.aws"
+        }]
 
         instance_type = null
 
@@ -290,19 +296,53 @@ module "eks" {
       # Can be enabled when appropriate for testing/validation
       create = false
 
-      ami_type      = "AL2_x86_64_GPU"
-      instance_type = "trn1n.32xlarge"
+      # The EKS AL2023 NVIDIA AMI provides all of the necessary components
+      # for accelerated workloads w/ EFA
+      ami_type       = "AL2023_x86_64_NVIDIA"
+      instance_types = ["p5e.48xlarge"]
 
-      enable_efa_support      = true
-      pre_bootstrap_user_data = <<-EOT
-        # Mount NVME instance store volumes since they are typically
-        # available on instances that support EFA
-        setup-local-disks raid0
-      EOT
+      # Mount instance store volumes in RAID-0 for kubelet and containerd
+      # https://github.com/awslabs/amazon-eks-ami/blob/master/doc/USER_GUIDE.md#raid-0-for-kubelet-and-containerd-raid0
+      cloudinit_pre_nodeadm = [
+        {
+          content_type = "application/node.eks.aws"
+          content      = <<-EOT
+            ---
+            apiVersion: node.eks.aws/v1alpha1
+            kind: NodeConfig
+            spec:
+              instance:
+                localStorage:
+                  strategy: RAID0
+          EOT
+        }
+      ]
+
+      # This will:
+      # 1. Create a placement group to place the instances close to one another
+      # 2. Ignore subnets that reside in AZs that do not support the instance type
+      # 3. Expose all of the available EFA interfaces on the launch template
+      enable_efa_support = true
+      enable_efa_only    = true
+      efa_indices        = [0, 4, 8, 12]
 
       min_size     = 2
       max_size     = 2
       desired_size = 2
+
+      labels = {
+        "vpc.amazonaws.com/efa.present" = "true"
+        "nvidia.com/gpu.present"        = "true"
+      }
+
+      taints = {
+        # Ensure only GPU workloads are scheduled on this node group
+        gpu = {
+          key    = "nvidia.com/gpu"
+          value  = "true"
+          effect = "NO_SCHEDULE"
+        }
+      }
     }
   }
 
@@ -354,7 +394,7 @@ data "aws_ami" "eks_default" {
 
   filter {
     name   = "name"
-    values = ["amazon-eks-node-${local.cluster_version}-v*"]
+    values = ["amazon-eks-node-al2023-x86_64-standard-${local.cluster_version}-v*"]
   }
 }
 
