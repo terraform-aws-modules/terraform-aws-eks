@@ -420,6 +420,12 @@ variable "desired_size" {
   default     = 1
 }
 
+variable "desired_size_type" {
+  description = "The unit of measurement for the value specified for `desired_size`. Supported for attribute-based instance type selection only. Valid values: `units`, `vcpu`, `memory-mib`"
+  type        = string
+  default     = null
+}
+
 variable "ignore_failed_scaling_activities" {
   description = "Whether to ignore failed Auto Scaling scaling activities while waiting for capacity."
   type        = bool
