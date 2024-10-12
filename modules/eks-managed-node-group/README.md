@@ -10,7 +10,7 @@ module "eks_managed_node_group" {
 
   name            = "separate-eks-mng"
   cluster_name    = "my-cluster"
-  cluster_version = "1.27"
+  cluster_version = "1.31"
 
   subnet_ids = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
 
@@ -64,13 +64,13 @@ module "eks_managed_node_group" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.2 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.61 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.70 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.61 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.70 |
 
 ## Modules
 

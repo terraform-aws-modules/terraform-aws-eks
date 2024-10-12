@@ -113,7 +113,7 @@ Refer to the [Self Managed Node Group documentation](https://docs.aws.amazon.com
 1. The `self-managed-node-group` uses the latest AWS EKS Optimized AMI (Linux) for the given Kubernetes version by default:
 
 ```hcl
-  cluster_version = "1.27"
+  cluster_version = "1.31"
 
   # This self managed node group will use the latest AWS EKS Optimized AMI for Kubernetes 1.27
   self_managed_node_groups = {
@@ -124,7 +124,7 @@ Refer to the [Self Managed Node Group documentation](https://docs.aws.amazon.com
 2. To use Bottlerocket, specify the `ami_type` as one of the respective `"BOTTLEROCKET_*" types` and supply a Bottlerocket OS AMI:
 
 ```hcl
-  cluster_version = "1.27"
+  cluster_version = "1.31"
 
   self_managed_node_groups = {
     bottlerocket = {

@@ -6,7 +6,7 @@ data "aws_availability_zones" "available" {}
 
 locals {
   name            = "ex-${basename(path.cwd)}"
-  cluster_version = "1.30"
+  cluster_version = "1.31"
   region          = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"

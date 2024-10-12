@@ -30,6 +30,8 @@ locals {
     WINDOWS_FULL_2022_x86_64   = "windows"
     AL2023_x86_64_STANDARD     = "al2023"
     AL2023_ARM_64_STANDARD     = "al2023"
+    AL2023_x86_64_NEURON       = "al2023"
+    AL2023_x86_64_NVIDIA       = "al2023"
   }
   # Try to use `ami_type` first, but fall back to current, default behavior
   # TODO - will be removed in v21.0
