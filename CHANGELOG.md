@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.26.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.25.0...v20.26.0) (2024-10-12)
+
+
+### Features
+
+* Add support for `desired_capacity_type` (named `desired_size_type`) on self-managed node group ([#3166](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3166)) ([6974a5e](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/6974a5e1582a4ed2d8b1f9a07cdacd156ba5ffef))
+
 ## [20.25.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.24.3...v20.25.0) (2024-10-12)
 
 
