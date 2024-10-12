@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.25.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.24.3...v20.25.0) (2024-10-12)
+
+
+### Features
+
+* Add support for newly released AL2023 accelerated AMI types ([#3177](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3177)) ([b2a8617](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/b2a8617794a782107399b26c1ff4503e0ea5ec3a))
+
+
+### Bug Fixes
+
+* Update CI workflow versions to latest ([#3176](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3176)) ([eb78240](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/eb78240617993845a2a85056655b16302ea9a02c))
+
 ## [20.24.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.24.2...v20.24.3) (2024-10-03)
 
 
