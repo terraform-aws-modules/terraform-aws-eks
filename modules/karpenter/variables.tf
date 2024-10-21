@@ -142,7 +142,7 @@ variable "irsa_oidc_provider_arn" {
 variable "irsa_namespace_service_accounts" {
   description = "List of `namespace:serviceaccount`pairs to use in trust policy for IAM role for service accounts"
   type        = list(string)
-  default     = ["karpenter:karpenter"]
+  default     = ["${var.namespace}:${var.service_account}"]
 }
 
 variable "irsa_assume_role_condition_test" {
