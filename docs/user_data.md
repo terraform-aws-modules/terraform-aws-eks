@@ -1,6 +1,6 @@
 # User Data & Bootstrapping
 
-Users can see the various methods of using and providing user data through the [user data examples](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/user_data) as well more detailed information on the design and possible configurations via the [user data module itself](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/_user_data)
+Users can see the various methods of using and providing user data through the [user data tests](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/tests/user-data) as well more detailed information on the design and possible configurations via the [user data module itself](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/_user_data)
 
 ## Summary
 

@@ -104,7 +104,7 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
   }
 ```
 
-See the [`examples/eks_managed_node_group/` example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_managed_node_group) for a working example of various configurations.
+See the [`examples/eks-managed-node-group/` example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks-managed-node-group) for a working example of various configurations.
 
 ### Self Managed Node Groups
 
@@ -134,11 +134,11 @@ Refer to the [Self Managed Node Group documentation](https://docs.aws.amazon.com
   }
 ```
 
-See the [`examples/self_managed_node_group/` example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/self_managed_node_group) for a working example of various configurations.
+See the [`examples/self-managed-node-group/` example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/self-managed-node-group) for a working example of various configurations.
 
 ### Fargate Profiles
 
-Fargate profiles are straightforward to use and therefore no further details are provided here. See the [`examples/fargate_profile/` example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/fargate_profile) for a working example of various configurations.
+Fargate profiles are straightforward to use and therefore no further details are provided here. See the [`tests/fargate-profile/` tests](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/tests/fargate-profile) for a working example of various configurations.
 
 ### Default Configurations
 
