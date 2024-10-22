@@ -493,7 +493,7 @@
 </span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="w">    </span><span class="p">}</span>
 </span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="w">  </span><span class="p">}</span>
 </span></code></pre></div>
-<p>See the <a href="https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_managed_node_group"><code>examples/eks_managed_node_group/</code> example</a> for a working example of various configurations.</p>
+<p>See the <a href="https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks-managed-node-group"><code>examples/eks-managed-node-group/</code> example</a> for a working example of various configurations.</p>
 <h3 id="self-managed-node-groups">Self Managed Node Groups<a class="headerlink" href="#self-managed-node-groups" title="Permanent link">&para;</a></h3>
 <p>Refer to the <a href="https://docs.aws.amazon.com/eks/latest/userguide/worker.html">Self Managed Node Group documentation</a> documentation for service related details.</p>
 <ol>
@@ -518,9 +518,9 @@
 </span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="p">}</span>
 </span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">  </span><span class="p">}</span>
 </span></code></pre></div>
-<p>See the <a href="https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/self_managed_node_group"><code>examples/self_managed_node_group/</code> example</a> for a working example of various configurations.</p>
+<p>See the <a href="https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/self-managed-node-group"><code>examples/self-managed-node-group/</code> example</a> for a working example of various configurations.</p>
 <h3 id="fargate-profiles">Fargate Profiles<a class="headerlink" href="#fargate-profiles" title="Permanent link">&para;</a></h3>
-<p>Fargate profiles are straightforward to use and therefore no further details are provided here. See the <a href="https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/fargate_profile"><code>examples/fargate_profile/</code> example</a> for a working example of various configurations.</p>
+<p>Fargate profiles are straightforward to use and therefore no further details are provided here. See the <a href="https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/tests/fargate-profile"><code>tests/fargate-profile/</code> tests</a> for a working example of various configurations.</p>
 <h3 id="default-configurations">Default Configurations<a class="headerlink" href="#default-configurations" title="Permanent link">&para;</a></h3>
 <p>Each type of compute resource (EKS managed node group, self managed node group, or Fargate profile) provides the option for users to specify a default configuration. These default configurations can be overridden from within the compute resource's individual definition. The order of precedence for configurations (from highest to least precedence):</p>
 <ul>
