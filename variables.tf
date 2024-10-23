@@ -50,6 +50,12 @@ variable "cluster_upgrade_policy" {
   default     = {}
 }
 
+variable "cluster_remote_network_config" {
+  description = "Configuration block for the cluster remote network configuration"
+  type        = any
+  default     = {}
+}
+
 variable "cluster_zonal_shift_config" {
   description = "Configuration block for the cluster zonal shift"
   type        = any

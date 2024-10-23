@@ -84,6 +84,29 @@ resource "aws_eks_cluster" "this" {
     }
   }
 
+  dynamic "remote_network_config" {
+    # Not valid on Outposts
+    for_each = length(var.cluster_remote_network_config) > 0 && !local.create_outposts_local_cluster ? [var.cluster_remote_network_config] : []
+
+    content {
+      dynamic "remote_node_networks" {
+        for_each = [remote_network_config.value.remote_node_networks]
+
+        content {
+          cidrs = remote_node_networks.value.cidrs
+        }
+      }
+
+      dynamic "remote_pod_networks" {
+        for_each = try([remote_network_config.value.remote_pod_networks], [])
+
+        content {
+          cidrs = remote_pod_networks.value.cidrs
+        }
+      }
+    }
+  }
+
   dynamic "upgrade_policy" {
     for_each = length(var.cluster_upgrade_policy) > 0 ? [var.cluster_upgrade_policy] : []
 
@@ -199,7 +222,7 @@ locals {
           association_policy_arn              = pol_val.policy_arn
           association_access_scope_type       = pol_val.access_scope.type
           association_access_scope_namespaces = lookup(pol_val.access_scope, "namespaces", [])
-        } : k => v if !contains(["EC2_LINUX", "EC2_WINDOWS", "FARGATE_LINUX"], lookup(entry_val, "type", "STANDARD")) },
+        } : k => v if !contains(["EC2_LINUX", "EC2_WINDOWS", "FARGATE_LINUX", "HYBRID_LINUX"], lookup(entry_val, "type", "STANDARD")) },
       )
     ]
   ])
