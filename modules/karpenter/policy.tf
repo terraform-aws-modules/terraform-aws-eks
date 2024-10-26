@@ -195,7 +195,7 @@ data "aws_iam_policy_document" "v033" {
     condition {
       test     = "StringEquals"
       variable = "iam:PassedToService"
-      values   = ["ec2.amazonaws.com"]
+      values   = local.partition == "aws" ? ["ec2.amazonaws.com"] : ["ec2.amazonaws.com.cn"]
     }
   }
 
@@ -584,7 +584,7 @@ data "aws_iam_policy_document" "v1" {
     condition {
       test     = "StringEquals"
       variable = "iam:PassedToService"
-      values   = ["ec2.amazonaws.com"]
+      values   = local.partition == "aws" ? ["ec2.amazonaws.com"] : ["ec2.amazonaws.com.cn"]
     }
   }
 
