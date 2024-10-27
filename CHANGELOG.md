@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.26.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.26.0...v20.26.1) (2024-10-27)
+
+
+### Bug Fixes
+
+* Use dynamic partition data source to determine DNS suffix for Karpenter EC2 pass role permission ([#3193](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3193)) ([dea6c44](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/dea6c44b459a546b1386563dfd497bc9d766bfe1))
+
 ## [20.26.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.25.0...v20.26.0) (2024-10-12)
 
 
