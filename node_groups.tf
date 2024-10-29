@@ -305,7 +305,7 @@ module "eks_managed_node_group" {
 
   # EKS Managed Node Group
   name            = try(each.value.name, each.key)
-  use_name_prefix = try(each.value.use_name_prefix, false)
+  use_name_prefix = false
 
   subnet_ids = try(each.value.subnet_ids, var.eks_managed_node_group_defaults.subnet_ids, var.subnet_ids)
 
