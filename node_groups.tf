@@ -305,7 +305,7 @@ module "eks_managed_node_group" {
 
   # EKS Managed Node Group
   name            = try(each.value.name, each.key)
-  use_name_prefix = try(each.value.use_name_prefix, var.eks_managed_node_group_defaults.use_name_prefix, true)
+  use_name_prefix = try(each.value.use_name_prefix, false)
 
   subnet_ids = try(each.value.subnet_ids, var.eks_managed_node_group_defaults.subnet_ids, var.subnet_ids)
 
@@ -435,7 +435,6 @@ module "self_managed_node_group" {
   min_size                  = try(each.value.min_size, var.self_managed_node_group_defaults.min_size, 0)
   max_size                  = try(each.value.max_size, var.self_managed_node_group_defaults.max_size, 3)
   desired_size              = try(each.value.desired_size, var.self_managed_node_group_defaults.desired_size, 1)
-  desired_size_type         = try(each.value.desired_size_type, var.self_managed_node_group_defaults.desired_size_type, null)
   capacity_rebalance        = try(each.value.capacity_rebalance, var.self_managed_node_group_defaults.capacity_rebalance, null)
   min_elb_capacity          = try(each.value.min_elb_capacity, var.self_managed_node_group_defaults.min_elb_capacity, null)
   wait_for_elb_capacity     = try(each.value.wait_for_elb_capacity, var.self_managed_node_group_defaults.wait_for_elb_capacity, null)
