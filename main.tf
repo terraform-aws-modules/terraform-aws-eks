@@ -92,6 +92,14 @@ resource "aws_eks_cluster" "this" {
     }
   }
 
+  dynamic "zonal_shift_config" {
+    for_each = length(var.cluster_zonal_shift_config) > 0 ? [var.cluster_zonal_shift_config] : []
+
+    content {
+      enabled = try(zonal_shift_config.value.enabled, null)
+    }
+  }
+
   tags = merge(
     { terraform-aws-modules = "eks" },
     var.tags,
