@@ -422,8 +422,8 @@ resource "aws_iam_role" "this" {
 resource "aws_iam_role_policy" "this" {
   count = local.create_iam_role && var.create_cloudwatch_log_group ? 1 : 0
 
-  name   = local.iam_role_name
-  role   = aws_iam_role.this[0].name
+  name = local.iam_role_name
+  role = aws_iam_role.this[0].name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -439,8 +439,12 @@ resource "aws_iam_role_policy" "this" {
 resource "aws_iam_role_policies_exclusive" "this" {
   count = local.create_iam_role && var.create_cloudwatch_log_group ? 1 : 0
 
-  role_name = aws_iam_role.this[0].name
+  role_name    = aws_iam_role.this[0].name
   policy_names = [local.iam_role_name]
+
+  depends_on = [
+    aws_iam_role_policy.this,
+  ]
 }
 
 # Policies attached ref https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html
