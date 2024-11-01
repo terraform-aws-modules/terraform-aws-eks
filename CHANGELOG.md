@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.27.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.26.1...v20.27.0) (2024-11-01)
+
+
+### Features
+
+* Add support for zonal shift ([#3195](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3195)) ([1b0ac83](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/1b0ac832647dcf0425aedba119fa8276008cbe28))
+
 ## [20.26.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.26.0...v20.26.1) (2024-10-27)
 
 
