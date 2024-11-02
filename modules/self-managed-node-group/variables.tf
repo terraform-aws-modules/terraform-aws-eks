@@ -334,6 +334,19 @@ variable "enable_efa_support" {
   default     = false
 }
 
+# TODO - make this true by default at next breaking change (remove variable, only pass indices)
+variable "enable_efa_only" {
+  description = "Determines whether to enable EFA (`false`, default) or EFA and EFA-only (`true`) network interfaces. Note: requires vpc-cni version `v1.18.4` or later"
+  type        = bool
+  default     = false
+}
+
+variable "efa_indices" {
+  description = "The indices of the network interfaces that should be EFA-enabled. Only valid when `enable_efa_support` = `true`"
+  type        = list(number)
+  default     = [0]
+}
+
 variable "metadata_options" {
   description = "Customize the metadata options for the instance"
   type        = map(string)
