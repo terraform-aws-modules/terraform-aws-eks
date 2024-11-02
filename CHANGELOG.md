@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.28.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.27.0...v20.28.0) (2024-11-02)
+
+
+### Features
+
+* Add support for creating `efa-only` network interfaces ([#3196](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3196)) ([c6da22c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c6da22c78f60a8643a6c76f97c93724f4e1f4e5a))
+
 ## [20.27.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.26.1...v20.27.0) (2024-11-01)
 
 
