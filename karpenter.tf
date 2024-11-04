@@ -51,6 +51,27 @@ resource "aws_iam_policy" "kms_key_policy" {
         "Effect" : "Allow",
         "Resource" : data.aws_kms_alias.ebs.arn,
         "Sid" : "KmsKey"
+      },
+      {
+        Action = [
+          "route53:ListHostedZones",
+          "route53:ChangeResourceRecordSets",
+          "route53:ListResourceRecordSets"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+      {
+        Action = [
+          "ec2:DescribeLaunchTemplateVersions",
+          "autoscaling:DescribeTags",
+          "autoscaling:DescribeLaunchConfigurations",
+          "autoscaling:DescribeAutoScalingInstances",
+          "autoscaling:DescribeAutoScalingGroups"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+        Sid      = "eksWorkerAutoscalingAll"
       }
     ]
   })
