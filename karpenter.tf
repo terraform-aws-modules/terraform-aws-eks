@@ -28,3 +28,35 @@ resource "aws_iam_instance_profile" "karpenter_node_instance_profile" {
   name = "karpenter_node_instance_profile_${var.logging_stage}"
   role = aws_iam_role.karpenter_role[0].name
 }
+
+data "aws_kms_alias" "ebs" {
+  name = "alias/aws/ebs"
+}
+resource "aws_iam_policy" "kms_key_policy" {
+  name        = "${var.logging_stage}-kms-key-policy"
+  description = "Policy for kms key used by EBS volumes"
+
+
+  policy = jsonencode({
+    Version : "2012-10-17"
+    Statement : [
+      {
+        "Action" : [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ],
+        "Effect" : "Allow",
+        "Resource" : data.aws_kms_alias.ebs.arn,
+        "Sid" : "KmsKey"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "kms_key_role_policy_attachment" {
+  role       = aws_iam_role.karpenter_role[0].name
+  policy_arn = aws_iam_policy.kms_key_policy.arn
+}
