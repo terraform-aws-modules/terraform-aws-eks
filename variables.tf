@@ -164,6 +164,12 @@ variable "enable_cluster_creator_admin_permissions" {
   default     = false
 }
 
+variable "custom_cluster_creator_admin_arn" {
+  description = "ARN of cluster creator to use instead of current role for access entry administrator"
+  type = string
+  default = ""
+}
+
 ################################################################################
 # KMS Key
 ################################################################################

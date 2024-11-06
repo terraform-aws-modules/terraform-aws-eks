@@ -156,7 +156,7 @@ locals {
   # better controlled by users through Terraform
   bootstrap_cluster_creator_admin_permissions = {
     cluster_creator = {
-      principal_arn = data.aws_iam_session_context.current.issuer_arn
+      principal_arn = var.custom_cluster_creator_admin_arn ? var.custom_cluster_creator_admin_arn : data.aws_iam_session_context.current.issuer_arn
       type          = "STANDARD"
 
       policy_associations = {
