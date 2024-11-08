@@ -45,6 +45,10 @@ module "eks" {
     coredns = {
       most_recent = true
     }
+    eks-pod-identity-agent = {
+      before_compute = true
+      most_recent    = true
+    }
     kube-proxy = {
       most_recent = true
     }
@@ -58,6 +62,10 @@ module "eks" {
           WARM_PREFIX_TARGET       = "1"
         }
       })
+      pod_identity_association = [{
+        role_arn        = module.aws_vpc_cni_ipv6_pod_identity.iam_role_arn
+        service_account = "aws-node"
+      }]
     }
   }
 
@@ -366,8 +374,7 @@ module "eks" {
   access_entries = {
     # One access entry with a policy associated
     ex-single = {
-      kubernetes_groups = []
-      principal_arn     = aws_iam_role.this["single"].arn
+      principal_arn = aws_iam_role.this["single"].arn
 
       policy_associations = {
         single = {
@@ -382,8 +389,7 @@ module "eks" {
 
     # Example of adding multiple policies to a single access entry
     ex-multiple = {
-      kubernetes_groups = []
-      principal_arn     = aws_iam_role.this["multiple"].arn
+      principal_arn = aws_iam_role.this["multiple"].arn
 
       policy_associations = {
         ex-one = {
@@ -485,6 +491,18 @@ module "vpc" {
   private_subnet_tags = {
     "kubernetes.io/role/internal-elb" = 1
   }
+
+  tags = local.tags
+}
+
+module "aws_vpc_cni_ipv6_pod_identity" {
+  source  = "terraform-aws-modules/eks-pod-identity/aws"
+  version = "~> 1.6"
+
+  name = "aws-vpc-cni-ipv6"
+
+  attach_aws_vpc_cni_policy = true
+  aws_vpc_cni_enable_ipv6   = true
 
   tags = local.tags
 }
