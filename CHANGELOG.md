@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.29.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.28.0...v20.29.0) (2024-11-08)
+
+
+### Features
+
+* Add support for pod identity association on EKS addons ([#3203](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3203)) ([a224334](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/a224334fc8000dc8728971dff8adad46ceb7a8a1))
+
 ## [20.28.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.27.0...v20.28.0) (2024-11-02)
 
 
