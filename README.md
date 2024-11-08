@@ -70,7 +70,6 @@ module "eks" {
   access_entries = {
     # One access entry with a policy associated
     example = {
-      kubernetes_groups = []
       principal_arn     = "arn:aws:iam::123456789012:role/something"
 
       policy_associations = {
@@ -175,7 +174,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.2 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.74 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.75 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9 |
 | <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 3.0 |
 
@@ -183,7 +182,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.74 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.75 |
 | <a name="provider_time"></a> [time](#provider\_time) | >= 0.9 |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | >= 3.0 |
 

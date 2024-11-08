@@ -41,11 +41,18 @@ module "eks" {
     coredns = {
       most_recent = true
     }
+    eks-pod-identity-agent = {
+      most_recent = true
+    }
     kube-proxy = {
       most_recent = true
     }
     vpc-cni = {
       most_recent = true
+      pod_identity_association = [{
+        role_arn        = module.aws_vpc_cni_ipv4_pod_identity.iam_role_arn
+        service_account = "aws-node"
+      }]
     }
   }
 
@@ -384,6 +391,18 @@ module "vpc" {
   private_subnet_tags = {
     "kubernetes.io/role/internal-elb" = 1
   }
+
+  tags = local.tags
+}
+
+module "aws_vpc_cni_ipv4_pod_identity" {
+  source  = "terraform-aws-modules/eks-pod-identity/aws"
+  version = "~> 1.6"
+
+  name = "aws-vpc-cni-ipv4"
+
+  attach_aws_vpc_cni_policy = true
+  aws_vpc_cni_enable_ipv4   = true
 
   tags = local.tags
 }
