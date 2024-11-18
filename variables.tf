@@ -16,6 +16,12 @@ variable "prefix_separator" {
   default     = "-"
 }
 
+variable "disable_dynamic_outputs" {
+  description = "Disable outputs for resource attributes that AWS can modify, preventing state drift"
+  type        = bool
+  default     = false
+}
+
 ################################################################################
 # Cluster
 ################################################################################

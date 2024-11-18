@@ -68,7 +68,7 @@ output "cluster_version" {
 
 output "cluster_platform_version" {
   description = "Platform version for the cluster"
-  value       = try(aws_eks_cluster.this[0].platform_version, null)
+  value       = var.disable_dynamic_outputs ? try(aws_eks_cluster.this[0].platform_version, null) : null
 }
 
 output "cluster_status" {
@@ -196,7 +196,7 @@ output "cluster_iam_role_unique_id" {
 
 output "cluster_addons" {
   description = "Map of attribute maps for all EKS cluster addons enabled"
-  value       = merge(aws_eks_addon.this, aws_eks_addon.before_compute)
+  value       = var.disable_dynamic_outputs ? merge(aws_eks_addon.this, aws_eks_addon.before_compute) : null
 }
 
 ################################################################################
