@@ -289,6 +289,15 @@ data "aws_iam_policy_document" "node_assume_role" {
       type        = "Service"
       identifiers = ["ec2.${local.dns_suffix}"]
     }
+
+    dynamic "condition" {
+      for_each = var.iam_role_conditions
+      content {
+        test     = condition.value.test
+        variable = condition.value.variable
+        values   = condition.value.values
+      }
+    }
   }
 }
 
