@@ -62,6 +62,15 @@ variable "iam_role_permissions_boundary_arn" {
   default     = null
 }
 
+variable "iam_role_conditions" {
+  description = "Additional conditions of the IAM role assume policy"
+  type = list(object({
+    test = string
+    variable = string
+    values = list(string)
+  }))
+}
+
 variable "iam_role_tags" {
   description = "A map of additional tags to add the the IAM role"
   type        = map(any)

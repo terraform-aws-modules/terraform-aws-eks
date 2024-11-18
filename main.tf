@@ -396,6 +396,15 @@ data "aws_iam_policy_document" "assume_role_policy" {
         ]
       }
     }
+
+    dynamic "condition" {
+      for_each = var.iam_role_conditions
+      content {
+        test     = condition.value.test
+        variable = condition.value.variable
+        values   = condition.value.values
+      }
+    }
   }
 }
 
