@@ -183,9 +183,9 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.76.0 |
-| <a name="provider_time"></a> [time](#provider\_time) | 0.12.1 |
-| <a name="provider_tls"></a> [tls](#provider\_tls) | 4.0.6 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.70 |
+| <a name="provider_time"></a> [time](#provider\_time) | >= 0.9 |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | >= 3.0 |
 
 ## Modules
 
