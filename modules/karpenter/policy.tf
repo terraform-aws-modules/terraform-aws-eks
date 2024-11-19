@@ -195,7 +195,7 @@ data "aws_iam_policy_document" "v033" {
     condition {
       test     = "StringEquals"
       variable = "iam:PassedToService"
-      values   = ["ec2.amazonaws.com"]
+      values   = ["ec2.${local.dns_suffix}"]
     }
   }
 
@@ -584,7 +584,7 @@ data "aws_iam_policy_document" "v1" {
     condition {
       test     = "StringEquals"
       variable = "iam:PassedToService"
-      values   = ["ec2.amazonaws.com"]
+      values   = ["ec2.${local.dns_suffix}"]
     }
   }
 

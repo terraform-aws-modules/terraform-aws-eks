@@ -50,6 +50,12 @@ variable "cluster_upgrade_policy" {
   default     = {}
 }
 
+variable "cluster_zonal_shift_config" {
+  description = "Configuration block for the cluster zonal shift"
+  type        = any
+  default     = {}
+}
+
 variable "cluster_additional_security_group_ids" {
   description = "List of additional, externally created security group IDs to attach to the cluster control plane"
   type        = list(string)

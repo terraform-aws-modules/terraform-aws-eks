@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.29.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.28.0...v20.29.0) (2024-11-08)
+
+
+### Features
+
+* Add support for pod identity association on EKS addons ([#3203](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3203)) ([a224334](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/a224334fc8000dc8728971dff8adad46ceb7a8a1))
+
+## [20.28.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.27.0...v20.28.0) (2024-11-02)
+
+
+### Features
+
+* Add support for creating `efa-only` network interfaces ([#3196](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3196)) ([c6da22c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c6da22c78f60a8643a6c76f97c93724f4e1f4e5a))
+
+## [20.27.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.26.1...v20.27.0) (2024-11-01)
+
+
+### Features
+
+* Add support for zonal shift ([#3195](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3195)) ([1b0ac83](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/1b0ac832647dcf0425aedba119fa8276008cbe28))
+
+## [20.26.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.26.0...v20.26.1) (2024-10-27)
+
+
+### Bug Fixes
+
+* Use dynamic partition data source to determine DNS suffix for Karpenter EC2 pass role permission ([#3193](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3193)) ([dea6c44](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/dea6c44b459a546b1386563dfd497bc9d766bfe1))
+
 ## [20.26.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.25.0...v20.26.0) (2024-10-12)
 
 

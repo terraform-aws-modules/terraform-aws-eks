@@ -45,6 +45,10 @@ module "eks" {
     coredns = {
       most_recent = true
     }
+    eks-pod-identity-agent = {
+      before_compute = true
+      most_recent    = true
+    }
     kube-proxy = {
       most_recent = true
     }
@@ -58,6 +62,10 @@ module "eks" {
           WARM_PREFIX_TARGET       = "1"
         }
       })
+      pod_identity_association = [{
+        role_arn        = module.aws_vpc_cni_ipv6_pod_identity.iam_role_arn
+        service_account = "aws-node"
+      }]
     }
   }
 
@@ -65,12 +73,16 @@ module "eks" {
     support_type = "STANDARD"
   }
 
+  cluster_zonal_shift_config = {
+    enabled = true
+  }
+
   vpc_id                   = module.vpc.vpc_id
   subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.intra_subnets
 
   eks_managed_node_group_defaults = {
-    ami_type       = "AL2_x86_64"
+    ami_type       = "AL2023_x86_64_STANDARD"
     instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
   }
 
@@ -180,7 +192,7 @@ module "eks" {
 
     # Use a custom AMI
     custom_ami = {
-      ami_type = "AL2_ARM_64"
+      ami_type = "AL2023_ARM_64_STANDARD"
       # Current default AMI used by managed node groups - pseudo "custom"
       ami_id = data.aws_ami.eks_default_arm.image_id
 
@@ -207,13 +219,28 @@ module "eks" {
       ami_id                     = data.aws_ami.eks_default.image_id
       enable_bootstrap_user_data = true
 
-      pre_bootstrap_user_data = <<-EOT
-        export FOO=bar
-      EOT
+      cloudinit_pre_nodeadm = [{
+        content      = <<-EOT
+          ---
+          apiVersion: node.eks.aws/v1alpha1
+          kind: NodeConfig
+          spec:
+            kubelet:
+              config:
+                shutdownGracePeriod: 30s
+                featureGates:
+                  DisableKubeletCloudCredentialProviders: true
+        EOT
+        content_type = "application/node.eks.aws"
+      }]
 
-      post_bootstrap_user_data = <<-EOT
-        echo "you are free little kubelet!"
-      EOT
+      # This is only possible with a custom AMI or self-managed node group
+      cloudinit_post_nodeadm = [{
+        content      = <<-EOT
+          echo "All done"
+        EOT
+        content_type = "text/x-shellscript; charset=\"us-ascii\""
+      }]
 
       capacity_type        = "SPOT"
       force_update_version = true
@@ -222,14 +249,6 @@ module "eks" {
         GithubRepo = "terraform-aws-eks"
         GithubOrg  = "terraform-aws-modules"
       }
-
-      taints = [
-        {
-          key    = "dedicated"
-          value  = "gpuGroup"
-          effect = "NO_SCHEDULE"
-        }
-      ]
 
       update_config = {
         max_unavailable_percentage = 33 # or set `max_unavailable`
@@ -302,27 +321,60 @@ module "eks" {
       # Can be enabled when appropriate for testing/validation
       create = false
 
-      ami_type       = "AL2_x86_64_GPU"
-      instance_types = ["trn1n.32xlarge"]
+      # The EKS AL2023 NVIDIA AMI provides all of the necessary components
+      # for accelerated workloads w/ EFA
+      ami_type       = "AL2023_x86_64_NVIDIA"
+      instance_types = ["p5e.48xlarge"]
 
-      enable_efa_support      = true
-      pre_bootstrap_user_data = <<-EOT
-        # Mount NVME instance store volumes since they are typically
-        # available on instances that support EFA
-        setup-local-disks raid0
-      EOT
+      # Mount instance store volumes in RAID-0 for kubelet and containerd
+      # https://github.com/awslabs/amazon-eks-ami/blob/master/doc/USER_GUIDE.md#raid-0-for-kubelet-and-containerd-raid0
+      cloudinit_pre_nodeadm = [
+        {
+          content_type = "application/node.eks.aws"
+          content      = <<-EOT
+            ---
+            apiVersion: node.eks.aws/v1alpha1
+            kind: NodeConfig
+            spec:
+              instance:
+                localStorage:
+                  strategy: RAID0
+          EOT
+        }
+      ]
 
-      min_size     = 2
-      max_size     = 2
-      desired_size = 2
+      # This will:
+      # 1. Create a placement group to place the instances close to one another
+      # 2. Ignore subnets that reside in AZs that do not support the instance type
+      # 3. Expose all of the available EFA interfaces on the launch template
+      enable_efa_support = true
+      enable_efa_only    = true
+      efa_indices        = [0, 4, 8, 12]
+
+      min_size     = 1
+      max_size     = 1
+      desired_size = 1
+
+      labels = {
+        "vpc.amazonaws.com/efa.present" = "true"
+        "nvidia.com/gpu.present"        = "true"
+      }
+
+      taints = {
+        # Ensure only GPU workloads are scheduled on this node group
+        gpu = {
+          key    = "nvidia.com/gpu"
+          value  = "true"
+          effect = "NO_SCHEDULE"
+        }
+      }
     }
   }
 
   access_entries = {
     # One access entry with a policy associated
     ex-single = {
-      kubernetes_groups = []
-      principal_arn     = aws_iam_role.this["single"].arn
+      principal_arn = aws_iam_role.this["single"].arn
 
       policy_associations = {
         single = {
@@ -337,8 +389,7 @@ module "eks" {
 
     # Example of adding multiple policies to a single access entry
     ex-multiple = {
-      kubernetes_groups = []
-      principal_arn     = aws_iam_role.this["multiple"].arn
+      principal_arn = aws_iam_role.this["multiple"].arn
 
       policy_associations = {
         ex-one = {
@@ -444,6 +495,18 @@ module "vpc" {
   tags = local.tags
 }
 
+module "aws_vpc_cni_ipv6_pod_identity" {
+  source  = "terraform-aws-modules/eks-pod-identity/aws"
+  version = "~> 1.6"
+
+  name = "aws-vpc-cni-ipv6"
+
+  attach_aws_vpc_cni_policy = true
+  aws_vpc_cni_enable_ipv6   = true
+
+  tags = local.tags
+}
+
 module "ebs_kms_key" {
   source  = "terraform-aws-modules/kms/aws"
   version = "~> 2.1"
@@ -528,7 +591,7 @@ data "aws_ami" "eks_default" {
 
   filter {
     name   = "name"
-    values = ["amazon-eks-node-${local.cluster_version}-v*"]
+    values = ["amazon-eks-node-al2023-x86_64-standard-${local.cluster_version}-v*"]
   }
 }
 
@@ -538,7 +601,7 @@ data "aws_ami" "eks_default_arm" {
 
   filter {
     name   = "name"
-    values = ["amazon-eks-arm64-node-${local.cluster_version}-v*"]
+    values = ["amazon-eks-node-al2023-arm64-standard-${local.cluster_version}-v*"]
   }
 }
 
