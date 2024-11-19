@@ -475,6 +475,7 @@ variable "iam_role_conditions" {
     variable = string
     values   = list(string)
   }))
+  default = []
 }
 
 variable "iam_role_additional_policies" {
