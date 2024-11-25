@@ -489,6 +489,14 @@ data "aws_eks_addon_version" "this" {
   most_recent        = try(each.value.most_recent, null)
 }
 
+resource "time_sleep" "addon_delay" {
+  count           = length(var.cluster_addons) > 0 ? 1 : 0
+  create_duration = var.addon_delay_duration
+  triggers = {
+    cluster_name = aws_eks_cluster.this[0].name
+  }
+}
+
 resource "aws_eks_addon" "this" {
   # Not supported on outposts
   for_each = { for k, v in var.cluster_addons : k => v if !try(v.before_compute, false) && local.create && !local.create_outposts_local_cluster }
@@ -523,6 +531,7 @@ resource "aws_eks_addon" "this" {
     module.fargate_profile,
     module.eks_managed_node_group,
     module.self_managed_node_group,
+    time_sleep.addon_delay
   ]
 
   tags = merge(var.tags, try(each.value.tags, {}))
@@ -557,6 +566,10 @@ resource "aws_eks_addon" "before_compute" {
     update = try(each.value.timeouts.update, var.cluster_addons_timeouts.update, null)
     delete = try(each.value.timeouts.delete, var.cluster_addons_timeouts.delete, null)
   }
+
+  depends_on = [
+    time_sleep.addon_delay
+  ]
 
   tags = merge(var.tags, try(each.value.tags, {}))
 }

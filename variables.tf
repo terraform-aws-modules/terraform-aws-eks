@@ -538,6 +538,12 @@ variable "cluster_addons_timeouts" {
   default     = {}
 }
 
+variable "addon_delay_duration" {
+  description = "Duration to wait after the EKS cluster has become active before creating the addons"
+  type        = string
+  default     = "0s"
+}
+
 ################################################################################
 # EKS Identity Provider
 ################################################################################
