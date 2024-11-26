@@ -148,6 +148,7 @@ variable "cluster_timeouts" {
   default     = {}
 }
 
+# TODO - hard code to false on next breaking change
 variable "bootstrap_self_managed_addons" {
   description = "Indicates whether or not to bootstrap self-managed addons after the cluster has been created"
   type        = bool

@@ -32,7 +32,7 @@ resource "time_sleep" "this" {
   create_duration = var.dataplane_wait_duration
 
   triggers = {
-    cluster_name         = aws_eks_cluster.this[0].name
+    cluster_name         = aws_eks_cluster.this[0].id
     cluster_endpoint     = aws_eks_cluster.this[0].endpoint
     cluster_version      = aws_eks_cluster.this[0].version
     cluster_service_cidr = var.cluster_ip_family == "ipv6" ? try(local.kubernetes_network_config.service_ipv6_cidr, "") : try(local.kubernetes_network_config.service_ipv4_cidr, "")

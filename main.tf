@@ -208,7 +208,7 @@ locals {
 resource "aws_eks_access_entry" "this" {
   for_each = { for k, v in local.merged_access_entries : k => v if local.create }
 
-  cluster_name      = aws_eks_cluster.this[0].name
+  cluster_name      = aws_eks_cluster.this[0].id
   kubernetes_groups = try(each.value.kubernetes_groups, null)
   principal_arn     = each.value.principal_arn
   type              = try(each.value.type, "STANDARD")
@@ -225,7 +225,7 @@ resource "aws_eks_access_policy_association" "this" {
     type       = each.value.association_access_scope_type
   }
 
-  cluster_name = aws_eks_cluster.this[0].name
+  cluster_name = aws_eks_cluster.this[0].id
 
   policy_arn    = each.value.association_policy_arn
   principal_arn = each.value.principal_arn
@@ -481,19 +481,25 @@ resource "aws_iam_policy" "cluster_encryption" {
 # EKS Addons
 ################################################################################
 
+locals {
+  # TODO - Set to `NONE` on next breaking change when default addons are disabled
+  resolve_conflicts_on_create_default = var.bootstrap_self_managed_addons ? "OVERWRITE" : "NONE"
+}
+
 data "aws_eks_addon_version" "this" {
   for_each = { for k, v in var.cluster_addons : k => v if local.create && !local.create_outposts_local_cluster }
 
   addon_name         = try(each.value.name, each.key)
   kubernetes_version = coalesce(var.cluster_version, aws_eks_cluster.this[0].version)
-  most_recent        = try(each.value.most_recent, null)
+  # TODO - Set default fallback to  `true` on next breaking change
+  most_recent = try(each.value.most_recent, null)
 }
 
 resource "aws_eks_addon" "this" {
   # Not supported on outposts
   for_each = { for k, v in var.cluster_addons : k => v if !try(v.before_compute, false) && local.create && !local.create_outposts_local_cluster }
 
-  cluster_name = aws_eks_cluster.this[0].name
+  cluster_name = aws_eks_cluster.this[0].id
   addon_name   = try(each.value.name, each.key)
 
   addon_version        = coalesce(try(each.value.addon_version, null), data.aws_eks_addon_version.this[each.key].version)
@@ -508,8 +514,9 @@ resource "aws_eks_addon" "this" {
     }
   }
 
-  preserve                    = try(each.value.preserve, true)
-  resolve_conflicts_on_create = try(each.value.resolve_conflicts_on_create, "OVERWRITE")
+  preserve = try(each.value.preserve, true)
+  # TODO - Set to `NONE` on next breaking change when default addons are disabled
+  resolve_conflicts_on_create = try(each.value.resolve_conflicts_on_create, local.resolve_conflicts_on_create_default)
   resolve_conflicts_on_update = try(each.value.resolve_conflicts_on_update, "OVERWRITE")
   service_account_role_arn    = try(each.value.service_account_role_arn, null)
 
@@ -532,7 +539,7 @@ resource "aws_eks_addon" "before_compute" {
   # Not supported on outposts
   for_each = { for k, v in var.cluster_addons : k => v if try(v.before_compute, false) && local.create && !local.create_outposts_local_cluster }
 
-  cluster_name = aws_eks_cluster.this[0].name
+  cluster_name = aws_eks_cluster.this[0].id
   addon_name   = try(each.value.name, each.key)
 
   addon_version        = coalesce(try(each.value.addon_version, null), data.aws_eks_addon_version.this[each.key].version)
@@ -547,8 +554,9 @@ resource "aws_eks_addon" "before_compute" {
     }
   }
 
-  preserve                    = try(each.value.preserve, true)
-  resolve_conflicts_on_create = try(each.value.resolve_conflicts_on_create, "OVERWRITE")
+  preserve = try(each.value.preserve, true)
+  # TODO - Set to `NONE` on next breaking change when default addons are disabled
+  resolve_conflicts_on_create = try(each.value.resolve_conflicts_on_create, local.resolve_conflicts_on_create_default)
   resolve_conflicts_on_update = try(each.value.resolve_conflicts_on_update, "OVERWRITE")
   service_account_role_arn    = try(each.value.service_account_role_arn, null)
 
@@ -570,6 +578,7 @@ locals {
   # Maintain current behavior for <= 1.29, remove default for >= 1.30
   # `null` will return the latest Kubernetes version from the EKS API, which at time of writing is 1.30
   # https://github.com/kubernetes/kubernetes/pull/123561
+  # TODO - remove on next breaking change in conjunction with issuer URL change below
   idpc_backwards_compat_version = contains(["1.21", "1.22", "1.23", "1.24", "1.25", "1.26", "1.27", "1.28", "1.29"], coalesce(var.cluster_version, "1.30"))
   idpc_issuer_url               = local.idpc_backwards_compat_version ? try(aws_eks_cluster.this[0].identity[0].oidc[0].issuer, null) : null
 }
@@ -577,7 +586,7 @@ locals {
 resource "aws_eks_identity_provider_config" "this" {
   for_each = { for k, v in var.cluster_identity_providers : k => v if local.create && !local.create_outposts_local_cluster }
 
-  cluster_name = aws_eks_cluster.this[0].name
+  cluster_name = aws_eks_cluster.this[0].id
 
   oidc {
     client_id                     = each.value.client_id
