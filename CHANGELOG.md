@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.30.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.30.0...v20.30.1) (2024-11-26)
+
+
+### Bug Fixes
+
+* Coalesce local `resolve_conflicts_on_create_default` value to a boolean since default is `null` ([#3221](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3221)) ([35388bb](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/35388bb8c4cfa0c351427c133490b914b9944b07))
+
 ## [20.30.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.29.0...v20.30.0) (2024-11-26)
 
 
