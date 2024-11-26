@@ -483,7 +483,7 @@ resource "aws_iam_policy" "cluster_encryption" {
 
 locals {
   # TODO - Set to `NONE` on next breaking change when default addons are disabled
-  resolve_conflicts_on_create_default = var.bootstrap_self_managed_addons ? "OVERWRITE" : "NONE"
+  resolve_conflicts_on_create_default = coalesce(var.bootstrap_self_managed_addons, true) ? "OVERWRITE" : "NONE"
 }
 
 data "aws_eks_addon_version" "this" {
