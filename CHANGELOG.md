@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.30.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.29.0...v20.30.0) (2024-11-26)
+
+
+### Features
+
+* Improve addon dependency chain and decrease time to provision addons (due to retries) ([#3218](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3218)) ([ab2207d](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ab2207d50949079d5dd97c976c6f7a8f5b668f0c))
+
 ## [20.29.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.28.0...v20.29.0) (2024-11-08)
 
 
