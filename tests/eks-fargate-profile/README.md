@@ -1,4 +1,4 @@
-# Fargate Profile
+# EKS Fargate Profile
 
 ## Usage
 

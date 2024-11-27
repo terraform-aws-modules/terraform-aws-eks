@@ -42,7 +42,7 @@ module "eks" {
   authentication_mode = "API"
 
   cluster_compute_config = {
-    enabled    = false
+    enabled    = true
     node_pools = ["general-purpose"]
   }
 

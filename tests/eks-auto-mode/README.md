@@ -1,4 +1,4 @@
-# EKS Managed Node Group
+# EKS Auto Mode
 
 ## Usage
 
