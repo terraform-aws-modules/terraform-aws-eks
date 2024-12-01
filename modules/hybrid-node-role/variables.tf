@@ -11,7 +11,7 @@ variable "create" {
 variable "name" {
   description = "Name of the IAM role"
   type        = string
-  default     = "EKSHybrideNode"
+  default     = "EKSHybridNode"
 }
 
 variable "use_name_prefix" {
@@ -106,6 +106,12 @@ variable "cluster_arns" {
   description = "List of EKS cluster ARNs to allow the node to describe"
   type        = list(string)
   default     = ["*"]
+}
+
+variable "enable_pod_identity" {
+  description = "Enables EKS Pod Identity based IAM permissions on the node"
+  type        = bool
+  default     = true
 }
 
 ################################################################################

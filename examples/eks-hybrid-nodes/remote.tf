@@ -10,16 +10,6 @@ provider "aws" {
 module "eks_hybrid_node_role" {
   source = "../../modules/hybrid-node-role"
 
-  policy_statements = [
-    {
-      actions = [
-        "s3:Get*",
-        "s3:List*",
-      ]
-      resources = ["*"]
-    }
-  ]
-
   tags = local.tags
 }
 

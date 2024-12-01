@@ -2,6 +2,9 @@
 
 ## Usage
 
+> [!NOTE]
+> The [Packer CLI](https://developer.hashicorp.com/packer/tutorials/docker-get-started/get-started-install-cli) is required to build a custom AMI for the Hybrid node used in the example.
+
 To provision the provided configurations you need to execute:
 
 ```bash

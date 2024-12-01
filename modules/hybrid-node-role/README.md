@@ -113,6 +113,7 @@ No modules.
 | <a name="input_create"></a> [create](#input\_create) | Controls if resources should be created (affects nearly all resources) | `bool` | `true` | no |
 | <a name="input_description"></a> [description](#input\_description) | IAM role description | `string` | `"EKS Hybrid Node IAM role"` | no |
 | <a name="input_enable_ira"></a> [enable\_ira](#input\_enable\_ira) | Enables IAM Roles Anywhere based IAM permissions on the node | `bool` | `false` | no |
+| <a name="input_enable_pod_identity"></a> [enable\_pod\_identity](#input\_enable\_pod\_identity) | Enables EKS Pod Identity based IAM permissions on the node | `bool` | `true` | no |
 | <a name="input_intermediate_policy_name"></a> [intermediate\_policy\_name](#input\_intermediate\_policy\_name) | Name of the IAM policy | `string` | `null` | no |
 | <a name="input_intermediate_policy_statements"></a> [intermediate\_policy\_statements](#input\_intermediate\_policy\_statements) | A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed | `any` | `[]` | no |
 | <a name="input_intermediate_policy_use_name_prefix"></a> [intermediate\_policy\_use\_name\_prefix](#input\_intermediate\_policy\_use\_name\_prefix) | Determines whether the name of the IAM policy (`intermediate_policy_name`) is used as a prefix | `bool` | `true` | no |
@@ -132,7 +133,7 @@ No modules.
 | <a name="input_ira_trust_anchor_source_type"></a> [ira\_trust\_anchor\_source\_type](#input\_ira\_trust\_anchor\_source\_type) | The source type of the trust anchor | `string` | `null` | no |
 | <a name="input_ira_trust_anchor_x509_certificate_data"></a> [ira\_trust\_anchor\_x509\_certificate\_data](#input\_ira\_trust\_anchor\_x509\_certificate\_data) | The X.509 certificate data of the trust anchor | `string` | `null` | no |
 | <a name="input_max_session_duration"></a> [max\_session\_duration](#input\_max\_session\_duration) | Maximum API session duration in seconds between 3600 and 43200 | `number` | `null` | no |
-| <a name="input_name"></a> [name](#input\_name) | Name of the IAM role | `string` | `"EKSHybrideNode"` | no |
+| <a name="input_name"></a> [name](#input\_name) | Name of the IAM role | `string` | `"EKSHybridNode"` | no |
 | <a name="input_path"></a> [path](#input\_path) | Path of the IAM role | `string` | `"/"` | no |
 | <a name="input_permissions_boundary_arn"></a> [permissions\_boundary\_arn](#input\_permissions\_boundary\_arn) | Permissions boundary ARN to use for the IAM role | `string` | `null` | no |
 | <a name="input_policies"></a> [policies](#input\_policies) | Policies to attach to the IAM role in `{'static_name' = 'policy_arn'}` format | `map(string)` | `{}` | no |

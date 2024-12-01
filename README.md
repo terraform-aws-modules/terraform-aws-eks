@@ -276,17 +276,31 @@ module "eks" {
 
   eks_managed_node_groups = {
     example = {
+      # The EKS AL2023 NVIDIA AMI provides all of the necessary components
+      # for accelerated workloads w/ EFA
+      ami_type       = "AL2023_x86_64_NVIDIA"
       instance_types = ["p5.48xlarge"]
 
       # Exposes all EFA interfaces on the launch template created by the node group(s)
       # This would expose all 32 EFA interfaces for the p5.48xlarge instance type
       enable_efa_support = true
 
-      pre_bootstrap_user_data = <<-EOT
-        # Mount NVME instance store volumes since they are typically
-        # available on instance types that support EFA
-        setup-local-disks raid0
-      EOT
+      # Mount instance store volumes in RAID-0 for kubelet and containerd
+      # https://github.com/awslabs/amazon-eks-ami/blob/master/doc/USER_GUIDE.md#raid-0-for-kubelet-and-containerd-raid0
+      cloudinit_pre_nodeadm = [
+        {
+          content_type = "application/node.eks.aws"
+          content      = <<-EOT
+            ---
+            apiVersion: node.eks.aws/v1alpha1
+            kind: NodeConfig
+            spec:
+              instance:
+                localStorage:
+                  strategy: RAID0
+          EOT
+        }
+      ]
 
       # EFA should only be enabled when connecting 2 or more nodes
       # Do not use EFA on a single node workload

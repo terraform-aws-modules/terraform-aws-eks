@@ -1,13 +1,13 @@
 variable "ami_name_prefix" {
   description = "The prefix to use when creating the AMI name. i.e. - `<ami_name_prefix>-<eks_version>-<architecture>-<timestamp>"
   type        = string
-  default     = "amazon-eks-ubuntu"
+  default     = "eks-hybrid-ubuntu"
 }
 
 variable "eks_version" {
   description = "The EKS cluster version associated with the AMI created"
   type        = string
-  default     = "1.30"
+  default     = "1.31"
 }
 
 variable "credential_provider" {
@@ -42,7 +42,7 @@ variable "ami_block_device_mappings" {
 variable "ami_description" {
   description = "The description to use when creating the AMI"
   type        = string
-  default     = "Amazon EKS Ubuntu Hybrid Node AMI"
+  default     = "EKS Hybrid Node demonstration AMI"
 }
 
 variable "ami_groups" {
@@ -651,7 +651,6 @@ variable "temporary_iam_instance_profile_policy_document" {
       Effect = "Allow"
       Action = [
         "ec2:Describe*",
-        "s3:Get*",
       ]
       Resource = ["*"]
     },

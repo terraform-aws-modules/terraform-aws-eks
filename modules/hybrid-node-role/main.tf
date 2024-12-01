@@ -107,6 +107,14 @@ data "aws_iam_policy_document" "this" {
     resources = var.cluster_arns
   }
 
+  dynamic "statement" {
+    for_each = var.enable_pod_identity ? [1] : []
+
+    content {
+      actions   = ["eks-auth:AssumeRoleForPodIdentity"]
+      resources = ["*"]
+    }
+  }
 
   dynamic "statement" {
     for_each = var.policy_statements
@@ -167,7 +175,7 @@ resource "aws_iam_role_policy_attachment" "this" {
     {
       node                               = try(aws_iam_policy.this[0].arn, null)
       AmazonSSMManagedInstanceCore       = "arn:${local.partition}:iam::aws:policy/AmazonSSMManagedInstanceCore"
-      AmazonEC2ContainerRegistryReadOnly = "arn:${local.partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+      AmazonEC2ContainerRegistryPullOnly = "arn:${local.partition}:iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
     },
     var.policies
   ) : k => v if var.create }
@@ -351,7 +359,7 @@ resource "aws_iam_role_policy_attachment" "intermediate" {
   for_each = { for k, v in merge(
     {
       intermediate                       = try(aws_iam_policy.intermediate[0].arn, null)
-      AmazonEC2ContainerRegistryReadOnly = "arn:${local.partition}:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+      AmazonEC2ContainerRegistryPullOnly = "arn:${local.partition}:iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
     },
     var.intermediate_role_policies
   ) : k => v if local.enable_ira }
