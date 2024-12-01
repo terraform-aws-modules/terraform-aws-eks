@@ -11,7 +11,6 @@ locals {
 }
 
 data "amazon-parameterstore" "this" {
-  # name   = "/aws/service/canonical/ubuntu/server-minimal/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id"
   name = "/aws/service/canonical/ubuntu/server-minimal/22.04/stable/current/amd64/hvm/ebs-gp2/ami-id"
   region = var.region
 }
@@ -297,7 +296,7 @@ build {
 
       "snap install aws-cli --classic",
       "snap switch --channel=candidate amazon-ssm-agent",
-      "aws s3 cp s3://eks-hybrid-beta/v0.0.0-beta.1/bin/linux/amd64/nodeadm /usr/bin/nodeadm",
+      "curl -OL https://hybrid-assets.eks.amazonaws.com/releases/latest/bin/linux/amd64/nodeadm /usr/bin/",
       "chmod +x /usr/bin/nodeadm",
       "nodeadm install ${var.eks_version} --credential-provider ${var.credential_provider}",
     ]

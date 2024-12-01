@@ -1,5 +1,32 @@
+provider "aws" {
+  region = local.region
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = module.eks.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      command     = "aws"
+      # This requires the awscli to be installed locally where Terraform is executed
+      args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+    }
+  }
+}
+
 locals {
-  cluster_version = "1.30"
+  name   = "ex-${basename(path.cwd)}"
+  region = "us-west-2"
+
+  cluster_version = "1.31"
+
+  tags = {
+    Test       = local.name
+    GithubRepo = "terraform-aws-eks"
+    GithubOrg  = "terraform-aws-modules"
+  }
 }
 
 ################################################################################
@@ -7,19 +34,13 @@ locals {
 ################################################################################
 
 module "eks" {
-  # source  = "terraform-aws-modules/eks/aws"
-  # version = "~> 20.0"
   source = "../.."
 
   cluster_name    = local.name
   cluster_version = local.cluster_version
-  # Required for Hybrid Nodes beta
-  cluster_endpoint_public_access = true
 
+  cluster_endpoint_public_access           = true
   enable_cluster_creator_admin_permissions = true
-
-  # Required for Hybrid Nodes beta
-  authentication_mode = "API_AND_CONFIG_MAP"
 
   cluster_security_group_additional_rules = {
     hybrid-all = {
@@ -47,38 +68,7 @@ module "eks" {
   cluster_addons = {
     coredns    = {}
     kube-proxy = {}
-    vpc-cni = {
-      configuration_values = jsonencode({
-        # Required for Hybrid Nodes beta
-        affinity = {
-          nodeAffinity = {
-            requiredDuringSchedulingIgnoredDuringExecution = {
-              nodeSelectorTerms = [
-                {
-                  matchExpressions = [
-                    {
-                      key      = "kubernetes.io/os"
-                      operator = "In"
-                      values   = ["linux"]
-                    },
-                    {
-                      key      = "kubernetes.io/arch"
-                      operator = "In"
-                      values   = ["amd64", "arm64"]
-                    },
-                    {
-                      key      = "eks.amazonaws.com/compute-type"
-                      operator = "NotIn"
-                      values   = ["fargate", "hybrid"]
-                    }
-                  ]
-                },
-              ]
-            }
-          }
-        }
-      })
-    }
+    vpc-cni    = {}
   }
 
   access_entries = {

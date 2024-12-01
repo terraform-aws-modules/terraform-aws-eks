@@ -1,21 +1,37 @@
-locals {
-  remote_region = "us-east-1"
-}
-
 provider "aws" {
   alias  = "remote"
-  region = local.remote_region
+  region = "us-east-1"
+}
+
+################################################################################
+# Hybrid Node IAM Module
+################################################################################
+
+module "eks_hybrid_node_role" {
+  source = "../../modules/hybrid-node-role"
+
+  policy_statements = [
+    {
+      actions = [
+        "s3:Get*",
+        "s3:List*",
+      ]
+      resources = ["*"]
+    }
+  ]
+
+  tags = local.tags
 }
 
 ################################################################################
 # Psuedo Hybrid Node
+# Demonstration only - AWS EC2 instances are not supported for EKS Hybrid nodes
 ################################################################################
 
 # Activation should be done is same region as cluster
 resource "aws_ssm_activation" "this" {
   name               = "hybrid-node"
   iam_role           = module.eks_hybrid_node_role.name
-  expiration_date    = "2024-12-11T00:00:00Z"
   registration_limit = 10
 
   tags = local.tags
@@ -83,6 +99,7 @@ data "aws_ami" "hybrid_node" {
   owners      = ["self"]
 }
 
+# Demonstration only - AWS EC2 instances are not supported for EKS Hybrid nodes
 resource "aws_instance" "hybrid_node" {
   provider = aws.remote
 
@@ -98,13 +115,15 @@ resource "aws_instance" "hybrid_node" {
   vpc_security_group_ids = [aws_security_group.remote_node.id]
   subnet_id              = element(module.remote_node_vpc.public_subnets, 0)
 
-  tags = merge(local.tags, {
-    Name = "hybrid-node"
+  tags = merge(
+    local.tags, {
+      Name = "hybrid-node"
   })
 }
 
 ################################################################################
 # Psuedo Hybrid Node - Security Group
+# Demonstration only - AWS EC2 instances are not supported for EKS Hybrid nodes
 ################################################################################
 
 # Retrieve the IP of where the Terraform is running to restrict SSH access to that IP
@@ -119,7 +138,8 @@ resource "aws_security_group" "remote_node" {
   vpc_id                 = module.remote_node_vpc.vpc_id
   revoke_rules_on_delete = true
 
-  tags = merge(local.tags,
+  tags = merge(
+    local.tags,
     { Name = "hybrid-node" }
   )
 }
@@ -140,6 +160,7 @@ resource "aws_vpc_security_group_ingress_rule" "remote_node" {
       ip_protocol                  = "all"
       referenced_security_group_id = aws_security_group.remote_node.id
     }
+    # Restrict SSH access to only the IP where Terraform is running
     ssh = {
       description = "Local SSH access to join node to cluster"
       cidr_ipv4   = "${chomp(data.http.icanhazip.response_body)}/32"
@@ -155,9 +176,10 @@ resource "aws_vpc_security_group_ingress_rule" "remote_node" {
   referenced_security_group_id = try(each.value.referenced_security_group_id, null)
   security_group_id            = aws_security_group.remote_node.id
 
-  tags = merge(local.tags, {
-    Name = "hybrid-node-${each.key}"
-  })
+  tags = merge(
+    local.tags,
+    { Name = "hybrid-node-${each.key}" }
+  )
 }
 
 resource "aws_vpc_security_group_egress_rule" "remote_node" {
@@ -181,9 +203,11 @@ resource "aws_vpc_security_group_egress_rule" "remote_node" {
   referenced_security_group_id = try(each.value.referenced_security_group_id, null)
   security_group_id            = aws_security_group.remote_node.id
 
-  tags = merge(local.tags, {
-    Name = "hybrid-node-${each.key}"
-  })
+  tags = merge(
+    local.tags,
+    {
+    Name = "hybrid-node-${each.key}" }
+  )
 }
 
 ################################################################################

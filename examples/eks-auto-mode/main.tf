@@ -37,9 +37,6 @@ module "eks" {
   cluster_endpoint_public_access = true
 
   enable_cluster_creator_admin_permissions = true
-  bootstrap_self_managed_addons            = false
-
-  authentication_mode = "API"
 
   cluster_compute_config = {
     enabled    = true

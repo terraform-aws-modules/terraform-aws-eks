@@ -25,6 +25,140 @@ Please note that we strive to provide a comprehensive suite of documentation for
 
 ## Usage
 
+### EKS Auto Mode
+
+```hcl
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 20.31"
+
+  cluster_name    = "example"
+  cluster_version = "1.31"
+
+  # Optional
+  cluster_endpoint_public_access = true
+
+  # Optional: Adds the current caller identity as an administrator via cluster access entry
+  enable_cluster_creator_admin_permissions = true
+
+  cluster_compute_config = {
+    enabled    = true
+    node_pools = ["general-purpose"]
+  }
+
+  vpc_id     = "vpc-1234556abcdef"
+  subnet_ids = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
+
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
+}
+```
+
+### EKS Hybrid Nodes
+
+```hcl
+locals {
+  # RFC 1918 IP ranges supported
+  remote_network_cidr = "172.16.0.0/16"
+  remote_node_cidr    = cidrsubnet(local.remote_network_cidr, 2, 0)
+  remote_pod_cidr     = cidrsubnet(local.remote_network_cidr, 2, 1)
+}
+
+# SSM and IAM Roles Anywhere supported - SSM is default
+module "eks_hybrid_node_role" {
+  source  = "terraform-aws-modules/eks/aws//modules/hybrid-node-role"
+  version = "~> 20.31"
+
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
+}
+
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 20.31"
+
+  cluster_name    = "example"
+  cluster_version = "1.31"
+
+  cluster_addons = {
+    coredns                = {}
+    eks-pod-identity-agent = {}
+    kube-proxy             = {}
+    vpc-cni                = {}
+  }
+
+  # Optional
+  cluster_endpoint_public_access = true
+
+  # Optional: Adds the current caller identity as an administrator via cluster access entry
+  enable_cluster_creator_admin_permissions = true
+
+  cluster_security_group_additional_rules = {
+    hybrid-all = {
+      cidr_blocks = [local.remote_network_cidr]
+      description = "Allow all HTTPS traffic from remote node/pod network"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      type        = "ingress"
+    }
+  }
+
+  node_security_group_additional_rules = {
+    hybrid-all = {
+      cidr_blocks = [local.remote_network_cidr]
+      description = "Allow all traffic from remote node/pod network"
+      from_port   = "-1"
+      to_port     = "-1"
+      protocol    = "all"
+      type        = "ingress"
+    }
+  }
+
+  vpc_id     = "vpc-1234556abcdef"
+  subnet_ids = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
+
+  access_entries = {
+    hybrid-node-role = {
+      principal_arn = module.eks_hybrid_node_role.arn
+      type          = "HYBRID_LINUX"
+    }
+  }
+
+  cluster_remote_network_config = {
+    remote_node_networks = {
+      cidrs = [local.remote_node_cidr]
+    }
+    # Required if running webhooks on Hybrid nodes
+    remote_pod_networks = {
+      cidrs = [local.remote_pod_cidr]
+    }
+  }
+
+  # Optional
+  eks_managed_node_groups = {
+    default = {
+      instance_types = ["m6i.large"]
+
+      min_size     = 2
+      max_size     = 5
+      desired_size = 2
+    }
+  }
+
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
+}
+```
+
+### EKS Managed Node Group
+
 ```hcl
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
@@ -33,14 +167,18 @@ module "eks" {
   cluster_name    = "my-cluster"
   cluster_version = "1.31"
 
-  cluster_endpoint_public_access  = true
-
   cluster_addons = {
     coredns                = {}
     eks-pod-identity-agent = {}
     kube-proxy             = {}
     vpc-cni                = {}
   }
+
+  # Optional
+  cluster_endpoint_public_access = true
+
+  # Optional: Adds the current caller identity as an administrator via cluster access entry
+  enable_cluster_creator_admin_permissions = true
 
   vpc_id                   = "vpc-1234556abcdef"
   subnet_ids               = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
@@ -63,27 +201,6 @@ module "eks" {
     }
   }
 
-  # Cluster access entry
-  # To add the current caller identity as an administrator
-  enable_cluster_creator_admin_permissions = true
-
-  access_entries = {
-    # One access entry with a policy associated
-    example = {
-      principal_arn     = "arn:aws:iam::123456789012:role/something"
-
-      policy_associations = {
-        example = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
-          access_scope = {
-            namespaces = ["default"]
-            type       = "namespace"
-          }
-        }
-      }
-    }
-  }
-
   tags = {
     Environment = "dev"
     Terraform   = "true"
@@ -96,6 +213,32 @@ module "eks" {
 When enabling `authentication_mode = "API_AND_CONFIG_MAP"`, EKS will automatically create an access entry for the IAM role(s) used by managed node group(s) and Fargate profile(s). There are no additional actions required by users. For self-managed node groups and the Karpenter sub-module, this project automatically adds the access entry on behalf of users so there are no additional actions required by users.
 
 On clusters that were created prior to CAM support, there will be an existing access entry for the cluster creator. This was previously not visible when using `aws-auth` ConfigMap, but will become visible when access entry is enabled.
+
+```hcl
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 20.0"
+
+  # Truncated for brevity ...
+
+  access_entries = {
+    # One access entry with a policy associated
+    example = {
+      principal_arn = "arn:aws:iam::123456789012:role/something"
+
+      policy_associations = {
+        example = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+          access_scope = {
+            namespaces = ["default"]
+            type       = "namespace"
+          }
+        }
+      }
+    }
+  }
+}
+```
 
 ### Bootstrap Cluster Creator Admin Permissions
 
@@ -157,9 +300,11 @@ module "eks" {
 
 ## Examples
 
-- [EKS Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks-managed-node-group): EKS Cluster using EKS managed node groups
+- [EKS Auto Mode](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks-auto-mode): EKS Cluster with EKS Auto Mode
+- [EKS Hybrid Nodes](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks-hybrid-nodes): EKS Cluster with EKS Hybrid nodes
+- [EKS Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks-managed-node-group): EKS Cluster with EKS managed node group(s)
 - [Karpenter](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/karpenter): EKS Cluster with [Karpenter](https://karpenter.sh/) provisioned for intelligent data plane management
-- [Self Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/self-managed-node-group): EKS Cluster using self-managed node groups
+- [Self Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/self-managed-node-group): EKS Cluster with self-managed node group(s)
 
 ## Contributing
 
