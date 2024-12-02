@@ -84,6 +84,7 @@ module "eks" {
   cluster_name    = "example"
   cluster_version = "1.31"
 
+  # Optional: for the EKS managed node group that runs within AWS
   cluster_addons = {
     coredns                = {}
     eks-pod-identity-agent = {}

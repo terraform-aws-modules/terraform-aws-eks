@@ -106,9 +106,9 @@ resource "aws_instance" "hybrid_node" {
   subnet_id              = element(module.remote_node_vpc.public_subnets, 0)
 
   tags = merge(
-    local.tags, {
-      Name = "hybrid-node"
-  })
+    local.tags,
+    { Name = "hybrid-node" }
+  )
 }
 
 ################################################################################
@@ -195,8 +195,7 @@ resource "aws_vpc_security_group_egress_rule" "remote_node" {
 
   tags = merge(
     local.tags,
-    {
-    Name = "hybrid-node-${each.key}" }
+    { Name = "hybrid-node-${each.key}" }
   )
 }
 
@@ -298,9 +297,10 @@ resource "aws_vpc_peering_connection" "remote_node" {
 
   vpc_id = module.remote_node_vpc.vpc_id
 
-  tags = merge(local.tags, {
-    Name = "remote-node"
-  })
+  tags = merge(
+    local.tags,
+    { Name = "remote-node" }
+  )
 }
 
 resource "aws_route" "remote_node_private" {
