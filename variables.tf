@@ -620,6 +620,18 @@ variable "node_iam_role_tags" {
   default     = {}
 }
 
+variable "enable_node_custom_tags_permissions" {
+  description = "Determines whether to enable permissions for custom tags for the EKS Auto node IAM role"
+  type        = bool
+  default     = true
+}
+
+variable "node_iam_role_policy_statements" {
+  description = "A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed"
+  type        = any
+  default     = []
+}
+
 ################################################################################
 # Fargate
 ################################################################################

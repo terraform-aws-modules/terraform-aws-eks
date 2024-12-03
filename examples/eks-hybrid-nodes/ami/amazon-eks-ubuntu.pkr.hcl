@@ -296,7 +296,8 @@ build {
 
       "snap install aws-cli --classic",
       "snap switch --channel=candidate amazon-ssm-agent",
-      "curl -OL https://hybrid-assets.eks.amazonaws.com/releases/latest/bin/linux/amd64/nodeadm /usr/bin/",
+      "curl -OL 'https://hybrid-assets.eks.amazonaws.com/releases/latest/bin/linux/amd64/nodeadm'",
+      "mv nodeadm /usr/bin/nodeadm",
       "chmod +x /usr/bin/nodeadm",
       "nodeadm install ${var.eks_version} --credential-provider ${var.credential_provider}",
     ]

@@ -71,9 +71,13 @@ resource "local_file" "join" {
     EOF
 
     # Use SCP/SSH to execute commands on the remote host
-    scp -i ${local_file.key_pem.filename} nodeConfig.yaml ubuntu@${aws_instance.hybrid_node.public_ip}:/home/ubuntu/nodeConfig.yaml
-    ssh -n -i ${local_file.key_pem.filename} ubuntu@${aws_instance.hybrid_node.public_ip} sudo nodeadm init -c file://nodeConfig.yaml
-    ssh -n -i ${local_file.key_pem.filename} ubuntu@${aws_instance.hybrid_node.public_ip} sudo systemctl daemon-reload
+    scp -i ${local_file.key_pem.filename} nodeConfig.yaml ubuntu@${aws_instance.hybrid_node["one"].public_ip}:/home/ubuntu/nodeConfig.yaml
+    ssh -n -i ${local_file.key_pem.filename} ubuntu@${aws_instance.hybrid_node["one"].public_ip} sudo nodeadm init -c file://nodeConfig.yaml
+    ssh -n -i ${local_file.key_pem.filename} ubuntu@${aws_instance.hybrid_node["one"].public_ip} sudo systemctl daemon-reload
+
+    scp -i ${local_file.key_pem.filename} nodeConfig.yaml ubuntu@${aws_instance.hybrid_node["two"].public_ip}:/home/ubuntu/nodeConfig.yaml
+    ssh -n -i ${local_file.key_pem.filename} ubuntu@${aws_instance.hybrid_node["two"].public_ip} sudo nodeadm init -c file://nodeConfig.yaml
+    ssh -n -i ${local_file.key_pem.filename} ubuntu@${aws_instance.hybrid_node["two"].public_ip} sudo systemctl daemon-reload
 
     # Clean up
     rm nodeConfig.yaml
@@ -85,13 +89,15 @@ data "aws_ami" "hybrid_node" {
   provider = aws.remote
 
   most_recent = true
-  name_regex  = "amazon-eks-ubuntu-${local.cluster_version}-amd64-*"
+  name_regex  = "eks-hybrid-ubuntu-${local.cluster_version}-amd64-*"
   owners      = ["self"]
 }
 
 # Demonstration only - AWS EC2 instances are not supported for EKS Hybrid nodes
 resource "aws_instance" "hybrid_node" {
   provider = aws.remote
+
+  for_each = { one = 0, two = 1 }
 
   ami                         = data.aws_ami.hybrid_node.id
   associate_public_ip_address = true
@@ -103,11 +109,11 @@ resource "aws_instance" "hybrid_node" {
   }
 
   vpc_security_group_ids = [aws_security_group.remote_node.id]
-  subnet_id              = element(module.remote_node_vpc.public_subnets, 0)
+  subnet_id              = element(module.remote_node_vpc.public_subnets, each.value)
 
   tags = merge(
     local.tags,
-    { Name = "hybrid-node" }
+    { Name = "hybrid-node-${each.key}" }
   )
 }
 
@@ -141,12 +147,10 @@ resource "aws_vpc_security_group_ingress_rule" "remote_node" {
     cluster-all = {
       description = "Allow all traffic from cluster network"
       cidr_ipv4   = module.vpc.vpc_cidr_block
-      from_port   = "-1"
       ip_protocol = "all"
     }
     remote-all = {
       description                  = "Allow all traffic from within the remote network itself"
-      from_port                    = "-1"
       ip_protocol                  = "all"
       referenced_security_group_id = aws_security_group.remote_node.id
     }
@@ -179,10 +183,7 @@ resource "aws_vpc_security_group_egress_rule" "remote_node" {
     all = {
       description = "Allow all egress"
       cidr_ipv4   = "0.0.0.0/0"
-      description = "All"
-      from_port   = "-1"
       ip_protocol = "all"
-      to_port     = "-1"
     }
   }
 
@@ -207,21 +208,14 @@ resource "helm_release" "cilium" {
   name       = "cilium"
   repository = "https://helm.cilium.io/"
   chart      = "cilium"
-  version    = "1.15.10"
+  version    = "1.16.4"
   namespace  = "kube-system"
   wait       = false
 
   values = [
     <<-EOT
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                - key: eks.amazonaws.com/compute-type
-                  operator: In
-                  values:
-                    - hybrid
+      nodeSelector:
+        eks.amazonaws.com/compute-type: hybrid
       ipam:
         mode: cluster-pool
         operator:
