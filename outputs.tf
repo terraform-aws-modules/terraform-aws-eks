@@ -196,17 +196,17 @@ output "cluster_iam_role_unique_id" {
 
 output "node_iam_role_name" {
   description = "EKS Auto node IAM role name"
-  value       = try(aws_iam_role.this[0].name, null)
+  value       = try(aws_iam_role.eks_auto[0].name, null)
 }
 
 output "node_iam_role_arn" {
   description = "EKS Auto node IAM role ARN"
-  value       = try(aws_iam_role.this[0].arn, null)
+  value       = try(aws_iam_role.eks_auto[0].arn, null)
 }
 
 output "node_iam_role_unique_id" {
   description = "Stable and unique string identifying the IAM role"
-  value       = try(aws_iam_role.this[0].unique_id, null)
+  value       = try(aws_iam_role.eks_auto[0].unique_id, null)
 }
 
 ################################################################################

@@ -456,7 +456,7 @@ locals {
 
   # Security groups for pods
   eks_sgpp_iam_role_policies = { for k, v in {
-    AmazonEKSClusterPolicy = "${local.iam_role_policy_prefix}/AmazonEKSVPCResourceController"
+    AmazonEKSVPCResourceController = "${local.iam_role_policy_prefix}/AmazonEKSVPCResourceController"
   } : k => v if var.enable_security_groups_for_pods && !local.create_outposts_local_cluster && !local.auto_mode_enabled }
 }
 
