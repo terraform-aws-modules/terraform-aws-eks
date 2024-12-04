@@ -25,6 +25,124 @@ Please note that we strive to provide a comprehensive suite of documentation for
 
 ## Usage
 
+### EKS Auto Mode
+
+```hcl
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 20.31"
+
+  cluster_name    = "example"
+  cluster_version = "1.31"
+
+  # Optional
+  cluster_endpoint_public_access = true
+
+  # Optional: Adds the current caller identity as an administrator via cluster access entry
+  enable_cluster_creator_admin_permissions = true
+
+  cluster_compute_config = {
+    enabled    = true
+    node_pools = ["general-purpose"]
+  }
+
+  vpc_id     = "vpc-1234556abcdef"
+  subnet_ids = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
+
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
+}
+```
+
+### EKS Hybrid Nodes
+
+```hcl
+locals {
+  # RFC 1918 IP ranges supported
+  remote_network_cidr = "172.16.0.0/16"
+  remote_node_cidr    = cidrsubnet(local.remote_network_cidr, 2, 0)
+  remote_pod_cidr     = cidrsubnet(local.remote_network_cidr, 2, 1)
+}
+
+# SSM and IAM Roles Anywhere supported - SSM is default
+module "eks_hybrid_node_role" {
+  source  = "terraform-aws-modules/eks/aws//modules/hybrid-node-role"
+  version = "~> 20.31"
+
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
+}
+
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 20.31"
+
+  cluster_name    = "example"
+  cluster_version = "1.31"
+
+  cluster_addons = {
+    coredns                = {}
+    eks-pod-identity-agent = {}
+    kube-proxy             = {}
+  }
+
+  # Optional
+  cluster_endpoint_public_access = true
+
+  # Optional: Adds the current caller identity as an administrator via cluster access entry
+  enable_cluster_creator_admin_permissions = true
+
+  create_node_security_group = false
+  cluster_security_group_additional_rules = {
+    hybrid-all = {
+      cidr_blocks = [local.remote_network_cidr]
+      description = "Allow all traffic from remote node/pod network"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "all"
+      type        = "ingress"
+    }
+  }
+
+  # Optional
+  cluster_compute_config = {
+    enabled    = true
+    node_pools = ["system"]
+  }
+
+  access_entries = {
+    hybrid-node-role = {
+      principal_arn = module.eks_hybrid_node_role.arn
+      type          = "HYBRID_LINUX"
+    }
+  }
+
+  vpc_id     = "vpc-1234556abcdef"
+  subnet_ids = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
+
+  cluster_remote_network_config = {
+    remote_node_networks = {
+      cidrs = [local.remote_node_cidr]
+    }
+    # Required if running webhooks on Hybrid nodes
+    remote_pod_networks = {
+      cidrs = [local.remote_pod_cidr]
+    }
+  }
+
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
+}
+```
+
+### EKS Managed Node Group
+
 ```hcl
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
@@ -33,14 +151,19 @@ module "eks" {
   cluster_name    = "my-cluster"
   cluster_version = "1.31"
 
-  cluster_endpoint_public_access  = true
-
+  bootstrap_self_managed_addons = false
   cluster_addons = {
     coredns                = {}
     eks-pod-identity-agent = {}
     kube-proxy             = {}
     vpc-cni                = {}
   }
+
+  # Optional
+  cluster_endpoint_public_access = true
+
+  # Optional: Adds the current caller identity as an administrator via cluster access entry
+  enable_cluster_creator_admin_permissions = true
 
   vpc_id                   = "vpc-1234556abcdef"
   subnet_ids               = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
@@ -63,14 +186,30 @@ module "eks" {
     }
   }
 
-  # Cluster access entry
-  # To add the current caller identity as an administrator
-  enable_cluster_creator_admin_permissions = true
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
+}
+```
+
+### Cluster Access Entry
+
+When enabling `authentication_mode = "API_AND_CONFIG_MAP"`, EKS will automatically create an access entry for the IAM role(s) used by managed node group(s) and Fargate profile(s). There are no additional actions required by users. For self-managed node groups and the Karpenter sub-module, this project automatically adds the access entry on behalf of users so there are no additional actions required by users.
+
+On clusters that were created prior to cluster access management (CAM) support, there will be an existing access entry for the cluster creator. This was previously not visible when using `aws-auth` ConfigMap, but will become visible when access entry is enabled.
+
+```hcl
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 20.0"
+
+  # Truncated for brevity ...
 
   access_entries = {
     # One access entry with a policy associated
     example = {
-      principal_arn     = "arn:aws:iam::123456789012:role/something"
+      principal_arn = "arn:aws:iam::123456789012:role/something"
 
       policy_associations = {
         example = {
@@ -83,19 +222,8 @@ module "eks" {
       }
     }
   }
-
-  tags = {
-    Environment = "dev"
-    Terraform   = "true"
-  }
 }
 ```
-
-### Cluster Access Entry
-
-When enabling `authentication_mode = "API_AND_CONFIG_MAP"`, EKS will automatically create an access entry for the IAM role(s) used by managed node group(s) and Fargate profile(s). There are no additional actions required by users. For self-managed node groups and the Karpenter sub-module, this project automatically adds the access entry on behalf of users so there are no additional actions required by users.
-
-On clusters that were created prior to CAM support, there will be an existing access entry for the cluster creator. This was previously not visible when using `aws-auth` ConfigMap, but will become visible when access entry is enabled.
 
 ### Bootstrap Cluster Creator Admin Permissions
 
@@ -133,17 +261,31 @@ module "eks" {
 
   eks_managed_node_groups = {
     example = {
+      # The EKS AL2023 NVIDIA AMI provides all of the necessary components
+      # for accelerated workloads w/ EFA
+      ami_type       = "AL2023_x86_64_NVIDIA"
       instance_types = ["p5.48xlarge"]
 
       # Exposes all EFA interfaces on the launch template created by the node group(s)
       # This would expose all 32 EFA interfaces for the p5.48xlarge instance type
       enable_efa_support = true
 
-      pre_bootstrap_user_data = <<-EOT
-        # Mount NVME instance store volumes since they are typically
-        # available on instance types that support EFA
-        setup-local-disks raid0
-      EOT
+      # Mount instance store volumes in RAID-0 for kubelet and containerd
+      # https://github.com/awslabs/amazon-eks-ami/blob/master/doc/USER_GUIDE.md#raid-0-for-kubelet-and-containerd-raid0
+      cloudinit_pre_nodeadm = [
+        {
+          content_type = "application/node.eks.aws"
+          content      = <<-EOT
+            ---
+            apiVersion: node.eks.aws/v1alpha1
+            kind: NodeConfig
+            spec:
+              instance:
+                localStorage:
+                  strategy: RAID0
+          EOT
+        }
+      ]
 
       # EFA should only be enabled when connecting 2 or more nodes
       # Do not use EFA on a single node workload
@@ -157,9 +299,11 @@ module "eks" {
 
 ## Examples
 
-- [EKS Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks-managed-node-group): EKS Cluster using EKS managed node groups
+- [EKS Auto Mode](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks-auto-mode): EKS Cluster with EKS Auto Mode
+- [EKS Hybrid Nodes](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks-hybrid-nodes): EKS Cluster with EKS Hybrid nodes
+- [EKS Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks-managed-node-group): EKS Cluster with EKS managed node group(s)
 - [Karpenter](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/karpenter): EKS Cluster with [Karpenter](https://karpenter.sh/) provisioned for intelligent data plane management
-- [Self Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/self-managed-node-group): EKS Cluster using self-managed node groups
+- [Self Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/self-managed-node-group): EKS Cluster with self-managed node group(s)
 
 ## Contributing
 
@@ -174,7 +318,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.2 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.75 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.79 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9 |
 | <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 3.0 |
 
@@ -182,7 +326,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.75 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.79 |
 | <a name="provider_time"></a> [time](#provider\_time) | >= 0.9 |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | >= 3.0 |
 
@@ -210,9 +354,14 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | [aws_iam_openid_connect_provider.oidc_provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_openid_connect_provider) | resource |
 | [aws_iam_policy.cluster_encryption](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_policy.cni_ipv6_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
+| [aws_iam_policy.eks_auto_custom](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
+| [aws_iam_role.eks_auto](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role_policy_attachment.additional](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.cluster_encryption](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.eks_auto](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.eks_auto_additional](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.eks_auto_custom](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_security_group.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_security_group.node](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
@@ -223,6 +372,8 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | [aws_eks_addon_version.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_addon_version) | data source |
 | [aws_iam_policy_document.assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.cni_ipv6_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.eks_auto_custom](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.node_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_session_context.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_session_context) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 | [tls_certificate.this](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/data-sources/certificate) | data source |
@@ -242,6 +393,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | <a name="input_cluster_additional_security_group_ids"></a> [cluster\_additional\_security\_group\_ids](#input\_cluster\_additional\_security\_group\_ids) | List of additional, externally created security group IDs to attach to the cluster control plane | `list(string)` | `[]` | no |
 | <a name="input_cluster_addons"></a> [cluster\_addons](#input\_cluster\_addons) | Map of cluster addon configurations to enable for the cluster. Addon name can be the map keys or set with `name` | `any` | `{}` | no |
 | <a name="input_cluster_addons_timeouts"></a> [cluster\_addons\_timeouts](#input\_cluster\_addons\_timeouts) | Create, update, and delete timeout configurations for the cluster addons | `map(string)` | `{}` | no |
+| <a name="input_cluster_compute_config"></a> [cluster\_compute\_config](#input\_cluster\_compute\_config) | Configuration block for the cluster compute configuration | `any` | `{}` | no |
 | <a name="input_cluster_enabled_log_types"></a> [cluster\_enabled\_log\_types](#input\_cluster\_enabled\_log\_types) | A list of the desired control plane logs to enable. For more information, see Amazon EKS Control Plane Logging documentation (https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html) | `list(string)` | <pre>[<br/>  "audit",<br/>  "api",<br/>  "authenticator"<br/>]</pre> | no |
 | <a name="input_cluster_encryption_config"></a> [cluster\_encryption\_config](#input\_cluster\_encryption\_config) | Configuration block with encryption configuration for the cluster. To disable secret encryption, set this value to `{}` | `any` | <pre>{<br/>  "resources": [<br/>    "secrets"<br/>  ]<br/>}</pre> | no |
 | <a name="input_cluster_encryption_policy_description"></a> [cluster\_encryption\_policy\_description](#input\_cluster\_encryption\_policy\_description) | Description of the cluster encryption policy created | `string` | `"Cluster encryption policy to allow cluster role to utilize CMK provided"` | no |
@@ -255,6 +407,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | <a name="input_cluster_identity_providers"></a> [cluster\_identity\_providers](#input\_cluster\_identity\_providers) | Map of cluster identity provider configurations to enable for the cluster. Note - this is different/separate from IRSA | `any` | `{}` | no |
 | <a name="input_cluster_ip_family"></a> [cluster\_ip\_family](#input\_cluster\_ip\_family) | The IP family used to assign Kubernetes pod and service addresses. Valid values are `ipv4` (default) and `ipv6`. You can only specify an IP family when you create a cluster, changing this value will force a new cluster to be created | `string` | `"ipv4"` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the EKS cluster | `string` | `""` | no |
+| <a name="input_cluster_remote_network_config"></a> [cluster\_remote\_network\_config](#input\_cluster\_remote\_network\_config) | Configuration block for the cluster remote network configuration | `any` | `{}` | no |
 | <a name="input_cluster_security_group_additional_rules"></a> [cluster\_security\_group\_additional\_rules](#input\_cluster\_security\_group\_additional\_rules) | List of additional security group rules to add to the cluster security group created. Set `source_node_security_group = true` inside rules to set the `node_security_group` as source | `any` | `{}` | no |
 | <a name="input_cluster_security_group_description"></a> [cluster\_security\_group\_description](#input\_cluster\_security\_group\_description) | Description of the cluster security group created | `string` | `"EKS cluster security group"` | no |
 | <a name="input_cluster_security_group_id"></a> [cluster\_security\_group\_id](#input\_cluster\_security\_group\_id) | Existing security group ID to be attached to the cluster | `string` | `""` | no |
@@ -274,8 +427,9 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | <a name="input_create_cluster_primary_security_group_tags"></a> [create\_cluster\_primary\_security\_group\_tags](#input\_create\_cluster\_primary\_security\_group\_tags) | Indicates whether or not to tag the cluster's primary security group. This security group is created by the EKS service, not the module, and therefore tagging is handled after cluster creation | `bool` | `true` | no |
 | <a name="input_create_cluster_security_group"></a> [create\_cluster\_security\_group](#input\_create\_cluster\_security\_group) | Determines if a security group is created for the cluster. Note: the EKS service creates a primary security group for the cluster by default | `bool` | `true` | no |
 | <a name="input_create_cni_ipv6_iam_policy"></a> [create\_cni\_ipv6\_iam\_policy](#input\_create\_cni\_ipv6\_iam\_policy) | Determines whether to create an [`AmazonEKS_CNI_IPv6_Policy`](https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html#cni-iam-role-create-ipv6-policy) | `bool` | `false` | no |
-| <a name="input_create_iam_role"></a> [create\_iam\_role](#input\_create\_iam\_role) | Determines whether a an IAM role is created or to use an existing IAM role | `bool` | `true` | no |
+| <a name="input_create_iam_role"></a> [create\_iam\_role](#input\_create\_iam\_role) | Determines whether an IAM role is created for the cluster | `bool` | `true` | no |
 | <a name="input_create_kms_key"></a> [create\_kms\_key](#input\_create\_kms\_key) | Controls if a KMS key for cluster encryption should be created | `bool` | `true` | no |
+| <a name="input_create_node_iam_role"></a> [create\_node\_iam\_role](#input\_create\_node\_iam\_role) | Determines whether an EKS Auto node IAM role is created | `bool` | `true` | no |
 | <a name="input_create_node_security_group"></a> [create\_node\_security\_group](#input\_create\_node\_security\_group) | Determines whether to create a security group for the node groups or use the existing `node_security_group_id` | `bool` | `true` | no |
 | <a name="input_custom_oidc_thumbprints"></a> [custom\_oidc\_thumbprints](#input\_custom\_oidc\_thumbprints) | Additional list of server certificate thumbprints for the OpenID Connect (OIDC) identity provider's server certificate(s) | `list(string)` | `[]` | no |
 | <a name="input_dataplane_wait_duration"></a> [dataplane\_wait\_duration](#input\_dataplane\_wait\_duration) | Duration to wait after the EKS cluster has become active before creating the dataplane components (EKS managed node group(s), self-managed node group(s), Fargate profile(s)) | `string` | `"30s"` | no |
@@ -285,13 +439,15 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | <a name="input_enable_efa_support"></a> [enable\_efa\_support](#input\_enable\_efa\_support) | Determines whether to enable Elastic Fabric Adapter (EFA) support | `bool` | `false` | no |
 | <a name="input_enable_irsa"></a> [enable\_irsa](#input\_enable\_irsa) | Determines whether to create an OpenID Connect Provider for EKS to enable IRSA | `bool` | `true` | no |
 | <a name="input_enable_kms_key_rotation"></a> [enable\_kms\_key\_rotation](#input\_enable\_kms\_key\_rotation) | Specifies whether key rotation is enabled | `bool` | `true` | no |
+| <a name="input_enable_node_custom_tags_permissions"></a> [enable\_node\_custom\_tags\_permissions](#input\_enable\_node\_custom\_tags\_permissions) | Determines whether to enable permissions for custom tags for the EKS Auto node IAM role | `bool` | `true` | no |
+| <a name="input_enable_security_groups_for_pods"></a> [enable\_security\_groups\_for\_pods](#input\_enable\_security\_groups\_for\_pods) | Determines whether to add the necessary IAM permission policy for security groups for pods | `bool` | `true` | no |
 | <a name="input_fargate_profile_defaults"></a> [fargate\_profile\_defaults](#input\_fargate\_profile\_defaults) | Map of Fargate Profile default configurations | `any` | `{}` | no |
 | <a name="input_fargate_profiles"></a> [fargate\_profiles](#input\_fargate\_profiles) | Map of Fargate Profile definitions to create | `any` | `{}` | no |
 | <a name="input_iam_role_additional_policies"></a> [iam\_role\_additional\_policies](#input\_iam\_role\_additional\_policies) | Additional policies to be added to the IAM role | `map(string)` | `{}` | no |
 | <a name="input_iam_role_arn"></a> [iam\_role\_arn](#input\_iam\_role\_arn) | Existing IAM role ARN for the cluster. Required if `create_iam_role` is set to `false` | `string` | `null` | no |
 | <a name="input_iam_role_description"></a> [iam\_role\_description](#input\_iam\_role\_description) | Description of the role | `string` | `null` | no |
 | <a name="input_iam_role_name"></a> [iam\_role\_name](#input\_iam\_role\_name) | Name to use on IAM role created | `string` | `null` | no |
-| <a name="input_iam_role_path"></a> [iam\_role\_path](#input\_iam\_role\_path) | Cluster IAM role path | `string` | `null` | no |
+| <a name="input_iam_role_path"></a> [iam\_role\_path](#input\_iam\_role\_path) | The IAM role path | `string` | `null` | no |
 | <a name="input_iam_role_permissions_boundary"></a> [iam\_role\_permissions\_boundary](#input\_iam\_role\_permissions\_boundary) | ARN of the policy that is used to set the permissions boundary for the IAM role | `string` | `null` | no |
 | <a name="input_iam_role_tags"></a> [iam\_role\_tags](#input\_iam\_role\_tags) | A map of additional tags to add to the IAM role created | `map(string)` | `{}` | no |
 | <a name="input_iam_role_use_name_prefix"></a> [iam\_role\_use\_name\_prefix](#input\_iam\_role\_use\_name\_prefix) | Determines whether the IAM role name (`iam_role_name`) is used as a prefix | `bool` | `true` | no |
@@ -306,6 +462,14 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | <a name="input_kms_key_service_users"></a> [kms\_key\_service\_users](#input\_kms\_key\_service\_users) | A list of IAM ARNs for [key service users](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-service-integration) | `list(string)` | `[]` | no |
 | <a name="input_kms_key_source_policy_documents"></a> [kms\_key\_source\_policy\_documents](#input\_kms\_key\_source\_policy\_documents) | List of IAM policy documents that are merged together into the exported document. Statements must have unique `sid`s | `list(string)` | `[]` | no |
 | <a name="input_kms_key_users"></a> [kms\_key\_users](#input\_kms\_key\_users) | A list of IAM ARNs for [key users](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-default-allow-users) | `list(string)` | `[]` | no |
+| <a name="input_node_iam_role_additional_policies"></a> [node\_iam\_role\_additional\_policies](#input\_node\_iam\_role\_additional\_policies) | Additional policies to be added to the EKS Auto node IAM role | `map(string)` | `{}` | no |
+| <a name="input_node_iam_role_description"></a> [node\_iam\_role\_description](#input\_node\_iam\_role\_description) | Description of the EKS Auto node IAM role | `string` | `null` | no |
+| <a name="input_node_iam_role_name"></a> [node\_iam\_role\_name](#input\_node\_iam\_role\_name) | Name to use on the EKS Auto node IAM role created | `string` | `null` | no |
+| <a name="input_node_iam_role_path"></a> [node\_iam\_role\_path](#input\_node\_iam\_role\_path) | The EKS Auto node IAM role path | `string` | `null` | no |
+| <a name="input_node_iam_role_permissions_boundary"></a> [node\_iam\_role\_permissions\_boundary](#input\_node\_iam\_role\_permissions\_boundary) | ARN of the policy that is used to set the permissions boundary for the EKS Auto node IAM role | `string` | `null` | no |
+| <a name="input_node_iam_role_policy_statements"></a> [node\_iam\_role\_policy\_statements](#input\_node\_iam\_role\_policy\_statements) | A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed | `any` | `[]` | no |
+| <a name="input_node_iam_role_tags"></a> [node\_iam\_role\_tags](#input\_node\_iam\_role\_tags) | A map of additional tags to add to the EKS Auto node IAM role created | `map(string)` | `{}` | no |
+| <a name="input_node_iam_role_use_name_prefix"></a> [node\_iam\_role\_use\_name\_prefix](#input\_node\_iam\_role\_use\_name\_prefix) | Determines whether the EKS Auto node IAM role name (`node_iam_role_name`) is used as a prefix | `bool` | `true` | no |
 | <a name="input_node_security_group_additional_rules"></a> [node\_security\_group\_additional\_rules](#input\_node\_security\_group\_additional\_rules) | List of additional security group rules to add to the node security group created. Set `source_cluster_security_group = true` inside rules to set the `cluster_security_group` as source | `any` | `{}` | no |
 | <a name="input_node_security_group_description"></a> [node\_security\_group\_description](#input\_node\_security\_group\_description) | Description of the node security group created | `string` | `"EKS node shared security group"` | no |
 | <a name="input_node_security_group_enable_recommended_rules"></a> [node\_security\_group\_enable\_recommended\_rules](#input\_node\_security\_group\_enable\_recommended\_rules) | Determines whether to enable recommended security group rules for the node security group created. This includes node-to-node TCP ingress on ephemeral ports and allows all egress traffic | `bool` | `true` | no |
@@ -336,8 +500,8 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | <a name="output_cluster_certificate_authority_data"></a> [cluster\_certificate\_authority\_data](#output\_cluster\_certificate\_authority\_data) | Base64 encoded certificate data required to communicate with the cluster |
 | <a name="output_cluster_dualstack_oidc_issuer_url"></a> [cluster\_dualstack\_oidc\_issuer\_url](#output\_cluster\_dualstack\_oidc\_issuer\_url) | Dual-stack compatible URL on the EKS cluster for the OpenID Connect identity provider |
 | <a name="output_cluster_endpoint"></a> [cluster\_endpoint](#output\_cluster\_endpoint) | Endpoint for your Kubernetes API server |
-| <a name="output_cluster_iam_role_arn"></a> [cluster\_iam\_role\_arn](#output\_cluster\_iam\_role\_arn) | IAM role ARN of the EKS cluster |
-| <a name="output_cluster_iam_role_name"></a> [cluster\_iam\_role\_name](#output\_cluster\_iam\_role\_name) | IAM role name of the EKS cluster |
+| <a name="output_cluster_iam_role_arn"></a> [cluster\_iam\_role\_arn](#output\_cluster\_iam\_role\_arn) | Cluster IAM role ARN |
+| <a name="output_cluster_iam_role_name"></a> [cluster\_iam\_role\_name](#output\_cluster\_iam\_role\_name) | Cluster IAM role name |
 | <a name="output_cluster_iam_role_unique_id"></a> [cluster\_iam\_role\_unique\_id](#output\_cluster\_iam\_role\_unique\_id) | Stable and unique string identifying the IAM role |
 | <a name="output_cluster_id"></a> [cluster\_id](#output\_cluster\_id) | The ID of the EKS cluster. Note: currently a value is returned only for local EKS clusters created on Outposts |
 | <a name="output_cluster_identity_providers"></a> [cluster\_identity\_providers](#output\_cluster\_identity\_providers) | Map of attribute maps for all EKS identity providers enabled |
@@ -358,6 +522,9 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | <a name="output_kms_key_arn"></a> [kms\_key\_arn](#output\_kms\_key\_arn) | The Amazon Resource Name (ARN) of the key |
 | <a name="output_kms_key_id"></a> [kms\_key\_id](#output\_kms\_key\_id) | The globally unique identifier for the key |
 | <a name="output_kms_key_policy"></a> [kms\_key\_policy](#output\_kms\_key\_policy) | The IAM resource policy set on the key |
+| <a name="output_node_iam_role_arn"></a> [node\_iam\_role\_arn](#output\_node\_iam\_role\_arn) | EKS Auto node IAM role ARN |
+| <a name="output_node_iam_role_name"></a> [node\_iam\_role\_name](#output\_node\_iam\_role\_name) | EKS Auto node IAM role name |
+| <a name="output_node_iam_role_unique_id"></a> [node\_iam\_role\_unique\_id](#output\_node\_iam\_role\_unique\_id) | Stable and unique string identifying the IAM role |
 | <a name="output_node_security_group_arn"></a> [node\_security\_group\_arn](#output\_node\_security\_group\_arn) | Amazon Resource Name (ARN) of the node shared security group |
 | <a name="output_node_security_group_id"></a> [node\_security\_group\_id](#output\_node\_security\_group\_id) | ID of the node shared security group |
 | <a name="output_oidc_provider"></a> [oidc\_provider](#output\_oidc\_provider) | The OpenID Connect identity provider (issuer URL without leading `https://`) |

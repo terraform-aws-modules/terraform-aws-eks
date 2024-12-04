@@ -11,21 +11,52 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  name   = "ex-eks-mng"
-  region = "eu-west-1"
+  name            = "ex-${basename(path.cwd)}"
+  cluster_version = "1.31"
+  region          = "us-west-2"
 
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
   tags = {
-    Example    = local.name
+    Test       = local.name
     GithubRepo = "terraform-aws-eks"
     GithubOrg  = "terraform-aws-modules"
   }
 }
 
 ################################################################################
-# VPC
+# EKS Module
+################################################################################
+
+module "eks" {
+  source = "../.."
+
+  cluster_name                   = local.name
+  cluster_version                = local.cluster_version
+  cluster_endpoint_public_access = true
+
+  enable_cluster_creator_admin_permissions = true
+
+  cluster_compute_config = {
+    enabled    = true
+    node_pools = ["general-purpose"]
+  }
+
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
+
+  tags = local.tags
+}
+
+module "disabled_eks" {
+  source = "../.."
+
+  create = false
+}
+
+################################################################################
+# Supporting Resources
 ################################################################################
 
 module "vpc" {

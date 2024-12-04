@@ -1,13 +1,20 @@
-# Self-managed Node Group
+# EKS Auto Mode
 
 ## Usage
 
 To provision the provided configurations you need to execute:
 
 ```bash
-$ terraform init
-$ terraform plan
-$ terraform apply --auto-approve
+terraform init
+terraform plan
+terraform apply --auto-approve
+```
+
+Once the cluster has finished provisioning, you can use the `kubectl` command to interact with the cluster. For example, to deploy a sample deployment and see EKS Auto Mode in action, run:
+
+```bash
+aws eks update-kubeconfig --name $(terraform output -raw cluster_name)
+kubectl apply -f deployment.yaml
 ```
 
 Note that this example may create resources which cost money. Run `terraform destroy` when you don't need these resources.
@@ -30,23 +37,15 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_aws_vpc_cni_ipv4_pod_identity"></a> [aws\_vpc\_cni\_ipv4\_pod\_identity](#module\_aws\_vpc\_cni\_ipv4\_pod\_identity) | terraform-aws-modules/eks-pod-identity/aws | ~> 1.6 |
-| <a name="module_disabled_self_managed_node_group"></a> [disabled\_self\_managed\_node\_group](#module\_disabled\_self\_managed\_node\_group) | ../../modules/self-managed-node-group | n/a |
-| <a name="module_ebs_kms_key"></a> [ebs\_kms\_key](#module\_ebs\_kms\_key) | terraform-aws-modules/kms/aws | ~> 2.0 |
+| <a name="module_disabled_eks"></a> [disabled\_eks](#module\_disabled\_eks) | ../.. | n/a |
 | <a name="module_eks"></a> [eks](#module\_eks) | ../.. | n/a |
-| <a name="module_key_pair"></a> [key\_pair](#module\_key\_pair) | terraform-aws-modules/key-pair/aws | ~> 2.0 |
-| <a name="module_kms"></a> [kms](#module\_kms) | terraform-aws-modules/kms/aws | ~> 2.1 |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 5.0 |
 
 ## Resources
 
 | Name | Type |
 |------|------|
-| [aws_iam_policy.additional](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
-| [aws_ami.eks_default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
-| [aws_ami.eks_default_bottlerocket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
-| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 
 ## Inputs
 
