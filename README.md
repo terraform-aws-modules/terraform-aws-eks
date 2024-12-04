@@ -84,12 +84,10 @@ module "eks" {
   cluster_name    = "example"
   cluster_version = "1.31"
 
-  # Optional: for the EKS managed node group that runs within AWS
   cluster_addons = {
     coredns                = {}
     eks-pod-identity-agent = {}
     kube-proxy             = {}
-    vpc-cni                = {}
   }
 
   # Optional
@@ -98,30 +96,23 @@ module "eks" {
   # Optional: Adds the current caller identity as an administrator via cluster access entry
   enable_cluster_creator_admin_permissions = true
 
+  create_node_security_group = false
   cluster_security_group_additional_rules = {
     hybrid-all = {
       cidr_blocks = [local.remote_network_cidr]
-      description = "Allow all HTTPS traffic from remote node/pod network"
-      from_port   = 443
-      to_port     = 443
-      protocol    = "tcp"
-      type        = "ingress"
-    }
-  }
-
-  node_security_group_additional_rules = {
-    hybrid-all = {
-      cidr_blocks = [local.remote_network_cidr]
       description = "Allow all traffic from remote node/pod network"
-      from_port   = "-1"
-      to_port     = "-1"
+      from_port   = 0
+      to_port     = 0
       protocol    = "all"
       type        = "ingress"
     }
   }
 
-  vpc_id     = "vpc-1234556abcdef"
-  subnet_ids = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
+  # Optional
+  cluster_compute_config = {
+    enabled    = true
+    node_pools = ["system"]
+  }
 
   access_entries = {
     hybrid-node-role = {
@@ -130,6 +121,9 @@ module "eks" {
     }
   }
 
+  vpc_id     = "vpc-1234556abcdef"
+  subnet_ids = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
+
   cluster_remote_network_config = {
     remote_node_networks = {
       cidrs = [local.remote_node_cidr]
@@ -137,17 +131,6 @@ module "eks" {
     # Required if running webhooks on Hybrid nodes
     remote_pod_networks = {
       cidrs = [local.remote_pod_cidr]
-    }
-  }
-
-  # Optional
-  eks_managed_node_groups = {
-    default = {
-      instance_types = ["m6i.large"]
-
-      min_size     = 2
-      max_size     = 5
-      desired_size = 2
     }
   }
 
@@ -168,6 +151,7 @@ module "eks" {
   cluster_name    = "my-cluster"
   cluster_version = "1.31"
 
+  bootstrap_self_managed_addons = false
   cluster_addons = {
     coredns                = {}
     eks-pod-identity-agent = {}
