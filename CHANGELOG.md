@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.31.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.30.1...v20.31.0) (2024-12-04)
+
+
+### Features
+
+* Add support for EKS Auto Mode and EKS Hybrid nodes ([#3225](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3225)) ([3b974d3](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/3b974d33ad79e142566dd7bcb4bf10472cc91899))
+
 ## [20.30.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.30.0...v20.30.1) (2024-11-26)
 
 
