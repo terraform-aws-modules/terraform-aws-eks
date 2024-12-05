@@ -32,6 +32,11 @@ output "cluster_oidc_issuer_url" {
   value       = module.eks.cluster_oidc_issuer_url
 }
 
+output "cluster_dualstack_oidc_issuer_url" {
+  description = "Dual-stack compatible URL on the EKS cluster for the OpenID Connect identity provider"
+  value       = module.eks.cluster_dualstack_oidc_issuer_url
+}
+
 output "cluster_platform_version" {
   description = "Platform version for the cluster"
   value       = module.eks.cluster_platform_version
@@ -45,6 +50,25 @@ output "cluster_status" {
 output "cluster_primary_security_group_id" {
   description = "Cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication. Referred to as 'Cluster security group' in the EKS console"
   value       = module.eks.cluster_primary_security_group_id
+}
+
+output "cluster_service_cidr" {
+  description = "The CIDR block where Kubernetes pod and service IP addresses are assigned from"
+  value       = module.eks.cluster_service_cidr
+}
+
+output "cluster_ip_family" {
+  description = "The IP family used by the cluster (e.g. `ipv4` or `ipv6`)"
+  value       = module.eks.cluster_ip_family
+}
+
+################################################################################
+# Access Entry
+################################################################################
+
+output "access_entries" {
+  description = "Map of access entries created and their attributes"
+  value       = module.eks.access_entries
 }
 
 ################################################################################
@@ -183,31 +207,22 @@ output "self_managed_node_groups_autoscaling_group_names" {
 }
 
 ################################################################################
-# Additional
+# Karpenter controller IAM Role
 ################################################################################
 
-output "aws_auth_configmap_yaml" {
-  description = "Formatted yaml output for base aws-auth configmap containing roles used in cluster node groups/fargate profiles"
-  value       = module.eks.aws_auth_configmap_yaml
+output "karpenter_iam_role_name" {
+  description = "The name of the controller IAM role"
+  value       = module.karpenter.iam_role_name
 }
 
-################################################################################
-# IAM Role for Service Account (IRSA)
-################################################################################
-
-output "karpenter_irsa_name" {
-  description = "The name of the IAM role for service accounts"
-  value       = module.karpenter.irsa_name
+output "karpenter_iam_role_arn" {
+  description = "The Amazon Resource Name (ARN) specifying the controller IAM role"
+  value       = module.karpenter.iam_role_arn
 }
 
-output "karpenter_irsa_arn" {
-  description = "The Amazon Resource Name (ARN) specifying the IAM role for service accounts"
-  value       = module.karpenter.irsa_arn
-}
-
-output "karpenter_irsa_unique_id" {
-  description = "Stable and unique string identifying the IAM role for service accounts"
-  value       = module.karpenter.irsa_unique_id
+output "karpenter_iam_role_unique_id" {
+  description = "Stable and unique string identifying the controller IAM role"
+  value       = module.karpenter.iam_role_unique_id
 }
 
 ################################################################################
@@ -242,19 +257,19 @@ output "karpenter_event_rules" {
 # Node IAM Role
 ################################################################################
 
-output "karpenter_role_name" {
+output "karpenter_node_iam_role_name" {
   description = "The name of the IAM role"
-  value       = module.karpenter.role_name
+  value       = module.karpenter.node_iam_role_name
 }
 
-output "karpenter_role_arn" {
+output "karpenter_node_iam_role_arn" {
   description = "The Amazon Resource Name (ARN) specifying the IAM role"
-  value       = module.karpenter.role_arn
+  value       = module.karpenter.node_iam_role_arn
 }
 
-output "karpenter_role_unique_id" {
+output "karpenter_node_iam_role_unique_id" {
   description = "Stable and unique string identifying the IAM role"
-  value       = module.karpenter.role_unique_id
+  value       = module.karpenter.node_iam_role_unique_id
 }
 
 ################################################################################

@@ -82,15 +82,6 @@ output "autoscaling_group_vpc_zone_identifier" {
 }
 
 ################################################################################
-# autoscaling group schedule
-################################################################################
-
-output "autoscaling_group_schedule_arns" {
-  description = "ARNs of autoscaling group schedules"
-  value       = { for k, v in aws_autoscaling_schedule.this : k => v.arn }
-}
-
-################################################################################
 # IAM Role
 ################################################################################
 
@@ -129,12 +120,30 @@ output "iam_instance_profile_unique" {
 }
 
 ################################################################################
+# Access Entry
+################################################################################
+
+output "access_entry_arn" {
+  description = "Amazon Resource Name (ARN) of the Access Entry"
+  value       = try(aws_eks_access_entry.this[0].access_entry_arn, null)
+}
+
+################################################################################
+# Autoscaling Group Schedule
+################################################################################
+
+output "autoscaling_group_schedule_arns" {
+  description = "ARNs of autoscaling group schedules"
+  value       = { for k, v in aws_autoscaling_schedule.this : k => v.arn }
+}
+
+################################################################################
 # Additional
 ################################################################################
 
 output "platform" {
-  description = "Identifies if the OS platform is `bottlerocket`, `linux`, or `windows` based"
-  value       = var.platform
+  description = "[DEPRECATED - Will be removed in `v21.0`] Identifies the OS platform as `bottlerocket`, `linux` (AL2), `al2023`, or `windows`"
+  value       = module.user_data.platform
 }
 
 output "image_id" {

@@ -1,9 +1,8 @@
 repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.77.1
+    rev: v1.96.2
     hooks:
       - id: terraform_fmt
-      - id: terraform_validate
       - id: terraform_docs
         args:
           - '--args=--lockfile=false'
@@ -22,8 +21,12 @@ repos:
           - '--args=--only=terraform_required_providers'
           - '--args=--only=terraform_standard_module_structure'
           - '--args=--only=terraform_workspace_remote'
+      - id: terraform_validate
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v5.0.0
     hooks:
       - id: check-merge-conflict
       - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+        args: [--fix=lf]

@@ -1,178 +1,132 @@
+data "aws_region" "current" {}
 data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 
 locals {
   account_id = data.aws_caller_identity.current.account_id
-  partition  = data.aws_partition.current.partition
   dns_suffix = data.aws_partition.current.dns_suffix
+  partition  = data.aws_partition.current.partition
+  region     = data.aws_region.current.name
 }
 
 ################################################################################
-# IAM Role for Service Account (IRSA)
-# This is used by the Karpenter controller
+# Karpenter controller IAM Role
 ################################################################################
 
 locals {
-  create_irsa      = var.create && var.create_irsa
-  irsa_name        = coalesce(var.irsa_name, "KarpenterIRSA-${var.cluster_name}")
-  irsa_policy_name = coalesce(var.irsa_policy_name, local.irsa_name)
-
+  create_iam_role        = var.create && var.create_iam_role
   irsa_oidc_provider_url = replace(var.irsa_oidc_provider_arn, "/^(.*provider/)/", "")
 }
 
-data "aws_iam_policy_document" "irsa_assume_role" {
-  count = local.create_irsa ? 1 : 0
+data "aws_iam_policy_document" "controller_assume_role" {
+  count = local.create_iam_role ? 1 : 0
 
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRoleWithWebIdentity"]
-
-    principals {
-      type        = "Federated"
-      identifiers = [var.irsa_oidc_provider_arn]
-    }
-
-    condition {
-      test     = var.irsa_assume_role_condition_test
-      variable = "${local.irsa_oidc_provider_url}:sub"
-      values   = [for sa in var.irsa_namespace_service_accounts : "system:serviceaccount:${sa}"]
-    }
-
-    # https://aws.amazon.com/premiumsupport/knowledge-center/eks-troubleshoot-oidc-and-irsa/?nc1=h_ls
-    condition {
-      test     = var.irsa_assume_role_condition_test
-      variable = "${local.irsa_oidc_provider_url}:aud"
-      values   = ["sts.amazonaws.com"]
-    }
-  }
-}
-
-resource "aws_iam_role" "irsa" {
-  count = local.create_irsa ? 1 : 0
-
-  name        = var.irsa_use_name_prefix ? null : local.irsa_name
-  name_prefix = var.irsa_use_name_prefix ? "${local.irsa_name}-" : null
-  path        = var.irsa_path
-  description = var.irsa_description
-
-  assume_role_policy    = data.aws_iam_policy_document.irsa_assume_role[0].json
-  max_session_duration  = var.irsa_max_session_duration
-  permissions_boundary  = var.irsa_permissions_boundary_arn
-  force_detach_policies = true
-
-  tags = merge(var.tags, var.irsa_tags)
-}
-
-data "aws_iam_policy_document" "irsa" {
-  count = local.create_irsa ? 1 : 0
-
-  statement {
-    actions = [
-      "ec2:CreateLaunchTemplate",
-      "ec2:CreateFleet",
-      "ec2:CreateTags",
-      "ec2:DescribeLaunchTemplates",
-      "ec2:DescribeImages",
-      "ec2:DescribeInstances",
-      "ec2:DescribeSecurityGroups",
-      "ec2:DescribeSubnets",
-      "ec2:DescribeInstanceTypes",
-      "ec2:DescribeInstanceTypeOfferings",
-      "ec2:DescribeAvailabilityZones",
-      "ec2:DescribeSpotPriceHistory",
-      "pricing:GetProducts",
-    ]
-
-    resources = ["*"]
-  }
-
-  statement {
-    actions = [
-      "ec2:TerminateInstances",
-      "ec2:DeleteLaunchTemplate",
-    ]
-
-    resources = ["*"]
-
-    condition {
-      test     = "StringEquals"
-      variable = "ec2:ResourceTag/${var.irsa_tag_key}"
-      values   = [var.cluster_name]
-    }
-  }
-
-  statement {
-    actions = ["ec2:RunInstances"]
-    resources = [
-      "arn:${local.partition}:ec2:*:${local.account_id}:launch-template/*",
-    ]
-
-    condition {
-      test     = "StringEquals"
-      variable = "ec2:ResourceTag/${var.irsa_tag_key}"
-      values   = [var.cluster_name]
-    }
-  }
-
-  statement {
-    actions = ["ec2:RunInstances"]
-    resources = [
-      "arn:${local.partition}:ec2:*::image/*",
-      "arn:${local.partition}:ec2:*:${local.account_id}:instance/*",
-      "arn:${local.partition}:ec2:*:${local.account_id}:spot-instances-request/*",
-      "arn:${local.partition}:ec2:*:${local.account_id}:security-group/*",
-      "arn:${local.partition}:ec2:*:${local.account_id}:volume/*",
-      "arn:${local.partition}:ec2:*:${local.account_id}:network-interface/*",
-      "arn:${local.partition}:ec2:*:${coalesce(var.irsa_subnet_account_id, local.account_id)}:subnet/*",
-    ]
-  }
-
-  statement {
-    actions   = ["ssm:GetParameter"]
-    resources = var.irsa_ssm_parameter_arns
-  }
-
-  statement {
-    actions   = ["eks:DescribeCluster"]
-    resources = ["arn:${local.partition}:eks:*:${local.account_id}:cluster/${var.cluster_name}"]
-  }
-
-  statement {
-    actions   = ["iam:PassRole"]
-    resources = [var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn]
-  }
-
+  # Pod Identity
   dynamic "statement" {
-    for_each = local.enable_spot_termination ? [1] : []
+    for_each = var.enable_pod_identity ? [1] : []
 
     content {
       actions = [
-        "sqs:DeleteMessage",
-        "sqs:GetQueueUrl",
-        "sqs:GetQueueAttributes",
-        "sqs:ReceiveMessage",
+        "sts:AssumeRole",
+        "sts:TagSession",
       ]
-      resources = [aws_sqs_queue.this[0].arn]
+
+      principals {
+        type        = "Service"
+        identifiers = ["pods.eks.amazonaws.com"]
+      }
+    }
+  }
+
+  # IAM Roles for Service Accounts (IRSA)
+  dynamic "statement" {
+    for_each = var.enable_irsa ? [1] : []
+
+    content {
+      actions = ["sts:AssumeRoleWithWebIdentity"]
+
+      principals {
+        type        = "Federated"
+        identifiers = [var.irsa_oidc_provider_arn]
+      }
+
+      condition {
+        test     = var.irsa_assume_role_condition_test
+        variable = "${local.irsa_oidc_provider_url}:sub"
+        values   = [for sa in var.irsa_namespace_service_accounts : "system:serviceaccount:${sa}"]
+      }
+
+      # https://aws.amazon.com/premiumsupport/knowledge-center/eks-troubleshoot-oidc-and-irsa/?nc1=h_ls
+      condition {
+        test     = var.irsa_assume_role_condition_test
+        variable = "${local.irsa_oidc_provider_url}:aud"
+        values   = ["sts.amazonaws.com"]
+      }
     }
   }
 }
 
-resource "aws_iam_policy" "irsa" {
-  count = local.create_irsa ? 1 : 0
+resource "aws_iam_role" "controller" {
+  count = local.create_iam_role ? 1 : 0
 
-  name_prefix = "${local.irsa_policy_name}-"
-  path        = var.irsa_path
-  description = var.irsa_description
-  policy      = data.aws_iam_policy_document.irsa[0].json
+  name        = var.iam_role_use_name_prefix ? null : var.iam_role_name
+  name_prefix = var.iam_role_use_name_prefix ? "${var.iam_role_name}-" : null
+  path        = var.iam_role_path
+  description = var.iam_role_description
+
+  assume_role_policy    = data.aws_iam_policy_document.controller_assume_role[0].json
+  max_session_duration  = var.iam_role_max_session_duration
+  permissions_boundary  = var.iam_role_permissions_boundary_arn
+  force_detach_policies = true
+
+  tags = merge(var.tags, var.iam_role_tags)
+}
+
+data "aws_iam_policy_document" "controller" {
+  count = local.create_iam_role ? 1 : 0
+
+  source_policy_documents = var.enable_v1_permissions ? [data.aws_iam_policy_document.v1[0].json] : [data.aws_iam_policy_document.v033[0].json]
+}
+
+resource "aws_iam_policy" "controller" {
+  count = local.create_iam_role ? 1 : 0
+
+  name        = var.iam_policy_use_name_prefix ? null : var.iam_policy_name
+  name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}-" : null
+  path        = var.iam_policy_path
+  description = var.iam_policy_description
+  policy      = data.aws_iam_policy_document.controller[0].json
 
   tags = var.tags
 }
 
-resource "aws_iam_role_policy_attachment" "irsa" {
-  count = local.create_irsa ? 1 : 0
+resource "aws_iam_role_policy_attachment" "controller" {
+  count = local.create_iam_role ? 1 : 0
 
-  role       = aws_iam_role.irsa[0].name
-  policy_arn = aws_iam_policy.irsa[0].arn
+  role       = aws_iam_role.controller[0].name
+  policy_arn = aws_iam_policy.controller[0].arn
+}
+
+resource "aws_iam_role_policy_attachment" "controller_additional" {
+  for_each = { for k, v in var.iam_role_policies : k => v if local.create_iam_role }
+
+  role       = aws_iam_role.controller[0].name
+  policy_arn = each.value
+}
+
+################################################################################
+# Pod Identity Association
+################################################################################
+
+resource "aws_eks_pod_identity_association" "karpenter" {
+  count = local.create_iam_role && var.enable_pod_identity && var.create_pod_identity_association ? 1 : 0
+
+  cluster_name    = var.cluster_name
+  namespace       = var.namespace
+  service_account = var.service_account
+  role_arn        = aws_iam_role.controller[0].arn
+
+  tags = var.tags
 }
 
 ################################################################################
@@ -190,7 +144,7 @@ resource "aws_sqs_queue" "this" {
 
   name                              = local.queue_name
   message_retention_seconds         = 300
-  sqs_managed_sse_enabled           = var.queue_managed_sse_enabled
+  sqs_managed_sse_enabled           = var.queue_managed_sse_enabled ? var.queue_managed_sse_enabled : null
   kms_master_key_id                 = var.queue_kms_master_key_id
   kms_data_key_reuse_period_seconds = var.queue_kms_data_key_reuse_period_seconds
 
@@ -208,11 +162,31 @@ data "aws_iam_policy_document" "queue" {
     principals {
       type = "Service"
       identifiers = [
-        "events.${local.dns_suffix}",
-        "sqs.${local.dns_suffix}",
+        "events.amazonaws.com",
+        "sqs.amazonaws.com",
       ]
     }
-
+  }
+  statement {
+    sid    = "DenyHTTP"
+    effect = "Deny"
+    actions = [
+      "sqs:*"
+    ]
+    resources = [aws_sqs_queue.this[0].arn]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SecureTransport"
+      values = [
+        "false"
+      ]
+    }
+    principals {
+      type = "*"
+      identifiers = [
+        "*"
+      ]
+    }
   }
 }
 
@@ -237,7 +211,7 @@ locals {
         detail-type = ["AWS Health Event"]
       }
     }
-    spot_interupt = {
+    spot_interrupt = {
       name        = "SpotInterrupt"
       description = "Karpenter interrupt - EC2 spot instance interruption warning"
       event_pattern = {
@@ -291,15 +265,21 @@ resource "aws_cloudwatch_event_target" "this" {
 ################################################################################
 
 locals {
-  create_iam_role = var.create && var.create_iam_role
+  create_node_iam_role = var.create && var.create_node_iam_role
 
-  iam_role_name          = coalesce(var.iam_role_name, "Karpenter-${var.cluster_name}")
-  iam_role_policy_prefix = "arn:${local.partition}:iam::aws:policy"
-  cni_policy             = var.cluster_ip_family == "ipv6" ? "${local.iam_role_policy_prefix}/AmazonEKS_CNI_IPv6_Policy" : "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
+  node_iam_role_name          = coalesce(var.node_iam_role_name, "Karpenter-${var.cluster_name}")
+  node_iam_role_policy_prefix = "arn:${local.partition}:iam::aws:policy"
+
+  ipv4_cni_policy = { for k, v in {
+    AmazonEKS_CNI_Policy = "${local.node_iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
+  } : k => v if var.node_iam_role_attach_cni_policy && var.cluster_ip_family == "ipv4" }
+  ipv6_cni_policy = { for k, v in {
+    AmazonEKS_CNI_IPv6_Policy = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/AmazonEKS_CNI_IPv6_Policy"
+  } : k => v if var.node_iam_role_attach_cni_policy && var.cluster_ip_family == "ipv6" }
 }
 
-data "aws_iam_policy_document" "assume_role" {
-  count = local.create_iam_role ? 1 : 0
+data "aws_iam_policy_document" "node_assume_role" {
+  count = local.create_node_iam_role ? 1 : 0
 
   statement {
     sid     = "EKSNodeAssumeRole"
@@ -312,57 +292,81 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
-resource "aws_iam_role" "this" {
-  count = local.create_iam_role ? 1 : 0
+resource "aws_iam_role" "node" {
+  count = local.create_node_iam_role ? 1 : 0
 
-  name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
-  name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
-  path        = var.iam_role_path
-  description = var.iam_role_description
+  name        = var.node_iam_role_use_name_prefix ? null : local.node_iam_role_name
+  name_prefix = var.node_iam_role_use_name_prefix ? "${local.node_iam_role_name}-" : null
+  path        = var.node_iam_role_path
+  description = var.node_iam_role_description
 
-  assume_role_policy    = data.aws_iam_policy_document.assume_role[0].json
-  max_session_duration  = var.iam_role_max_session_duration
-  permissions_boundary  = var.iam_role_permissions_boundary
+  assume_role_policy    = data.aws_iam_policy_document.node_assume_role[0].json
+  max_session_duration  = var.node_iam_role_max_session_duration
+  permissions_boundary  = var.node_iam_role_permissions_boundary
   force_detach_policies = true
 
-  tags = merge(var.tags, var.iam_role_tags)
+  tags = merge(var.tags, var.node_iam_role_tags)
 }
 
 # Policies attached ref https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
-resource "aws_iam_role_policy_attachment" "this" {
-  for_each = { for k, v in toset(compact([
-    "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy",
-    "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly",
-    var.iam_role_attach_cni_policy ? local.cni_policy : "",
-  ])) : k => v if local.create_iam_role }
+resource "aws_iam_role_policy_attachment" "node" {
+  for_each = { for k, v in merge(
+    {
+      AmazonEKSWorkerNodePolicy          = "${local.node_iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy"
+      AmazonEC2ContainerRegistryReadOnly = "${local.node_iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly"
+    },
+    local.ipv4_cni_policy,
+    local.ipv6_cni_policy
+  ) : k => v if local.create_node_iam_role }
 
   policy_arn = each.value
-  role       = aws_iam_role.this[0].name
+  role       = aws_iam_role.node[0].name
 }
 
-resource "aws_iam_role_policy_attachment" "additional" {
-  for_each = { for k, v in var.iam_role_additional_policies : k => v if local.create_iam_role }
+resource "aws_iam_role_policy_attachment" "node_additional" {
+  for_each = { for k, v in var.node_iam_role_additional_policies : k => v if local.create_node_iam_role }
 
   policy_arn = each.value
-  role       = aws_iam_role.this[0].name
+  role       = aws_iam_role.node[0].name
+}
+
+################################################################################
+# Access Entry
+################################################################################
+
+resource "aws_eks_access_entry" "node" {
+  count = var.create && var.create_access_entry ? 1 : 0
+
+  cluster_name  = var.cluster_name
+  principal_arn = var.create_node_iam_role ? aws_iam_role.node[0].arn : var.node_iam_role_arn
+  type          = var.access_entry_type
+
+  tags = var.tags
+
+  depends_on = [
+    # If we try to add this too quickly, it fails. So .... we wait
+    aws_sqs_queue_policy.this,
+  ]
 }
 
 ################################################################################
 # Node IAM Instance Profile
 # This is used by the nodes launched by Karpenter
+# Starting with Karpenter 0.32 this is no longer required as Karpenter will
+# create the Instance Profile
 ################################################################################
 
 locals {
-  external_role_name = try(replace(var.iam_role_arn, "/^(.*role/)/", ""), null)
+  external_role_name = try(replace(var.node_iam_role_arn, "/^(.*role/)/", ""), null)
 }
 
 resource "aws_iam_instance_profile" "this" {
   count = var.create && var.create_instance_profile ? 1 : 0
 
-  name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
-  name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
-  path        = var.iam_role_path
-  role        = var.create_iam_role ? aws_iam_role.this[0].name : local.external_role_name
+  name        = var.node_iam_role_use_name_prefix ? null : local.node_iam_role_name
+  name_prefix = var.node_iam_role_use_name_prefix ? "${local.node_iam_role_name}-" : null
+  path        = var.node_iam_role_path
+  role        = var.create_node_iam_role ? aws_iam_role.node[0].name : local.external_role_name
 
-  tags = merge(var.tags, var.iam_role_tags)
+  tags = merge(var.tags, var.node_iam_role_tags)
 }

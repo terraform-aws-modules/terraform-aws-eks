@@ -17,6 +17,8 @@ locals {
       min_healthy_percentage = 66
     }
   }
+
+  kubernetes_network_config = try(aws_eks_cluster.this[0].kubernetes_network_config[0], {})
 }
 
 # This sleep resource is used to provide a timed gap between the cluster creation and the downstream dependencies
@@ -30,9 +32,10 @@ resource "time_sleep" "this" {
   create_duration = var.dataplane_wait_duration
 
   triggers = {
-    cluster_name     = aws_eks_cluster.this[0].name
-    cluster_endpoint = aws_eks_cluster.this[0].endpoint
-    cluster_version  = aws_eks_cluster.this[0].version
+    cluster_name         = aws_eks_cluster.this[0].id
+    cluster_endpoint     = aws_eks_cluster.this[0].endpoint
+    cluster_version      = aws_eks_cluster.this[0].version
+    cluster_service_cidr = var.cluster_ip_family == "ipv6" ? try(local.kubernetes_network_config.service_ipv6_cidr, "") : try(local.kubernetes_network_config.service_ipv4_cidr, "")
 
     cluster_certificate_authority_data = aws_eks_cluster.this[0].certificate_authority[0].data
   }
@@ -40,7 +43,6 @@ resource "time_sleep" "this" {
 
 ################################################################################
 # EKS IPV6 CNI Policy
-# TODO - hopefully AWS releases a managed policy which can replace this
 # https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html#cni-iam-role-create-ipv6-policy
 ################################################################################
 
@@ -62,7 +64,7 @@ data "aws_iam_policy_document" "cni_ipv6_policy" {
   statement {
     sid       = "CreateTags"
     actions   = ["ec2:CreateTags"]
-    resources = ["arn:${data.aws_partition.current.partition}:ec2:*:*:network-interface/*"]
+    resources = ["arn:${local.partition}:ec2:*:*:network-interface/*"]
   }
 }
 
@@ -180,6 +182,27 @@ locals {
       ipv6_cidr_blocks = var.cluster_ip_family == "ipv6" ? ["::/0"] : null
     }
   } : k => v if var.node_security_group_enable_recommended_rules }
+
+  efa_security_group_rules = { for k, v in
+    {
+      ingress_all_self_efa = {
+        description = "Node to node EFA"
+        protocol    = "-1"
+        from_port   = 0
+        to_port     = 0
+        type        = "ingress"
+        self        = true
+      }
+      egress_all_self_efa = {
+        description = "Node to node EFA"
+        protocol    = "-1"
+        from_port   = 0
+        to_port     = 0
+        type        = "egress"
+        self        = true
+      }
+    } : k => v if var.enable_efa_support
+  }
 }
 
 resource "aws_security_group" "node" {
@@ -206,6 +229,7 @@ resource "aws_security_group" "node" {
 
 resource "aws_security_group_rule" "node" {
   for_each = { for k, v in merge(
+    local.efa_security_group_rules,
     local.node_security_group_rules,
     local.node_security_group_recommended_rules,
     var.node_security_group_additional_rules,
@@ -259,6 +283,8 @@ module "fargate_profile" {
   # To better understand why this `lookup()` logic is required, see:
   # https://github.com/hashicorp/terraform/issues/31646#issuecomment-1217279031
   iam_role_additional_policies = lookup(each.value, "iam_role_additional_policies", lookup(var.fargate_profile_defaults, "iam_role_additional_policies", {}))
+  create_iam_role_policy       = try(each.value.create_iam_role_policy, var.fargate_profile_defaults.create_iam_role_policy, true)
+  iam_role_policy_statements   = try(each.value.iam_role_policy_statements, var.fargate_profile_defaults.iam_role_policy_statements, [])
 
   tags = merge(var.tags, try(each.value.tags, var.fargate_profile_defaults.tags, {}))
 }
@@ -274,9 +300,8 @@ module "eks_managed_node_group" {
 
   create = try(each.value.create, true)
 
-  cluster_name      = time_sleep.this[0].triggers["cluster_name"]
-  cluster_version   = try(each.value.cluster_version, var.eks_managed_node_group_defaults.cluster_version, time_sleep.this[0].triggers["cluster_version"])
-  cluster_ip_family = var.cluster_ip_family
+  cluster_name    = time_sleep.this[0].triggers["cluster_name"]
+  cluster_version = try(each.value.cluster_version, var.eks_managed_node_group_defaults.cluster_version, time_sleep.this[0].triggers["cluster_version"])
 
   # EKS Managed Node Group
   name            = try(each.value.name, each.key)
@@ -288,9 +313,10 @@ module "eks_managed_node_group" {
   max_size     = try(each.value.max_size, var.eks_managed_node_group_defaults.max_size, 3)
   desired_size = try(each.value.desired_size, var.eks_managed_node_group_defaults.desired_size, 1)
 
-  ami_id              = try(each.value.ami_id, var.eks_managed_node_group_defaults.ami_id, "")
-  ami_type            = try(each.value.ami_type, var.eks_managed_node_group_defaults.ami_type, null)
-  ami_release_version = try(each.value.ami_release_version, var.eks_managed_node_group_defaults.ami_release_version, null)
+  ami_id                         = try(each.value.ami_id, var.eks_managed_node_group_defaults.ami_id, "")
+  ami_type                       = try(each.value.ami_type, var.eks_managed_node_group_defaults.ami_type, null)
+  ami_release_version            = try(each.value.ami_release_version, var.eks_managed_node_group_defaults.ami_release_version, null)
+  use_latest_ami_release_version = try(each.value.use_latest_ami_release_version, var.eks_managed_node_group_defaults.use_latest_ami_release_version, false)
 
   capacity_type        = try(each.value.capacity_type, var.eks_managed_node_group_defaults.capacity_type, null)
   disk_size            = try(each.value.disk_size, var.eks_managed_node_group_defaults.disk_size, null)
@@ -308,11 +334,15 @@ module "eks_managed_node_group" {
   cluster_endpoint           = try(time_sleep.this[0].triggers["cluster_endpoint"], "")
   cluster_auth_base64        = try(time_sleep.this[0].triggers["cluster_certificate_authority_data"], "")
   cluster_service_ipv4_cidr  = var.cluster_service_ipv4_cidr
+  cluster_ip_family          = var.cluster_ip_family
+  cluster_service_cidr       = try(time_sleep.this[0].triggers["cluster_service_cidr"], "")
   enable_bootstrap_user_data = try(each.value.enable_bootstrap_user_data, var.eks_managed_node_group_defaults.enable_bootstrap_user_data, false)
   pre_bootstrap_user_data    = try(each.value.pre_bootstrap_user_data, var.eks_managed_node_group_defaults.pre_bootstrap_user_data, "")
   post_bootstrap_user_data   = try(each.value.post_bootstrap_user_data, var.eks_managed_node_group_defaults.post_bootstrap_user_data, "")
   bootstrap_extra_args       = try(each.value.bootstrap_extra_args, var.eks_managed_node_group_defaults.bootstrap_extra_args, "")
   user_data_template_path    = try(each.value.user_data_template_path, var.eks_managed_node_group_defaults.user_data_template_path, "")
+  cloudinit_pre_nodeadm      = try(each.value.cloudinit_pre_nodeadm, var.eks_managed_node_group_defaults.cloudinit_pre_nodeadm, [])
+  cloudinit_post_nodeadm     = try(each.value.cloudinit_post_nodeadm, var.eks_managed_node_group_defaults.cloudinit_post_nodeadm, [])
 
   # Launch Template
   create_launch_template                 = try(each.value.create_launch_template, var.eks_managed_node_group_defaults.create_launch_template, true)
@@ -344,8 +374,14 @@ module "eks_managed_node_group" {
   license_specifications             = try(each.value.license_specifications, var.eks_managed_node_group_defaults.license_specifications, {})
   metadata_options                   = try(each.value.metadata_options, var.eks_managed_node_group_defaults.metadata_options, local.metadata_options)
   enable_monitoring                  = try(each.value.enable_monitoring, var.eks_managed_node_group_defaults.enable_monitoring, true)
-  network_interfaces                 = try(each.value.network_interfaces, var.eks_managed_node_group_defaults.network_interfaces, [])
+  enable_efa_support                 = try(each.value.enable_efa_support, var.eks_managed_node_group_defaults.enable_efa_support, false)
+  enable_efa_only                    = try(each.value.enable_efa_only, var.eks_managed_node_group_defaults.enable_efa_only, false)
+  efa_indices                        = try(each.value.efa_indices, var.eks_managed_node_group_defaults.efa_indices, [0])
+  create_placement_group             = try(each.value.create_placement_group, var.eks_managed_node_group_defaults.create_placement_group, false)
   placement                          = try(each.value.placement, var.eks_managed_node_group_defaults.placement, {})
+  placement_group_az                 = try(each.value.placement_group_az, var.eks_managed_node_group_defaults.placement_group_az, null)
+  placement_group_strategy           = try(each.value.placement_group_strategy, var.eks_managed_node_group_defaults.placement_group_strategy, "cluster")
+  network_interfaces                 = try(each.value.network_interfaces, var.eks_managed_node_group_defaults.network_interfaces, [])
   maintenance_options                = try(each.value.maintenance_options, var.eks_managed_node_group_defaults.maintenance_options, {})
   private_dns_name_options           = try(each.value.private_dns_name_options, var.eks_managed_node_group_defaults.private_dns_name_options, {})
 
@@ -362,6 +398,12 @@ module "eks_managed_node_group" {
   # To better understand why this `lookup()` logic is required, see:
   # https://github.com/hashicorp/terraform/issues/31646#issuecomment-1217279031
   iam_role_additional_policies = lookup(each.value, "iam_role_additional_policies", lookup(var.eks_managed_node_group_defaults, "iam_role_additional_policies", {}))
+  create_iam_role_policy       = try(each.value.create_iam_role_policy, var.eks_managed_node_group_defaults.create_iam_role_policy, true)
+  iam_role_policy_statements   = try(each.value.iam_role_policy_statements, var.eks_managed_node_group_defaults.iam_role_policy_statements, [])
+
+  # Autoscaling group schedule
+  create_schedule = try(each.value.create_schedule, var.eks_managed_node_group_defaults.create_schedule, true)
+  schedules       = try(each.value.schedules, var.eks_managed_node_group_defaults.schedules, {})
 
   # Security group
   vpc_security_group_ids            = compact(concat([local.node_security_group_id], try(each.value.vpc_security_group_ids, var.eks_managed_node_group_defaults.vpc_security_group_ids, [])))
@@ -381,8 +423,7 @@ module "self_managed_node_group" {
 
   create = try(each.value.create, true)
 
-  cluster_name      = time_sleep.this[0].triggers["cluster_name"]
-  cluster_ip_family = var.cluster_ip_family
+  cluster_name = time_sleep.this[0].triggers["cluster_name"]
 
   # Autoscaling Group
   create_autoscaling_group = try(each.value.create_autoscaling_group, var.self_managed_node_group_defaults.create_autoscaling_group, true)
@@ -396,6 +437,7 @@ module "self_managed_node_group" {
   min_size                  = try(each.value.min_size, var.self_managed_node_group_defaults.min_size, 0)
   max_size                  = try(each.value.max_size, var.self_managed_node_group_defaults.max_size, 3)
   desired_size              = try(each.value.desired_size, var.self_managed_node_group_defaults.desired_size, 1)
+  desired_size_type         = try(each.value.desired_size_type, var.self_managed_node_group_defaults.desired_size_type, null)
   capacity_rebalance        = try(each.value.capacity_rebalance, var.self_managed_node_group_defaults.capacity_rebalance, null)
   min_elb_capacity          = try(each.value.min_elb_capacity, var.self_managed_node_group_defaults.min_elb_capacity, null)
   wait_for_elb_capacity     = try(each.value.wait_for_elb_capacity, var.self_managed_node_group_defaults.wait_for_elb_capacity, null)
@@ -406,9 +448,13 @@ module "self_managed_node_group" {
   context                   = try(each.value.context, var.self_managed_node_group_defaults.context, null)
 
   target_group_arns         = try(each.value.target_group_arns, var.self_managed_node_group_defaults.target_group_arns, [])
+  create_placement_group    = try(each.value.create_placement_group, var.self_managed_node_group_defaults.create_placement_group, false)
   placement_group           = try(each.value.placement_group, var.self_managed_node_group_defaults.placement_group, null)
+  placement_group_az        = try(each.value.placement_group_az, var.self_managed_node_group_defaults.placement_group_az, null)
   health_check_type         = try(each.value.health_check_type, var.self_managed_node_group_defaults.health_check_type, null)
   health_check_grace_period = try(each.value.health_check_grace_period, var.self_managed_node_group_defaults.health_check_grace_period, null)
+
+  ignore_failed_scaling_activities = try(each.value.ignore_failed_scaling_activities, var.self_managed_node_group_defaults.ignore_failed_scaling_activities, null)
 
   force_delete           = try(each.value.force_delete, var.self_managed_node_group_defaults.force_delete, null)
   force_delete_warm_pool = try(each.value.force_delete_warm_pool, var.self_managed_node_group_defaults.force_delete_warm_pool, null)
@@ -420,26 +466,30 @@ module "self_managed_node_group" {
   metrics_granularity     = try(each.value.metrics_granularity, var.self_managed_node_group_defaults.metrics_granularity, null)
   service_linked_role_arn = try(each.value.service_linked_role_arn, var.self_managed_node_group_defaults.service_linked_role_arn, null)
 
-  initial_lifecycle_hooks    = try(each.value.initial_lifecycle_hooks, var.self_managed_node_group_defaults.initial_lifecycle_hooks, [])
-  instance_refresh           = try(each.value.instance_refresh, var.self_managed_node_group_defaults.instance_refresh, local.default_instance_refresh)
-  use_mixed_instances_policy = try(each.value.use_mixed_instances_policy, var.self_managed_node_group_defaults.use_mixed_instances_policy, false)
-  mixed_instances_policy     = try(each.value.mixed_instances_policy, var.self_managed_node_group_defaults.mixed_instances_policy, null)
-  warm_pool                  = try(each.value.warm_pool, var.self_managed_node_group_defaults.warm_pool, {})
-
-  create_schedule = try(each.value.create_schedule, var.self_managed_node_group_defaults.create_schedule, false)
-  schedules       = try(each.value.schedules, var.self_managed_node_group_defaults.schedules, {})
+  initial_lifecycle_hooks     = try(each.value.initial_lifecycle_hooks, var.self_managed_node_group_defaults.initial_lifecycle_hooks, [])
+  instance_maintenance_policy = try(each.value.instance_maintenance_policy, var.self_managed_node_group_defaults.instance_maintenance_policy, {})
+  instance_refresh            = try(each.value.instance_refresh, var.self_managed_node_group_defaults.instance_refresh, local.default_instance_refresh)
+  use_mixed_instances_policy  = try(each.value.use_mixed_instances_policy, var.self_managed_node_group_defaults.use_mixed_instances_policy, false)
+  mixed_instances_policy      = try(each.value.mixed_instances_policy, var.self_managed_node_group_defaults.mixed_instances_policy, null)
+  warm_pool                   = try(each.value.warm_pool, var.self_managed_node_group_defaults.warm_pool, {})
 
   delete_timeout         = try(each.value.delete_timeout, var.self_managed_node_group_defaults.delete_timeout, null)
   autoscaling_group_tags = try(each.value.autoscaling_group_tags, var.self_managed_node_group_defaults.autoscaling_group_tags, {})
 
   # User data
-  platform                 = try(each.value.platform, var.self_managed_node_group_defaults.platform, "linux")
+  platform = try(each.value.platform, var.self_managed_node_group_defaults.platform, null)
+  # TODO - update this when `var.platform` is removed in v21.0
+  ami_type                 = try(each.value.ami_type, var.self_managed_node_group_defaults.ami_type, "AL2_x86_64")
   cluster_endpoint         = try(time_sleep.this[0].triggers["cluster_endpoint"], "")
   cluster_auth_base64      = try(time_sleep.this[0].triggers["cluster_certificate_authority_data"], "")
+  cluster_service_cidr     = try(time_sleep.this[0].triggers["cluster_service_cidr"], "")
+  cluster_ip_family        = var.cluster_ip_family
   pre_bootstrap_user_data  = try(each.value.pre_bootstrap_user_data, var.self_managed_node_group_defaults.pre_bootstrap_user_data, "")
   post_bootstrap_user_data = try(each.value.post_bootstrap_user_data, var.self_managed_node_group_defaults.post_bootstrap_user_data, "")
   bootstrap_extra_args     = try(each.value.bootstrap_extra_args, var.self_managed_node_group_defaults.bootstrap_extra_args, "")
   user_data_template_path  = try(each.value.user_data_template_path, var.self_managed_node_group_defaults.user_data_template_path, "")
+  cloudinit_pre_nodeadm    = try(each.value.cloudinit_pre_nodeadm, var.self_managed_node_group_defaults.cloudinit_pre_nodeadm, [])
+  cloudinit_post_nodeadm   = try(each.value.cloudinit_post_nodeadm, var.self_managed_node_group_defaults.cloudinit_post_nodeadm, [])
 
   # Launch Template
   create_launch_template                 = try(each.value.create_launch_template, var.self_managed_node_group_defaults.create_launch_template, true)
@@ -477,6 +527,9 @@ module "self_managed_node_group" {
   license_specifications             = try(each.value.license_specifications, var.self_managed_node_group_defaults.license_specifications, {})
   metadata_options                   = try(each.value.metadata_options, var.self_managed_node_group_defaults.metadata_options, local.metadata_options)
   enable_monitoring                  = try(each.value.enable_monitoring, var.self_managed_node_group_defaults.enable_monitoring, true)
+  enable_efa_support                 = try(each.value.enable_efa_support, var.self_managed_node_group_defaults.enable_efa_support, false)
+  enable_efa_only                    = try(each.value.enable_efa_only, var.self_managed_node_group_defaults.enable_efa_only, false)
+  efa_indices                        = try(each.value.efa_indices, var.self_managed_node_group_defaults.efa_indices, [0])
   network_interfaces                 = try(each.value.network_interfaces, var.self_managed_node_group_defaults.network_interfaces, [])
   placement                          = try(each.value.placement, var.self_managed_node_group_defaults.placement, {})
   maintenance_options                = try(each.value.maintenance_options, var.self_managed_node_group_defaults.maintenance_options, {})
@@ -495,6 +548,16 @@ module "self_managed_node_group" {
   # To better understand why this `lookup()` logic is required, see:
   # https://github.com/hashicorp/terraform/issues/31646#issuecomment-1217279031
   iam_role_additional_policies = lookup(each.value, "iam_role_additional_policies", lookup(var.self_managed_node_group_defaults, "iam_role_additional_policies", {}))
+  create_iam_role_policy       = try(each.value.create_iam_role_policy, var.self_managed_node_group_defaults.create_iam_role_policy, true)
+  iam_role_policy_statements   = try(each.value.iam_role_policy_statements, var.self_managed_node_group_defaults.iam_role_policy_statements, [])
+
+  # Access entry
+  create_access_entry = try(each.value.create_access_entry, var.self_managed_node_group_defaults.create_access_entry, true)
+  iam_role_arn        = try(each.value.iam_role_arn, var.self_managed_node_group_defaults.iam_role_arn, null)
+
+  # Autoscaling group schedule
+  create_schedule = try(each.value.create_schedule, var.self_managed_node_group_defaults.create_schedule, true)
+  schedules       = try(each.value.schedules, var.self_managed_node_group_defaults.schedules, {})
 
   # Security group
   vpc_security_group_ids            = compact(concat([local.node_security_group_id], try(each.value.vpc_security_group_ids, var.self_managed_node_group_defaults.vpc_security_group_ids, [])))

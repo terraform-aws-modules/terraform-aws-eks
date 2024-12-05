@@ -31,7 +31,6 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
       use_custom_launch_template = false
 
       ami_type = "BOTTLEROCKET_x86_64"
-      platform = "bottlerocket"
     }
   }
 ```
@@ -42,7 +41,6 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
   eks_managed_node_groups = {
     bottlerocket_prepend_userdata = {
       ami_type = "BOTTLEROCKET_x86_64"
-      platform = "bottlerocket"
 
       bootstrap_extra_args = <<-EOT
         # extra args added
@@ -84,7 +82,7 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
   eks_managed_node_groups = {
     bottlerocket_custom_ami = {
       ami_id   = "ami-0ff61e0bcfc81dc94"
-      platform = "bottlerocket"
+      ami_type = "BOTTLEROCKET_x86_64"
 
       # use module user data template to bootstrap
       enable_bootstrap_user_data = true
@@ -106,7 +104,7 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
   }
 ```
 
-See the [`examples/eks_managed_node_group/` example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks_managed_node_group) for a working example of various configurations.
+See the [`examples/eks-managed-node-group/` example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks-managed-node-group) for a working example of various configurations.
 
 ### Self Managed Node Groups
 
@@ -115,32 +113,32 @@ Refer to the [Self Managed Node Group documentation](https://docs.aws.amazon.com
 1. The `self-managed-node-group` uses the latest AWS EKS Optimized AMI (Linux) for the given Kubernetes version by default:
 
 ```hcl
-  cluster_version = "1.24"
+  cluster_version = "1.31"
 
-  # This self managed node group will use the latest AWS EKS Optimized AMI for Kubernetes 1.24
+  # This self managed node group will use the latest AWS EKS Optimized AMI for Kubernetes 1.27
   self_managed_node_groups = {
     default = {}
   }
 ```
 
-2. To use Bottlerocket, specify the `platform` as `bottlerocket` and supply a Bottlerocket OS AMI:
+2. To use Bottlerocket, specify the `ami_type` as one of the respective `"BOTTLEROCKET_*" types` and supply a Bottlerocket OS AMI:
 
 ```hcl
-  cluster_version = "1.24"
+  cluster_version = "1.31"
 
   self_managed_node_groups = {
     bottlerocket = {
-      platform = "bottlerocket"
       ami_id   = data.aws_ami.bottlerocket_ami.id
+      ami_type = "BOTTLEROCKET_x86_64"
     }
   }
 ```
 
-See the [`examples/self_managed_node_group/` example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/self_managed_node_group) for a working example of various configurations.
+See the [`examples/self-managed-node-group/` example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/self-managed-node-group) for a working example of various configurations.
 
 ### Fargate Profiles
 
-Fargate profiles are straightforward to use and therefore no further details are provided here. See the [`examples/fargate_profile/` example](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/fargate_profile) for a working example of various configurations.
+Fargate profiles are straightforward to use and therefore no further details are provided here. See the [`tests/fargate-profile/` tests](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/tests/fargate-profile) for a working example of various configurations.
 
 ### Default Configurations
 
@@ -177,7 +175,6 @@ For example, the following creates 4 AWS EKS Managed Node Groups:
     # This overrides the OS used
     bottlerocket = {
       ami_type = "BOTTLEROCKET_x86_64"
-      platform = "bottlerocket"
     }
   }
 ```

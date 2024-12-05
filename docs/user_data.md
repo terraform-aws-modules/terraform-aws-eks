@@ -1,17 +1,18 @@
 # User Data & Bootstrapping
 
-Users can see the various methods of using and providing user data through the [user data examples](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/user_data) as well more detailed information on the design and possible configurations via the [user data module itself](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/_user_data)
+Users can see the various methods of using and providing user data through the [user data tests](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/tests/user-data) as well more detailed information on the design and possible configurations via the [user data module itself](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/_user_data)
 
 ## Summary
 
 - AWS EKS Managed Node Groups
   - By default, any supplied user data is pre-pended to the user data supplied by the EKS Managed Node Group service
   - If users supply an `ami_id`, the service no longers supplies user data to bootstrap nodes; users can enable `enable_bootstrap_user_data` and use the module provided user data template, or provide their own user data template
-  - `bottlerocket` platform user data must be in TOML format
+  - AMI types of `BOTTLEROCKET_*`, user data must be in TOML format
+  - AMI types of `WINDOWS_*`, user data must be in powershell/PS1 script format
 - Self Managed Node Groups
-  - `linux` platform (default) -> the user data template (bash/shell script) provided by the module is used as the default; users are able to provide their own user data template
-  - `bottlerocket` platform -> the user data template (TOML file) provided by the module is used as the default; users are able to provide their own user data template
-  - `windows` platform -> the user data template (powershell/PS1 script) provided by the module is used as the default; users are able to provide their own user data template
+  - `AL2_x86_64` AMI type (default) -> the user data template (bash/shell script) provided by the module is used as the default; users are able to provide their own user data template
+  - `BOTTLEROCKET_*` AMI types -> the user data template (TOML file) provided by the module is used as the default; users are able to provide their own user data template
+  - `WINDOWS_*` AMI types -> the user data template (powershell/PS1 script) provided by the module is used as the default; users are able to provide their own user data template
 
 The templates provided by the module can be found under the [templates directory](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/templates)
 
@@ -36,7 +37,7 @@ When using an EKS managed node group, users have 2 primary routes for interactin
        bootstrap_extra_args       = "..."
        post_bootstrap_user_data   = "..."
        ```
-   - If the AMI is **NOT** an AWS EKS Optimized AMI derivative, or if users wish to have more control over the user data that is supplied to the node when launched, users have the ability to supply their own user data template that will be rendered instead of the module supplied template. Note - only the variables that are supplied to the `templatefile()` for the respective platform/OS are available for use in the supplied template, otherwise users will need to pre-render/pre-populate the template before supplying the final template to the module for rendering as user data.
+   - If the AMI is **NOT** an AWS EKS Optimized AMI derivative, or if users wish to have more control over the user data that is supplied to the node when launched, users have the ability to supply their own user data template that will be rendered instead of the module supplied template. Note - only the variables that are supplied to the `templatefile()` for the respective AMI type are available for use in the supplied template, otherwise users will need to pre-render/pre-populate the template before supplying the final template to the module for rendering as user data.
      - Users can use the following variables to facilitate this process:
        ```hcl
        user_data_template_path  = "./your/user_data.sh" # user supplied bootstrap user data template
@@ -45,12 +46,12 @@ When using an EKS managed node group, users have 2 primary routes for interactin
        post_bootstrap_user_data = "..."
        ```
 
-| ℹ️ When using bottlerocket as the desired platform, since the user data for bottlerocket is TOML, all configurations are merged in the one file supplied as user data. Therefore, `pre_bootstrap_user_data` and `post_bootstrap_user_data` are not valid since the bottlerocket OS handles when various settings are applied. If you wish to supply additional configuration settings when using bottlerocket, supply them via the `bootstrap_extra_args` variable. For the linux platform, `bootstrap_extra_args` are settings that will be supplied to the [AWS EKS Optimized AMI bootstrap script](https://github.com/awslabs/amazon-eks-ami/blob/master/files/bootstrap.sh#L14) such as kubelet extra args, etc. See the [bottlerocket GitHub repository documentation](https://github.com/bottlerocket-os/bottlerocket#description-of-settings) for more details on what settings can be supplied via the `bootstrap_extra_args` variable. |
+| ℹ️ When using bottlerocket, the supplied user data (TOML format) is merged in with the values supplied by EKS. Therefore, `pre_bootstrap_user_data` and `post_bootstrap_user_data` are not valid since the bottlerocket OS handles when various settings are applied. If you wish to supply additional configuration settings when using bottlerocket, supply them via the `bootstrap_extra_args` variable. For the `AL2_*` AMI types, `bootstrap_extra_args` are settings that will be supplied to the [AWS EKS Optimized AMI bootstrap script](https://github.com/awslabs/amazon-eks-ami/blob/master/files/bootstrap.sh#L14) such as kubelet extra args, etc. See the [bottlerocket GitHub repository documentation](https://github.com/bottlerocket-os/bottlerocket#description-of-settings) for more details on what settings can be supplied via the `bootstrap_extra_args` variable. |
 | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 
 ### Self Managed Node Group
 
-Self managed node groups require users to provide the necessary bootstrap user data. Users can elect to use the user data template provided by the module for their platform/OS or provide their own user data template for rendering by the module.
+Self managed node groups require users to provide the necessary bootstrap user data. Users can elect to use the user data template provided by the module for their respective AMI type or provide their own user data template for rendering by the module.
 
 - If the AMI used is a derivative of the [AWS EKS Optimized AMI ](https://github.com/awslabs/amazon-eks-ami), users can opt in to using a template provided by the module that provides the minimum necessary configuration to bootstrap the node when launched:
   - Users can use the following variables to facilitate this process:
@@ -60,7 +61,7 @@ Self managed node groups require users to provide the necessary bootstrap user d
     bootstrap_extra_args       = "..."
     post_bootstrap_user_data   = "..."
     ```
-  - If the AMI is **NOT** an AWS EKS Optimized AMI derivative, or if users wish to have more control over the user data that is supplied to the node when launched, users have the ability to supply their own user data template that will be rendered instead of the module supplied template. Note - only the variables that are supplied to the `templatefile()` for the respective platform/OS are available for use in the supplied template, otherwise users will need to pre-render/pre-populate the template before supplying the final template to the module for rendering as user data.
+  - If the AMI is **NOT** an AWS EKS Optimized AMI derivative, or if users wish to have more control over the user data that is supplied to the node when launched, users have the ability to supply their own user data template that will be rendered instead of the module supplied template. Note - only the variables that are supplied to the `templatefile()` for the respective AMI type are available for use in the supplied template, otherwise users will need to pre-render/pre-populate the template before supplying the final template to the module for rendering as user data.
     - Users can use the following variables to facilitate this process:
       ```hcl
       user_data_template_path  = "./your/user_data.sh" # user supplied bootstrap user data template
