@@ -1,26 +1,31 @@
-data "aws_partition" "current" {}
-data "aws_caller_identity" "current" {}
+data "aws_partition" "current" {
+  count = local.create ? 1 : 0
+}
+data "aws_caller_identity" "current" {
+  count = local.create ? 1 : 0
+}
 
 data "aws_iam_session_context" "current" {
+  count = local.create ? 1 : 0
+
   # This data source provides information on the IAM source role of an STS assumed role
   # For non-role ARNs, this data source simply passes the ARN through issuer ARN
   # Ref https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2327#issuecomment-1355581682
   # Ref https://github.com/hashicorp/terraform-provider-aws/issues/28381
-  arn = data.aws_caller_identity.current.arn
+  arn = try(data.aws_caller_identity.current[0].arn, "")
 }
 
 locals {
   create = var.create && var.putin_khuylo
 
-  partition = data.aws_partition.current.partition
+  partition = try(data.aws_partition.current[0].partition, "")
 
   cluster_role = try(aws_iam_role.this[0].arn, var.iam_role_arn)
 
   create_outposts_local_cluster    = length(var.outpost_config) > 0
   enable_cluster_encryption_config = length(var.cluster_encryption_config) > 0 && !local.create_outposts_local_cluster
 
-  auto_mode_enabled           = try(var.cluster_compute_config.enabled, false)
-  auto_mode_nodepools_enabled = length(try(var.cluster_compute_config.node_pools, [])) > 0
+  auto_mode_enabled = try(var.cluster_compute_config.enabled, false)
 }
 
 ################################################################################
@@ -218,7 +223,7 @@ locals {
   # better controlled by users through Terraform
   bootstrap_cluster_creator_admin_permissions = {
     cluster_creator = {
-      principal_arn = data.aws_iam_session_context.current.issuer_arn
+      principal_arn = try(data.aws_iam_session_context.current[0].issuer_arn, "")
       type          = "STANDARD"
 
       policy_associations = {
@@ -307,7 +312,7 @@ module "kms" {
   # Policy
   enable_default_policy     = var.kms_key_enable_default_policy
   key_owners                = var.kms_key_owners
-  key_administrators        = coalescelist(var.kms_key_administrators, [data.aws_iam_session_context.current.issuer_arn])
+  key_administrators        = coalescelist(var.kms_key_administrators, [try(data.aws_iam_session_context.current[0].issuer_arn, "")])
   key_users                 = concat([local.cluster_role], var.kms_key_users)
   key_service_users         = var.kms_key_service_users
   source_policy_documents   = var.kms_key_source_policy_documents
@@ -689,7 +694,7 @@ resource "aws_eks_identity_provider_config" "this" {
 ################################################################################
 
 locals {
-  create_node_iam_role = local.create && var.create_node_iam_role && local.auto_mode_nodepools_enabled
+  create_node_iam_role = local.create && var.create_node_iam_role && local.auto_mode_enabled
   node_iam_role_name   = coalesce(var.node_iam_role_name, "${var.cluster_name}-eks-auto")
 
   create_node_iam_role_custom_policy = local.create_node_iam_role && (var.enable_node_custom_tags_permissions || length(var.node_iam_role_policy_statements) > 0)
