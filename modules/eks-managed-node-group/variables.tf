@@ -273,6 +273,7 @@ variable "metadata_options" {
   }
 }
 
+# TODO - make this false by default at next breaking change
 variable "enable_monitoring" {
   description = "Enables/disables detailed monitoring"
   type        = bool
