@@ -95,16 +95,6 @@ module "eks" {
       min_size     = 2
       max_size     = 3
       desired_size = 2
-
-      taints = {
-        # This Taint aims to keep just EKS Addons and Karpenter running on this MNG
-        # The pods that do not tolerate this taint should run on nodes created by Karpenter
-        addons = {
-          key    = "CriticalAddonsOnly"
-          value  = "true"
-          effect = "NO_SCHEDULE"
-        },
-      }
     }
   }
 
@@ -164,17 +154,18 @@ resource "helm_release" "karpenter" {
   repository_username = data.aws_ecrpublic_authorization_token.token.user_name
   repository_password = data.aws_ecrpublic_authorization_token.token.password
   chart               = "karpenter"
-  version             = "1.0.6"
+  version             = "1.1.0"
   wait                = false
 
   values = [
     <<-EOT
-    serviceAccount:
-      name: ${module.karpenter.service_account}
+    dnsPolicy: Default
     settings:
       clusterName: ${module.eks.cluster_name}
       clusterEndpoint: ${module.eks.cluster_endpoint}
       interruptionQueue: ${module.karpenter.queue_name}
+    webhook:
+      enabled: false
     EOT
   ]
 }
@@ -226,7 +217,7 @@ resource "kubectl_manifest" "karpenter_node_pool" {
               values: ["nitro"]
             - key: "karpenter.k8s.aws/instance-generation"
               operator: Gt
-              values: ["2"]
+              values: ["5"]
       limits:
         cpu: 1000
       disruption:
