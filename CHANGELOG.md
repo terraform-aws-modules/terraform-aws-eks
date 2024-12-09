@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.31.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.0...v20.31.1) (2024-12-09)
+
+
+### Bug Fixes
+
+* Create EKS Auto Mode role when Auto Mode is enabled, regardless of built-in node pool use ([#3234](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3234)) ([e2846be](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e2846be8b110e59d36d6f868b74531a6d8ca4987))
+
 ## [20.31.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.30.1...v20.31.0) (2024-12-04)
 
 
