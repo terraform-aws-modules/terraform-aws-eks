@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.31.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.1...v20.31.2) (2024-12-12)
+
+
+### Bug Fixes
+
+* Avoid trying to attach the node role when Auto Mode nodepools are not specified ([#3239](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3239)) ([ce34f1d](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ce34f1db3f7824167d9a766e6c90dee3a6dcf1c3))
+
 ## [20.31.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.0...v20.31.1) (2024-12-09)
 
 
