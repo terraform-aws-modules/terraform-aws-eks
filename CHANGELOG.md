@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.31.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.2...v20.31.3) (2024-12-12)
+
+
+### Bug Fixes
+
+* Update min provider version to remediate cluster replacement when enabling EKS Auto Mode ([#3240](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3240)) ([012e51c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/012e51c05551da48a7f380d4a7b75880b0c24fe1))
+
 ## [20.31.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.1...v20.31.2) (2024-12-12)
 
 
