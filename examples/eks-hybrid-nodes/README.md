@@ -1,4 +1,7 @@
-# EKS Hybrid Node IAM Role
+# EKS Hybrid Nodes
+
+> [!CAUTION]
+> EC2 instances are not supported with EKS Hybrid Nodes. This example is provided for reference only in lieu of users having to provision a VM in their own environment.
 
 ## Usage
 
@@ -23,7 +26,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.2 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.79 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.81 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.16 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | >= 3.4 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.5 |
@@ -33,8 +36,8 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.79 |
-| <a name="provider_aws.remote"></a> [aws.remote](#provider\_aws.remote) | >= 5.79 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.81 |
+| <a name="provider_aws.remote"></a> [aws.remote](#provider\_aws.remote) | >= 5.81 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.16 |
 | <a name="provider_http"></a> [http](#provider\_http) | >= 3.4 |
 | <a name="provider_local"></a> [local](#provider\_local) | >= 2.5 |
