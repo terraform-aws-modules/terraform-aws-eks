@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.31.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.3...v20.31.4) (2024-12-14)
+
+
+### Bug Fixes
+
+* Auto Mode custom tag policy should apply to cluster role, not node role ([#3242](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3242)) ([a07013a](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/a07013a1f4d4d56b56eb2e6265a6f38041a4540b))
+
 ## [20.31.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.2...v20.31.3) (2024-12-12)
 
 
