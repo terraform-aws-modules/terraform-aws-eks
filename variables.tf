@@ -542,6 +542,12 @@ variable "dataplane_wait_duration" {
   default     = "30s"
 }
 
+variable "enable_auto_mode_custom_tags" {
+  description = "Determines whether to enable permissions for custom tags resources created by EKS Auto Mode"
+  type        = bool
+  default     = true
+}
+
 ################################################################################
 # EKS Addons
 ################################################################################
@@ -618,18 +624,6 @@ variable "node_iam_role_tags" {
   description = "A map of additional tags to add to the EKS Auto node IAM role created"
   type        = map(string)
   default     = {}
-}
-
-variable "enable_node_custom_tags_permissions" {
-  description = "Determines whether to enable permissions for custom tags for the EKS Auto node IAM role"
-  type        = bool
-  default     = true
-}
-
-variable "node_iam_role_policy_statements" {
-  description = "A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed"
-  type        = any
-  default     = []
 }
 
 ################################################################################
