@@ -36,6 +36,11 @@ output "node_group_id" {
   value       = try(aws_eks_node_group.this[0].id, null)
 }
 
+output "node_group_release_version" {
+  description = "AMI version of the EKS node group"
+  value       = try(aws_eks_node_group.this[0].release_version, null)
+}
+
 output "node_group_resources" {
   description = "List of objects containing information about underlying resources"
   value       = try(aws_eks_node_group.this[0].resources, null)
