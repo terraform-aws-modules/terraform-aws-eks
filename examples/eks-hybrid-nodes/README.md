@@ -12,7 +12,7 @@ To provision the provided configurations you need to execute:
 
 ```bash
 terraform init
-terraform apply -target=module.remote_node_vpc -target=local_file.key_pem --auto-approve
+terraform apply -target=module.remote_node_vpc -target=local_file.key_pem -target=module.key_pair --auto-approve
 cd ami && packer build -var 'ssh_keypair_name=hybrid-node' -var 'ssh_private_key_file=../key.pem' . && cd -
 terraform apply --auto-approve
 ./join.sh
