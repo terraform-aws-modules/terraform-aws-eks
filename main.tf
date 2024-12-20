@@ -75,9 +75,12 @@ resource "aws_eks_cluster" "this" {
     for_each = local.create_outposts_local_cluster ? [] : [1]
 
     content {
-      elastic_load_balancing {
+      dynamic "elastic_load_balancing" {
+        for_each = local.auto_mode_enabled ? [1] : []
 
-        enabled = local.auto_mode_enabled
+        content {
+          enabled = local.auto_mode_enabled
+        }
       }
 
       ip_family         = var.cluster_ip_family
@@ -130,9 +133,13 @@ resource "aws_eks_cluster" "this" {
     }
   }
 
-  storage_config {
-    block_storage {
-      enabled = local.auto_mode_enabled
+  dynamic "storage_config" {
+    for_each = local.auto_mode_enabled ? [1] : []
+
+    content {
+      block_storage {
+        enabled = local.auto_mode_enabled
+      }
     }
   }
 
