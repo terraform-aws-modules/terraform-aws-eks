@@ -18,8 +18,11 @@ Once the cluster is up and running, you can check that Karpenter is functioning 
 # First, make sure you have updated your local kubeconfig
 aws eks --region eu-west-1 update-kubeconfig --name ex-karpenter
 
-# Second, scale the example deployment
-kubectl scale deployment inflate --replicas 5
+# Second, deploy the Karpenter NodeClass/NodePool
+kubectl apply -f karpenter.yaml
+
+# Second, deploy the example deployment
+kubectl apply -f inflate.yaml
 
 # You can watch Karpenter's controller logs with
 kubectl logs -f -n kube-system -l app.kubernetes.io/name=karpenter -c controller
@@ -32,10 +35,10 @@ kubectl get nodes -L karpenter.sh/registered
 ```
 
 ```text
-NAME                                        STATUS   ROLES    AGE    VERSION               REGISTERED
-ip-10-0-16-155.eu-west-1.compute.internal   Ready    <none>   100s   v1.29.3-eks-ae9a62a   true
-ip-10-0-3-23.eu-west-1.compute.internal     Ready    <none>   6m1s   v1.29.3-eks-ae9a62a
-ip-10-0-41-2.eu-west-1.compute.internal     Ready    <none>   6m3s   v1.29.3-eks-ae9a62a
+NAME                                        STATUS   ROLES    AGE   VERSION               REGISTERED
+ip-10-0-13-51.eu-west-1.compute.internal    Ready    <none>   29s   v1.31.1-eks-1b3e656   true
+ip-10-0-41-242.eu-west-1.compute.internal   Ready    <none>   35m   v1.31.1-eks-1b3e656
+ip-10-0-8-151.eu-west-1.compute.internal    Ready    <none>   35m   v1.31.1-eks-1b3e656
 ```
 
 ```sh
@@ -44,24 +47,27 @@ kubectl get pods -A -o custom-columns=NAME:.metadata.name,NODE:.spec.nodeName
 
 ```text
 NAME                           NODE
-inflate-75d744d4c6-nqwz8       ip-10-0-16-155.eu-west-1.compute.internal
-inflate-75d744d4c6-nrqnn       ip-10-0-16-155.eu-west-1.compute.internal
-inflate-75d744d4c6-sp4dx       ip-10-0-16-155.eu-west-1.compute.internal
-inflate-75d744d4c6-xqzd9       ip-10-0-16-155.eu-west-1.compute.internal
-inflate-75d744d4c6-xr6p5       ip-10-0-16-155.eu-west-1.compute.internal
-aws-node-mnn7r                 ip-10-0-3-23.eu-west-1.compute.internal
-aws-node-rkmvm                 ip-10-0-16-155.eu-west-1.compute.internal
-aws-node-s4slh                 ip-10-0-41-2.eu-west-1.compute.internal
-coredns-68bd859788-7rcfq       ip-10-0-3-23.eu-west-1.compute.internal
-coredns-68bd859788-l78hw       ip-10-0-41-2.eu-west-1.compute.internal
-eks-pod-identity-agent-gbx8l   ip-10-0-41-2.eu-west-1.compute.internal
-eks-pod-identity-agent-s7vt7   ip-10-0-16-155.eu-west-1.compute.internal
-eks-pod-identity-agent-xwgqw   ip-10-0-3-23.eu-west-1.compute.internal
-karpenter-79f59bdfdc-9q5ff     ip-10-0-41-2.eu-west-1.compute.internal
-karpenter-79f59bdfdc-cxvhr     ip-10-0-3-23.eu-west-1.compute.internal
-kube-proxy-7crbl               ip-10-0-41-2.eu-west-1.compute.internal
-kube-proxy-jtzds               ip-10-0-16-155.eu-west-1.compute.internal
-kube-proxy-sm42c               ip-10-0-3-23.eu-west-1.compute.internal
+inflate-67cd5bb766-hvqfn       ip-10-0-13-51.eu-west-1.compute.internal
+inflate-67cd5bb766-jnsdp       ip-10-0-13-51.eu-west-1.compute.internal
+inflate-67cd5bb766-k4gwf       ip-10-0-41-242.eu-west-1.compute.internal
+inflate-67cd5bb766-m49f6       ip-10-0-13-51.eu-west-1.compute.internal
+inflate-67cd5bb766-pgzx9       ip-10-0-8-151.eu-west-1.compute.internal
+aws-node-58m4v                 ip-10-0-3-57.eu-west-1.compute.internal
+aws-node-pj2gc                 ip-10-0-8-151.eu-west-1.compute.internal
+aws-node-thffj                 ip-10-0-41-242.eu-west-1.compute.internal
+aws-node-vh66d                 ip-10-0-13-51.eu-west-1.compute.internal
+coredns-844dbb9f6f-9g9lg       ip-10-0-41-242.eu-west-1.compute.internal
+coredns-844dbb9f6f-fmzfq       ip-10-0-41-242.eu-west-1.compute.internal
+eks-pod-identity-agent-jr2ns   ip-10-0-8-151.eu-west-1.compute.internal
+eks-pod-identity-agent-mpjkq   ip-10-0-13-51.eu-west-1.compute.internal
+eks-pod-identity-agent-q4tjc   ip-10-0-3-57.eu-west-1.compute.internal
+eks-pod-identity-agent-zzfdj   ip-10-0-41-242.eu-west-1.compute.internal
+karpenter-5b8965dc9b-rx9bx     ip-10-0-8-151.eu-west-1.compute.internal
+karpenter-5b8965dc9b-xrfnx     ip-10-0-41-242.eu-west-1.compute.internal
+kube-proxy-2xf42               ip-10-0-41-242.eu-west-1.compute.internal
+kube-proxy-kbfc8               ip-10-0-8-151.eu-west-1.compute.internal
+kube-proxy-kt8zn               ip-10-0-13-51.eu-west-1.compute.internal
+kube-proxy-sl6bz               ip-10-0-3-57.eu-west-1.compute.internal
 ```
 
 ### Tear Down & Clean-Up
@@ -72,7 +78,6 @@ Because Karpenter manages the state of node resources outside of Terraform, Karp
 
 ```bash
 kubectl delete deployment inflate
-kubectl delete node -l karpenter.sh/provisioner-name=default
 ```
 
 2. Remove the resources created by Terraform
@@ -91,7 +96,6 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.2 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.81 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.7 |
-| <a name="requirement_kubectl"></a> [kubectl](#requirement\_kubectl) | >= 2.0 |
 
 ## Providers
 
@@ -100,7 +104,6 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.81 |
 | <a name="provider_aws.virginia"></a> [aws.virginia](#provider\_aws.virginia) | >= 5.81 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.7 |
-| <a name="provider_kubectl"></a> [kubectl](#provider\_kubectl) | >= 2.0 |
 
 ## Modules
 
@@ -116,9 +119,6 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Type |
 |------|------|
 | [helm_release.karpenter](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
-| [kubectl_manifest.karpenter_example_deployment](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
-| [kubectl_manifest.karpenter_node_class](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
-| [kubectl_manifest.karpenter_node_pool](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 | [aws_ecrpublic_authorization_token.token](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ecrpublic_authorization_token) | data source |
 
