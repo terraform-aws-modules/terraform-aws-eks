@@ -56,7 +56,7 @@ resource "aws_eks_cluster" "this" {
     for_each = length(var.cluster_compute_config) > 0 ? [var.cluster_compute_config] : []
 
     content {
-      enabled       = try(compute_config.value.enabled, null)
+      enabled       = local.auto_mode_enabled
       node_pools    = local.auto_mode_enabled ? try(compute_config.value.node_pools, []) : null
       node_role_arn = local.auto_mode_enabled && length(try(compute_config.value.node_pools, [])) > 0 ? try(compute_config.value.node_role_arn, aws_iam_role.eks_auto[0].arn, null) : null
     }
@@ -75,12 +75,9 @@ resource "aws_eks_cluster" "this" {
     for_each = local.create_outposts_local_cluster ? [] : [1]
 
     content {
-      dynamic "elastic_load_balancing" {
-        for_each = local.auto_mode_enabled ? [1] : []
+      elastic_load_balancing {
 
-        content {
-          enabled = local.auto_mode_enabled
-        }
+        enabled = local.auto_mode_enabled
       }
 
       ip_family         = var.cluster_ip_family
@@ -133,13 +130,9 @@ resource "aws_eks_cluster" "this" {
     }
   }
 
-  dynamic "storage_config" {
-    for_each = local.auto_mode_enabled ? [1] : []
-
-    content {
-      block_storage {
-        enabled = local.auto_mode_enabled
-      }
+  storage_config {
+    block_storage {
+      enabled = local.auto_mode_enabled
     }
   }
 
