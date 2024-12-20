@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.31.6](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.5...v20.31.6) (2024-12-20)
+
+
+### Bug Fixes
+
+* Revert changes to disabling auto mode [#3253](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3253) ([#3255](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3255)) ([1ac67b8](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/1ac67b8a60e336285c4dca03e550dfc78d64acce))
+
 ## [20.31.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.4...v20.31.5) (2024-12-20)
 
 
