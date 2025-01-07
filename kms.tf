@@ -66,7 +66,7 @@ resource "aws_iam_policy" "eks_secrets_encryption" {
           "kms:GenerateDataKey*",
           "kms:DescribeKey"
         ],
-        Resource = aws_kms_key.eks_secrets.arn
+        Resource = aws_kms_key.eks_secrets[0].arn
       }
     ]
   })
