@@ -443,7 +443,7 @@ variable "efs_csi_driver_role_arn" {
 }
 
 variable "encryption" {
-  description = "toggle for enabling encrpption"
+  description = "toggle for enabling encryption"
   type        = bool
   default     = false
 }
