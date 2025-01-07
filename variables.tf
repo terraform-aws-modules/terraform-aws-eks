@@ -441,3 +441,9 @@ variable "efs_csi_driver_role_arn" {
   description = "Role for efs csi driver needed by the service accounts to perform ondemand volume resizing"
   type        = string
 }
+
+variable "encryption" {
+  description = "toggle for enabling encrpption"
+  type        = bool
+  default     = false
+}
