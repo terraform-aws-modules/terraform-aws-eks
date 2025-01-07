@@ -8,8 +8,6 @@ resource "aws_kms_key" "eks_secrets" {
   policy = data.aws_iam_policy_document.kms_key_policy.json
 }
 
-data "aws_caller_identity" "current" {}
-
 data "aws_iam_policy_document" "kms_key_policy" {
   statement {
     sid    = "Enable IAM User Permissions"
