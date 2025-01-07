@@ -53,20 +53,23 @@ resource "aws_iam_policy" "eks_secrets_encryption" {
   name        = "eks-${var.cluster_name}-secrets-encryption-policy"
   description = "Allows EKS to use KMS key for encrypting Kubernetes Secrets at rest"
 
-  statement {
-    sid = "KMSEKSKeyPolicy"
 
-    effect = "Allow"
-
-    actions = [
-      "kms:Encrypt",
-      "kms:Decrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ],
+        Resource = aws_kms_key.eks_secrets.arn
+      }
     ]
-    resources = [aws_kms_key.eks_secrets.arn]
-  }
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "eks_cluster_kms_policy" {
