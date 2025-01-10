@@ -468,6 +468,12 @@ variable "update_config" {
   }
 }
 
+variable "node_repair_config_enabled" {
+  description = "Determines whether to enable the node auto repair feature."
+  type        = bool
+  default     = false
+}
+
 variable "timeouts" {
   description = "Create, update, and delete timeout configurations for the node group"
   type        = map(string)

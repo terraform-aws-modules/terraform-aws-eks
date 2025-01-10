@@ -357,6 +357,8 @@ module "eks_managed_node_group" {
   launch_template_tags                   = try(each.value.launch_template_tags, var.eks_managed_node_group_defaults.launch_template_tags, {})
   tag_specifications                     = try(each.value.tag_specifications, var.eks_managed_node_group_defaults.tag_specifications, ["instance", "volume", "network-interface"])
 
+  node_repair_config_enabled = try(each.value.node_repair_config_enabled, var.eks_managed_node_group_defaults.node_repair_config_enabled, false)
+
   ebs_optimized           = try(each.value.ebs_optimized, var.eks_managed_node_group_defaults.ebs_optimized, null)
   key_name                = try(each.value.key_name, var.eks_managed_node_group_defaults.key_name, null)
   disable_api_termination = try(each.value.disable_api_termination, var.eks_managed_node_group_defaults.disable_api_termination, null)
