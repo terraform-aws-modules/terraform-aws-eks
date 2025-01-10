@@ -44,12 +44,8 @@ resource "aws_eks_cluster" "this" {
   access_config {
     authentication_mode = var.authentication_mode
 
-    # See access entries below - this is a one time operation from the EKS API.
-    # Instead, we are hardcoding this to false and if users wish to achieve this
-    # same functionality, we will do that through an access entry which can be
-    # enabled or disabled at any time of their choosing using the variable
-    # var.enable_cluster_creator_admin_permissions
-    bootstrap_cluster_creator_admin_permissions = false
+    # The variable enable_cluster_creator_admin_permissions must be set to true to avoid an EKS error when creating a cluster using the CONFIG_MAP authentication mode.
+    bootstrap_cluster_creator_admin_permissions = var.enable_cluster_creator_admin_permissions
   }
 
   dynamic "compute_config" {
