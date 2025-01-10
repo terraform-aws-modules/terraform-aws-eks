@@ -7,10 +7,11 @@ module "eks_al2" {
 
   # EKS Addons
   cluster_addons = {
-    coredns                = {}
-    eks-pod-identity-agent = {}
-    kube-proxy             = {}
-    vpc-cni                = {}
+    coredns                   = {}
+    eks-pod-identity-agent    = {}
+    kube-proxy                = {}
+    vpc-cni                   = {}
+    eks-node-monitoring-agent = {}
   }
 
   vpc_id     = module.vpc.vpc_id
@@ -27,6 +28,8 @@ module "eks_al2" {
       # This value is ignored after the initial creation
       # https://github.com/bryantbiggs/eks-desired-size-hack
       desired_size = 2
+
+      node_repair_config_enabled = true
     }
   }
 

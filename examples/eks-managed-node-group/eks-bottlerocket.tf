@@ -7,10 +7,11 @@ module "eks_bottlerocket" {
 
   # EKS Addons
   cluster_addons = {
-    coredns                = {}
-    eks-pod-identity-agent = {}
-    kube-proxy             = {}
-    vpc-cni                = {}
+    coredns                   = {}
+    eks-pod-identity-agent    = {}
+    kube-proxy                = {}
+    vpc-cni                   = {}
+    eks-node-monitoring-agent = {}
   }
 
   vpc_id     = module.vpc.vpc_id
@@ -26,6 +27,8 @@ module "eks_bottlerocket" {
       # This value is ignored after the initial creation
       # https://github.com/bryantbiggs/eks-desired-size-hack
       desired_size = 2
+
+      node_repair_config_enabled = true
 
       # This is not required - demonstrates how to pass additional configuration
       # Ref https://bottlerocket.dev/en/os/1.19.x/api/settings/
