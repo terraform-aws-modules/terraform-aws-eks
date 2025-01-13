@@ -698,3 +698,13 @@ resource "aws_autoscaling_schedule" "this" {
   # Cron examples: https://crontab.guru/examples.html
   recurrence = try(each.value.recurrence, null)
 }
+
+resource "aws_autoscaling_group_tag" "nodes_group" {
+  count                  = var.use_custom_launch_template ? 0 : 1
+  autoscaling_group_name = aws_eks_node_group.this[0].resources[0].autoscaling_groups[0].name
+  tag {
+    key                 = "Name"
+    value               = "${var.name}-node"
+    propagate_at_launch = true
+  }
+}
