@@ -22,6 +22,17 @@ resource "aws_eks_cluster" "this" {
     public_access_cidrs     = var.cluster_endpoint_public_access_cidrs
   }
 
+
+
+  dynamic "encryption_config" {
+    for_each = var.encryption ? [1] : []
+    content {
+      provider {
+        key_arn = aws_kms_key.eks_secrets[0].arn
+      }
+      resources = ["secrets"]
+    }
+  }
   timeouts {
     create = var.cluster_create_timeout
     update = var.cluster_update_timeout
