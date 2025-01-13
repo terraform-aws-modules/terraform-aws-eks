@@ -22,6 +22,8 @@ locals {
     AL2_ARM_64                 = "linux"
     BOTTLEROCKET_ARM_64        = "bottlerocket"
     BOTTLEROCKET_x86_64        = "bottlerocket"
+    BOTTLEROCKET_ARM_64_FIPS   = "bottlerocket"
+    BOTTLEROCKET_x86_64_FIPS   = "bottlerocket"
     BOTTLEROCKET_ARM_64_NVIDIA = "bottlerocket"
     BOTTLEROCKET_x86_64_NVIDIA = "bottlerocket"
     WINDOWS_CORE_2019_x86_64   = "windows"
