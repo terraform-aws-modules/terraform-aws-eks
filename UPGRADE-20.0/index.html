@@ -455,15 +455,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#authentication_mode-config_map" class="md-nav__link">
-    <span class="md-ellipsis">
-      authentication_mode = "CONFIG_MAP"
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#authentication_mode-api_and_config_map" class="md-nav__link">
     <span class="md-ellipsis">
       authentication_mode = "API_AND_CONFIG_MAP"
@@ -529,7 +520,7 @@
 <li>The default/fallback value for the <code>preserve</code> argument of <code>cluster_addons</code>is now set to <code>true</code>. This has shown to be useful for users deprovisioning clusters while avoiding the situation where the CNI is deleted too early and causes resources to be left orphaned resulting in conflicts.</li>
 <li>The Karpenter sub-module's use of the <code>irsa</code> naming convention has been removed, along with an update to the Karpenter controller IAM policy to align with Karpenter's <code>v1beta1</code>/<code>v0.32</code> changes. Instead of referring to the role as <code>irsa</code> or <code>pod_identity</code>, its simply just an IAM role used by the Karpenter controller and there is support for use with either IRSA and/or Pod Identity (default) at this time</li>
 <li>The <code>aws-auth</code> ConfigMap resources have been moved to a standalone sub-module. This removes the Kubernetes provider requirement from the main module and allows for the <code>aws-auth</code> ConfigMap to be managed independently of the main module. This sub-module will be removed entirely in the next major release.</li>
-<li>Support for cluster access management has been added with the default authentication mode set as <code>API_AND_CONFIG_MAP</code>. This is a one way change if applied; if you wish to use <code>CONFIG_MAP</code>, you will need to set <code>authentication_mode = "CONFIG_MAP"</code> explicitly when upgrading.</li>
+<li>Support for cluster access management has been added with the default authentication mode set as <code>API_AND_CONFIG_MAP</code>. Support for <code>CONFIG_MAP</code> is no longer supported; instead you will need to use <code>API_AND_CONFIG_MAP</code> at minimum</li>
 <li>Karpenter EventBridge rule key <code>spot_interrupt</code> updated to correct mis-spelling (was <code>spot_interupt</code>). This will cause the rule to be replaced</li>
 </ul>
 <h3 id="upcoming-changes-planned-in-v210">⚠️ Upcoming Changes Planned in v21.0 ⚠️<a class="headerlink" href="#upcoming-changes-planned-in-v210" title="Permanent link">&para;</a></h3>
@@ -764,21 +755,10 @@
 <h4 id="authentication-mode-changes">⚠️ Authentication Mode Changes ⚠️<a class="headerlink" href="#authentication-mode-changes" title="Permanent link">&para;</a></h4>
 <p>Changing the <code>authentication_mode</code> is a one-way decision. See <a href="https://aws.amazon.com/blogs/containers/a-deep-dive-into-simplified-amazon-eks-access-management-controls/">announcement blog</a> for further details:</p>
 <blockquote>
-<p>Switching authentication modes on an existing cluster is a one-way operation. You can switch from CONFIG_MAP to API_AND_CONFIG_MAP. You can then switch from API_AND_CONFIG_MAP to API. You cannot revert these operations in the opposite direction. Meaning you cannot switch back to CONFIG_MAP or API_AND_CONFIG_MAP from API. And you cannot switch back to CONFIG_MAP from API_AND_CONFIG_MAP.</p>
+<p>Switching authentication modes on an existing cluster is a one-way operation. You can switch from CONFIG_MAP to API_AND_CONFIG_MAP. You can then switch from API_AND_CONFIG_MAP to API. You cannot revert these operations in the opposite direction. Meaning you cannot switch back to CONFIG_MAP or API_AND_CONFIG_MAP from API.</p>
 <p>[!IMPORTANT]
 If migrating to cluster access entries and you will NOT have any entries that remain in the <code>aws-auth</code> ConfigMap, you do not need to remove the configmap from the statefile. You can simply follow the migration guide and once access entries have been created, you can let Terraform remove/delete the <code>aws-auth</code> ConfigMap.</p>
 <p>If you WILL have entries that remain in the <code>aws-auth</code> ConfigMap, then you will need to remove the ConfigMap resources from the statefile to avoid any disruptions. When you add the new <code>aws-auth</code> sub-module and apply the changes, the sub-module will upsert the ConfigMap on the cluster. Provided the necessary entries are defined in that sub-module's definition, it will "re-adopt" the ConfigMap under Terraform's control.</p>
-</blockquote>
-<h3 id="authentication_mode-config_map">authentication_mode = "CONFIG_MAP"<a class="headerlink" href="#authentication_mode-config_map" title="Permanent link">&para;</a></h3>
-<p>If using <code>authentication_mode = "CONFIG_MAP"</code>, before making any changes, you will first need to remove the configmap from the statefile to avoid any disruptions:</p>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>terraform<span class="w"> </span>state<span class="w"> </span>rm<span class="w"> </span><span class="s1">&#39;module.eks.kubernetes_config_map_v1_data.aws_auth[0]&#39;</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>terraform<span class="w"> </span>state<span class="w"> </span>rm<span class="w"> </span><span class="s1">&#39;module.eks.kubernetes_config_map.aws_auth[0]&#39;</span><span class="w"> </span><span class="c1"># include if Terraform created the original configmap</span>
-</span></code></pre></div>
-<p>Once the configmap has been removed from the statefile, you can add the new <code>aws-auth</code> sub-module and copy the relevant definitions from the EKS module over to the new <code>aws-auth</code> sub-module definition (see before after diff above).</p>
-<blockquote>
-<p>[!CAUTION]
-You will need to add entries to the <code>aws-auth</code> sub-module for any IAM roles used by node groups and/or Fargate profiles - the module no longer handles this in the background on behalf of users.</p>
-<p>When you apply the changes with the new sub-module, the configmap in the cluster will get updated with the contents provided in the sub-module definition, so please be sure all of the necessary entries are added before applying the changes.</p>
 </blockquote>
 <h3 id="authentication_mode-api_and_config_map">authentication_mode = "API_AND_CONFIG_MAP"<a class="headerlink" href="#authentication_mode-api_and_config_map" title="Permanent link">&para;</a></h3>
 <p>When using <code>authentication_mode = "API_AND_CONFIG_MAP"</code> and there are entries that will remain in the configmap (entries that cannot be replaced by cluster access entry), you will first need to update the <code>authentication_mode</code> on the cluster to <code>"API_AND_CONFIG_MAP"</code>. To help make this upgrade process easier, a copy of the changes defined in the <a href="https://github.com/terraform-aws-modules/terraform-aws-eks/pull/2858"><code>v20.0.0</code></a> PR have been captured <a href="https://github.com/clowdhaus/terraform-aws-eks-v20-migrate">here</a> but with the <code>aws-auth</code> components still provided in the module. This means you get the equivalent of the <code>v20.0.0</code> module, but it still includes support for the <code>aws-auth</code> configmap. You can follow the provided README on that interim migration module for the order of execution and return here once the <code>authentication_mode</code> has been updated to <code>"API_AND_CONFIG_MAP"</code>. Note - EKS automatically adds access entries for the roles used by EKS managed node groups and Fargate profiles; users do not need to do anything additional for these roles.</p>
@@ -787,8 +767,8 @@ You will need to add entries to the <code>aws-auth</code> sub-module for any IAM
 <p>[!NOTE]
 This is only required if there are entries that will remain in the <code>aws-auth</code> ConfigMap after migrating. Otherwise, you can skip this step and let Terraform destroy the ConfigMap.</p>
 </blockquote>
-<div class="language-sh highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>terraform<span class="w"> </span>state<span class="w"> </span>rm<span class="w"> </span><span class="s1">&#39;module.eks.kubernetes_config_map_v1_data.aws_auth[0]&#39;</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>terraform<span class="w"> </span>state<span class="w"> </span>rm<span class="w"> </span><span class="s1">&#39;module.eks.kubernetes_config_map.aws_auth[0]&#39;</span><span class="w"> </span><span class="c1"># include if Terraform created the original configmap</span>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>terraform<span class="w"> </span>state<span class="w"> </span>rm<span class="w"> </span><span class="s1">&#39;module.eks.kubernetes_config_map_v1_data.aws_auth[0]&#39;</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>terraform<span class="w"> </span>state<span class="w"> </span>rm<span class="w"> </span><span class="s1">&#39;module.eks.kubernetes_config_map.aws_auth[0]&#39;</span><span class="w"> </span><span class="c1"># include if Terraform created the original configmap</span>
 </span></code></pre></div>
 <h4 id="i-terraform-17-users">ℹ️ Terraform 1.7+ users<a class="headerlink" href="#i-terraform-17-users" title="Permanent link">&para;</a></h4>
 <p>If you are using Terraform <code>v1.7+</code>, you can utilize the <a href="https://developer.hashicorp.com/terraform/language/resources/syntax#removing-resources"><code>remove</code></a> to facilitate both the removal of the configmap through code. You can create a fork/clone of the provided <a href="https://github.com/clowdhaus/terraform-aws-eks-migrate-v19-to-v20">migration module</a> and add the <code>remove</code> blocks and apply those changes before proceeding. We do not want to force users onto the bleeding edge with this module, so we have not included <code>remove</code> support at this time.</p>
