@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.33.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.32.0...v20.33.0) (2025-01-17)
+
+
+### Features
+
+* Add node repair config to managed node group ([#3271](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3271)) ([edd7ef3](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/edd7ef36dd0f6b6801275cbecbb6780f03fc7aed)), closes [terraform-aws-modules/terraform-aws-eks#3249](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3249)
+
 ## [20.32.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.6...v20.32.0) (2025-01-17)
 
 
