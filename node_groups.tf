@@ -323,11 +323,11 @@ module "eks_managed_node_group" {
   force_update_version = try(each.value.force_update_version, var.eks_managed_node_group_defaults.force_update_version, null)
   instance_types       = try(each.value.instance_types, var.eks_managed_node_group_defaults.instance_types, null)
   labels               = try(each.value.labels, var.eks_managed_node_group_defaults.labels, null)
-
-  remote_access = try(each.value.remote_access, var.eks_managed_node_group_defaults.remote_access, {})
-  taints        = try(each.value.taints, var.eks_managed_node_group_defaults.taints, {})
-  update_config = try(each.value.update_config, var.eks_managed_node_group_defaults.update_config, local.default_update_config)
-  timeouts      = try(each.value.timeouts, var.eks_managed_node_group_defaults.timeouts, {})
+  node_repair_config   = try(each.value.node_repair_config, var.eks_managed_node_group_defaults.node_repair_config, null)
+  remote_access        = try(each.value.remote_access, var.eks_managed_node_group_defaults.remote_access, {})
+  taints               = try(each.value.taints, var.eks_managed_node_group_defaults.taints, {})
+  update_config        = try(each.value.update_config, var.eks_managed_node_group_defaults.update_config, local.default_update_config)
+  timeouts             = try(each.value.timeouts, var.eks_managed_node_group_defaults.timeouts, {})
 
   # User data
   platform                   = try(each.value.platform, var.eks_managed_node_group_defaults.platform, "linux")

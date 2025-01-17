@@ -458,6 +458,14 @@ resource "aws_eks_node_group" "this" {
     }
   }
 
+  dynamic "node_repair_config" {
+    for_each = var.node_repair_config != null ? [var.node_repair_config] : []
+
+    content {
+      enabled = node_repair_config.value.enabled
+    }
+  }
+
   timeouts {
     create = lookup(var.timeouts, "create", null)
     update = lookup(var.timeouts, "update", null)

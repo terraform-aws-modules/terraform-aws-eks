@@ -468,6 +468,14 @@ variable "update_config" {
   }
 }
 
+variable "node_repair_config" {
+  description = "The node auto repair configuration for the node group"
+  type = object({
+    enabled = optional(bool, true)
+  })
+  default = null
+}
+
 variable "timeouts" {
   description = "Create, update, and delete timeout configurations for the node group"
   type        = map(string)
