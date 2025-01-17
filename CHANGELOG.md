@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.32.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.6...v20.32.0) (2025-01-17)
+
+
+### Features
+
+* Add Bottlerocket FIPS image variants ([#3275](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3275)) ([d876ac4](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/d876ac4ef1bb45e4f078d0928630033b659c9aa0))
+
 ## [20.31.6](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.5...v20.31.6) (2024-12-20)
 
 
