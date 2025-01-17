@@ -52,6 +52,9 @@ module "eks" {
     coredns = {
       most_recent = true
     }
+    eks-node-monitoring-agent = {
+      most_recent = true
+    }
     eks-pod-identity-agent = {
       before_compute = true
       most_recent    = true
@@ -287,6 +290,10 @@ module "eks" {
         http_tokens                 = "required"
         http_put_response_hop_limit = 2
         instance_metadata_tags      = "disabled"
+      }
+
+      node_repair_config = {
+        enabled = true
       }
 
       create_iam_role          = true

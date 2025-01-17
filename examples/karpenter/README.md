@@ -94,15 +94,15 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.2 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.81 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.83 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.7 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.81 |
-| <a name="provider_aws.virginia"></a> [aws.virginia](#provider\_aws.virginia) | >= 5.81 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.83 |
+| <a name="provider_aws.virginia"></a> [aws.virginia](#provider\_aws.virginia) | >= 5.83 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.7 |
 
 ## Modules

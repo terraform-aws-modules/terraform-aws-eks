@@ -7,11 +7,10 @@ module "eks_al2023" {
 
   # EKS Addons
   cluster_addons = {
-    coredns                   = {}
-    eks-pod-identity-agent    = {}
-    kube-proxy                = {}
-    vpc-cni                   = {}
-    eks-node-monitoring-agent = {}
+    coredns                = {}
+    eks-pod-identity-agent = {}
+    kube-proxy             = {}
+    vpc-cni                = {}
   }
 
   vpc_id     = module.vpc.vpc_id
@@ -27,8 +26,6 @@ module "eks_al2023" {
       # This value is ignored after the initial creation
       # https://github.com/bryantbiggs/eks-desired-size-hack
       desired_size = 2
-
-      node_repair_config_enabled = true
 
       # This is not required - demonstrates how to pass additional configuration to nodeadm
       # Ref https://awslabs.github.io/amazon-eks-ami/nodeadm/doc/api/

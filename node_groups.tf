@@ -323,11 +323,11 @@ module "eks_managed_node_group" {
   force_update_version = try(each.value.force_update_version, var.eks_managed_node_group_defaults.force_update_version, null)
   instance_types       = try(each.value.instance_types, var.eks_managed_node_group_defaults.instance_types, null)
   labels               = try(each.value.labels, var.eks_managed_node_group_defaults.labels, null)
-
-  remote_access = try(each.value.remote_access, var.eks_managed_node_group_defaults.remote_access, {})
-  taints        = try(each.value.taints, var.eks_managed_node_group_defaults.taints, {})
-  update_config = try(each.value.update_config, var.eks_managed_node_group_defaults.update_config, local.default_update_config)
-  timeouts      = try(each.value.timeouts, var.eks_managed_node_group_defaults.timeouts, {})
+  node_repair_config   = try(each.value.node_repair_config, var.eks_managed_node_group_defaults.node_repair_config, null)
+  remote_access        = try(each.value.remote_access, var.eks_managed_node_group_defaults.remote_access, {})
+  taints               = try(each.value.taints, var.eks_managed_node_group_defaults.taints, {})
+  update_config        = try(each.value.update_config, var.eks_managed_node_group_defaults.update_config, local.default_update_config)
+  timeouts             = try(each.value.timeouts, var.eks_managed_node_group_defaults.timeouts, {})
 
   # User data
   platform                   = try(each.value.platform, var.eks_managed_node_group_defaults.platform, "linux")
@@ -356,8 +356,6 @@ module "eks_managed_node_group" {
   launch_template_description            = try(each.value.launch_template_description, var.eks_managed_node_group_defaults.launch_template_description, "Custom launch template for ${try(each.value.name, each.key)} EKS managed node group")
   launch_template_tags                   = try(each.value.launch_template_tags, var.eks_managed_node_group_defaults.launch_template_tags, {})
   tag_specifications                     = try(each.value.tag_specifications, var.eks_managed_node_group_defaults.tag_specifications, ["instance", "volume", "network-interface"])
-
-  node_repair_config_enabled = try(each.value.node_repair_config_enabled, var.eks_managed_node_group_defaults.node_repair_config_enabled, false)
 
   ebs_optimized           = try(each.value.ebs_optimized, var.eks_managed_node_group_defaults.ebs_optimized, null)
   key_name                = try(each.value.key_name, var.eks_managed_node_group_defaults.key_name, null)

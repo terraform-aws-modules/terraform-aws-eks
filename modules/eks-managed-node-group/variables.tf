@@ -468,10 +468,12 @@ variable "update_config" {
   }
 }
 
-variable "node_repair_config_enabled" {
-  description = "Determines whether to enable the node auto repair feature."
-  type        = bool
-  default     = false
+variable "node_repair_config" {
+  description = "The node auto repair configuration for the node group"
+  type = object({
+    enabled = optional(bool, true)
+  })
+  default = null
 }
 
 variable "timeouts" {

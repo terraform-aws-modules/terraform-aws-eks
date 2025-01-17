@@ -459,10 +459,10 @@ resource "aws_eks_node_group" "this" {
   }
 
   dynamic "node_repair_config" {
-    for_each = var.node_repair_config_enabled ? [1] : []
+    for_each = var.node_repair_config != null ? [var.node_repair_config] : []
 
     content {
-      enabled = var.node_repair_config_enabled
+      enabled = node_repair_config.value.enabled
     }
   }
 
