@@ -258,7 +258,7 @@ locals {
           association_policy_arn              = pol_val.policy_arn
           association_access_scope_type       = pol_val.access_scope.type
           association_access_scope_namespaces = lookup(pol_val.access_scope, "namespaces", [])
-        } : k => v if !contains(["EC2", "EC2_LINUX", "EC2_WINDOWS", "FARGATE_LINUX", "HYBRID_LINUX"], lookup(entry_val, "type", "STANDARD")) },
+        } : k => v if !contains(["EC2_LINUX", "EC2_WINDOWS", "FARGATE_LINUX", "HYBRID_LINUX"], lookup(entry_val, "type", "STANDARD")) },
       )
     ]
   ])
