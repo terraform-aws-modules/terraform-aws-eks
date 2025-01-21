@@ -489,6 +489,16 @@ data "aws_iam_policy_document" "assume_role_policy" {
       }
     }
   }
+  dynamic "statement" {
+    for_each = var.additional_assume_role_principals
+    content {
+      actions = statement.value.actions
+      principals {
+        type        = statement.value.type
+        identifiers = statement.value.identifiers
+      }
+    }
+  }
 }
 
 resource "aws_iam_role" "this" {

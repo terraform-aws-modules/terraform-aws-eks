@@ -548,6 +548,16 @@ variable "enable_auto_mode_custom_tags" {
   default     = true
 }
 
+variable "additional_assume_role_principals" {
+  description = "List of additional principals to allow assuming the role"
+  type = list(object({
+    type        = string
+    identifiers = list(string)
+    actions     = optional(list(string), ["sts:AssumeRole"])
+  }))
+  default = []
+}
+
 ################################################################################
 # EKS Addons
 ################################################################################
