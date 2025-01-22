@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.33.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.33.0...v20.33.1) (2025-01-22)
+
+
+### Bug Fixes
+
+* Allow `"EC2"` access entry type for EKS Auto Mode custom node pools ([#3281](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3281)) ([3e2ea83](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/3e2ea83267d7532cb66fa4de7f0d2a944b43c3d5))
+
 ## [20.33.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.32.0...v20.33.0) (2025-01-17)
 
 
