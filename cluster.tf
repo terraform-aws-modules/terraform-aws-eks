@@ -14,6 +14,10 @@ resource "aws_eks_cluster" "this" {
   version                   = var.cluster_version
   tags                      = var.tags
 
+  access_config {
+    authentication_mode = "API_AND_CONFIG_MAP"
+  }
+
   vpc_config {
     security_group_ids      = [local.cluster_security_group_id]
     subnet_ids              = var.subnets
