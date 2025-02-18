@@ -236,7 +236,7 @@ variable "node_iam_role_name" {
 }
 
 variable "node_iam_role_use_name_prefix" {
-  description = "Determines whether the IAM role name (`iam_role_name`) is used as a prefix"
+  description = "Determines whether the Node IAM role name (`node_iam_role_name`) is used as a prefix"
   type        = bool
   default     = true
 }
