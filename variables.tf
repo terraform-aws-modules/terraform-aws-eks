@@ -47,6 +47,7 @@ variable "authentication_mode" {
 variable "cluster_compute_config" {
   description = "Configuration block for the cluster compute configuration"
   type        = any
+  nullable    = false
   default     = {}
 }
 
