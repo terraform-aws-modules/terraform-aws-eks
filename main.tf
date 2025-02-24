@@ -53,7 +53,7 @@ resource "aws_eks_cluster" "this" {
   }
 
   dynamic "compute_config" {
-    for_each = length(var.cluster_compute_config) > 0 ? [var.cluster_compute_config] : []
+    for_each = var.cluster_compute_config[*]
 
     content {
       enabled       = local.auto_mode_enabled

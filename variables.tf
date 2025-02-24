@@ -46,8 +46,12 @@ variable "authentication_mode" {
 
 variable "cluster_compute_config" {
   description = "Configuration block for the cluster compute configuration"
-  type        = any
-  default     = {}
+  type = object({
+    enabled       = bool
+    node_pools    = optional(list(string), [])
+    node_role_arn = optional(string)
+  })
+  default = null
 }
 
 variable "cluster_upgrade_policy" {
