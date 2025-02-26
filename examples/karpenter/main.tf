@@ -121,7 +121,7 @@ module "karpenter" {
 
   # Used to enforce TLS messaging on SQS queue
   queue_enforce_tls_messages = true
-  tags = local.tags
+  tags                       = local.tags
 }
 
 module "karpenter_disabled" {

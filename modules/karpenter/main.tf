@@ -188,12 +188,12 @@ data "aws_iam_policy_document" "queue" {
       ]
     }
   }
-    dynamic "statement" {
+  dynamic "statement" {
     for_each = var.queue_enforce_tls_messages ? [1] : []
     content {
-      sid = "DenyNonTLS"
+      sid    = "DenyNonTLS"
       effect = "Deny"
-      actions= [
+      actions = [
         "sqs:SendMessage",
         "sqs:ReceiveMessage"
       ]
