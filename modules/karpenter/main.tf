@@ -188,6 +188,31 @@ data "aws_iam_policy_document" "queue" {
       ]
     }
   }
+    dynamic "statement" {
+    for_each = var.queue_enforce_tls_messages ? [1] : []
+    content {
+      sid = "DenyNonTLS"
+      effect = "Deny"
+      actions= [
+        "sqs:SendMessage",
+        "sqs:ReceiveMessage"
+      ]
+      resources = [aws_sqs_queue.this[0].arn]
+      condition {
+        test     = "Bool"
+        variable = "aws:SecureTransport"
+        values = [
+          "false"
+        ]
+      }
+      principals {
+        type = "*"
+        identifiers = [
+          "*"
+        ]
+      }
+    }
+  }
 }
 
 resource "aws_sqs_queue_policy" "this" {

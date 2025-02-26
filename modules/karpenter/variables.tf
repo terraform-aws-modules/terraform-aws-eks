@@ -207,6 +207,12 @@ variable "queue_kms_data_key_reuse_period_seconds" {
   default     = null
 }
 
+variable "queue_enforce_tls_messages" {
+  description = "Enforces TLS messaging on the SQS queue"
+  type        = bool
+  default     = false
+}
+
 ################################################################################
 # Node IAM Role
 ################################################################################
