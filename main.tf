@@ -194,7 +194,7 @@ resource "aws_ec2_tag" "cluster_primary_security_group" {
     k => v if local.create && k != "Name" && var.create_cluster_primary_security_group_tags
   }
 
-  resource_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
+  resource_id = local.cluster_security_group_id
   key         = each.key
   value       = each.value
 }
