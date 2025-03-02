@@ -86,6 +86,17 @@ variable "subnet_ids" {
   default     = []
 }
 
+variable "azs" {
+  description = "A list of availability zones in the region"
+  type        = list(string)
+}
+
+variable "secondary_subnet_ids" {
+  description = "Optional list of subnets to use for pods.If list is empty, pods will be placed in the subnet_ids subnets. Must be the length of the number of availability zones"
+  type        = list(string)
+  default     = []
+}
+
 variable "cluster_endpoint_private_access" {
   description = "Indicates whether or not the Amazon EKS private API server endpoint is enabled"
   type        = bool
