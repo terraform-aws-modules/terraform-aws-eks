@@ -189,7 +189,7 @@ resource "aws_eks_cluster" "this" {
 }
 
 resource "kubectl_manifest" "eni_config" {
-  for_each = local.optional_pod_subnet_count > 0 ? zipmap(var.azs, slice(var.subnet_ids, local.eks_cluster_subnet_count, sum([local.eks_cluster_subnet_count, local.optional_pod_subnet_count]))) : {}
+  for_each = local.optional_pod_subnet_count > 0 ? zipmap(var.availability_zones, slice(var.subnet_ids, local.eks_cluster_subnet_count, sum([local.eks_cluster_subnet_count, local.optional_pod_subnet_count]))) : {}
 
   yaml_body = yamlencode({
     apiVersion = "crd.k8s.amazonaws.com/v1alpha1"
