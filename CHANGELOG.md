@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.34.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.33.1...v20.34.0) (2025-03-07)
+
+
+### Features
+
+* Add capacity reservation permissions to Karpenter IAM policy ([#3318](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3318)) ([770ee99](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/770ee99d9c4b61c509d9988eac62de4db113af91))
+
 ## [20.33.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.33.0...v20.33.1) (2025-01-22)
 
 
