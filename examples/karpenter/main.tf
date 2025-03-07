@@ -119,7 +119,9 @@ module "karpenter" {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }
 
-  tags = local.tags
+  # Used to enforce TLS messaging on SQS queue
+  queue_enforce_tls_messages = true
+  tags                       = local.tags
 }
 
 module "karpenter_disabled" {
