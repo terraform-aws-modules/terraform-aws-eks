@@ -697,9 +697,9 @@ resource "aws_autoscaling_schedule" "this" {
   scheduled_action_name  = each.key
   autoscaling_group_name = aws_eks_node_group.this[0].resources[0].autoscaling_groups[0].name
 
-  min_size         = try(each.value.min_size, null)
-  max_size         = try(each.value.max_size, null)
-  desired_capacity = try(each.value.desired_size, null)
+  min_size         = try(each.value.min_size, -1)
+  max_size         = try(each.value.max_size, -1)
+  desired_capacity = try(each.value.desired_size, -1)
   start_time       = try(each.value.start_time, null)
   end_time         = try(each.value.end_time, null)
   time_zone        = try(each.value.time_zone, null)
