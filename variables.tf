@@ -125,6 +125,24 @@ variable "coredns_resolve_conflicts" {
   default     = "NONE"
 }
 
+variable "coredns_scaling_enabled" {
+  description = "Whether or not to enable auto-scaling of coredns pods"
+  type        = bool
+  default     = false
+}
+
+variable "coredns_minreplicas" {
+  description = "Minimum number of coredns pods (if autoscaling enabled)"
+  type        = number
+  default     = 2
+}
+
+variable "coredns_maxreplicas" {
+  description = "Maximum number of coredns pods (if autoscaling enabled)"
+  type        = number
+  default     = 10
+}
+
 variable "enable_kube_proxy_addon" {
   description = "Whether or not to install the kube-proxy addon in the cluster"
   type        = bool

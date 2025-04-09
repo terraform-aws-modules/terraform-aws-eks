@@ -14,6 +14,13 @@ resource "aws_eks_addon" "coredns" {
   addon_name        = "coredns"
   addon_version     = var.coredns_version
   resolve_conflicts = var.coredns_resolve_conflicts
+  configuration_values = jsonencode({
+    autoScaling = {
+      enabled = var.coredns_scaling_enabled
+      minReplicas = var.coredns_minreplicas
+      maxReplicas = var.coredns_maxreplicas
+    }
+  })
 }
 
 resource "aws_eks_addon" "kube_proxy" {
