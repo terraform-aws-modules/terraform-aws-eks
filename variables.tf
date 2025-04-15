@@ -129,7 +129,7 @@ variable "outpost_config" {
 }
 
 variable "cluster_encryption_config" {
-  description = "Configuration block with encryption configuration for the cluster. To disable secret encryption, set this value to `{}`"
+  description = "Configuration block with encryption configuration for the cluster. To disable secret encryption, set this value to `{}` or `null`"
   type        = any
   default = {
     resources = ["secrets"]
