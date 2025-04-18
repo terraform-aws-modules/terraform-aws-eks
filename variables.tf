@@ -38,6 +38,12 @@ variable "cluster_enabled_log_types" {
   default     = ["audit", "api", "authenticator"]
 }
 
+variable "cluster_force_update_version" {
+  description = "Force version update by overriding upgrade-blocking readiness checks when updating a cluster"
+  type        = bool
+  default     = null
+}
+
 variable "authentication_mode" {
   description = "The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP`"
   type        = string
