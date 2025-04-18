@@ -283,6 +283,12 @@ variable "node_iam_role_tags" {
   default     = {}
 }
 
+variable "additional_node_iam_role_arns" {
+  description = "Additional node instance IAM role ARNs to allow Karpenter to pass"
+  type        = list(string)
+  default     = []
+}
+
 ################################################################################
 # Access Entry
 ################################################################################
