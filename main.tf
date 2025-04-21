@@ -40,6 +40,7 @@ resource "aws_eks_cluster" "this" {
   version                       = var.cluster_version
   enabled_cluster_log_types     = var.cluster_enabled_log_types
   bootstrap_self_managed_addons = local.auto_mode_enabled ? coalesce(var.bootstrap_self_managed_addons, false) : var.bootstrap_self_managed_addons
+  force_update_version          = var.cluster_force_update_version
 
   access_config {
     authentication_mode = var.authentication_mode

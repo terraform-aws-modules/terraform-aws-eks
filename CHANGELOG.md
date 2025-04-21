@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.36.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.35.0...v20.36.0) (2025-04-18)
+
+
+### Features
+
+* Add support for cluster `force_update_version` ([#3345](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3345)) ([207d73f](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/207d73fbaa5eebe6e98b94e95b83fd0a5a13c307))
+
+## [20.35.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.34.0...v20.35.0) (2025-03-29)
+
+
+### Features
+
+* Default to not changing autoscaling schedule values at the scheduled time ([#3322](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3322)) ([abf76f6](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/abf76f60144fe645bbf500d98505377fd4a9da79))
+
 ## [20.34.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.33.1...v20.34.0) (2025-03-07)
 
 
