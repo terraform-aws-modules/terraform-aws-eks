@@ -175,7 +175,6 @@ resource "aws_eks_cluster" "this" {
   depends_on = [
     aws_iam_role_policy_attachment.this,
     aws_security_group_rule.cluster,
-    aws_security_group_rule.node,
     aws_cloudwatch_log_group.this,
     aws_iam_policy.cni_ipv6_policy,
   ]
@@ -341,7 +340,8 @@ locals {
   cluster_sg_name   = coalesce(var.cluster_security_group_name, "${var.cluster_name}-cluster")
   create_cluster_sg = local.create && var.create_cluster_security_group
 
-  cluster_security_group_id = local.create_cluster_sg ? aws_security_group.cluster[0].id : var.cluster_security_group_id
+  cluster_security_group_id         = local.create_cluster_sg ? aws_security_group.cluster[0].id : var.cluster_security_group_id
+  cluster_primary_security_group_id = try(aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id, null)
 
   # Do not add rules to node security group if the module is not creating it
   cluster_security_group_rules = { for k, v in {

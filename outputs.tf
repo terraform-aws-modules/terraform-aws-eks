@@ -78,7 +78,7 @@ output "cluster_status" {
 
 output "cluster_primary_security_group_id" {
   description = "Cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication. Referred to as 'Cluster security group' in the EKS console"
-  value       = try(aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id, null)
+  value       = local.cluster_primary_security_group_id
 }
 
 output "cluster_service_cidr" {
