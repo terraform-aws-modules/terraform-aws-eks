@@ -299,6 +299,12 @@ variable "cloudwatch_log_group_tags" {
   default     = {}
 }
 
+variable "cluster_cloudwatch_log_group_use_name_prefix" {
+  description = "Determines whether cluster cloudwatch log group name (`/aws/eks/$${var.cluster_name}/cluster`) is used as a prefix"
+  type        = bool
+  default     = true
+}
+
 ################################################################################
 # Cluster Security Group
 ################################################################################
