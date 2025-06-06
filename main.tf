@@ -703,7 +703,7 @@ resource "aws_iam_policy" "custom" {
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
-  path        = var.iam_role_path
+  path        = var.iam_policy_path
   description = var.iam_role_description
 
   policy = data.aws_iam_policy_document.custom[0].json

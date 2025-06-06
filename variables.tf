@@ -475,6 +475,12 @@ variable "iam_role_use_name_prefix" {
   default     = true
 }
 
+variable "iam_policy_path" {
+  description = "The IAM policy path"
+  type        = string
+  default     = null
+}
+
 variable "iam_role_path" {
   description = "The IAM role path"
   type        = string
