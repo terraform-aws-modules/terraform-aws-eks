@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.36.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.36.0...v20.36.1) (2025-06-09)
+
+
+### Bug Fixes
+
+* Ensure `additional_cluster_dns_ips` is passed through from root module ([#3376](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3376)) ([7a83b1b](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/7a83b1b3db9c7475fe6ec46d1c300c0a18f19b2a))
+
 ## [20.36.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.35.0...v20.36.0) (2025-04-18)
 
 
