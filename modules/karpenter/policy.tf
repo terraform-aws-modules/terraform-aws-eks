@@ -189,7 +189,7 @@ data "aws_iam_policy_document" "v033" {
 
   statement {
     sid       = "AllowPassingInstanceRole"
-    resources = var.create_node_iam_role ? [aws_iam_role.node[0].arn] : [var.node_iam_role_arn]
+    resources = concat(var.create_node_iam_role ? [aws_iam_role.node[0].arn] : [var.node_iam_role_arn], var.additional_node_iam_role_arns)
     actions   = ["iam:PassRole"]
 
     condition {
@@ -579,7 +579,7 @@ data "aws_iam_policy_document" "v1" {
 
   statement {
     sid       = "AllowPassingInstanceRole"
-    resources = var.create_node_iam_role ? [aws_iam_role.node[0].arn] : [var.node_iam_role_arn]
+    resources = concat(var.create_node_iam_role ? [aws_iam_role.node[0].arn] : [var.node_iam_role_arn], var.additional_node_iam_role_arns)
     actions   = ["iam:PassRole"]
 
     condition {
