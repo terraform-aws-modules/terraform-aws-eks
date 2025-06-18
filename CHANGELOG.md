@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.37.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.37.0...v20.37.1) (2025-06-18)
+
+
+### Bug Fixes
+
+* Restrict AWS provider max version due to v6 provider breaking changes ([#3384](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3384)) ([681a868](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/681a868d624878474fd9f92d1b04d3fec0120db7))
+
 ## [20.37.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.36.1...v20.37.0) (2025-06-09)
 
 
