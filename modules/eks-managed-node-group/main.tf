@@ -137,22 +137,6 @@ resource "aws_launch_template" "this" {
   disable_api_termination = var.disable_api_termination
   ebs_optimized           = var.ebs_optimized
 
-  dynamic "elastic_gpu_specifications" {
-    for_each = var.elastic_gpu_specifications
-
-    content {
-      type = elastic_gpu_specifications.value.type
-    }
-  }
-
-  dynamic "elastic_inference_accelerator" {
-    for_each = length(var.elastic_inference_accelerator) > 0 ? [var.elastic_inference_accelerator] : []
-
-    content {
-      type = elastic_inference_accelerator.value.type
-    }
-  }
-
   dynamic "enclave_options" {
     for_each = length(var.enclave_options) > 0 ? [var.enclave_options] : []
 
