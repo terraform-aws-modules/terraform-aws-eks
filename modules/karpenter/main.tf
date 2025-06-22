@@ -175,7 +175,7 @@ data "aws_iam_policy_document" "queue" {
     ]
     resources = [aws_sqs_queue.this[0].arn]
     condition {
-      test     = "StringEquals"
+      test     = "Bool"
       variable = "aws:SecureTransport"
       values = [
         "false"
