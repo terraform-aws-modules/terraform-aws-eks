@@ -134,9 +134,13 @@ resource "aws_eks_cluster" "this" {
     }
   }
 
-  storage_config {
-    block_storage {
-      enabled = local.auto_mode_enabled
+  dynamic "storage_config" {
+    for_each = length(var.cluster_compute_config) > 0 ? [var.cluster_compute_config] : []
+
+    content {
+      block_storage {
+        enabled = local.auto_mode_enabled
+      }
     }
   }
 
