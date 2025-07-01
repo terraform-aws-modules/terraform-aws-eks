@@ -20,7 +20,7 @@ locals {
   name   = "ex-${basename(path.cwd)}"
   region = "us-west-2"
 
-  cluster_version = "1.31"
+  cluster_version = "1.33"
 
   tags = {
     Test       = local.name

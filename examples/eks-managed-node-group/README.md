@@ -2,7 +2,6 @@
 
 Configuration in this directory creates Amazon EKS clusters with EKS Managed Node Groups demonstrating different configurations:
 
-- `eks-al2.tf` demonstrates an EKS cluster using EKS managed node group that utilizes the EKS Amazon Linux 2 optimized AMI
 - `eks-al2023.tf` demonstrates an EKS cluster using EKS managed node group that utilizes the EKS Amazon Linux 2023 optimized AMI
 - `eks-bottlerocket.tf` demonstrates an EKS cluster using EKS managed node group that utilizes the Bottlerocket EKS optimized AMI
 

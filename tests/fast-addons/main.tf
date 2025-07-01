@@ -4,7 +4,7 @@ provider "aws" {
 
 locals {
   name            = "ex-${basename(path.cwd)}"
-  cluster_version = "1.31"
+  cluster_version = "1.33"
   region          = "eu-west-1"
 
   tags = {

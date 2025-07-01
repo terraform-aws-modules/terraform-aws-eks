@@ -7,7 +7,7 @@ variable "ami_name_prefix" {
 variable "eks_version" {
   description = "The EKS cluster version associated with the AMI created"
   type        = string
-  default     = "1.31"
+  default     = "1.33"
 }
 
 variable "credential_provider" {
