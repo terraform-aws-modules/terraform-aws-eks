@@ -3,7 +3,7 @@ module "eks_bottlerocket" {
   version = "~> 20.0"
 
   cluster_name    = "${local.name}-bottlerocket"
-  cluster_version = "1.31"
+  cluster_version = "1.33"
 
   # EKS Addons
   cluster_addons = {
