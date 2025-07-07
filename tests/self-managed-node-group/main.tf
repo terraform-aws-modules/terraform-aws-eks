@@ -284,7 +284,7 @@ module "eks" {
       metadata_options = {
         http_endpoint               = "enabled"
         http_tokens                 = "required"
-        http_put_response_hop_limit = 2
+        http_put_response_hop_limit = 1
         instance_metadata_tags      = "disabled"
       }
 
