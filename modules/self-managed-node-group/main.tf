@@ -9,30 +9,6 @@ locals {
   # Just to ensure templating doesn't fail when values are not provided
   ssm_cluster_version = var.cluster_version != null ? var.cluster_version : ""
 
-  # TODO - Temporary stopgap for backwards compatibility until v21.0
-  ami_type_to_user_data_type = {
-    AL2_x86_64                 = "linux"
-    AL2_x86_64_GPU             = "linux"
-    AL2_ARM_64                 = "linux"
-    BOTTLEROCKET_ARM_64        = "bottlerocket"
-    BOTTLEROCKET_x86_64        = "bottlerocket"
-    BOTTLEROCKET_ARM_64_FIPS   = "bottlerocket"
-    BOTTLEROCKET_x86_64_FIPS   = "bottlerocket"
-    BOTTLEROCKET_ARM_64_NVIDIA = "bottlerocket"
-    BOTTLEROCKET_x86_64_NVIDIA = "bottlerocket"
-    WINDOWS_CORE_2019_x86_64   = "windows"
-    WINDOWS_FULL_2019_x86_64   = "windows"
-    WINDOWS_CORE_2022_x86_64   = "windows"
-    WINDOWS_FULL_2022_x86_64   = "windows"
-    AL2023_x86_64_STANDARD     = "al2023"
-    AL2023_ARM_64_STANDARD     = "al2023"
-    AL2023_x86_64_NEURON       = "al2023"
-    AL2023_x86_64_NVIDIA       = "al2023"
-    AL2023_ARM_64_NVIDIA       = "al2023"
-  }
-
-  user_data_type = local.ami_type_to_user_data_type[var.ami_type]
-
   # Map the AMI type to the respective SSM param path
   ami_type_to_ssm_param = {
     AL2_x86_64                 = "/aws/service/eks/optimized-ami/${local.ssm_cluster_version}/amazon-linux-2/recommended/image_id"
@@ -741,7 +717,7 @@ resource "aws_autoscaling_group" "this" {
 
   target_group_arns         = var.target_group_arns
   termination_policies      = var.termination_policies
-  vpc_zone_identifier       = local.enable_efa_support ? data.aws_subnets.placement_group[0].ids : var.subnet_ids
+  vpc_zone_identifier       = var.subnet_ids
   wait_for_capacity_timeout = var.wait_for_capacity_timeout
   wait_for_elb_capacity     = var.wait_for_elb_capacity
 
@@ -940,60 +916,6 @@ resource "aws_placement_group" "this" {
 }
 
 ################################################################################
-# Instance AZ Lookup
-
-# Instances usually used in placement groups w/ EFA are only available in
-# select availability zones. These data sources will cross reference the availability
-# zones supported by the instance type with the subnets provided to ensure only
-# AZs/subnets that are supported are used.
-################################################################################
-
-# Find the availability zones supported by the instance type
-# TODO - remove at next breaking change
-# Force users to be explicit about which AZ to use when using placement groups,
-# with or without EFA support
-data "aws_ec2_instance_type_offerings" "this" {
-  count = local.enable_efa_support ? 1 : 0
-
-  filter {
-    name   = "instance-type"
-    values = [var.instance_type]
-  }
-
-  location_type = "availability-zone-id"
-}
-
-# Reverse the lookup to find one of the subnets provided based on the availability
-# availability zone ID of the queried instance type (supported)
-data "aws_subnets" "placement_group" {
-  count = local.create_placement_group ? 1 : 0
-
-  filter {
-    name   = "subnet-id"
-    values = var.subnet_ids
-  }
-
-  # The data source can lookup the first available AZ or you can specify an AZ (next filter)
-  dynamic "filter" {
-    for_each = local.create_placement_group && var.placement_group_az == null ? [1] : []
-
-    content {
-      name   = "availability-zone-id"
-      values = data.aws_ec2_instance_type_offerings.this[0].locations
-    }
-  }
-
-  dynamic "filter" {
-    for_each = var.placement_group_az != null ? [var.placement_group_az] : []
-
-    content {
-      name   = "availability-zone"
-      values = [filter.value]
-    }
-  }
-}
-
-################################################################################
 # Access Entry
 ################################################################################
 
@@ -1002,7 +924,7 @@ resource "aws_eks_access_entry" "this" {
 
   cluster_name  = var.cluster_name
   principal_arn = var.create_iam_instance_profile ? aws_iam_role.this[0].arn : var.iam_role_arn
-  type          = local.user_data_type == "windows" ? "EC2_WINDOWS" : "EC2_LINUX"
+  type          = startswith(var.ami_type, "WINDOWS_") ? "EC2_WINDOWS" : "EC2_LINUX"
 
   tags = var.tags
 }

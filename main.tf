@@ -39,7 +39,7 @@ resource "aws_eks_cluster" "this" {
   role_arn                      = local.cluster_role
   version                       = var.cluster_version
   enabled_cluster_log_types     = var.cluster_enabled_log_types
-  bootstrap_self_managed_addons = local.auto_mode_enabled ? coalesce(var.bootstrap_self_managed_addons, false) : var.bootstrap_self_managed_addons
+  bootstrap_self_managed_addons = false
   force_update_version          = var.cluster_force_update_version
 
   access_config {
@@ -459,11 +459,6 @@ locals {
   eks_outpost_iam_role_policies = { for k, v in {
     AmazonEKSClusterPolicy = "${local.iam_role_policy_prefix}/AmazonEKSLocalOutpostClusterPolicy"
   } : k => v if local.create_outposts_local_cluster && !local.auto_mode_enabled }
-
-  # Security groups for pods
-  eks_sgpp_iam_role_policies = { for k, v in {
-    AmazonEKSVPCResourceController = "${local.iam_role_policy_prefix}/AmazonEKSVPCResourceController"
-  } : k => v if var.enable_security_groups_for_pods && !local.create_outposts_local_cluster && !local.auto_mode_enabled }
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
@@ -513,7 +508,6 @@ resource "aws_iam_role_policy_attachment" "this" {
     local.eks_standard_iam_role_policies,
     local.eks_auto_mode_iam_role_policies,
     local.eks_outpost_iam_role_policies,
-    local.eks_sgpp_iam_role_policies,
   ) : k => v if local.create_iam_role }
 
   policy_arn = each.value
@@ -722,18 +716,12 @@ resource "aws_iam_role_policy_attachment" "custom" {
 # EKS Addons
 ################################################################################
 
-locals {
-  # TODO - Set to `NONE` on next breaking change when default addons are disabled
-  resolve_conflicts_on_create_default = coalesce(var.bootstrap_self_managed_addons, true) ? "OVERWRITE" : "NONE"
-}
-
 data "aws_eks_addon_version" "this" {
   for_each = { for k, v in var.cluster_addons : k => v if local.create && !local.create_outposts_local_cluster }
 
   addon_name         = try(each.value.name, each.key)
   kubernetes_version = coalesce(var.cluster_version, aws_eks_cluster.this[0].version)
-  # TODO - Set default fallback to  `true` on next breaking change
-  most_recent = try(each.value.most_recent, null)
+  most_recent        = try(each.value.most_recent, true)
 }
 
 resource "aws_eks_addon" "this" {
@@ -755,9 +743,8 @@ resource "aws_eks_addon" "this" {
     }
   }
 
-  preserve = try(each.value.preserve, true)
-  # TODO - Set to `NONE` on next breaking change when default addons are disabled
-  resolve_conflicts_on_create = try(each.value.resolve_conflicts_on_create, local.resolve_conflicts_on_create_default)
+  preserve                    = try(each.value.preserve, true)
+  resolve_conflicts_on_create = try(each.value.resolve_conflicts_on_create, "NONE")
   resolve_conflicts_on_update = try(each.value.resolve_conflicts_on_update, "OVERWRITE")
   service_account_role_arn    = try(each.value.service_account_role_arn, null)
 
@@ -795,9 +782,8 @@ resource "aws_eks_addon" "before_compute" {
     }
   }
 
-  preserve = try(each.value.preserve, true)
-  # TODO - Set to `NONE` on next breaking change when default addons are disabled
-  resolve_conflicts_on_create = try(each.value.resolve_conflicts_on_create, local.resolve_conflicts_on_create_default)
+  preserve                    = try(each.value.preserve, true)
+  resolve_conflicts_on_create = try(each.value.resolve_conflicts_on_create, "NONE")
   resolve_conflicts_on_update = try(each.value.resolve_conflicts_on_update, "OVERWRITE")
   service_account_role_arn    = try(each.value.service_account_role_arn, null)
 
@@ -815,15 +801,6 @@ resource "aws_eks_addon" "before_compute" {
 # Note - this is different from IRSA
 ################################################################################
 
-locals {
-  # Maintain current behavior for <= 1.29, remove default for >= 1.30
-  # `null` will return the latest Kubernetes version from the EKS API, which at time of writing is 1.30
-  # https://github.com/kubernetes/kubernetes/pull/123561
-  # TODO - remove on next breaking change in conjunction with issuer URL change below
-  idpc_backwards_compat_version = contains(["1.21", "1.22", "1.23", "1.24", "1.25", "1.26", "1.27", "1.28", "1.29"], coalesce(var.cluster_version, "1.30"))
-  idpc_issuer_url               = local.idpc_backwards_compat_version ? try(aws_eks_cluster.this[0].identity[0].oidc[0].issuer, null) : null
-}
-
 resource "aws_eks_identity_provider_config" "this" {
   for_each = { for k, v in var.cluster_identity_providers : k => v if local.create && !local.create_outposts_local_cluster }
 
@@ -834,11 +811,10 @@ resource "aws_eks_identity_provider_config" "this" {
     groups_claim                  = lookup(each.value, "groups_claim", null)
     groups_prefix                 = lookup(each.value, "groups_prefix", null)
     identity_provider_config_name = try(each.value.identity_provider_config_name, each.key)
-    # TODO - make argument explicitly required on next breaking change
-    issuer_url      = try(each.value.issuer_url, local.idpc_issuer_url)
-    required_claims = lookup(each.value, "required_claims", null)
-    username_claim  = lookup(each.value, "username_claim", null)
-    username_prefix = lookup(each.value, "username_prefix", null)
+    issuer_url                    = each.value.issuer_url
+    required_claims               = lookup(each.value, "required_claims", null)
+    username_claim                = lookup(each.value, "username_claim", null)
+    username_prefix               = lookup(each.value, "username_prefix", null)
   }
 
   tags = merge(var.tags, try(each.value.tags, {}))

@@ -310,11 +310,10 @@ variable "enable_efa_support" {
   default     = false
 }
 
-# TODO - make this true by default at next breaking change (remove variable, only pass indices)
 variable "enable_efa_only" {
   description = "Determines whether to enable EFA (`false`, default) or EFA and EFA-only (`true`) network interfaces. Note: requires vpc-cni version `v1.18.4` or later"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "efa_indices" {
@@ -376,12 +375,6 @@ variable "launch_template_version" {
 variable "availability_zones" {
   description = "A list of one or more availability zones for the group. Used for EC2-Classic and default subnets when not specified with `subnet_ids` argument. Conflicts with `subnet_ids`"
   type        = list(string)
-  default     = null
-}
-
-variable "placement_group_az" {
-  description = "Availability zone where placement group is created (ex. `eu-west-1c`)"
-  type        = string
   default     = null
 }
 

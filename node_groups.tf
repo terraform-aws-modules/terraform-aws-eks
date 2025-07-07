@@ -375,7 +375,6 @@ module "eks_managed_node_group" {
   efa_indices                        = try(each.value.efa_indices, var.eks_managed_node_group_defaults.efa_indices, [0])
   create_placement_group             = try(each.value.create_placement_group, var.eks_managed_node_group_defaults.create_placement_group, false)
   placement                          = try(each.value.placement, var.eks_managed_node_group_defaults.placement, {})
-  placement_group_az                 = try(each.value.placement_group_az, var.eks_managed_node_group_defaults.placement_group_az, null)
   placement_group_strategy           = try(each.value.placement_group_strategy, var.eks_managed_node_group_defaults.placement_group_strategy, "cluster")
   network_interfaces                 = try(each.value.network_interfaces, var.eks_managed_node_group_defaults.network_interfaces, [])
   maintenance_options                = try(each.value.maintenance_options, var.eks_managed_node_group_defaults.maintenance_options, {})
@@ -446,7 +445,6 @@ module "self_managed_node_group" {
   target_group_arns         = try(each.value.target_group_arns, var.self_managed_node_group_defaults.target_group_arns, [])
   create_placement_group    = try(each.value.create_placement_group, var.self_managed_node_group_defaults.create_placement_group, false)
   placement_group           = try(each.value.placement_group, var.self_managed_node_group_defaults.placement_group, null)
-  placement_group_az        = try(each.value.placement_group_az, var.self_managed_node_group_defaults.placement_group_az, null)
   health_check_type         = try(each.value.health_check_type, var.self_managed_node_group_defaults.health_check_type, null)
   health_check_grace_period = try(each.value.health_check_grace_period, var.self_managed_node_group_defaults.health_check_grace_period, null)
 

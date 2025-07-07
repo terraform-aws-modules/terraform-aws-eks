@@ -166,13 +166,6 @@ variable "cluster_timeouts" {
   default     = {}
 }
 
-# TODO - hard code to false on next breaking change
-variable "bootstrap_self_managed_addons" {
-  description = "Indicates whether or not to bootstrap self-managed addons after the cluster has been created"
-  type        = bool
-  default     = null
-}
-
 ################################################################################
 # Access Entry
 ################################################################################
@@ -497,13 +490,6 @@ variable "iam_role_additional_policies" {
   description = "Additional policies to be added to the IAM role"
   type        = map(string)
   default     = {}
-}
-
-# TODO - will be removed in next breaking change; user can add the policy on their own when needed
-variable "enable_security_groups_for_pods" {
-  description = "Determines whether to add the necessary IAM permission policy for security groups for pods"
-  type        = bool
-  default     = true
 }
 
 variable "iam_role_tags" {

@@ -82,12 +82,6 @@ resource "aws_iam_role" "controller" {
   tags = merge(var.tags, var.iam_role_tags)
 }
 
-data "aws_iam_policy_document" "controller" {
-  count = local.create_iam_role ? 1 : 0
-
-  source_policy_documents = var.enable_v1_permissions ? [data.aws_iam_policy_document.v1[0].json] : [data.aws_iam_policy_document.v033[0].json]
-}
-
 resource "aws_iam_policy" "controller" {
   count = local.create_iam_role ? 1 : 0
 

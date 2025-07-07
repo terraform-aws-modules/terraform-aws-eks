@@ -116,13 +116,6 @@ variable "enable_pod_identity" {
   default     = true
 }
 
-# TODO - make v1 permssions the default policy at next breaking change
-variable "enable_v1_permissions" {
-  description = "Determines whether to enable permissions suitable for v1+ (`true`) or for v0.33.x-v0.37.x (`false`)"
-  type        = bool
-  default     = false
-}
-
 ################################################################################
 # IAM Role for Service Account (IRSA)
 ################################################################################
@@ -154,11 +147,11 @@ variable "irsa_assume_role_condition_test" {
 ################################################################################
 # Pod Identity Association
 ################################################################################
-# TODO - Change default to `true` at next breaking change
+
 variable "create_pod_identity_association" {
   description = "Determines whether to create pod identity association"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "namespace" {

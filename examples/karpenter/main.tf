@@ -106,8 +106,7 @@ module "eks" {
 module "karpenter" {
   source = "../../modules/karpenter"
 
-  cluster_name          = module.eks.cluster_name
-  enable_v1_permissions = true
+  cluster_name = module.eks.cluster_name
 
   # Name needs to match role name passed to the EC2NodeClass
   node_iam_role_use_name_prefix   = false

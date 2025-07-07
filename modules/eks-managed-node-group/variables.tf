@@ -248,11 +248,10 @@ variable "metadata_options" {
   }
 }
 
-# TODO - make this false by default at next breaking change
 variable "enable_monitoring" {
   description = "Enables/disables detailed monitoring"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "enable_efa_support" {
@@ -261,11 +260,10 @@ variable "enable_efa_support" {
   default     = false
 }
 
-# TODO - make this true by default at next breaking change (remove variable, only pass indices)
 variable "enable_efa_only" {
   description = "Determines whether to enable EFA (`false`, default) or EFA and EFA-only (`true`) network interfaces. Note: requires vpc-cni version `v1.18.4` or later"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "efa_indices" {
@@ -292,7 +290,6 @@ variable "create_placement_group" {
   default     = false
 }
 
-# TODO - remove at next breaking change
 variable "placement_group_strategy" {
   description = "The placement group strategy"
   type        = string
@@ -324,12 +321,6 @@ variable "tag_specifications" {
 variable "subnet_ids" {
   description = "Identifiers of EC2 Subnets to associate with the EKS Node Group. These subnets must have the following resource tag: `kubernetes.io/cluster/CLUSTER_NAME`"
   type        = list(string)
-  default     = null
-}
-
-variable "placement_group_az" {
-  description = "Availability zone where placement group is created (ex. `eu-west-1c`)"
-  type        = string
   default     = null
 }
 

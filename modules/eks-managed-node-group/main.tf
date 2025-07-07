@@ -381,7 +381,7 @@ resource "aws_eks_node_group" "this" {
   # Required
   cluster_name  = var.cluster_name
   node_role_arn = var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
-  subnet_ids    = local.create_placement_group ? data.aws_subnets.placement_group[0].ids : var.subnet_ids
+  subnet_ids    = var.subnet_ids
 
   scaling_config {
     min_size     = var.min_size
@@ -615,60 +615,6 @@ resource "aws_placement_group" "this" {
   strategy = var.placement_group_strategy
 
   tags = var.tags
-}
-
-################################################################################
-# Instance AZ Lookup
-
-# Instances usually used in placement groups w/ EFA are only available in
-# select availability zones. These data sources will cross reference the availability
-# zones supported by the instance type with the subnets provided to ensure only
-# AZs/subnets that are supported are used.
-################################################################################
-
-# Find the availability zones supported by the instance type
-# TODO - remove at next breaking change
-# Force users to be explicit about which AZ to use when using placement groups,
-# with or without EFA support
-data "aws_ec2_instance_type_offerings" "this" {
-  count = local.enable_efa_support ? 1 : 0
-
-  filter {
-    name   = "instance-type"
-    values = [local.efa_instance_type]
-  }
-
-  location_type = "availability-zone-id"
-}
-
-# Reverse the lookup to find one of the subnets provided based on the availability
-# availability zone ID of the queried instance type (supported)
-data "aws_subnets" "placement_group" {
-  count = local.create_placement_group ? 1 : 0
-
-  filter {
-    name   = "subnet-id"
-    values = var.subnet_ids
-  }
-
-  # The data source can lookup the first available AZ or you can specify an AZ (next filter)
-  dynamic "filter" {
-    for_each = var.enable_efa_support && var.placement_group_az == null ? [1] : []
-
-    content {
-      name   = "availability-zone-id"
-      values = data.aws_ec2_instance_type_offerings.this[0].locations
-    }
-  }
-
-  dynamic "filter" {
-    for_each = var.placement_group_az != null ? [var.placement_group_az] : []
-
-    content {
-      name   = "availability-zone"
-      values = [filter.value]
-    }
-  }
 }
 
 ################################################################################
