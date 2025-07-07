@@ -117,34 +117,6 @@ variable "enable_pod_identity" {
 }
 
 ################################################################################
-# IAM Role for Service Account (IRSA)
-################################################################################
-
-variable "enable_irsa" {
-  description = "Determines whether to enable support for IAM role for service accounts"
-  type        = bool
-  default     = false
-}
-
-variable "irsa_oidc_provider_arn" {
-  description = "OIDC provider arn used in trust policy for IAM role for service accounts"
-  type        = string
-  default     = ""
-}
-
-variable "irsa_namespace_service_accounts" {
-  description = "List of `namespace:serviceaccount`pairs to use in trust policy for IAM role for service accounts"
-  type        = list(string)
-  default     = ["karpenter:karpenter"]
-}
-
-variable "irsa_assume_role_condition_test" {
-  description = "Name of the [IAM condition operator](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition_operators.html) to evaluate when assuming the role"
-  type        = string
-  default     = "StringEquals"
-}
-
-################################################################################
 # Pod Identity Association
 ################################################################################
 
