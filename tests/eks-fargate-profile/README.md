@@ -33,7 +33,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_disabled_fargate_profile"></a> [disabled\_fargate\_profile](#module\_disabled\_fargate\_profile) | ../../modules/fargate-profile | n/a |
 | <a name="module_eks"></a> [eks](#module\_eks) | ../.. | n/a |
 | <a name="module_fargate_profile"></a> [fargate\_profile](#module\_fargate\_profile) | ../../modules/fargate-profile | n/a |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 5.0 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 6.0 |
 
 ## Resources
 

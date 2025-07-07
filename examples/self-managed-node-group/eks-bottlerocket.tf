@@ -1,6 +1,7 @@
 module "eks_bottlerocket" {
-  source  = "terraform-aws-modules/eks/aws"
-  version = "~> 20.0"
+  # source  = "terraform-aws-modules/eks/aws"
+  # version = "~> 20.0"
+  source = "../.."
 
   cluster_name    = "${local.name}-bottlerocket"
   cluster_version = "1.33"

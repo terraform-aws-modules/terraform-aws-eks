@@ -378,7 +378,7 @@ module "disabled_self_managed_node_group" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
   name = local.name
   cidr = local.vpc_cidr
@@ -446,7 +446,7 @@ module "key_pair" {
 
 module "ebs_kms_key" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   description = "Customer managed key to encrypt EKS managed node group volumes"
 
@@ -470,7 +470,7 @@ module "ebs_kms_key" {
 
 module "kms" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 2.1"
+  version = "~> 3.0"
 
   aliases               = ["eks/${local.name}"]
   description           = "${local.name} cluster encryption key"

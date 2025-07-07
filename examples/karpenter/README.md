@@ -95,7 +95,7 @@ Note that this example may create resources which cost money. Run `terraform des
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0 |
-| <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.7, < 3.0.0 |
+| <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 3.0.0 |
 
 ## Providers
 
@@ -103,7 +103,7 @@ Note that this example may create resources which cost money. Run `terraform des
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0 |
 | <a name="provider_aws.virginia"></a> [aws.virginia](#provider\_aws.virginia) | >= 6.0 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.7, < 3.0.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 3.0.0 |
 
 ## Modules
 
@@ -112,7 +112,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_eks"></a> [eks](#module\_eks) | ../.. | n/a |
 | <a name="module_karpenter"></a> [karpenter](#module\_karpenter) | ../../modules/karpenter | n/a |
 | <a name="module_karpenter_disabled"></a> [karpenter\_disabled](#module\_karpenter\_disabled) | ../../modules/karpenter | n/a |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 5.0 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 6.0 |
 
 ## Resources
 
