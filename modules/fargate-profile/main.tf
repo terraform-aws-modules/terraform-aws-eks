@@ -1,18 +1,30 @@
-data "aws_partition" "current" {}
-data "aws_caller_identity" "current" {}
-data "aws_region" "current" {}
+data "aws_region" "current" {
+  count = var.create ? 1 : 0
+}
+data "aws_partition" "current" {
+  count = var.create && var.partition == "" ? 1 : 0
+}
+data "aws_caller_identity" "current" {
+  count = var.create && var.account_id == "" ? 1 : 0
+}
+
+locals {
+  account_id = try(data.aws_caller_identity.current[0].account_id, var.account_id)
+  partition  = try(data.aws_partition.current[0].partition, var.partition)
+  region     = try(data.aws_region.current[0].region, "")
+}
 
 locals {
   create_iam_role = var.create && var.create_iam_role
 
   iam_role_name          = coalesce(var.iam_role_name, var.name, "fargate-profile")
-  iam_role_policy_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
+  iam_role_policy_prefix = "arn:${local.partition}:iam::aws:policy"
 
   ipv4_cni_policy = { for k, v in {
     AmazonEKS_CNI_Policy = "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
   } : k => v if var.iam_role_attach_cni_policy && var.cluster_ip_family == "ipv4" }
   ipv6_cni_policy = { for k, v in {
-    AmazonEKS_CNI_IPv6_Policy = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/AmazonEKS_CNI_IPv6_Policy"
+    AmazonEKS_CNI_IPv6_Policy = "arn:${local.partition}:iam::${local.account_id}:policy/AmazonEKS_CNI_IPv6_Policy"
   } : k => v if var.iam_role_attach_cni_policy && var.cluster_ip_family == "ipv6" }
 }
 
@@ -37,7 +49,7 @@ data "aws_iam_policy_document" "assume_role_policy" {
       variable = "aws:SourceArn"
 
       values = [
-        "arn:${data.aws_partition.current.partition}:eks:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:fargateprofile/${var.cluster_name}/*",
+        "arn:${local.partition}:eks:${local.region}:${local.account_id}:fargateprofile/${var.cluster_name}/*",
       ]
     }
   }

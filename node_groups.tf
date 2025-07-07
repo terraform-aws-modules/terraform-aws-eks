@@ -262,6 +262,10 @@ module "fargate_profile" {
 
   create = try(each.value.create, true)
 
+  # Pass through values to reduce GET requests from data sources
+  partition  = local.partition
+  account_id = local.account_id
+
   # Fargate Profile
   cluster_name      = time_sleep.this[0].triggers["cluster_name"]
   cluster_ip_family = var.cluster_ip_family
@@ -299,6 +303,10 @@ module "eks_managed_node_group" {
   for_each = { for k, v in var.eks_managed_node_groups : k => v if var.create && !local.create_outposts_local_cluster }
 
   create = try(each.value.create, true)
+
+  # Pass through values to reduce GET requests from data sources
+  partition  = local.partition
+  account_id = local.account_id
 
   cluster_name    = time_sleep.this[0].triggers["cluster_name"]
   cluster_version = try(each.value.cluster_version, var.eks_managed_node_group_defaults.cluster_version, time_sleep.this[0].triggers["cluster_version"])
@@ -417,6 +425,10 @@ module "self_managed_node_group" {
   for_each = { for k, v in var.self_managed_node_groups : k => v if var.create }
 
   create = try(each.value.create, true)
+
+  # Pass through values to reduce GET requests from data sources
+  partition  = local.partition
+  account_id = local.account_id
 
   cluster_name = time_sleep.this[0].triggers["cluster_name"]
 

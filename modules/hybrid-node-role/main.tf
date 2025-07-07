@@ -1,9 +1,8 @@
 data "aws_partition" "current" {
   count = var.create ? 1 : 0
 }
-
 locals {
-  partition = try(data.aws_partition.current[0].partition, "aws")
+  partition = try(data.aws_partition.current[0].partition, "")
 }
 
 ################################################################################

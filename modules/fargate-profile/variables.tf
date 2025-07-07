@@ -10,6 +10,18 @@ variable "tags" {
   default     = {}
 }
 
+variable "partition" {
+  description = "The AWS partition - pass through value to reduce number of GET requests from data sources"
+  type        = string
+  default     = null
+}
+
+variable "account_id" {
+  description = "The AWS account ID - pass through value to reduce number of GET requests from data sources"
+  type        = string
+  default     = null
+}
+
 ################################################################################
 # IAM Role
 ################################################################################
