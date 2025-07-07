@@ -141,11 +141,6 @@ output "autoscaling_group_schedule_arns" {
 # Additional
 ################################################################################
 
-output "platform" {
-  description = "[DEPRECATED - Will be removed in `v21.0`] Identifies the OS platform as `bottlerocket`, `linux` (AL2), `al2023`, or `windows`"
-  value       = module.user_data.platform
-}
-
 output "image_id" {
   description = "ID of the image"
   value       = try(aws_launch_template.this[0].image_id, null)

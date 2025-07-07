@@ -88,12 +88,3 @@ output "iam_role_unique_id" {
   description = "Stable and unique string identifying the IAM role"
   value       = try(aws_iam_role.this[0].unique_id, null)
 }
-
-################################################################################
-# Additional
-################################################################################
-
-output "platform" {
-  description = "[DEPRECATED - Will be removed in `v21.0`] Identifies the OS platform as `bottlerocket`, `linux` (AL2), `al2023`, or `windows`"
-  value       = module.user_data.platform
-}

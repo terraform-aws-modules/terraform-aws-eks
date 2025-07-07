@@ -10,12 +10,6 @@ variable "tags" {
   default     = {}
 }
 
-variable "platform" {
-  description = "[DEPRECATED - use `ami_type` instead. Will be removed in `v21.0`] Identifies the OS platform as `bottlerocket`, `linux` (AL2), `al2023`, or `windows`"
-  type        = string
-  default     = "linux"
-}
-
 ################################################################################
 # User Data
 ################################################################################
@@ -48,13 +42,6 @@ variable "cluster_service_cidr" {
   description = "The CIDR block (IPv4 or IPv6) used by the cluster to assign Kubernetes service IP addresses. This is derived from the cluster itself"
   type        = string
   default     = ""
-}
-
-# TODO - remove at next breaking change
-variable "cluster_service_ipv4_cidr" {
-  description = "[Deprecated] The CIDR block to assign Kubernetes service IP addresses from. If you don't specify a block, Kubernetes assigns addresses from either the 10.100.0.0/16 or 172.20.0.0/16 CIDR blocks"
-  type        = string
-  default     = null
 }
 
 variable "pre_bootstrap_user_data" {
@@ -379,7 +366,7 @@ variable "use_name_prefix" {
 variable "ami_type" {
   description = "Type of Amazon Machine Image (AMI) associated with the EKS Node Group. See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#AmazonEKS-Type-Nodegroup-amiType) for valid values"
   type        = string
-  default     = null
+  default     = "AL2023_x86_64_STANDARD"
 }
 
 variable "ami_release_version" {

@@ -10,18 +10,6 @@ variable "tags" {
   default     = {}
 }
 
-# tflint-ignore: terraform_unused_declarations
-variable "platform" {
-  description = "[DEPRECATED - must use `ami_type` instead. Will be removed in `v21.0`]"
-  type        = string
-  default     = null
-
-  validation {
-    condition     = var.platform == null
-    error_message = "`platform` is no longer valid due to the number of OS choices. Please provide an [`ami_type`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-amitype) instead."
-  }
-}
-
 ################################################################################
 # User Data
 ################################################################################
@@ -271,7 +259,7 @@ variable "ami_id" {
 variable "ami_type" {
   description = "Type of Amazon Machine Image (AMI) associated with the node group. See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#AmazonEKS-Type-Nodegroup-amiType) for valid values"
   type        = string
-  default     = "AL2_x86_64"
+  default     = "AL2023_x86_64_STANDARD"
 }
 
 variable "cluster_version" {

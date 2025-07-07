@@ -314,7 +314,7 @@ module "eks_managed_node_group" {
   desired_size = try(each.value.desired_size, var.eks_managed_node_group_defaults.desired_size, 1)
 
   ami_id                         = try(each.value.ami_id, var.eks_managed_node_group_defaults.ami_id, "")
-  ami_type                       = try(each.value.ami_type, var.eks_managed_node_group_defaults.ami_type, null)
+  ami_type                       = try(each.value.ami_type, var.eks_managed_node_group_defaults.ami_type, "AL2023_x86_64_STANDARD")
   ami_release_version            = try(each.value.ami_release_version, var.eks_managed_node_group_defaults.ami_release_version, null)
   use_latest_ami_release_version = try(each.value.use_latest_ami_release_version, var.eks_managed_node_group_defaults.use_latest_ami_release_version, false)
 
@@ -330,10 +330,8 @@ module "eks_managed_node_group" {
   timeouts             = try(each.value.timeouts, var.eks_managed_node_group_defaults.timeouts, {})
 
   # User data
-  platform                   = try(each.value.platform, var.eks_managed_node_group_defaults.platform, "linux")
   cluster_endpoint           = try(time_sleep.this[0].triggers["cluster_endpoint"], "")
   cluster_auth_base64        = try(time_sleep.this[0].triggers["cluster_certificate_authority_data"], "")
-  cluster_service_ipv4_cidr  = var.cluster_service_ipv4_cidr
   cluster_ip_family          = var.cluster_ip_family
   cluster_service_cidr       = try(time_sleep.this[0].triggers["cluster_service_cidr"], "")
   enable_bootstrap_user_data = try(each.value.enable_bootstrap_user_data, var.eks_managed_node_group_defaults.enable_bootstrap_user_data, false)
@@ -475,9 +473,7 @@ module "self_managed_node_group" {
   autoscaling_group_tags = try(each.value.autoscaling_group_tags, var.self_managed_node_group_defaults.autoscaling_group_tags, {})
 
   # User data
-  platform = try(each.value.platform, var.self_managed_node_group_defaults.platform, null)
-  # TODO - update this when `var.platform` is removed in v21.0
-  ami_type                   = try(each.value.ami_type, var.self_managed_node_group_defaults.ami_type, "AL2_x86_64")
+  ami_type                   = try(each.value.ami_type, var.self_managed_node_group_defaults.ami_type, "AL2023_x86_64_STANDARD")
   cluster_endpoint           = try(time_sleep.this[0].triggers["cluster_endpoint"], "")
   cluster_auth_base64        = try(time_sleep.this[0].triggers["cluster_certificate_authority_data"], "")
   cluster_service_cidr       = try(time_sleep.this[0].triggers["cluster_service_cidr"], "")

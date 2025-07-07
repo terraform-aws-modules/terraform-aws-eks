@@ -70,7 +70,6 @@ module "user_data" {
   source = "../_user_data"
 
   create                    = var.create
-  platform                  = local.user_data_type
   ami_type                  = var.ami_type
   is_eks_managed_node_group = false
 
