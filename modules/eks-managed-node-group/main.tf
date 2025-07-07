@@ -476,6 +476,8 @@ resource "aws_eks_node_group" "this" {
   lifecycle {
     create_before_destroy = true
     ignore_changes = [
+      // If you are here, you may think this is strange or even a bug but it is intentional!
+      // For more context, check out https://github.com/bryantbiggs/eks-desired-size-hack
       scaling_config[0].desired_size,
     ]
   }
