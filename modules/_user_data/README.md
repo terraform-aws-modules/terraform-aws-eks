@@ -9,7 +9,7 @@ See [`tests/user-data/`](https://github.com/terraform-aws-modules/terraform-aws-
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.2 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_cloudinit"></a> [cloudinit](#requirement\_cloudinit) | >= 2.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
 
