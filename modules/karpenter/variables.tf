@@ -64,7 +64,7 @@ variable "iam_role_permissions_boundary_arn" {
 
 variable "iam_role_tags" {
   description = "A map of additional tags to add the the IAM role"
-  type        = map(any)
+  type        = map(string)
   default     = {}
 }
 
@@ -94,8 +94,28 @@ variable "iam_policy_description" {
 
 variable "iam_policy_statements" {
   description = "A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed"
-  type        = any
-  default     = []
+  type = list(object({
+    sid           = optional(string)
+    actions       = optional(list(string))
+    not_actions   = optional(list(string))
+    effect        = optional(string)
+    resources     = optional(list(string))
+    not_resources = optional(list(string))
+    principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    not_principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    condition = optional(list(object({
+      test     = string
+      values   = list(string)
+      variable = string
+    })))
+  }))
+  default = null
 }
 
 variable "iam_role_policies" {

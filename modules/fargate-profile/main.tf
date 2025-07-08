@@ -95,25 +95,25 @@ resource "aws_iam_role_policy_attachment" "additional" {
 ################################################################################
 
 locals {
-  create_iam_role_policy = local.create_iam_role && var.create_iam_role_policy && length(var.iam_role_policy_statements) > 0
+  create_iam_role_policy = local.create_iam_role && var.create_iam_role_policy && var.iam_role_policy_statements != null
 }
 
 data "aws_iam_policy_document" "role" {
   count = local.create_iam_role_policy ? 1 : 0
 
   dynamic "statement" {
-    for_each = var.iam_role_policy_statements
+    for_each = var.iam_role_policy_statements != null ? var.iam_role_policy_statements : []
 
     content {
-      sid           = try(statement.value.sid, null)
-      actions       = try(statement.value.actions, null)
-      not_actions   = try(statement.value.not_actions, null)
-      effect        = try(statement.value.effect, null)
-      resources     = try(statement.value.resources, null)
-      not_resources = try(statement.value.not_resources, null)
+      sid           = statement.value.sid
+      actions       = statement.value.actions
+      not_actions   = statement.value.not_actions
+      effect        = statement.value.effect
+      resources     = statement.value.resources
+      not_resources = statement.value.not_resources
 
       dynamic "principals" {
-        for_each = try(statement.value.principals, [])
+        for_each = statement.value.principals != null ? statement.value.principals : []
 
         content {
           type        = principals.value.type
@@ -122,7 +122,7 @@ data "aws_iam_policy_document" "role" {
       }
 
       dynamic "not_principals" {
-        for_each = try(statement.value.not_principals, [])
+        for_each = statement.value.not_principals != null ? statement.value.not_principals : []
 
         content {
           type        = not_principals.value.type
@@ -131,7 +131,7 @@ data "aws_iam_policy_document" "role" {
       }
 
       dynamic "condition" {
-        for_each = try(statement.value.conditions, [])
+        for_each = statement.value.condition != null ? statement.value.condition : []
 
         content {
           test     = condition.value.test
@@ -165,19 +165,20 @@ resource "aws_eks_fargate_profile" "this" {
   subnet_ids             = var.subnet_ids
 
   dynamic "selector" {
-    for_each = var.selectors
+    for_each = var.selectors != null ? var.selectors : []
 
     content {
       namespace = selector.value.namespace
-      labels    = lookup(selector.value, "labels", {})
+      labels    = selector.value.labels
     }
   }
 
   dynamic "timeouts" {
-    for_each = [var.timeouts]
+    for_each = var.timeouts != null ? [var.timeouts] : []
+
     content {
-      create = lookup(var.timeouts, "create", null)
-      delete = lookup(var.timeouts, "delete", null)
+      create = var.timeouts.create
+      delete = var.timeouts.delete
     }
   }
 

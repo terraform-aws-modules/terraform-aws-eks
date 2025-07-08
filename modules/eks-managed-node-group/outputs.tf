@@ -62,15 +62,6 @@ output "node_group_taints" {
 }
 
 ################################################################################
-# Autoscaling Group Schedule
-################################################################################
-
-output "autoscaling_group_schedule_arns" {
-  description = "ARNs of autoscaling group schedules"
-  value       = { for k, v in aws_autoscaling_schedule.this : k => v.arn }
-}
-
-################################################################################
 # IAM Role
 ################################################################################
 

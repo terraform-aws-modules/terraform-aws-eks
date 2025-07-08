@@ -153,16 +153,18 @@ module "eks" {
           spot_allocation_strategy                 = "capacity-optimized"
         }
 
-        override = [
-          {
-            instance_type     = "m5.large"
-            weighted_capacity = "1"
-          },
-          {
-            instance_type     = "m6i.large"
-            weighted_capacity = "2"
-          },
-        ]
+        launch_template = {
+          override = [
+            {
+              instance_type     = "m5.large"
+              weighted_capacity = "1"
+            },
+            {
+              instance_type     = "m6i.large"
+              weighted_capacity = "2"
+            },
+          ]
+        }
       }
     }
 
@@ -263,21 +265,23 @@ module "eks" {
           }
 
           # ASG configuration
-          override = [
-            {
-              instance_requirements = {
-                cpu_manufacturers                           = ["intel"]
-                instance_generations                        = ["current", "previous"]
-                spot_max_price_percentage_over_lowest_price = 100
+          launch_template = {
+            override = [
+              {
+                instance_requirements = {
+                  cpu_manufacturers                           = ["intel"]
+                  instance_generations                        = ["current", "previous"]
+                  spot_max_price_percentage_over_lowest_price = 100
 
-                vcpu_count = {
-                  min = 1
+                  vcpu_count = {
+                    min = 1
+                  }
+
+                  allowed_instance_types = ["t*", "m*"]
                 }
-
-                allowed_instance_types = ["t*", "m*"]
               }
-            }
-          ]
+            ]
+          }
         }
       }
 

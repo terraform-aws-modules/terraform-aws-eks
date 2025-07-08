@@ -180,68 +180,153 @@ variable "ram_disk_id" {
 
 variable "block_device_mappings" {
   description = "Specify volumes to attach to the instance besides the volumes specified by the AMI"
-  type        = any
-  default     = {}
+  type = map(object({
+    device_name = optional(string)
+    ebs = optional(object({
+      delete_on_termination      = optional(bool)
+      encrypted                  = optional(bool)
+      iops                       = optional(number)
+      kms_key_id                 = optional(string)
+      snapshot_id                = optional(string)
+      throughput                 = optional(number)
+      volume_initialization_rate = optional(number)
+      volume_size                = optional(number)
+      volume_type                = optional(string)
+    }))
+    no_device    = optional(string)
+    virtual_name = optional(string)
+  }))
+  default = null
 }
 
 variable "capacity_reservation_specification" {
   description = "Targeting for EC2 capacity reservations"
-  type        = any
-  default     = {}
+  type = object({
+    capacity_reservation_preference = optional(string)
+    capacity_reservation_target = optional(object({
+      capacity_reservation_id                 = optional(string)
+      capacity_reservation_resource_group_arn = optional(string)
+    }))
+  })
+  default = null
 }
 
 variable "cpu_options" {
   description = "The CPU options for the instance"
-  type        = map(string)
-  default     = {}
+  type = object({
+    amd_sev_snp      = optional(string)
+    core_count       = optional(number)
+    threads_per_core = optional(number)
+  })
+  default = null
 }
 
 variable "credit_specification" {
   description = "Customize the credit specification of the instance"
-  type        = map(string)
-  default     = {}
+  type = object({
+    cpu_credits = optional(string)
+  })
+  default = null
 }
 
 variable "enclave_options" {
   description = "Enable Nitro Enclaves on launched instances"
-  type        = map(string)
-  default     = {}
+  type = object({
+    enabled = optional(bool)
+  })
+  default = null
 }
 
 variable "hibernation_options" {
   description = "The hibernation options for the instance"
-  type        = map(string)
-  default     = {}
+  type = object({
+    configured = optional(bool)
+  })
+  default = null
 }
 
 variable "instance_market_options" {
   description = "The market (purchasing) option for the instance"
-  type        = any
-  default     = {}
+  type = object({
+    market_type = optional(string)
+    spot_options = optional(object({
+      block_duration_minutes         = optional(number)
+      instance_interruption_behavior = optional(string)
+      max_price                      = optional(string)
+      spot_instance_type             = optional(string)
+      valid_until                    = optional(string)
+    }))
+  })
+  default = null
 }
 
 variable "maintenance_options" {
   description = "The maintenance options for the instance"
-  type        = any
-  default     = {}
+  type = object({
+    auto_recovery = optional(string)
+  })
+  default = null
 }
 
 variable "license_specifications" {
-  description = "A map of license specifications to associate with"
-  type        = any
-  default     = {}
+  description = "A list of license specifications to associate with"
+  type = list(object({
+    license_configuration_arn = string
+  }))
+  default = null
 }
 
 variable "network_interfaces" {
   description = "Customize network interfaces to be attached at instance boot time"
-  type        = list(any)
-  default     = []
+  type = list(object({
+    associate_carrier_ip_address = optional(bool)
+    associate_public_ip_address  = optional(bool)
+    connection_tracking_specification = optional(object({
+      tcp_established_timeout = optional(number)
+      udp_stream_timeout      = optional(number)
+      udp_timeout             = optional(number)
+    }))
+    delete_on_termination = optional(bool)
+    description           = optional(string)
+    device_index          = optional(number)
+    ena_srd_specification = optional(object({
+      ena_srd_enabled = optional(bool)
+      ena_srd_udp_specification = optional(object({
+        ena_srd_udp_enabled = optional(bool)
+      }))
+    }))
+    interface_type       = optional(string)
+    ipv4_address_count   = optional(number)
+    ipv4_addresses       = optional(list(string))
+    ipv4_prefix_count    = optional(number)
+    ipv4_prefixes        = optional(list(string))
+    ipv6_address_count   = optional(number)
+    ipv6_addresses       = optional(list(string))
+    ipv6_prefix_count    = optional(number)
+    ipv6_prefixes        = optional(list(string))
+    network_card_index   = optional(number)
+    network_interface_id = optional(string)
+    primary_ipv6         = optional(bool)
+    private_ip_address   = optional(string)
+    security_groups      = optional(list(string), [])
+    subnet_id            = optional(string)
+  }))
+  default = []
 }
 
 variable "placement" {
   description = "The placement of the instance"
-  type        = map(string)
-  default     = {}
+  type = object({
+    affinity                = optional(string)
+    availability_zone       = optional(string)
+    group_name              = optional(string)
+    host_id                 = optional(string)
+    host_resource_group_arn = optional(string)
+    partition_number        = optional(number)
+    spread_domain           = optional(string)
+    tenancy                 = optional(string)
+  })
+  default = {}
 }
 
 variable "create_placement_group" {
@@ -252,8 +337,12 @@ variable "create_placement_group" {
 
 variable "private_dns_name_options" {
   description = "The options for the instance hostname. The default values are inherited from the subnet"
-  type        = map(string)
-  default     = {}
+  type = object({
+    enable_resource_name_dns_aaaa_record = optional(bool)
+    enable_resource_name_dns_a_record    = optional(bool)
+    hostname_type                        = optional(string)
+  })
+  default = null
 }
 
 variable "ebs_optimized" {
@@ -282,14 +371,66 @@ variable "cluster_version" {
 
 variable "instance_requirements" {
   description = "The attribute requirements for the type of instance. If present then `instance_type` cannot be present"
-  type        = any
-  default     = {}
+  type = object({
+    accelerator_count = optional(object({
+      max = optional(number)
+      min = optional(number)
+    }))
+    accelerator_manufacturers = optional(list(string))
+    accelerator_names         = optional(list(string))
+    accelerator_total_memory_mib = optional(object({
+      max = optional(number)
+      min = optional(number)
+    }))
+    accelerator_types      = optional(list(string))
+    allowed_instance_types = optional(list(string))
+    bare_metal             = optional(string)
+    baseline_ebs_bandwidth_mbps = optional(object({
+      max = optional(number)
+      min = optional(number)
+    }))
+    burstable_performance                                   = optional(string)
+    cpu_manufacturers                                       = optional(list(string))
+    excluded_instance_types                                 = optional(list(string))
+    instance_generations                                    = optional(list(string))
+    local_storage                                           = optional(string)
+    local_storage_types                                     = optional(list(string))
+    max_spot_price_as_percentage_of_optimal_on_demand_price = optional(number)
+    memory_gib_per_vcpu = optional(object({
+      max = optional(number)
+      min = optional(number)
+    }))
+    memory_mib = optional(object({
+      max = optional(number)
+      min = optional(number)
+    }))
+    network_bandwidth_gbps = optional(object({
+      max = optional(number)
+      min = optional(number)
+    }))
+    network_interface_count = optional(object({
+      max = optional(number)
+      min = optional(number)
+    }))
+    on_demand_max_price_percentage_over_lowest_price = optional(number)
+    require_hibernate_support                        = optional(bool)
+    spot_max_price_percentage_over_lowest_price      = optional(number)
+    total_local_storage_gb = optional(object({
+      max = optional(number)
+      min = optional(number)
+    }))
+    vcpu_count = optional(object({
+      max = optional(number)
+      min = string
+    }))
+  })
+  default = null
 }
 
 variable "instance_type" {
   description = "The type of the instance to launch"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "key_name" {
@@ -336,11 +477,17 @@ variable "efa_indices" {
 
 variable "metadata_options" {
   description = "Customize the metadata options for the instance"
-  type        = map(string)
+  type = object({
+    http_endpoint               = optional(string, "enabled")
+    http_protocol_ipv6          = optional(string)
+    http_put_response_hop_limit = optional(number, 1)
+    http_tokens                 = optional(string, "required")
+    instance_metadata_tags      = optional(string)
+  })
   default = {
     http_endpoint               = "enabled"
-    http_tokens                 = "required"
     http_put_response_hop_limit = 1
+    http_tokens                 = "required"
   }
 }
 
@@ -421,7 +568,7 @@ variable "desired_size_type" {
 }
 
 variable "ignore_failed_scaling_activities" {
-  description = "Whether to ignore failed Auto Scaling scaling activities while waiting for capacity."
+  description = "Whether to ignore failed Auto Scaling scaling activities while waiting for capacity"
   type        = bool
   default     = null
 }
@@ -445,13 +592,13 @@ variable "min_elb_capacity" {
 }
 
 variable "wait_for_elb_capacity" {
-  description = "Setting this will cause Terraform to wait for exactly this number of healthy instances in all attached load balancers on both create and update operations. Takes precedence over `min_elb_capacity` behavior."
+  description = "Setting this will cause Terraform to wait for exactly this number of healthy instances in all attached load balancers on both create and update operations. Takes precedence over `min_elb_capacity` behavior"
   type        = number
   default     = null
 }
 
 variable "wait_for_capacity_timeout" {
-  description = "A maximum duration that Terraform should wait for ASG instances to be healthy before timing out. (See also Waiting for Capacity below.) Setting this to '0' causes Terraform to skip all Capacity Waiting behavior."
+  description = "A maximum duration that Terraform should wait for ASG instances to be healthy before timing out. (See also Waiting for Capacity below.) Setting this to '0' causes Terraform to skip all Capacity Waiting behavior"
   type        = string
   default     = null
 }
@@ -469,7 +616,7 @@ variable "default_instance_warmup" {
 }
 
 variable "protect_from_scale_in" {
-  description = "Allows setting instance protection. The autoscaling group will not select instances with this setting for termination during scale in events."
+  description = "Allows setting instance protection. The autoscaling group will not select instances with this setting for termination during scale in events"
   type        = bool
   default     = false
 }
@@ -481,7 +628,7 @@ variable "target_group_arns" {
 }
 
 variable "placement_group" {
-  description = "The name of the placement group into which you'll launch your instances, if any"
+  description = "The name of the placement group into which you'll launch your instances"
   type        = string
   default     = null
 }
@@ -548,19 +695,47 @@ variable "service_linked_role_arn" {
 
 variable "initial_lifecycle_hooks" {
   description = "One or more Lifecycle Hooks to attach to the Auto Scaling Group before instances are launched. The syntax is exactly the same as the separate `aws_autoscaling_lifecycle_hook` resource, without the `autoscaling_group_name` attribute. Please note that this will only work when creating a new Auto Scaling Group. For all other use-cases, please use `aws_autoscaling_lifecycle_hook` resource"
-  type        = list(map(string))
-  default     = []
+  type = list(object({
+    default_result          = optional(string)
+    heartbeat_timeout       = optional(number)
+    lifecycle_transition    = string
+    name                    = string
+    notification_metadata   = optional(string)
+    notification_target_arn = optional(string)
+    role_arn                = optional(string)
+  }))
+  default = null
 }
 
 variable "instance_maintenance_policy" {
   description = "If this block is configured, add a instance maintenance policy to the specified Auto Scaling group"
-  type        = any
-  default     = {}
+  type = object({
+    max_healthy_percentage = number
+    min_healthy_percentage = number
+  })
+  default = null
 }
 
 variable "instance_refresh" {
   description = "If this block is configured, start an Instance Refresh when this Auto Scaling Group is updated"
-  type        = any
+  type = object({
+    preferences = optional(object({
+      alarm_specification = optional(object({
+        alarms = optional(list(string))
+      }))
+      auto_rollback                = optional(bool)
+      checkpoint_delay             = optional(number)
+      checkpoint_percentages       = optional(list(number))
+      instance_warmup              = optional(number)
+      max_healthy_percentage       = optional(number)
+      min_healthy_percentage       = optional(number, 33)
+      scale_in_protected_instances = optional(string)
+      skip_matching                = optional(bool)
+      standby_instances            = optional(string)
+    }))
+    strategy = optional(string, "Rolling")
+    triggers = optional(list(string))
+  })
   default = {
     strategy = "Rolling"
     preferences = {
@@ -577,20 +752,102 @@ variable "use_mixed_instances_policy" {
 
 variable "mixed_instances_policy" {
   description = "Configuration block containing settings to define launch targets for Auto Scaling groups"
-  type        = any
-  default     = null
+  type = object({
+    instances_distribution = optional(object({
+      on_demand_allocation_strategy            = optional(string)
+      on_demand_base_capacity                  = optional(number)
+      on_demand_percentage_above_base_capacity = optional(number)
+      spot_allocation_strategy                 = optional(string)
+      spot_instance_pools                      = optional(number)
+      spot_max_price                           = optional(string)
+    }))
+    launch_template = object({
+      override = optional(list(object({
+        instance_requirements = optional(object({
+          accelerator_count = optional(object({
+            max = optional(number)
+            min = optional(number)
+          }))
+          accelerator_manufacturers = optional(list(string))
+          accelerator_names         = optional(list(string))
+          accelerator_total_memory_mib = optional(object({
+            max = optional(number)
+            min = optional(number)
+          }))
+          accelerator_types      = optional(list(string))
+          allowed_instance_types = optional(list(string))
+          bare_metal             = optional(string)
+          baseline_ebs_bandwidth_mbps = optional(object({
+            max = optional(number)
+            min = optional(number)
+          }))
+          burstable_performance                                   = optional(string)
+          cpu_manufacturers                                       = optional(list(string))
+          excluded_instance_types                                 = optional(list(string))
+          instance_generations                                    = optional(list(string))
+          local_storage                                           = optional(string)
+          local_storage_types                                     = optional(list(string))
+          max_spot_price_as_percentage_of_optimal_on_demand_price = optional(number)
+          memory_gib_per_vcpu = optional(object({
+            max = optional(number)
+            min = optional(number)
+          }))
+          memory_mib = optional(object({
+            max = optional(number)
+            min = optional(number)
+          }))
+          network_bandwidth_gbps = optional(object({
+            max = optional(number)
+            min = optional(number)
+          }))
+          network_interface_count = optional(object({
+            max = optional(number)
+            min = optional(number)
+          }))
+          on_demand_max_price_percentage_over_lowest_price = optional(number)
+          require_hibernate_support                        = optional(bool)
+          spot_max_price_percentage_over_lowest_price      = optional(number)
+          total_local_storage_gb = optional(object({
+            max = optional(number)
+            min = optional(number)
+          }))
+          vcpu_count = optional(object({
+            max = optional(number)
+            min = optional(number)
+          }))
+        }))
+        instance_type = optional(string)
+        launch_template_specification = optional(object({
+          launch_template_id   = optional(string)
+          launch_template_name = optional(string)
+          version              = optional(string)
+        }))
+        weighted_capacity = optional(string)
+      })))
+    })
+  })
+  default = null
 }
 
 variable "warm_pool" {
   description = "If this block is configured, add a Warm Pool to the specified Auto Scaling group"
-  type        = any
-  default     = {}
+  type = object({
+    instance_reuse_policy = optional(object({
+      reuse_on_scale_in = optional(bool)
+    }))
+    max_group_prepared_capacity = optional(number)
+    min_size                    = optional(number)
+    pool_state                  = optional(string)
+  })
+  default = null
 }
 
-variable "delete_timeout" {
-  description = "Delete timeout to wait for destroying autoscaling group"
-  type        = string
-  default     = null
+variable "timeouts" {
+  description = "Timeout configurations for the autoscaling group"
+  type = object({
+    delete = optional(string)
+  })
+  default = null
 }
 
 variable "autoscaling_group_tags" {
@@ -675,8 +932,28 @@ variable "create_iam_role_policy" {
 
 variable "iam_role_policy_statements" {
   description = "A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed"
-  type        = any
-  default     = []
+  type = list(object({
+    sid           = optional(string)
+    actions       = optional(list(string))
+    not_actions   = optional(list(string))
+    effect        = optional(string)
+    resources     = optional(list(string))
+    not_resources = optional(list(string))
+    principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    not_principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    condition = optional(list(object({
+      test     = string
+      values   = list(string)
+      variable = string
+    })))
+  }))
+  default = null
 }
 
 ################################################################################
@@ -693,20 +970,4 @@ variable "iam_role_arn" {
   description = "ARN of the IAM role used by the instance profile. Required when `create_access_entry = true` and `create_iam_instance_profile = false`"
   type        = string
   default     = null
-}
-
-################################################################################
-# Autoscaling group schedule
-################################################################################
-
-variable "create_schedule" {
-  description = "Determines whether to create autoscaling group schedule or not"
-  type        = bool
-  default     = true
-}
-
-variable "schedules" {
-  description = "Map of autoscaling group schedule to create"
-  type        = map(any)
-  default     = {}
 }

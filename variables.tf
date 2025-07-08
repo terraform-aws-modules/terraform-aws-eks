@@ -624,14 +624,112 @@ variable "node_iam_role_tags" {
 
 variable "fargate_profiles" {
   description = "Map of Fargate Profile definitions to create"
-  type        = any
-  default     = {}
+  type = map(object({
+    create = optional(bool, true)
+
+    # Fargate profile
+    name       = optional(string) # Will fall back to map key
+    subnet_ids = optional(list(string), [])
+    selectors = optional(list(object({
+      labels    = optional(map(string))
+      namespace = string
+    })))
+    timeouts = optional(object({
+      create = optional(string)
+      delete = optional(string)
+    }))
+
+    # IAM role
+    create_iam_role               = optional(bool, true)
+    iam_role_arn                  = optional(string)
+    iam_role_name                 = optional(string)
+    iam_role_use_name_prefix      = optional(bool, true)
+    iam_role_path                 = optional(string)
+    iam_role_description          = optional(string, "Fargate profile IAM role")
+    iam_role_permissions_boundary = optional(string)
+    iam_role_tags                 = optional(map(string), {})
+    iam_role_attach_cni_policy    = optional(bool, true)
+    iam_role_additional_policies  = optional(map(string), {})
+    create_iam_role_policy        = optional(bool, true)
+    iam_role_policy_statements = optional(list(object({
+      sid           = optional(string)
+      actions       = optional(list(string))
+      not_actions   = optional(list(string))
+      effect        = optional(string)
+      resources     = optional(list(string))
+      not_resources = optional(list(string))
+      principals = optional(list(object({
+        type        = string
+        identifiers = list(string)
+      })))
+      not_principals = optional(list(object({
+        type        = string
+        identifiers = list(string)
+      })))
+      condition = optional(list(object({
+        test     = string
+        values   = list(string)
+        variable = string
+      })))
+    })))
+    tags = optional(map(string), {})
+  }))
+  default = {}
 }
 
 variable "fargate_profile_defaults" {
   description = "Map of Fargate Profile default configurations"
-  type        = any
-  default     = {}
+  type = object({
+    create = optional(bool)
+
+    # Fargate profile
+    name       = optional(string) # Will fall back to map key
+    subnet_ids = optional(list(string))
+    selectors = optional(list(object({
+      labels    = optional(map(string))
+      namespace = string
+    })))
+    timeouts = optional(object({
+      create = optional(string)
+      delete = optional(string)
+    }))
+
+    # IAM role
+    create_iam_role               = optional(bool)
+    iam_role_arn                  = optional(string)
+    iam_role_name                 = optional(string)
+    iam_role_use_name_prefix      = optional(bool)
+    iam_role_path                 = optional(string)
+    iam_role_description          = optional(string)
+    iam_role_permissions_boundary = optional(string)
+    iam_role_tags                 = optional(map(string), {})
+    iam_role_attach_cni_policy    = optional(bool)
+    iam_role_additional_policies  = optional(map(string), {})
+    create_iam_role_policy        = optional(bool)
+    iam_role_policy_statements = optional(list(object({
+      sid           = optional(string)
+      actions       = optional(list(string))
+      not_actions   = optional(list(string))
+      effect        = optional(string)
+      resources     = optional(list(string))
+      not_resources = optional(list(string))
+      principals = optional(list(object({
+        type        = string
+        identifiers = list(string)
+      })))
+      not_principals = optional(list(object({
+        type        = string
+        identifiers = list(string)
+      })))
+      condition = optional(list(object({
+        test     = string
+        values   = list(string)
+        variable = string
+      })))
+    })))
+    tags = optional(map(string), {})
+  })
+  default = {}
 }
 
 ################################################################################
@@ -640,14 +738,806 @@ variable "fargate_profile_defaults" {
 
 variable "self_managed_node_groups" {
   description = "Map of self-managed node group definitions to create"
-  type        = any
-  default     = {}
+  type = map(object({
+    create = optional(bool, true)
+    # Autoscaling Group
+    create_autoscaling_group         = optional(bool, true)
+    name                             = optional(string) # Will fall back to map key
+    use_name_prefix                  = optional(bool, true)
+    availability_zones               = optional(list(string))
+    subnet_ids                       = optional(list(string))
+    min_size                         = optional(number, 0)
+    max_size                         = optional(number, 3)
+    desired_size                     = optional(number, 1)
+    desired_size_type                = optional(string)
+    capacity_rebalance               = optional(bool)
+    min_elb_capacity                 = optional(number)
+    wait_for_elb_capacity            = optional(number)
+    default_cooldown                 = optional(number)
+    default_instance_warmup          = optional(number)
+    protect_from_scale_in            = optional(bool, false)
+    context                          = optional(string)
+    target_group_arns                = optional(list(string), [])
+    create_placement_group           = optional(bool, false)
+    placement_group                  = optional(string)
+    health_check_type                = optional(string)
+    health_check_grace_period        = optional(number)
+    ignore_failed_scaling_activities = optional(number)
+    force_delete                     = optional(bool)
+    force_delete_warm_pool           = optional(bool)
+    termination_policies             = optional(list(string), [])
+    suspended_processes              = optional(list(string), [])
+    max_instance_lifetime            = optional(number)
+    enabled_metrics                  = optional(list(string), [])
+    metrics_granularity              = optional(string)
+    service_linked_role_arn          = optional(string)
+    initial_lifecycle_hooks = optional(list(object({
+      default_result          = optional(string)
+      heartbeat_timeout       = optional(number)
+      lifecycle_transition    = string
+      name                    = string
+      notification_metadata   = optional(string)
+      notification_target_arn = optional(string)
+      role_arn                = optional(string)
+    })))
+    instance_maintenance_policy = optional(object({
+      max_healthy_percentage = number
+      min_healthy_percentage = number
+    }))
+    instance_refresh = optional(object({
+      preferences = optional(object({
+        alarm_specification = optional(object({
+          alarms = optional(list(string))
+        }))
+        auto_rollback                = optional(bool)
+        checkpoint_delay             = optional(number)
+        checkpoint_percentages       = optional(list(number))
+        instance_warmup              = optional(number)
+        max_healthy_percentage       = optional(number)
+        min_healthy_percentage       = optional(number, 66)
+        scale_in_protected_instances = optional(string)
+        skip_matching                = optional(bool)
+        standby_instances            = optional(string)
+      }))
+      strategy = optional(string, "Rolling")
+      triggers = optional(list(string))
+      }), {
+      strategy = "Rolling"
+      preferences = {
+        min_healthy_percentage = 66
+      }
+    })
+    use_mixed_instances_policy = optional(bool, false)
+    mixed_instances_policy = optional(object({
+      instances_distribution = optional(object({
+        on_demand_allocation_strategy            = optional(string)
+        on_demand_base_capacity                  = optional(number)
+        on_demand_percentage_above_base_capacity = optional(number)
+        spot_allocation_strategy                 = optional(string)
+        spot_instance_pools                      = optional(number)
+        spot_max_price                           = optional(string)
+      }))
+      launch_template = object({
+        override = optional(list(object({
+          instance_requirements = optional(object({
+            accelerator_count = optional(object({
+              max = optional(number)
+              min = optional(number)
+            }))
+            accelerator_manufacturers = optional(list(string))
+            accelerator_names         = optional(list(string))
+            accelerator_total_memory_mib = optional(object({
+              max = optional(number)
+              min = optional(number)
+            }))
+            accelerator_types      = optional(list(string))
+            allowed_instance_types = optional(list(string))
+            bare_metal             = optional(string)
+            baseline_ebs_bandwidth_mbps = optional(object({
+              max = optional(number)
+              min = optional(number)
+            }))
+            burstable_performance                                   = optional(string)
+            cpu_manufacturers                                       = optional(list(string))
+            excluded_instance_types                                 = optional(list(string))
+            instance_generations                                    = optional(list(string))
+            local_storage                                           = optional(string)
+            local_storage_types                                     = optional(list(string))
+            max_spot_price_as_percentage_of_optimal_on_demand_price = optional(number)
+            memory_gib_per_vcpu = optional(object({
+              max = optional(number)
+              min = optional(number)
+            }))
+            memory_mib = optional(object({
+              max = optional(number)
+              min = optional(number)
+            }))
+            network_bandwidth_gbps = optional(object({
+              max = optional(number)
+              min = optional(number)
+            }))
+            network_interface_count = optional(object({
+              max = optional(number)
+              min = optional(number)
+            }))
+            on_demand_max_price_percentage_over_lowest_price = optional(number)
+            require_hibernate_support                        = optional(bool)
+            spot_max_price_percentage_over_lowest_price      = optional(number)
+            total_local_storage_gb = optional(object({
+              max = optional(number)
+              min = optional(number)
+            }))
+            vcpu_count = optional(object({
+              max = optional(number)
+              min = optional(number)
+            }))
+          }))
+          instance_type = optional(string)
+          launch_template_specification = optional(object({
+            launch_template_id   = optional(string)
+            launch_template_name = optional(string)
+            version              = optional(string)
+          }))
+          weighted_capacity = optional(string)
+        })))
+      })
+    }))
+    warm_pool = optional(object({
+      instance_reuse_policy = optional(object({
+        reuse_on_scale_in = optional(bool)
+      }))
+      max_group_prepared_capacity = optional(number)
+      min_size                    = optional(number)
+      pool_state                  = optional(string)
+    }))
+    timeouts = optional(object({
+      delete = optional(string)
+    }))
+    autoscaling_group_tags = optional(map(string), {})
+    # User data
+    ami_type                   = optional(string, "AL2023_x86_64_STANDARD")
+    additional_cluster_dns_ips = optional(list(string), [])
+    pre_bootstrap_user_data    = optional(string, "")
+    post_bootstrap_user_data   = optional(string, "")
+    bootstrap_extra_args       = optional(string, "")
+    user_data_template_path    = optional(string, "")
+    cloudinit_pre_nodeadm = optional(list(object({
+      content      = string
+      content_type = optional(string)
+      filename     = optional(string)
+      merge_type   = optional(string)
+    })), [])
+    cloudinit_post_nodeadm = optional(list(object({
+      content      = string
+      content_type = optional(string)
+      filename     = optional(string)
+      merge_type   = optional(string)
+    })), [])
+    # Launch Template
+    create_launch_template                 = optional(bool, true)
+    use_custom_launch_template             = optional(bool, true)
+    launch_template_id                     = optional(string, "")
+    launch_template_name                   = optional(string) # Will fall back to map key
+    launch_template_use_name_prefix        = optional(bool, true)
+    launch_template_version                = optional(string)
+    update_launch_template_default_version = optional(bool, true)
+    launch_template_description            = optional(string)
+    launch_template_tags                   = optional(map(string), {})
+    tag_specifications                     = optional(list(string), ["instance", "volume", "network-interface"])
+    ebs_optimized                          = optional(bool)
+    ami_id                                 = optional(string)
+    instance_type                          = optional(string, "m6i.large")
+    key_name                               = optional(string)
+    disable_api_termination                = optional(bool)
+    instance_initiated_shutdown_behavior   = optional(string)
+    kernel_id                              = optional(string)
+    ram_disk_id                            = optional(string)
+    block_device_mappings = optional(map(object({
+      device_name = optional(string)
+      ebs = optional(object({
+        delete_on_termination      = optional(bool)
+        encrypted                  = optional(bool)
+        iops                       = optional(number)
+        kms_key_id                 = optional(string)
+        snapshot_id                = optional(string)
+        throughput                 = optional(number)
+        volume_initialization_rate = optional(number)
+        volume_size                = optional(number)
+        volume_type                = optional(string)
+      }))
+      no_device    = optional(string)
+      virtual_name = optional(string)
+    })))
+    capacity_reservation_specification = optional(object({
+      capacity_reservation_preference = optional(string)
+      capacity_reservation_target = optional(object({
+        capacity_reservation_id                 = optional(string)
+        capacity_reservation_resource_group_arn = optional(string)
+      }))
+    }))
+    cpu_options = optional(object({
+      amd_sev_snp      = optional(string)
+      core_count       = optional(number)
+      threads_per_core = optional(number)
+    }))
+    credit_specification = optional(object({
+      cpu_credits = optional(string)
+    }))
+    enclave_options = optional(object({
+      enabled = optional(bool)
+    }))
+    hibernation_options = optional(object({
+      configured = optional(bool)
+    }))
+    instance_requirements = optional(object({
+      accelerator_count = optional(object({
+        max = optional(number)
+        min = optional(number)
+      }))
+      accelerator_manufacturers = optional(list(string))
+      accelerator_names         = optional(list(string))
+      accelerator_total_memory_mib = optional(object({
+        max = optional(number)
+        min = optional(number)
+      }))
+      accelerator_types      = optional(list(string))
+      allowed_instance_types = optional(list(string))
+      bare_metal             = optional(string)
+      baseline_ebs_bandwidth_mbps = optional(object({
+        max = optional(number)
+        min = optional(number)
+      }))
+      burstable_performance                                   = optional(string)
+      cpu_manufacturers                                       = optional(list(string))
+      excluded_instance_types                                 = optional(list(string))
+      instance_generations                                    = optional(list(string))
+      local_storage                                           = optional(string)
+      local_storage_types                                     = optional(list(string))
+      max_spot_price_as_percentage_of_optimal_on_demand_price = optional(number)
+      memory_gib_per_vcpu = optional(object({
+        max = optional(number)
+        min = optional(number)
+      }))
+      memory_mib = optional(object({
+        max = optional(number)
+        min = optional(number)
+      }))
+      network_bandwidth_gbps = optional(object({
+        max = optional(number)
+        min = optional(number)
+      }))
+      network_interface_count = optional(object({
+        max = optional(number)
+        min = optional(number)
+      }))
+      on_demand_max_price_percentage_over_lowest_price = optional(number)
+      require_hibernate_support                        = optional(bool)
+      spot_max_price_percentage_over_lowest_price      = optional(number)
+      total_local_storage_gb = optional(object({
+        max = optional(number)
+        min = optional(number)
+      }))
+      vcpu_count = optional(object({
+        max = optional(number)
+        min = string
+      }))
+    }))
+    instance_market_options = optional(object({
+      market_type = optional(string)
+      spot_options = optional(object({
+        block_duration_minutes         = optional(number)
+        instance_interruption_behavior = optional(string)
+        max_price                      = optional(string)
+        spot_instance_type             = optional(string)
+        valid_until                    = optional(string)
+      }))
+    }))
+    license_specifications = optional(list(object({
+      license_configuration_arn = string
+    })))
+    metadata_options = optional(object({
+      http_endpoint               = optional(string, "enabled")
+      http_protocol_ipv6          = optional(string)
+      http_put_response_hop_limit = optional(number, 1)
+      http_tokens                 = optional(string, "required")
+      instance_metadata_tags      = optional(string)
+      }), {
+      http_endpoint               = "enabled"
+      http_put_response_hop_limit = 1
+      http_tokens                 = "required"
+    })
+    enable_monitoring  = optional(bool, false)
+    enable_efa_support = optional(bool, false)
+    enable_efa_only    = optional(bool, true)
+    efa_indices        = optional(list(string), [0])
+    network_interfaces = optional(list(object({
+      associate_carrier_ip_address = optional(bool)
+      associate_public_ip_address  = optional(bool)
+      connection_tracking_specification = optional(object({
+        tcp_established_timeout = optional(number)
+        udp_stream_timeout      = optional(number)
+        udp_timeout             = optional(number)
+      }))
+      delete_on_termination = optional(bool)
+      description           = optional(string)
+      device_index          = optional(number)
+      ena_srd_specification = optional(object({
+        ena_srd_enabled = optional(bool)
+        ena_srd_udp_specification = optional(object({
+          ena_srd_udp_enabled = optional(bool)
+        }))
+      }))
+      interface_type       = optional(string)
+      ipv4_address_count   = optional(number)
+      ipv4_addresses       = optional(list(string))
+      ipv4_prefix_count    = optional(number)
+      ipv4_prefixes        = optional(list(string))
+      ipv6_address_count   = optional(number)
+      ipv6_addresses       = optional(list(string))
+      ipv6_prefix_count    = optional(number)
+      ipv6_prefixes        = optional(list(string))
+      network_card_index   = optional(number)
+      network_interface_id = optional(string)
+      primary_ipv6         = optional(bool)
+      private_ip_address   = optional(string)
+      security_groups      = optional(list(string), [])
+      subnet_id            = optional(string)
+    })), [])
+    placement = optional(object({
+      affinity                = optional(string)
+      availability_zone       = optional(string)
+      group_name              = optional(string)
+      host_id                 = optional(string)
+      host_resource_group_arn = optional(string)
+      partition_number        = optional(number)
+      spread_domain           = optional(string)
+      tenancy                 = optional(string)
+    }), {})
+    maintenance_options = optional(object({
+      auto_recovery = optional(string)
+    }))
+    private_dns_name_options = optional(object({
+      enable_resource_name_dns_aaaa_record = optional(bool)
+      enable_resource_name_dns_a_record    = optional(bool)
+      hostname_type                        = optional(string)
+    }))
+    # IAM role
+    create_iam_instance_profile   = optional(bool, true)
+    iam_instance_profile_arn      = optional(string)
+    iam_role_name                 = optional(string)
+    iam_role_use_name_prefix      = optional(bool, true)
+    iam_role_path                 = optional(string)
+    iam_role_description          = optional(string, "Self managed node group IAM role")
+    iam_role_permissions_boundary = optional(string)
+    iam_role_tags                 = optional(map(string), {})
+    iam_role_attach_cni_policy    = optional(bool, true)
+    iam_role_additional_policies  = optional(map(string), {})
+    create_iam_role_policy        = optional(bool, true)
+    iam_role_policy_statements = optional(list(object({
+      sid           = optional(string)
+      actions       = optional(list(string))
+      not_actions   = optional(list(string))
+      effect        = optional(string)
+      resources     = optional(list(string))
+      not_resources = optional(list(string))
+      principals = optional(list(object({
+        type        = string
+        identifiers = list(string)
+      })))
+      not_principals = optional(list(object({
+        type        = string
+        identifiers = list(string)
+      })))
+      condition = optional(list(object({
+        test     = string
+        values   = list(string)
+        variable = string
+      })))
+    })))
+    # Access entry
+    create_access_entry = optional(bool, true)
+    iam_role_arn        = optional(string)
+
+    tags = optional(map(string), {})
+  }))
+  default = {}
 }
 
 variable "self_managed_node_group_defaults" {
   description = "Map of self-managed node group default configurations"
-  type        = any
-  default     = {}
+  type = object({
+    create = optional(bool)
+    # Autoscaling Group
+    create_autoscaling_group         = optional(bool)
+    use_name_prefix                  = optional(bool)
+    availability_zones               = optional(list(string))
+    subnet_ids                       = optional(list(string))
+    min_size                         = optional(number)
+    max_size                         = optional(number)
+    desired_size                     = optional(number)
+    desired_size_type                = optional(string)
+    capacity_rebalance               = optional(bool)
+    min_elb_capacity                 = optional(number)
+    wait_for_elb_capacity            = optional(number)
+    default_cooldown                 = optional(number)
+    default_instance_warmup          = optional(number)
+    protect_from_scale_in            = optional(bool)
+    context                          = optional(string)
+    target_group_arns                = optional(list(string))
+    create_placement_group           = optional(bool)
+    placement_group                  = optional(string)
+    health_check_type                = optional(string)
+    health_check_grace_period        = optional(number)
+    ignore_failed_scaling_activities = optional(number)
+    force_delete                     = optional(bool)
+    force_delete_warm_pool           = optional(bool)
+    termination_policies             = optional(list(string))
+    suspended_processes              = optional(list(string))
+    max_instance_lifetime            = optional(number)
+    enabled_metrics                  = optional(list(string))
+    metrics_granularity              = optional(string)
+    service_linked_role_arn          = optional(string)
+    initial_lifecycle_hooks = optional(list(object({
+      default_result          = optional(string)
+      heartbeat_timeout       = optional(number)
+      lifecycle_transition    = string
+      name                    = string
+      notification_metadata   = optional(string)
+      notification_target_arn = optional(string)
+      role_arn                = optional(string)
+    })))
+    instance_maintenance_policy = optional(object({
+      max_healthy_percentage = number
+      min_healthy_percentage = number
+    }))
+    instance_refresh = optional(object({
+      preferences = optional(object({
+        alarm_specification = optional(object({
+          alarms = optional(list(string))
+        }))
+        auto_rollback                = optional(bool)
+        checkpoint_delay             = optional(number)
+        checkpoint_percentages       = optional(list(number))
+        instance_warmup              = optional(number)
+        max_healthy_percentage       = optional(number)
+        min_healthy_percentage       = optional(number)
+        scale_in_protected_instances = optional(string)
+        skip_matching                = optional(bool)
+        standby_instances            = optional(string)
+      }))
+      strategy = optional(string)
+      triggers = optional(list(string))
+    }))
+    use_mixed_instances_policy = optional(bool)
+    mixed_instances_policy = optional(object({
+      instances_distribution = optional(object({
+        on_demand_allocation_strategy            = optional(string)
+        on_demand_base_capacity                  = optional(number)
+        on_demand_percentage_above_base_capacity = optional(number)
+        spot_allocation_strategy                 = optional(string)
+        spot_instance_pools                      = optional(number)
+        spot_max_price                           = optional(string)
+      }))
+      launch_template = object({
+        override = optional(list(object({
+          instance_requirements = optional(object({
+            accelerator_count = optional(object({
+              max = optional(number)
+              min = optional(number)
+            }))
+            accelerator_manufacturers = optional(list(string))
+            accelerator_names         = optional(list(string))
+            accelerator_total_memory_mib = optional(object({
+              max = optional(number)
+              min = optional(number)
+            }))
+            accelerator_types      = optional(list(string))
+            allowed_instance_types = optional(list(string))
+            bare_metal             = optional(string)
+            baseline_ebs_bandwidth_mbps = optional(object({
+              max = optional(number)
+              min = optional(number)
+            }))
+            burstable_performance                                   = optional(string)
+            cpu_manufacturers                                       = optional(list(string))
+            excluded_instance_types                                 = optional(list(string))
+            instance_generations                                    = optional(list(string))
+            local_storage                                           = optional(string)
+            local_storage_types                                     = optional(list(string))
+            max_spot_price_as_percentage_of_optimal_on_demand_price = optional(number)
+            memory_gib_per_vcpu = optional(object({
+              max = optional(number)
+              min = optional(number)
+            }))
+            memory_mib = optional(object({
+              max = optional(number)
+              min = optional(number)
+            }))
+            network_bandwidth_gbps = optional(object({
+              max = optional(number)
+              min = optional(number)
+            }))
+            network_interface_count = optional(object({
+              max = optional(number)
+              min = optional(number)
+            }))
+            on_demand_max_price_percentage_over_lowest_price = optional(number)
+            require_hibernate_support                        = optional(bool)
+            spot_max_price_percentage_over_lowest_price      = optional(number)
+            total_local_storage_gb = optional(object({
+              max = optional(number)
+              min = optional(number)
+            }))
+            vcpu_count = optional(object({
+              max = optional(number)
+              min = optional(number)
+            }))
+          }))
+          instance_type = optional(string)
+          launch_template_specification = optional(object({
+            launch_template_id   = optional(string)
+            launch_template_name = optional(string)
+            version              = optional(string)
+          }))
+          weighted_capacity = optional(string)
+        })))
+      })
+    }))
+    warm_pool = optional(object({
+      instance_reuse_policy = optional(object({
+        reuse_on_scale_in = optional(bool)
+      }))
+      max_group_prepared_capacity = optional(number)
+      min_size                    = optional(number)
+      pool_state                  = optional(string)
+    }))
+    timeouts = optional(object({
+      delete = optional(string)
+    }))
+    autoscaling_group_tags = optional(map(string))
+    # User data
+    ami_type                   = optional(string)
+    additional_cluster_dns_ips = optional(list(string))
+    pre_bootstrap_user_data    = optional(string)
+    post_bootstrap_user_data   = optional(string)
+    bootstrap_extra_args       = optional(string)
+    user_data_template_path    = optional(string)
+    cloudinit_pre_nodeadm = optional(list(object({
+      content      = string
+      content_type = optional(string)
+      filename     = optional(string)
+      merge_type   = optional(string)
+    })))
+    cloudinit_post_nodeadm = optional(list(object({
+      content      = string
+      content_type = optional(string)
+      filename     = optional(string)
+      merge_type   = optional(string)
+    })))
+    # Launch Template
+    create_launch_template                 = optional(bool)
+    use_custom_launch_template             = optional(bool)
+    launch_template_id                     = optional(string)
+    launch_template_name                   = optional(string)
+    launch_template_use_name_prefix        = optional(bool)
+    launch_template_version                = optional(string)
+    update_launch_template_default_version = optional(bool)
+    launch_template_description            = optional(string)
+    launch_template_tags                   = optional(map(string))
+    tag_specifications                     = optional(list(string))
+    ebs_optimized                          = optional(bool)
+    ami_id                                 = optional(string)
+    instance_type                          = optional(string)
+    key_name                               = optional(string)
+    disable_api_termination                = optional(bool)
+    instance_initiated_shutdown_behavior   = optional(string)
+    kernel_id                              = optional(string)
+    ram_disk_id                            = optional(string)
+    block_device_mappings = optional(map(object({
+      device_name = optional(string)
+      ebs = optional(object({
+        delete_on_termination      = optional(bool)
+        encrypted                  = optional(bool)
+        iops                       = optional(number)
+        kms_key_id                 = optional(string)
+        snapshot_id                = optional(string)
+        throughput                 = optional(number)
+        volume_initialization_rate = optional(number)
+        volume_size                = optional(number)
+        volume_type                = optional(string)
+      }))
+      no_device    = optional(string)
+      virtual_name = optional(string)
+    })))
+    capacity_reservation_specification = optional(object({
+      capacity_reservation_preference = optional(string)
+      capacity_reservation_target = optional(object({
+        capacity_reservation_id                 = optional(string)
+        capacity_reservation_resource_group_arn = optional(string)
+      }))
+    }))
+    cpu_options = optional(object({
+      amd_sev_snp      = optional(string)
+      core_count       = optional(number)
+      threads_per_core = optional(number)
+    }))
+    credit_specification = optional(object({
+      cpu_credits = optional(string)
+    }))
+    enclave_options = optional(object({
+      enabled = optional(bool)
+    }))
+    hibernation_options = optional(object({
+      configured = optional(bool)
+    }))
+    instance_requirements = optional(object({
+      accelerator_count = optional(object({
+        max = optional(number)
+        min = optional(number)
+      }))
+      accelerator_manufacturers = optional(list(string))
+      accelerator_names         = optional(list(string))
+      accelerator_total_memory_mib = optional(object({
+        max = optional(number)
+        min = optional(number)
+      }))
+      accelerator_types      = optional(list(string))
+      allowed_instance_types = optional(list(string))
+      bare_metal             = optional(string)
+      baseline_ebs_bandwidth_mbps = optional(object({
+        max = optional(number)
+        min = optional(number)
+      }))
+      burstable_performance                                   = optional(string)
+      cpu_manufacturers                                       = optional(list(string))
+      excluded_instance_types                                 = optional(list(string))
+      instance_generations                                    = optional(list(string))
+      local_storage                                           = optional(string)
+      local_storage_types                                     = optional(list(string))
+      max_spot_price_as_percentage_of_optimal_on_demand_price = optional(number)
+      memory_gib_per_vcpu = optional(object({
+        max = optional(number)
+        min = optional(number)
+      }))
+      memory_mib = optional(object({
+        max = optional(number)
+        min = optional(number)
+      }))
+      network_bandwidth_gbps = optional(object({
+        max = optional(number)
+        min = optional(number)
+      }))
+      network_interface_count = optional(object({
+        max = optional(number)
+        min = optional(number)
+      }))
+      on_demand_max_price_percentage_over_lowest_price = optional(number)
+      require_hibernate_support                        = optional(bool)
+      spot_max_price_percentage_over_lowest_price      = optional(number)
+      total_local_storage_gb = optional(object({
+        max = optional(number)
+        min = optional(number)
+      }))
+      vcpu_count = optional(object({
+        max = optional(number)
+        min = string
+      }))
+    }))
+    instance_market_options = optional(object({
+      market_type = optional(string)
+      spot_options = optional(object({
+        block_duration_minutes         = optional(number)
+        instance_interruption_behavior = optional(string)
+        max_price                      = optional(string)
+        spot_instance_type             = optional(string)
+        valid_until                    = optional(string)
+      }))
+    }))
+    license_specifications = optional(list(object({
+      license_configuration_arn = string
+    })))
+    metadata_options = optional(object({
+      http_endpoint               = optional(string)
+      http_protocol_ipv6          = optional(string)
+      http_put_response_hop_limit = optional(number)
+      http_tokens                 = optional(string)
+      instance_metadata_tags      = optional(string)
+    }))
+    enable_monitoring  = optional(bool)
+    enable_efa_support = optional(bool)
+    enable_efa_only    = optional(bool)
+    efa_indices        = optional(list(string))
+    network_interfaces = optional(list(object({
+      associate_carrier_ip_address = optional(bool)
+      associate_public_ip_address  = optional(bool)
+      connection_tracking_specification = optional(object({
+        tcp_established_timeout = optional(number)
+        udp_stream_timeout      = optional(number)
+        udp_timeout             = optional(number)
+      }))
+      delete_on_termination = optional(bool)
+      description           = optional(string)
+      device_index          = optional(number)
+      ena_srd_specification = optional(object({
+        ena_srd_enabled = optional(bool)
+        ena_srd_udp_specification = optional(object({
+          ena_srd_udp_enabled = optional(bool)
+        }))
+      }))
+      interface_type       = optional(string)
+      ipv4_address_count   = optional(number)
+      ipv4_addresses       = optional(list(string))
+      ipv4_prefix_count    = optional(number)
+      ipv4_prefixes        = optional(list(string))
+      ipv6_address_count   = optional(number)
+      ipv6_addresses       = optional(list(string))
+      ipv6_prefix_count    = optional(number)
+      ipv6_prefixes        = optional(list(string))
+      network_card_index   = optional(number)
+      network_interface_id = optional(string)
+      primary_ipv6         = optional(bool)
+      private_ip_address   = optional(string)
+      security_groups      = optional(list(string))
+      subnet_id            = optional(string)
+    })))
+    placement = optional(object({
+      affinity                = optional(string)
+      availability_zone       = optional(string)
+      group_name              = optional(string)
+      host_id                 = optional(string)
+      host_resource_group_arn = optional(string)
+      partition_number        = optional(number)
+      spread_domain           = optional(string)
+      tenancy                 = optional(string)
+    }))
+    maintenance_options = optional(object({
+      auto_recovery = optional(string)
+    }))
+    private_dns_name_options = optional(object({
+      enable_resource_name_dns_aaaa_record = optional(bool)
+      enable_resource_name_dns_a_record    = optional(bool)
+      hostname_type                        = optional(string)
+    }))
+    # IAM role
+    create_iam_instance_profile   = optional(bool)
+    iam_instance_profile_arn      = optional(string)
+    iam_role_name                 = optional(string)
+    iam_role_use_name_prefix      = optional(bool)
+    iam_role_path                 = optional(string)
+    iam_role_description          = optional(string)
+    iam_role_permissions_boundary = optional(string)
+    iam_role_tags                 = optional(map(string))
+    iam_role_attach_cni_policy    = optional(bool)
+    iam_role_additional_policies  = optional(map(string))
+    create_iam_role_policy        = optional(bool)
+    iam_role_policy_statements = optional(list(object({
+      sid           = optional(string)
+      actions       = optional(list(string))
+      not_actions   = optional(list(string))
+      effect        = optional(string)
+      resources     = optional(list(string))
+      not_resources = optional(list(string))
+      principals = optional(list(object({
+        type        = string
+        identifiers = list(string)
+      })))
+      not_principals = optional(list(object({
+        type        = string
+        identifiers = list(string)
+      })))
+      condition = optional(list(object({
+        test     = string
+        values   = list(string)
+        variable = string
+      })))
+    })))
+    # Access entry
+    create_access_entry = optional(bool)
+    iam_role_arn        = optional(string)
+
+    tags = optional(map(string))
+  })
+  default = {}
 }
 
 ################################################################################
@@ -656,14 +1546,465 @@ variable "self_managed_node_group_defaults" {
 
 variable "eks_managed_node_groups" {
   description = "Map of EKS managed node group definitions to create"
-  type        = any
-  default     = {}
+  type = map(object({
+    create          = optional(bool, true)
+    cluster_version = optional(string)
+
+    # EKS Managed Node Group
+    name                           = optional(string) # Will fall back to map key
+    use_name_prefix                = optional(bool, true)
+    subnet_ids                     = optional(list(string))
+    min_size                       = optional(number, 0)
+    max_size                       = optional(number, 3)
+    desired_size                   = optional(number, 1)
+    ami_id                         = optional(string, "")
+    ami_type                       = optional(string, "AL2023_x86_64_STANDARD")
+    ami_release_version            = optional(string)
+    use_latest_ami_release_version = optional(bool, true)
+    capacity_type                  = optional(string, "ON_DEMAND")
+    disk_size                      = optional(number)
+    force_update_version           = optional(bool)
+    instance_types                 = optional(list(string))
+    labels                         = optional(map(string))
+    node_repair_config = optional(object({
+      enabled = optional(bool, true)
+    }))
+    remote_access = optional(object({
+      ec2_ssh_key               = optional(string)
+      source_security_group_ids = optional(list(string))
+    }))
+    taints = optional(map(object({
+      key    = string
+      value  = optional(string)
+      effect = string
+    })))
+    update_config = optional(object({
+      max_unavailable            = optional(number)
+      max_unavailable_percentage = optional(number)
+      }), {
+      max_unavailable_percentage = 33
+    })
+    timeouts = optional(object({
+      create = optional(string)
+      update = optional(string)
+      delete = optional(string)
+    }))
+    # User data
+    enable_bootstrap_user_data = optional(bool, false)
+    pre_bootstrap_user_data    = optional(string, "")
+    post_bootstrap_user_data   = optional(string, "")
+    bootstrap_extra_args       = optional(string, "")
+    user_data_template_path    = optional(string, "")
+    cloudinit_pre_nodeadm = optional(list(object({
+      content      = string
+      content_type = optional(string)
+      filename     = optional(string)
+      merge_type   = optional(string)
+    })), [])
+    cloudinit_post_nodeadm = optional(list(object({
+      content      = string
+      content_type = optional(string)
+      filename     = optional(string)
+      merge_type   = optional(string)
+    })), [])
+    # Launch Template
+    create_launch_template                 = optional(bool, true)
+    use_custom_launch_template             = optional(bool, true)
+    launch_template_id                     = optional(string, "")
+    launch_template_name                   = optional(string) # Will fall back to map key
+    launch_template_use_name_prefix        = optional(bool, true)
+    launch_template_version                = optional(string)
+    update_launch_template_default_version = optional(bool, true)
+    launch_template_description            = optional(string)
+    launch_template_tags                   = optional(map(string), {})
+    tag_specifications                     = optional(list(string), ["instance", "volume", "network-interface"])
+    ebs_optimized                          = optional(bool)
+    key_name                               = optional(string)
+    disable_api_termination                = optional(bool)
+    kernel_id                              = optional(string)
+    ram_disk_id                            = optional(string)
+    block_device_mappings = optional(map(object({
+      device_name = optional(string)
+      ebs = optional(object({
+        delete_on_termination      = optional(bool)
+        encrypted                  = optional(bool)
+        iops                       = optional(number)
+        kms_key_id                 = optional(string)
+        snapshot_id                = optional(string)
+        throughput                 = optional(number)
+        volume_initialization_rate = optional(number)
+        volume_size                = optional(number)
+        volume_type                = optional(string)
+      }))
+      no_device    = optional(string)
+      virtual_name = optional(string)
+    })))
+    capacity_reservation_specification = optional(object({
+      capacity_reservation_preference = optional(string)
+      capacity_reservation_target = optional(object({
+        capacity_reservation_id                 = optional(string)
+        capacity_reservation_resource_group_arn = optional(string)
+      }))
+    }))
+    cpu_options = optional(object({
+      amd_sev_snp      = optional(string)
+      core_count       = optional(number)
+      threads_per_core = optional(number)
+    }))
+    credit_specification = optional(object({
+      cpu_credits = optional(string)
+    }))
+    enclave_options = optional(object({
+      enabled = optional(bool)
+    }))
+    instance_market_options = optional(object({
+      market_type = optional(string)
+      spot_options = optional(object({
+        block_duration_minutes         = optional(number)
+        instance_interruption_behavior = optional(string)
+        max_price                      = optional(string)
+        spot_instance_type             = optional(string)
+        valid_until                    = optional(string)
+      }))
+    }))
+    license_specifications = optional(list(object({
+      license_configuration_arn = string
+    })))
+    metadata_options = optional(object({
+      http_endpoint               = optional(string, "enabled")
+      http_protocol_ipv6          = optional(string)
+      http_put_response_hop_limit = optional(number, 1)
+      http_tokens                 = optional(string, "required")
+      instance_metadata_tags      = optional(string)
+      }), {
+      http_endpoint               = "enabled"
+      http_put_response_hop_limit = 1
+      http_tokens                 = "required"
+    })
+    enable_monitoring      = optional(bool, false)
+    enable_efa_support     = optional(bool, false)
+    enable_efa_only        = optional(bool, true)
+    efa_indices            = optional(list(string), [0])
+    create_placement_group = optional(bool, false)
+    placement = optional(object({
+      affinity                = optional(string)
+      availability_zone       = optional(string)
+      group_name              = optional(string)
+      host_id                 = optional(string)
+      host_resource_group_arn = optional(string)
+      partition_number        = optional(number)
+      spread_domain           = optional(string)
+      tenancy                 = optional(string)
+    }), {})
+    network_interfaces = optional(list(object({
+      associate_carrier_ip_address = optional(bool)
+      associate_public_ip_address  = optional(bool)
+      connection_tracking_specification = optional(object({
+        tcp_established_timeout = optional(number)
+        udp_stream_timeout      = optional(number)
+        udp_timeout             = optional(number)
+      }))
+      delete_on_termination = optional(bool)
+      description           = optional(string)
+      device_index          = optional(number)
+      ena_srd_specification = optional(object({
+        ena_srd_enabled = optional(bool)
+        ena_srd_udp_specification = optional(object({
+          ena_srd_udp_enabled = optional(bool)
+        }))
+      }))
+      interface_type       = optional(string)
+      ipv4_address_count   = optional(number)
+      ipv4_addresses       = optional(list(string))
+      ipv4_prefix_count    = optional(number)
+      ipv4_prefixes        = optional(list(string))
+      ipv6_address_count   = optional(number)
+      ipv6_addresses       = optional(list(string))
+      ipv6_prefix_count    = optional(number)
+      ipv6_prefixes        = optional(list(string))
+      network_card_index   = optional(number)
+      network_interface_id = optional(string)
+      primary_ipv6         = optional(bool)
+      private_ip_address   = optional(string)
+      security_groups      = optional(list(string), [])
+      subnet_id            = optional(string)
+    })), [])
+    maintenance_options = optional(object({
+      auto_recovery = optional(string)
+    }))
+    private_dns_name_options = optional(object({
+      enable_resource_name_dns_aaaa_record = optional(bool)
+      enable_resource_name_dns_a_record    = optional(bool)
+      hostname_type                        = optional(string)
+    }))
+    # IAM role
+    creat_iam_role                = optional(bool, true)
+    iam_role_arn                  = optional(string)
+    iam_role_name                 = optional(string)
+    iam_role_use_name_prefix      = optional(bool, true)
+    iam_role_path                 = optional(string)
+    iam_role_description          = optional(string, "EKS managed node group IAM role")
+    iam_role_permissions_boundary = optional(string)
+    iam_role_tags                 = optional(map(string), {})
+    iam_role_attach_cni_policy    = optional(bool, true)
+    iam_role_additional_policies  = optional(map(string), {})
+    create_iam_role_policy        = optional(bool, true)
+    iam_role_policy_statements = optional(list(object({
+      sid           = optional(string)
+      actions       = optional(list(string))
+      not_actions   = optional(list(string))
+      effect        = optional(string)
+      resources     = optional(list(string))
+      not_resources = optional(list(string))
+      principals = optional(list(object({
+        type        = string
+        identifiers = list(string)
+      })))
+      not_principals = optional(list(object({
+        type        = string
+        identifiers = list(string)
+      })))
+      condition = optional(list(object({
+        test     = string
+        values   = list(string)
+        variable = string
+      })))
+    })))
+    # Security group
+    vpc_security_group_ids            = optional(list(string), [])
+    cluster_primary_security_group_id = optional(string)
+
+    tags = optional(map(string), {})
+  }))
+  default = {}
 }
 
 variable "eks_managed_node_group_defaults" {
   description = "Map of EKS managed node group default configurations"
-  type        = any
-  default     = {}
+  type = object({
+    create          = optional(bool)
+    cluster_version = optional(string)
+
+    # EKS Managed Node Group
+    use_name_prefix                = optional(bool)
+    subnet_ids                     = optional(list(string))
+    min_size                       = optional(number)
+    max_size                       = optional(number)
+    desired_size                   = optional(number)
+    ami_id                         = optional(string)
+    ami_type                       = optional(string)
+    ami_release_version            = optional(string)
+    use_latest_ami_release_version = optional(bool)
+    capacity_type                  = optional(string)
+    disk_size                      = optional(number)
+    force_update_version           = optional(bool)
+    instance_types                 = optional(list(string))
+    labels                         = optional(map(string))
+    node_repair_config = optional(object({
+      enabled = optional(bool)
+    }))
+    remote_access = optional(object({
+      ec2_ssh_key               = optional(string)
+      source_security_group_ids = optional(list(string))
+    }))
+    taints = optional(map(object({
+      key    = string
+      value  = optional(string)
+      effect = string
+    })))
+    update_config = optional(object({
+      max_unavailable            = optional(number)
+      max_unavailable_percentage = optional(number)
+    }))
+    timeouts = optional(object({
+      create = optional(string)
+      update = optional(string)
+      delete = optional(string)
+    }))
+    # User data
+    enable_bootstrap_user_data = optional(bool)
+    pre_bootstrap_user_data    = optional(string)
+    post_bootstrap_user_data   = optional(string)
+    bootstrap_extra_args       = optional(string)
+    user_data_template_path    = optional(string)
+    cloudinit_pre_nodeadm = optional(list(object({
+      content      = string
+      content_type = optional(string)
+      filename     = optional(string)
+      merge_type   = optional(string)
+    })))
+    cloudinit_post_nodeadm = optional(list(object({
+      content      = string
+      content_type = optional(string)
+      filename     = optional(string)
+      merge_type   = optional(string)
+    })))
+    # Launch Template
+    create_launch_template                 = optional(bool)
+    use_custom_launch_template             = optional(bool)
+    launch_template_id                     = optional(string)
+    launch_template_name                   = optional(string)
+    launch_template_use_name_prefix        = optional(bool)
+    launch_template_version                = optional(string)
+    update_launch_template_default_version = optional(bool)
+    launch_template_description            = optional(string)
+    launch_template_tags                   = optional(map(string))
+    tag_specifications                     = optional(list(string))
+    ebs_optimized                          = optional(bool)
+    key_name                               = optional(string)
+    disable_api_termination                = optional(bool)
+    kernel_id                              = optional(string)
+    ram_disk_id                            = optional(string)
+    block_device_mappings = optional(map(object({
+      device_name = optional(string)
+      ebs = optional(object({
+        delete_on_termination      = optional(bool)
+        encrypted                  = optional(bool)
+        iops                       = optional(number)
+        kms_key_id                 = optional(string)
+        snapshot_id                = optional(string)
+        throughput                 = optional(number)
+        volume_initialization_rate = optional(number)
+        volume_size                = optional(number)
+        volume_type                = optional(string)
+      }))
+      no_device    = optional(string)
+      virtual_name = optional(string)
+    })))
+    capacity_reservation_specification = optional(object({
+      capacity_reservation_preference = optional(string)
+      capacity_reservation_target = optional(object({
+        capacity_reservation_id                 = optional(string)
+        capacity_reservation_resource_group_arn = optional(string)
+      }))
+    }))
+    cpu_options = optional(object({
+      amd_sev_snp      = optional(string)
+      core_count       = optional(number)
+      threads_per_core = optional(number)
+    }))
+    credit_specification = optional(object({
+      cpu_credits = optional(string)
+    }))
+    enclave_options = optional(object({
+      enabled = optional(bool)
+    }))
+    instance_market_options = optional(object({
+      market_type = optional(string)
+      spot_options = optional(object({
+        block_duration_minutes         = optional(number)
+        instance_interruption_behavior = optional(string)
+        max_price                      = optional(string)
+        spot_instance_type             = optional(string)
+        valid_until                    = optional(string)
+      }))
+    }))
+    license_specifications = optional(list(object({
+      license_configuration_arn = string
+    })))
+    metadata_options = optional(object({
+      http_endpoint               = optional(string)
+      http_protocol_ipv6          = optional(string)
+      http_put_response_hop_limit = optional(number)
+      http_tokens                 = optional(string)
+      instance_metadata_tags      = optional(string)
+    }))
+    enable_monitoring      = optional(bool)
+    enable_efa_support     = optional(bool)
+    enable_efa_only        = optional(bool)
+    efa_indices            = optional(list(string))
+    create_placement_group = optional(bool)
+    placement = optional(object({
+      affinity                = optional(string)
+      availability_zone       = optional(string)
+      group_name              = optional(string)
+      host_id                 = optional(string)
+      host_resource_group_arn = optional(string)
+      partition_number        = optional(number)
+      spread_domain           = optional(string)
+      tenancy                 = optional(string)
+    }))
+    network_interfaces = optional(list(object({
+      associate_carrier_ip_address = optional(bool)
+      associate_public_ip_address  = optional(bool)
+      connection_tracking_specification = optional(object({
+        tcp_established_timeout = optional(number)
+        udp_stream_timeout      = optional(number)
+        udp_timeout             = optional(number)
+      }))
+      delete_on_termination = optional(bool)
+      description           = optional(string)
+      device_index          = optional(number)
+      ena_srd_specification = optional(object({
+        ena_srd_enabled = optional(bool)
+        ena_srd_udp_specification = optional(object({
+          ena_srd_udp_enabled = optional(bool)
+        }))
+      }))
+      interface_type       = optional(string)
+      ipv4_address_count   = optional(number)
+      ipv4_addresses       = optional(list(string))
+      ipv4_prefix_count    = optional(number)
+      ipv4_prefixes        = optional(list(string))
+      ipv6_address_count   = optional(number)
+      ipv6_addresses       = optional(list(string))
+      ipv6_prefix_count    = optional(number)
+      ipv6_prefixes        = optional(list(string))
+      network_card_index   = optional(number)
+      network_interface_id = optional(string)
+      primary_ipv6         = optional(bool)
+      private_ip_address   = optional(string)
+      security_groups      = optional(list(string))
+      subnet_id            = optional(string)
+    })))
+    maintenance_options = optional(object({
+      auto_recovery = optional(string)
+    }))
+    private_dns_name_options = optional(object({
+      enable_resource_name_dns_aaaa_record = optional(bool)
+      enable_resource_name_dns_a_record    = optional(bool)
+      hostname_type                        = optional(string)
+    }))
+    # IAM role
+    creat_iam_role                = optional(bool)
+    iam_role_arn                  = optional(string)
+    iam_role_name                 = optional(string)
+    iam_role_use_name_prefix      = optional(bool)
+    iam_role_path                 = optional(string)
+    iam_role_description          = optional(string)
+    iam_role_permissions_boundary = optional(string)
+    iam_role_tags                 = optional(map(string))
+    iam_role_attach_cni_policy    = optional(bool)
+    iam_role_additional_policies  = optional(map(string))
+    create_iam_role_policy        = optional(bool)
+    iam_role_policy_statements = optional(list(object({
+      sid           = optional(string)
+      actions       = optional(list(string))
+      not_actions   = optional(list(string))
+      effect        = optional(string)
+      resources     = optional(list(string))
+      not_resources = optional(list(string))
+      principals = optional(list(object({
+        type        = string
+        identifiers = list(string)
+      })))
+      not_principals = optional(list(object({
+        type        = string
+        identifiers = list(string)
+      })))
+      condition = optional(list(object({
+        test     = string
+        values   = list(string)
+        variable = string
+      })))
+    })))
+    # Security group
+    vpc_security_group_ids            = optional(list(string))
+    cluster_primary_security_group_id = optional(string)
+
+    tags = optional(map(string), {})
+  })
+  default = {}
 }
 
 variable "putin_khuylo" {

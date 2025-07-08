@@ -47,7 +47,7 @@ locals {
 
   cluster_dns_ips = flatten(concat([try(cidrhost(var.cluster_service_cidr, 10), "")], var.additional_cluster_dns_ips))
 
-  user_data = var.ami_type != "" ? base64encode(templatefile(local.user_data_path,
+  user_data = var.create ? base64encode(templatefile(local.user_data_path,
     {
       # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
       enable_bootstrap_user_data = var.enable_bootstrap_user_data
