@@ -52,26 +52,41 @@ variable "authentication_mode" {
 
 variable "cluster_compute_config" {
   description = "Configuration block for the cluster compute configuration"
-  type        = any
-  default     = {}
+  type = object({
+    enabled       = optional(bool, false)
+    node_pools    = optional(list(string))
+    node_role_arn = optional(string)
+  })
+  default = null
 }
 
 variable "cluster_upgrade_policy" {
   description = "Configuration block for the cluster upgrade policy"
-  type        = any
-  default     = {}
+  type = object({
+    support_type = optional(string)
+  })
+  default = null
 }
 
 variable "cluster_remote_network_config" {
   description = "Configuration block for the cluster remote network configuration"
-  type        = any
-  default     = {}
+  type = object({
+    remote_node_networks = object({
+      cidrs = optional(list(string))
+    })
+    remote_pod_networks = optional(object({
+      cidrs = optional(list(string))
+    }))
+  })
+  default = null
 }
 
 variable "cluster_zonal_shift_config" {
   description = "Configuration block for the cluster zonal shift"
-  type        = any
-  default     = {}
+  type = object({
+    enabled = optional(bool)
+  })
+  default = null
 }
 
 variable "cluster_additional_security_group_ids" {
@@ -130,16 +145,23 @@ variable "cluster_service_ipv6_cidr" {
 
 variable "outpost_config" {
   description = "Configuration for the AWS Outpost to provision the cluster on"
-  type        = any
-  default     = {}
+  type = object({
+    control_plane_instance_type = optional(string)
+    control_plane_placement = optional(object({
+      group_name = string
+    }))
+    outpost_arns = list(string)
+  })
+  default = null
 }
 
 variable "cluster_encryption_config" {
-  description = "Configuration block with encryption configuration for the cluster. To disable secret encryption, set this value to `{}`"
-  type        = any
-  default = {
-    resources = ["secrets"]
-  }
+  description = "Configuration block with encryption configuration for the cluster"
+  type = object({
+    provider_key_arn = optional(string)
+    resources        = optional(list(string), ["secrets"])
+  })
+  default = {}
 }
 
 variable "attach_cluster_encryption_policy" {
@@ -162,8 +184,12 @@ variable "create_cluster_primary_security_group_tags" {
 
 variable "cluster_timeouts" {
   description = "Create, update, and delete timeout configurations for the cluster"
-  type        = map(string)
-  default     = {}
+  type = object({
+    create = optional(string)
+    update = optional(string)
+    delete = optional(string)
+  })
+  default = null
 }
 
 ################################################################################
@@ -172,8 +198,23 @@ variable "cluster_timeouts" {
 
 variable "access_entries" {
   description = "Map of access entries to add to the cluster"
-  type        = any
-  default     = {}
+  type = map(object({
+    # Access entry
+    kubernetes_groups = optional(list(string))
+    principal_arn     = string
+    type              = optional(string, "STANDARD")
+    user_name         = optional(string)
+    tags              = optional(map(string), {})
+    # Access policy association
+    policy_associations = optional(map(object({
+      policy_arn = string
+      access_scope = object({
+        type = string
+      })
+      namespaces = optional(list(string))
+    })), {})
+  }))
+  default = {}
 }
 
 variable "enable_cluster_creator_admin_permissions" {
@@ -334,8 +375,20 @@ variable "cluster_security_group_description" {
 
 variable "cluster_security_group_additional_rules" {
   description = "List of additional security group rules to add to the cluster security group created. Set `source_node_security_group = true` inside rules to set the `node_security_group` as source"
-  type        = any
-  default     = {}
+  type = map(object({
+    protocol                   = optional(string, "tcp")
+    from_port                  = number
+    to_port                    = number
+    type                       = optional(string, "ingress")
+    description                = optional(string)
+    cidr_blocks                = optional(list(string))
+    ipv6_cidr_blocks           = optional(list(string))
+    prefix_list_ids            = optional(list(string))
+    self                       = optional(bool)
+    source_node_security_group = optional(bool, false)
+    source_security_group_id   = optional(string)
+  }))
+  default = {}
 }
 
 variable "cluster_security_group_tags" {
@@ -390,8 +443,20 @@ variable "node_security_group_description" {
 
 variable "node_security_group_additional_rules" {
   description = "List of additional security group rules to add to the node security group created. Set `source_cluster_security_group = true` inside rules to set the `cluster_security_group` as source"
-  type        = any
-  default     = {}
+  type = map(object({
+    protocol                      = optional(string, "tcp")
+    from_port                     = number
+    to_port                       = number
+    type                          = optional(string, "ingress")
+    description                   = optional(string)
+    cidr_blocks                   = optional(list(string))
+    ipv6_cidr_blocks              = optional(list(string))
+    prefix_list_ids               = optional(list(string))
+    self                          = optional(bool)
+    source_cluster_security_group = optional(bool, false)
+    source_security_group_id      = optional(string)
+  }))
+  default = {}
 }
 
 variable "node_security_group_enable_recommended_rules" {
@@ -546,14 +611,38 @@ variable "enable_auto_mode_custom_tags" {
 
 variable "cluster_addons" {
   description = "Map of cluster addon configurations to enable for the cluster. Addon name can be the map keys or set with `name`"
-  type        = any
-  default     = {}
+  type = map(object({
+    name                 = optional(string) # will fall back to map key
+    before_compute       = optional(bool, false)
+    most_recent          = optional(bool, true)
+    addon_version        = optional(string)
+    configuration_values = optional(string)
+    pod_identity_association = optional(list(object({
+      role_arn        = string
+      service_account = string
+    })))
+    preserve                    = optional(bool, true)
+    resolve_conflicts_on_create = optional(string, "NONE")
+    resolve_conflicts_on_update = optional(string, "OVERWRITE")
+    service_account_role_arn    = optional(string)
+    timeouts = optional(object({
+      create = optional(string)
+      update = optional(string)
+      delete = optional(string)
+    }))
+    tags = optional(map(string), {})
+  }))
+  default = null
 }
 
 variable "cluster_addons_timeouts" {
   description = "Create, update, and delete timeout configurations for the cluster addons"
-  type        = map(string)
-  default     = {}
+  type = object({
+    create = optional(string)
+    update = optional(string)
+    delete = optional(string)
+  })
+  default = null
 }
 
 ################################################################################
@@ -562,8 +651,17 @@ variable "cluster_addons_timeouts" {
 
 variable "cluster_identity_providers" {
   description = "Map of cluster identity provider configurations to enable for the cluster. Note - this is different/separate from IRSA"
-  type        = any
-  default     = {}
+  type = map(object({
+    client_id                     = string
+    groups_claim                  = optional(string)
+    groups_prefix                 = optional(string)
+    identity_provider_config_name = optional(string) # will fall back to map key
+    issuer_url                    = string
+    required_claims               = optional(map(string))
+    username_claim                = optional(string)
+    username_prefix               = optional(string)
+  }))
+  default = null
 }
 
 ################################################################################
