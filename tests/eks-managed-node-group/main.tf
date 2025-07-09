@@ -13,9 +13,9 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.33"
-  region          = "eu-west-1"
+  name               = "ex-${replace(basename(path.cwd), "_", "-")}"
+  kubernetes_version = "1.33"
+  region             = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
@@ -34,12 +34,12 @@ locals {
 module "eks" {
   source = "../.."
 
-  cluster_name                   = local.name
-  cluster_version                = local.cluster_version
-  cluster_endpoint_public_access = true
+  name                   = local.name
+  kubernetes_version     = local.kubernetes_version
+  endpoint_public_access = true
 
   # IPV6
-  cluster_ip_family          = "ipv6"
+  ip_family                  = "ipv6"
   create_cni_ipv6_iam_policy = true
 
   enable_cluster_creator_admin_permissions = true
@@ -48,7 +48,7 @@ module "eks" {
   # to the shared node security group
   enable_efa_support = true
 
-  cluster_addons = {
+  addons = {
     coredns = {
       most_recent = true
     }
@@ -79,11 +79,11 @@ module "eks" {
     }
   }
 
-  cluster_upgrade_policy = {
+  upgrade_policy = {
     support_type = "STANDARD"
   }
 
-  cluster_zonal_shift_config = {
+  zonal_shift_config = {
     enabled = true
   }
 
@@ -523,7 +523,7 @@ module "aws_vpc_cni_ipv6_pod_identity" {
 
 module "ebs_kms_key" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   description = "Customer managed key to encrypt EKS managed node group volumes"
 
@@ -605,7 +605,7 @@ data "aws_ami" "eks_default" {
 
   filter {
     name   = "name"
-    values = ["amazon-eks-node-al2023-x86_64-standard-${local.cluster_version}-v*"]
+    values = ["amazon-eks-node-al2023-x86_64-standard-${local.kubernetes_version}-v*"]
   }
 }
 
@@ -615,7 +615,7 @@ data "aws_ami" "eks_default_arm" {
 
   filter {
     name   = "name"
-    values = ["amazon-eks-node-al2023-arm64-standard-${local.cluster_version}-v*"]
+    values = ["amazon-eks-node-al2023-arm64-standard-${local.kubernetes_version}-v*"]
   }
 }
 
@@ -625,7 +625,7 @@ data "aws_ami" "eks_default_bottlerocket" {
 
   filter {
     name   = "name"
-    values = ["bottlerocket-aws-k8s-${local.cluster_version}-x86_64-*"]
+    values = ["bottlerocket-aws-k8s-${local.kubernetes_version}-x86_64-*"]
   }
 }
 

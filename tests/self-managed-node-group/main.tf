@@ -13,9 +13,9 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.33"
-  region          = "eu-west-1"
+  name               = "ex-${replace(basename(path.cwd), "_", "-")}"
+  kubernetes_version = "1.33"
+  region             = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
@@ -34,9 +34,9 @@ locals {
 module "eks" {
   source = "../.."
 
-  cluster_name                   = local.name
-  cluster_version                = local.cluster_version
-  cluster_endpoint_public_access = true
+  name                   = local.name
+  kubernetes_version     = local.kubernetes_version
+  endpoint_public_access = true
 
   enable_cluster_creator_admin_permissions = true
 
@@ -44,7 +44,7 @@ module "eks" {
   # to the shared node security group
   enable_efa_support = true
 
-  cluster_addons = {
+  addons = {
     coredns = {
       most_recent = true
     }
@@ -69,7 +69,7 @@ module "eks" {
 
   # External encryption key
   create_kms_key = false
-  cluster_encryption_config = {
+  encryption_config = {
     resources        = ["secrets"]
     provider_key_arn = module.kms.key_arn
   }
@@ -424,7 +424,7 @@ data "aws_ami" "eks_default" {
 
   filter {
     name   = "name"
-    values = ["amazon-eks-node-al2023-x86_64-standard-${local.cluster_version}-v*"]
+    values = ["amazon-eks-node-al2023-x86_64-standard-${local.kubernetes_version}-v*"]
   }
 }
 
@@ -434,7 +434,7 @@ data "aws_ami" "eks_default_bottlerocket" {
 
   filter {
     name   = "name"
-    values = ["bottlerocket-aws-k8s-${local.cluster_version}-x86_64-*"]
+    values = ["bottlerocket-aws-k8s-${local.kubernetes_version}-x86_64-*"]
   }
 }
 
@@ -450,7 +450,7 @@ module "key_pair" {
 
 module "ebs_kms_key" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   description = "Customer managed key to encrypt EKS managed node group volumes"
 
@@ -474,7 +474,7 @@ module "ebs_kms_key" {
 
 module "kms" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   aliases               = ["eks/${local.name}"]
   description           = "${local.name} cluster encryption key"

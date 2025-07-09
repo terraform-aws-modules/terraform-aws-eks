@@ -11,9 +11,9 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  name            = "ex-${basename(path.cwd)}"
-  cluster_version = "1.33"
-  region          = "eu-west-1"
+  name               = "ex-${basename(path.cwd)}"
+  kubernetes_version = "1.33"
+  region             = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
@@ -32,11 +32,11 @@ locals {
 module "eks" {
   source = "../.."
 
-  cluster_name                   = local.name
-  cluster_version                = local.cluster_version
-  cluster_endpoint_public_access = true
+  name                   = local.name
+  kubernetes_version     = local.kubernetes_version
+  endpoint_public_access = true
 
-  cluster_addons = {
+  addons = {
     kube-proxy = {}
     vpc-cni    = {}
     coredns = {
@@ -51,8 +51,8 @@ module "eks" {
   control_plane_subnet_ids = module.vpc.intra_subnets
 
   # Fargate profiles use the cluster primary security group so these are not utilized
-  create_cluster_security_group = false
-  create_node_security_group    = false
+  create_security_group      = false
+  create_node_security_group = false
 
   fargate_profile_defaults = {
     iam_role_additional_policies = {

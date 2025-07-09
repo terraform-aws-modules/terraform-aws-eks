@@ -20,25 +20,25 @@ variable "prefix_separator" {
 # Cluster
 ################################################################################
 
-variable "cluster_name" {
+variable "name" {
   description = "Name of the EKS cluster"
   type        = string
   default     = ""
 }
 
-variable "cluster_version" {
+variable "kubernetes_version" {
   description = "Kubernetes `<major>.<minor>` version to use for the EKS cluster (i.e.: `1.27`)"
   type        = string
   default     = null
 }
 
-variable "cluster_enabled_log_types" {
+variable "enabled_log_types" {
   description = "A list of the desired control plane logs to enable. For more information, see Amazon EKS Control Plane Logging documentation (https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html)"
   type        = list(string)
   default     = ["audit", "api", "authenticator"]
 }
 
-variable "cluster_force_update_version" {
+variable "force_update_version" {
   description = "Force version update by overriding upgrade-blocking readiness checks when updating a cluster"
   type        = bool
   default     = null
@@ -50,7 +50,7 @@ variable "authentication_mode" {
   default     = "API_AND_CONFIG_MAP"
 }
 
-variable "cluster_compute_config" {
+variable "compute_config" {
   description = "Configuration block for the cluster compute configuration"
   type = object({
     enabled       = optional(bool, false)
@@ -60,7 +60,7 @@ variable "cluster_compute_config" {
   default = null
 }
 
-variable "cluster_upgrade_policy" {
+variable "upgrade_policy" {
   description = "Configuration block for the cluster upgrade policy"
   type = object({
     support_type = optional(string)
@@ -68,7 +68,7 @@ variable "cluster_upgrade_policy" {
   default = null
 }
 
-variable "cluster_remote_network_config" {
+variable "remote_network_config" {
   description = "Configuration block for the cluster remote network configuration"
   type = object({
     remote_node_networks = object({
@@ -81,7 +81,7 @@ variable "cluster_remote_network_config" {
   default = null
 }
 
-variable "cluster_zonal_shift_config" {
+variable "zonal_shift_config" {
   description = "Configuration block for the cluster zonal shift"
   type = object({
     enabled = optional(bool)
@@ -89,7 +89,7 @@ variable "cluster_zonal_shift_config" {
   default = null
 }
 
-variable "cluster_additional_security_group_ids" {
+variable "additional_security_group_ids" {
   description = "List of additional, externally created security group IDs to attach to the cluster control plane"
   type        = list(string)
   default     = []
@@ -107,37 +107,37 @@ variable "subnet_ids" {
   default     = []
 }
 
-variable "cluster_endpoint_private_access" {
+variable "endpoint_private_access" {
   description = "Indicates whether or not the Amazon EKS private API server endpoint is enabled"
   type        = bool
   default     = true
 }
 
-variable "cluster_endpoint_public_access" {
+variable "endpoint_public_access" {
   description = "Indicates whether or not the Amazon EKS public API server endpoint is enabled"
   type        = bool
   default     = false
 }
 
-variable "cluster_endpoint_public_access_cidrs" {
+variable "endpoint_public_access_cidrs" {
   description = "List of CIDR blocks which can access the Amazon EKS public API server endpoint"
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
 
-variable "cluster_ip_family" {
+variable "ip_family" {
   description = "The IP family used to assign Kubernetes pod and service addresses. Valid values are `ipv4` (default) and `ipv6`. You can only specify an IP family when you create a cluster, changing this value will force a new cluster to be created"
   type        = string
   default     = "ipv4"
 }
 
-variable "cluster_service_ipv4_cidr" {
+variable "service_ipv4_cidr" {
   description = "The CIDR block to assign Kubernetes service IP addresses from. If you don't specify a block, Kubernetes assigns addresses from either the 10.100.0.0/16 or 172.20.0.0/16 CIDR blocks"
   type        = string
   default     = null
 }
 
-variable "cluster_service_ipv6_cidr" {
+variable "service_ipv6_cidr" {
   description = "The CIDR block to assign Kubernetes pod and service IP addresses from if `ipv6` was specified when the cluster was created. Kubernetes assigns service addresses from the unique local address range (fc00::/7) because you can't specify a custom IPv6 CIDR block when you create the cluster"
   type        = string
   default     = null
@@ -155,7 +155,7 @@ variable "outpost_config" {
   default = null
 }
 
-variable "cluster_encryption_config" {
+variable "encryption_config" {
   description = "Configuration block with encryption configuration for the cluster"
   type = object({
     provider_key_arn = optional(string)
@@ -164,7 +164,7 @@ variable "cluster_encryption_config" {
   default = {}
 }
 
-variable "attach_cluster_encryption_policy" {
+variable "attach_encryption_policy" {
   description = "Indicates whether or not to attach an additional policy for the cluster IAM role to utilize the encryption key provided"
   type        = bool
   default     = true
@@ -176,13 +176,13 @@ variable "cluster_tags" {
   default     = {}
 }
 
-variable "create_cluster_primary_security_group_tags" {
+variable "create_primary_security_group_tags" {
   description = "Indicates whether or not to tag the cluster's primary security group. This security group is created by the EKS service, not the module, and therefore tagging is handled after cluster creation"
   type        = bool
   default     = true
 }
 
-variable "cluster_timeouts" {
+variable "timeouts" {
   description = "Create, update, and delete timeout configurations for the cluster"
   type = object({
     create = optional(string)
@@ -337,13 +337,13 @@ variable "cloudwatch_log_group_tags" {
 # Cluster Security Group
 ################################################################################
 
-variable "create_cluster_security_group" {
+variable "create_security_group" {
   description = "Determines if a security group is created for the cluster. Note: the EKS service creates a primary security group for the cluster by default"
   type        = bool
   default     = true
 }
 
-variable "cluster_security_group_id" {
+variable "security_group_id" {
   description = "Existing security group ID to be attached to the cluster"
   type        = string
   default     = ""
@@ -355,25 +355,25 @@ variable "vpc_id" {
   default     = null
 }
 
-variable "cluster_security_group_name" {
+variable "security_group_name" {
   description = "Name to use on cluster security group created"
   type        = string
   default     = null
 }
 
-variable "cluster_security_group_use_name_prefix" {
+variable "security_group_use_name_prefix" {
   description = "Determines whether cluster security group name (`cluster_security_group_name`) is used as a prefix"
   type        = bool
   default     = true
 }
 
-variable "cluster_security_group_description" {
+variable "security_group_description" {
   description = "Description of the cluster security group created"
   type        = string
   default     = "EKS cluster security group"
 }
 
-variable "cluster_security_group_additional_rules" {
+variable "security_group_additional_rules" {
   description = "List of additional security group rules to add to the cluster security group created. Set `source_node_security_group = true` inside rules to set the `node_security_group` as source"
   type = map(object({
     protocol                   = optional(string, "tcp")
@@ -391,7 +391,7 @@ variable "cluster_security_group_additional_rules" {
   default = {}
 }
 
-variable "cluster_security_group_tags" {
+variable "security_group_tags" {
   description = "A map of additional tags to add to the cluster security group created"
   type        = map(string)
   default     = {}
@@ -563,31 +563,31 @@ variable "iam_role_tags" {
   default     = {}
 }
 
-variable "cluster_encryption_policy_use_name_prefix" {
+variable "encryption_policy_use_name_prefix" {
   description = "Determines whether cluster encryption policy name (`cluster_encryption_policy_name`) is used as a prefix"
   type        = bool
   default     = true
 }
 
-variable "cluster_encryption_policy_name" {
+variable "encryption_policy_name" {
   description = "Name to use on cluster encryption policy created"
   type        = string
   default     = null
 }
 
-variable "cluster_encryption_policy_description" {
+variable "encryption_policy_description" {
   description = "Description of the cluster encryption policy created"
   type        = string
   default     = "Cluster encryption policy to allow cluster role to utilize CMK provided"
 }
 
-variable "cluster_encryption_policy_path" {
+variable "encryption_policy_path" {
   description = "Cluster encryption policy path"
   type        = string
   default     = null
 }
 
-variable "cluster_encryption_policy_tags" {
+variable "encryption_policy_tags" {
   description = "A map of additional tags to add to the cluster encryption policy created"
   type        = map(string)
   default     = {}
@@ -609,7 +609,7 @@ variable "enable_auto_mode_custom_tags" {
 # EKS Addons
 ################################################################################
 
-variable "cluster_addons" {
+variable "addons" {
   description = "Map of cluster addon configurations to enable for the cluster. Addon name can be the map keys or set with `name`"
   type = map(object({
     name                 = optional(string) # will fall back to map key
@@ -635,7 +635,7 @@ variable "cluster_addons" {
   default = null
 }
 
-variable "cluster_addons_timeouts" {
+variable "addons_timeouts" {
   description = "Create, update, and delete timeout configurations for the cluster addons"
   type = object({
     create = optional(string)
@@ -649,7 +649,7 @@ variable "cluster_addons_timeouts" {
 # EKS Identity Provider
 ################################################################################
 
-variable "cluster_identity_providers" {
+variable "identity_providers" {
   description = "Map of cluster identity provider configurations to enable for the cluster. Note - this is different/separate from IRSA"
   type = map(object({
     client_id                     = string
@@ -1645,8 +1645,8 @@ variable "self_managed_node_group_defaults" {
 variable "eks_managed_node_groups" {
   description = "Map of EKS managed node group definitions to create"
   type = map(object({
-    create          = optional(bool, true)
-    cluster_version = optional(string)
+    create             = optional(bool, true)
+    kubernetes_version = optional(string)
 
     # EKS Managed Node Group
     name                           = optional(string) # Will fall back to map key
@@ -1880,8 +1880,8 @@ variable "eks_managed_node_groups" {
 variable "eks_managed_node_group_defaults" {
   description = "Map of EKS managed node group default configurations"
   type = object({
-    create          = optional(bool)
-    cluster_version = optional(string)
+    create             = optional(bool)
+    kubernetes_version = optional(string)
 
     # EKS Managed Node Group
     use_name_prefix                = optional(bool)

@@ -15,8 +15,8 @@ resource "time_sleep" "this" {
   triggers = {
     cluster_name         = aws_eks_cluster.this[0].id
     cluster_endpoint     = aws_eks_cluster.this[0].endpoint
-    cluster_version      = aws_eks_cluster.this[0].version
-    cluster_service_cidr = var.cluster_ip_family == "ipv6" ? try(local.kubernetes_network_config.service_ipv6_cidr, "") : try(local.kubernetes_network_config.service_ipv4_cidr, "")
+    kubernetes_version   = aws_eks_cluster.this[0].version
+    cluster_service_cidr = var.ip_family == "ipv6" ? try(local.kubernetes_network_config.service_ipv6_cidr, "") : try(local.kubernetes_network_config.service_ipv4_cidr, "")
 
     cluster_certificate_authority_data = aws_eks_cluster.this[0].certificate_authority[0].data
   }
@@ -68,7 +68,7 @@ resource "aws_iam_policy" "cni_ipv6_policy" {
 ################################################################################
 
 locals {
-  node_sg_name   = coalesce(var.node_security_group_name, "${var.cluster_name}-node")
+  node_sg_name   = coalesce(var.node_security_group_name, "${var.name}-node")
   create_node_sg = var.create && var.create_node_security_group
 
   node_security_group_id = local.create_node_sg ? aws_security_group.node[0].id : var.node_security_group_id
@@ -160,7 +160,7 @@ locals {
       to_port          = 0
       type             = "egress"
       cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = var.cluster_ip_family == "ipv6" ? ["::/0"] : null
+      ipv6_cidr_blocks = var.ip_family == "ipv6" ? ["::/0"] : null
     }
   } : k => v if var.node_security_group_enable_recommended_rules }
 
@@ -197,8 +197,8 @@ resource "aws_security_group" "node" {
   tags = merge(
     var.tags,
     {
-      "Name"                                      = local.node_sg_name
-      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+      "Name"                              = local.node_sg_name
+      "kubernetes.io/cluster/${var.name}" = "owned"
     },
     var.node_security_group_tags
   )
@@ -226,7 +226,7 @@ resource "aws_security_group_rule" "node" {
   ipv6_cidr_blocks         = each.value.ipv6_cidr_blocks
   prefix_list_ids          = each.value.prefix_list_ids
   self                     = each.value.self
-  source_security_group_id = each.value.source_cluster_security_group ? local.cluster_security_group_id : each.value.source_security_group_id
+  source_security_group_id = each.value.source_cluster_security_group ? local.security_group_id : each.value.source_security_group_id
 }
 
 ################################################################################
@@ -246,7 +246,7 @@ module "fargate_profile" {
 
   # Fargate Profile
   cluster_name      = time_sleep.this[0].triggers["cluster_name"]
-  cluster_ip_family = var.cluster_ip_family
+  cluster_ip_family = var.ip_family
   name              = try(each.value.name, each.key)
   subnet_ids        = try(each.value.subnet_ids, var.fargate_profile_defaults.subnet_ids, var.subnet_ids)
   selectors         = try(each.value.selectors, var.fargate_profile_defaults.selectors, null)
@@ -288,8 +288,8 @@ module "eks_managed_node_group" {
   partition  = local.partition
   account_id = local.account_id
 
-  cluster_name    = time_sleep.this[0].triggers["cluster_name"]
-  cluster_version = try(each.value.cluster_version, var.eks_managed_node_group_defaults.cluster_version, time_sleep.this[0].triggers["cluster_version"])
+  cluster_name       = time_sleep.this[0].triggers["cluster_name"]
+  kubernetes_version = try(each.value.kubernetes_version, var.eks_managed_node_group_defaults.kubernetes_version, time_sleep.this[0].triggers["kubernetes_version"])
 
   # EKS Managed Node Group
   name            = try(each.value.name, each.key)
@@ -320,7 +320,7 @@ module "eks_managed_node_group" {
   # User data
   cluster_endpoint           = try(time_sleep.this[0].triggers["cluster_endpoint"], "")
   cluster_auth_base64        = try(time_sleep.this[0].triggers["cluster_certificate_authority_data"], "")
-  cluster_ip_family          = var.cluster_ip_family
+  cluster_ip_family          = var.ip_family
   cluster_service_cidr       = try(time_sleep.this[0].triggers["cluster_service_cidr"], "")
   enable_bootstrap_user_data = try(each.value.enable_bootstrap_user_data, var.eks_managed_node_group_defaults.enable_bootstrap_user_data, null)
   pre_bootstrap_user_data    = try(each.value.pre_bootstrap_user_data, var.eks_managed_node_group_defaults.pre_bootstrap_user_data, null)
@@ -465,7 +465,7 @@ module "self_managed_node_group" {
   cluster_auth_base64        = try(time_sleep.this[0].triggers["cluster_certificate_authority_data"], "")
   cluster_service_cidr       = try(time_sleep.this[0].triggers["cluster_service_cidr"], "")
   additional_cluster_dns_ips = try(each.value.additional_cluster_dns_ips, var.self_managed_node_group_defaults.additional_cluster_dns_ips, null)
-  cluster_ip_family          = var.cluster_ip_family
+  cluster_ip_family          = var.ip_family
   pre_bootstrap_user_data    = try(each.value.pre_bootstrap_user_data, var.self_managed_node_group_defaults.pre_bootstrap_user_data, null)
   post_bootstrap_user_data   = try(each.value.post_bootstrap_user_data, var.self_managed_node_group_defaults.post_bootstrap_user_data, null)
   bootstrap_extra_args       = try(each.value.bootstrap_extra_args, var.self_managed_node_group_defaults.bootstrap_extra_args, null)
@@ -485,11 +485,11 @@ module "self_managed_node_group" {
   launch_template_tags                   = try(each.value.launch_template_tags, var.self_managed_node_group_defaults.launch_template_tags, null)
   tag_specifications                     = try(each.value.tag_specifications, var.self_managed_node_group_defaults.tag_specifications, null)
 
-  ebs_optimized   = try(each.value.ebs_optimized, var.self_managed_node_group_defaults.ebs_optimized, null)
-  ami_id          = try(each.value.ami_id, var.self_managed_node_group_defaults.ami_id, null)
-  cluster_version = try(each.value.cluster_version, var.self_managed_node_group_defaults.cluster_version, time_sleep.this[0].triggers["cluster_version"])
-  instance_type   = try(each.value.instance_type, var.self_managed_node_group_defaults.instance_type, null)
-  key_name        = try(each.value.key_name, var.self_managed_node_group_defaults.key_name, null)
+  ebs_optimized      = try(each.value.ebs_optimized, var.self_managed_node_group_defaults.ebs_optimized, null)
+  ami_id             = try(each.value.ami_id, var.self_managed_node_group_defaults.ami_id, null)
+  kubernetes_version = try(each.value.kubernetes_version, var.self_managed_node_group_defaults.kubernetes_version, time_sleep.this[0].triggers["kubernetes_version"])
+  instance_type      = try(each.value.instance_type, var.self_managed_node_group_defaults.instance_type, null)
+  key_name           = try(each.value.key_name, var.self_managed_node_group_defaults.key_name, null)
 
   disable_api_termination              = try(each.value.disable_api_termination, var.self_managed_node_group_defaults.disable_api_termination, null)
   instance_initiated_shutdown_behavior = try(each.value.instance_initiated_shutdown_behavior, var.self_managed_node_group_defaults.instance_initiated_shutdown_behavior, null)

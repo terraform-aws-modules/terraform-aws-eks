@@ -293,7 +293,7 @@ resource "aws_launch_template" "this" {
       primary_ipv6         = network_interfaces.value.primary_ipv6
       private_ip_address   = network_interfaces.value.private_ip_address
       # Ref: https://github.com/hashicorp/terraform-provider-aws/issues/4570
-      security_groups = compact(concat(network_interfaces.value.security_groups, var.security_groups))
+      security_groups = compact(concat(network_interfaces.value.security_groups, var.vpc_security_group_ids))
       # Set on EKS managed node group, will fail if set here
       # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-basics
       # subnet_id       = try(network_interfaces.value.subnet_id, null)
@@ -363,30 +363,30 @@ resource "aws_launch_template" "this" {
 
 locals {
   # Just to ensure templating doesn't fail when values are not provided
-  ssm_cluster_version = var.cluster_version != null ? var.cluster_version : ""
-  ssm_ami_type        = var.ami_type != null ? var.ami_type : ""
+  ssm_kubernetes_version = var.kubernetes_version != null ? var.kubernetes_version : ""
+  ssm_ami_type           = var.ami_type != null ? var.ami_type : ""
 
   # Map the AMI type to the respective SSM param path
   ssm_ami_type_to_ssm_param = {
-    AL2_x86_64                 = "/aws/service/eks/optimized-ami/${local.ssm_cluster_version}/amazon-linux-2/recommended/release_version"
-    AL2_x86_64_GPU             = "/aws/service/eks/optimized-ami/${local.ssm_cluster_version}/amazon-linux-2-gpu/recommended/release_version"
-    AL2_ARM_64                 = "/aws/service/eks/optimized-ami/${local.ssm_cluster_version}/amazon-linux-2-arm64/recommended/release_version"
+    AL2_x86_64                 = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2/recommended/release_version"
+    AL2_x86_64_GPU             = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2-gpu/recommended/release_version"
+    AL2_ARM_64                 = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2-arm64/recommended/release_version"
     CUSTOM                     = "NONE"
-    BOTTLEROCKET_ARM_64        = "/aws/service/bottlerocket/aws-k8s-${local.ssm_cluster_version}/arm64/latest/image_version"
-    BOTTLEROCKET_x86_64        = "/aws/service/bottlerocket/aws-k8s-${local.ssm_cluster_version}/x86_64/latest/image_version"
-    BOTTLEROCKET_ARM_64_FIPS   = "/aws/service/bottlerocket/aws-k8s-${local.ssm_cluster_version}-fips/arm64/latest/image_version"
-    BOTTLEROCKET_x86_64_FIPS   = "/aws/service/bottlerocket/aws-k8s-${local.ssm_cluster_version}-fips/x86_64/latest/image_version"
-    BOTTLEROCKET_ARM_64_NVIDIA = "/aws/service/bottlerocket/aws-k8s-${local.ssm_cluster_version}-nvidia/arm64/latest/image_version"
-    BOTTLEROCKET_x86_64_NVIDIA = "/aws/service/bottlerocket/aws-k8s-${local.ssm_cluster_version}-nvidia/x86_64/latest/image_version"
-    WINDOWS_CORE_2019_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-EKS_Optimized-${local.ssm_cluster_version}"
-    WINDOWS_FULL_2019_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Core-EKS_Optimized-${local.ssm_cluster_version}"
-    WINDOWS_CORE_2022_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Full-EKS_Optimized-${local.ssm_cluster_version}"
-    WINDOWS_FULL_2022_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Core-EKS_Optimized-${local.ssm_cluster_version}"
-    AL2023_x86_64_STANDARD     = "/aws/service/eks/optimized-ami/${local.ssm_cluster_version}/amazon-linux-2023/x86_64/standard/recommended/release_version"
-    AL2023_ARM_64_STANDARD     = "/aws/service/eks/optimized-ami/${local.ssm_cluster_version}/amazon-linux-2023/arm64/standard/recommended/release_version"
-    AL2023_x86_64_NEURON       = "/aws/service/eks/optimized-ami/${local.ssm_cluster_version}/amazon-linux-2023/x86_64/neuron/recommended/release_version"
-    AL2023_x86_64_NVIDIA       = "/aws/service/eks/optimized-ami/${local.ssm_cluster_version}/amazon-linux-2023/x86_64/nvidia/recommended/release_version"
-    AL2023_ARM_64_NVIDIA       = "/aws/service/eks/optimized-ami/${local.ssm_cluster_version}/amazon-linux-2023/arm64/nvidia/recommended/release_version"
+    BOTTLEROCKET_ARM_64        = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}/arm64/latest/image_version"
+    BOTTLEROCKET_x86_64        = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}/x86_64/latest/image_version"
+    BOTTLEROCKET_ARM_64_FIPS   = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-fips/arm64/latest/image_version"
+    BOTTLEROCKET_x86_64_FIPS   = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-fips/x86_64/latest/image_version"
+    BOTTLEROCKET_ARM_64_NVIDIA = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-nvidia/arm64/latest/image_version"
+    BOTTLEROCKET_x86_64_NVIDIA = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-nvidia/x86_64/latest/image_version"
+    WINDOWS_CORE_2019_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-EKS_Optimized-${local.ssm_kubernetes_version}"
+    WINDOWS_FULL_2019_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Core-EKS_Optimized-${local.ssm_kubernetes_version}"
+    WINDOWS_CORE_2022_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Full-EKS_Optimized-${local.ssm_kubernetes_version}"
+    WINDOWS_FULL_2022_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Core-EKS_Optimized-${local.ssm_kubernetes_version}"
+    AL2023_x86_64_STANDARD     = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/x86_64/standard/recommended/release_version"
+    AL2023_ARM_64_STANDARD     = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/arm64/standard/recommended/release_version"
+    AL2023_x86_64_NEURON       = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/x86_64/neuron/recommended/release_version"
+    AL2023_x86_64_NVIDIA       = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/x86_64/nvidia/recommended/release_version"
+    AL2023_ARM_64_NVIDIA       = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/arm64/nvidia/recommended/release_version"
   }
 
   # The Windows SSM params currently do not have a release version, so we have to get the full output JSON blob and parse out the release version
@@ -432,7 +432,7 @@ resource "aws_eks_node_group" "this" {
   # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
   ami_type        = var.ami_id != "" ? null : var.ami_type
   release_version = var.ami_id != "" ? null : var.use_latest_ami_release_version ? local.latest_ami_release_version : var.ami_release_version
-  version         = var.ami_id != "" ? null : var.cluster_version
+  version         = var.ami_id != "" ? null : var.kubernetes_version
 
   capacity_type        = var.capacity_type
   disk_size            = var.use_custom_launch_template ? null : var.disk_size # if using a custom LT, set disk size on custom LT or else it will error here

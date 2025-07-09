@@ -363,7 +363,7 @@ variable "ami_type" {
   default     = "AL2023_x86_64_STANDARD"
 }
 
-variable "cluster_version" {
+variable "kubernetes_version" {
   description = "Kubernetes cluster version - used to lookup default AMI ID if one is not provided"
   type        = string
   default     = null

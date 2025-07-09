@@ -54,15 +54,15 @@ locals {
 module "eks" {
   source = "../.."
 
-  cluster_name    = local.name
-  cluster_version = "1.33"
+  name               = local.name
+  kubernetes_version = "1.33"
 
   # Gives Terraform identity admin access to cluster which will
   # allow deploying resources (Karpenter) into the cluster
   enable_cluster_creator_admin_permissions = true
-  cluster_endpoint_public_access           = true
+  endpoint_public_access                   = true
 
-  cluster_addons = {
+  addons = {
     coredns                = {}
     eks-pod-identity-agent = {}
     kube-proxy             = {}

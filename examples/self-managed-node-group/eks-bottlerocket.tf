@@ -3,11 +3,11 @@ module "eks_bottlerocket" {
   # version = "~> 20.0"
   source = "../.."
 
-  cluster_name    = "${local.name}-bottlerocket"
-  cluster_version = "1.33"
+  name               = "${local.name}-bottlerocket"
+  kubernetes_version = "1.33"
 
   # EKS Addons
-  cluster_addons = {
+  addons = {
     coredns                = {}
     eks-pod-identity-agent = {}
     kube-proxy             = {}

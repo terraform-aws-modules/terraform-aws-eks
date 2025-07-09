@@ -89,7 +89,7 @@ data "aws_ami" "hybrid_node" {
   provider = aws.remote
 
   most_recent = true
-  name_regex  = "eks-hybrid-ubuntu-${local.cluster_version}-amd64-*"
+  name_regex  = "eks-hybrid-ubuntu-${local.kubernetes_version}-amd64-*"
   owners      = ["self"]
 }
 

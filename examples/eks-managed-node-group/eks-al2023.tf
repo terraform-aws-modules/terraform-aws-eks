@@ -3,11 +3,11 @@ module "eks_al2023" {
   # version = "~> 20.0"
   source = "../.."
 
-  cluster_name    = "${local.name}-al2023"
-  cluster_version = "1.33"
+  name               = "${local.name}-al2023"
+  kubernetes_version = "1.33"
 
   # EKS Addons
-  cluster_addons = {
+  addons = {
     coredns                = {}
     eks-pod-identity-agent = {}
     kube-proxy             = {}
