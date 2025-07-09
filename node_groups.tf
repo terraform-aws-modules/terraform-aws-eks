@@ -424,11 +424,10 @@ module "self_managed_node_group" {
 
   ignore_failed_scaling_activities = try(each.value.ignore_failed_scaling_activities, var.self_managed_node_group_defaults.ignore_failed_scaling_activities, null)
 
-  force_delete           = try(each.value.force_delete, var.self_managed_node_group_defaults.force_delete, null)
-  force_delete_warm_pool = try(each.value.force_delete_warm_pool, var.self_managed_node_group_defaults.force_delete_warm_pool, null)
-  termination_policies   = try(each.value.termination_policies, var.self_managed_node_group_defaults.termination_policies, null)
-  suspended_processes    = try(each.value.suspended_processes, var.self_managed_node_group_defaults.suspended_processes, null)
-  max_instance_lifetime  = try(each.value.max_instance_lifetime, var.self_managed_node_group_defaults.max_instance_lifetime, null)
+  force_delete          = try(each.value.force_delete, var.self_managed_node_group_defaults.force_delete, null)
+  termination_policies  = try(each.value.termination_policies, var.self_managed_node_group_defaults.termination_policies, null)
+  suspended_processes   = try(each.value.suspended_processes, var.self_managed_node_group_defaults.suspended_processes, null)
+  max_instance_lifetime = try(each.value.max_instance_lifetime, var.self_managed_node_group_defaults.max_instance_lifetime, null)
 
   enabled_metrics         = try(each.value.enabled_metrics, var.self_managed_node_group_defaults.enabled_metrics, null)
   metrics_granularity     = try(each.value.metrics_granularity, var.self_managed_node_group_defaults.metrics_granularity, null)
@@ -439,7 +438,6 @@ module "self_managed_node_group" {
   instance_refresh            = try(each.value.instance_refresh, var.self_managed_node_group_defaults.instance_refresh, null)
   use_mixed_instances_policy  = try(each.value.use_mixed_instances_policy, var.self_managed_node_group_defaults.use_mixed_instances_policy, null)
   mixed_instances_policy      = try(each.value.mixed_instances_policy, var.self_managed_node_group_defaults.mixed_instances_policy, null)
-  warm_pool                   = try(each.value.warm_pool, var.self_managed_node_group_defaults.warm_pool, null)
 
   timeouts               = try(each.value.timeouts, var.self_managed_node_group_defaults.timeouts, null)
   autoscaling_group_tags = try(each.value.autoscaling_group_tags, var.self_managed_node_group_defaults.autoscaling_group_tags, null)
@@ -486,7 +484,6 @@ module "self_managed_node_group" {
   cpu_options                        = try(each.value.cpu_options, var.self_managed_node_group_defaults.cpu_options, null)
   credit_specification               = try(each.value.credit_specification, var.self_managed_node_group_defaults.credit_specification, null)
   enclave_options                    = try(each.value.enclave_options, var.self_managed_node_group_defaults.enclave_options, null)
-  hibernation_options                = try(each.value.hibernation_options, var.self_managed_node_group_defaults.hibernation_options, null)
   instance_requirements              = try(each.value.instance_requirements, var.self_managed_node_group_defaults.instance_requirements, null)
   instance_market_options            = try(each.value.instance_market_options, var.self_managed_node_group_defaults.instance_market_options, null)
   license_specifications             = try(each.value.license_specifications, var.self_managed_node_group_defaults.license_specifications, null)

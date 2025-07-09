@@ -1058,9 +1058,6 @@ variable "self_managed_node_groups" {
     enclave_options = optional(object({
       enabled = optional(bool)
     }))
-    hibernation_options = optional(object({
-      configured = optional(bool)
-    }))
     instance_requirements = optional(object({
       accelerator_count = optional(object({
         max = optional(number)
@@ -1294,7 +1291,6 @@ variable "self_managed_node_group_defaults" {
     health_check_grace_period        = optional(number)
     ignore_failed_scaling_activities = optional(number)
     force_delete                     = optional(bool)
-    force_delete_warm_pool           = optional(bool)
     termination_policies             = optional(list(string))
     suspended_processes              = optional(list(string))
     max_instance_lifetime            = optional(number)
@@ -1407,14 +1403,6 @@ variable "self_managed_node_group_defaults" {
         })))
       })
     }))
-    warm_pool = optional(object({
-      instance_reuse_policy = optional(object({
-        reuse_on_scale_in = optional(bool)
-      }))
-      max_group_prepared_capacity = optional(number)
-      min_size                    = optional(number)
-      pool_state                  = optional(string)
-    }))
     timeouts = optional(object({
       delete = optional(string)
     }))
@@ -1490,9 +1478,6 @@ variable "self_managed_node_group_defaults" {
     }))
     enclave_options = optional(object({
       enabled = optional(bool)
-    }))
-    hibernation_options = optional(object({
-      configured = optional(bool)
     }))
     instance_requirements = optional(object({
       accelerator_count = optional(object({
