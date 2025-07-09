@@ -471,12 +471,6 @@ variable "node_security_group_tags" {
   default     = {}
 }
 
-variable "enable_efa_support" {
-  description = "Determines whether to enable Elastic Fabric Adapter (EFA) support"
-  type        = bool
-  default     = false
-}
-
 ################################################################################
 # IRSA
 ################################################################################
@@ -1235,6 +1229,38 @@ variable "self_managed_node_groups" {
     # Access entry
     create_access_entry = optional(bool, true)
     iam_role_arn        = optional(string)
+    # Security group
+    create_security_group          = optional(bool, true)
+    security_group_name            = optional(string)
+    security_group_use_name_prefix = optional(bool, true)
+    security_group_description     = optional(string)
+    security_group_ingress_rules = optional(map(object({
+      name                         = optional(string)
+      cidr_ipv4                    = optional(string)
+      cidr_ipv6                    = optional(string)
+      description                  = optional(string)
+      from_port                    = optional(string)
+      ip_protocol                  = optional(string, "tcp")
+      prefix_list_id               = optional(string)
+      referenced_security_group_id = optional(string)
+      self                         = optional(bool, false)
+      tags                         = optional(map(string), {})
+      to_port                      = optional(string)
+    })), {})
+    security_group_egress_rules = optional(map(object({
+      name                         = optional(string)
+      cidr_ipv4                    = optional(string)
+      cidr_ipv6                    = optional(string)
+      description                  = optional(string)
+      from_port                    = optional(string)
+      ip_protocol                  = optional(string, "tcp")
+      prefix_list_id               = optional(string)
+      referenced_security_group_id = optional(string)
+      self                         = optional(bool, false)
+      tags                         = optional(map(string), {})
+      to_port                      = optional(string)
+    })), {})
+    security_group_tags = optional(map(string), {})
 
     tags = optional(map(string), {})
   }))
@@ -1632,6 +1658,38 @@ variable "self_managed_node_group_defaults" {
     # Access entry
     create_access_entry = optional(bool)
     iam_role_arn        = optional(string)
+    # Security group
+    create_security_group          = optional(bool)
+    security_group_name            = optional(string)
+    security_group_use_name_prefix = optional(bool)
+    security_group_description     = optional(string)
+    security_group_ingress_rules = optional(map(object({
+      name                         = optional(string)
+      cidr_ipv4                    = optional(string)
+      cidr_ipv6                    = optional(string)
+      description                  = optional(string)
+      from_port                    = optional(string)
+      ip_protocol                  = optional(string)
+      prefix_list_id               = optional(string)
+      referenced_security_group_id = optional(string)
+      self                         = optional(bool)
+      tags                         = optional(map(string))
+      to_port                      = optional(string)
+    })))
+    security_group_egress_rules = optional(map(object({
+      name                         = optional(string)
+      cidr_ipv4                    = optional(string)
+      cidr_ipv6                    = optional(string)
+      description                  = optional(string)
+      from_port                    = optional(string)
+      ip_protocol                  = optional(string)
+      prefix_list_id               = optional(string)
+      referenced_security_group_id = optional(string)
+      self                         = optional(bool)
+      tags                         = optional(map(string))
+      to_port                      = optional(string)
+    })))
+    security_group_tags = optional(map(string))
 
     tags = optional(map(string))
   })
@@ -1871,6 +1929,37 @@ variable "eks_managed_node_groups" {
     # Security group
     vpc_security_group_ids            = optional(list(string), [])
     cluster_primary_security_group_id = optional(string)
+    create_security_group             = optional(bool, true)
+    security_group_name               = optional(string)
+    security_group_use_name_prefix    = optional(bool, true)
+    security_group_description        = optional(string)
+    security_group_ingress_rules = optional(map(object({
+      name                         = optional(string)
+      cidr_ipv4                    = optional(string)
+      cidr_ipv6                    = optional(string)
+      description                  = optional(string)
+      from_port                    = optional(string)
+      ip_protocol                  = optional(string, "tcp")
+      prefix_list_id               = optional(string)
+      referenced_security_group_id = optional(string)
+      self                         = optional(bool, false)
+      tags                         = optional(map(string), {})
+      to_port                      = optional(string)
+    })), {})
+    security_group_egress_rules = optional(map(object({
+      name                         = optional(string)
+      cidr_ipv4                    = optional(string)
+      cidr_ipv6                    = optional(string)
+      description                  = optional(string)
+      from_port                    = optional(string)
+      ip_protocol                  = optional(string, "tcp")
+      prefix_list_id               = optional(string)
+      referenced_security_group_id = optional(string)
+      self                         = optional(bool, false)
+      tags                         = optional(map(string), {})
+      to_port                      = optional(string)
+    })), {})
+    security_group_tags = optional(map(string), {})
 
     tags = optional(map(string), {})
   }))
@@ -2099,6 +2188,37 @@ variable "eks_managed_node_group_defaults" {
     # Security group
     vpc_security_group_ids            = optional(list(string))
     cluster_primary_security_group_id = optional(string)
+    create_security_group             = optional(bool)
+    security_group_name               = optional(string)
+    security_group_use_name_prefix    = optional(bool)
+    security_group_description        = optional(string)
+    security_group_ingress_rules = optional(map(object({
+      name                         = optional(string)
+      cidr_ipv4                    = optional(string)
+      cidr_ipv6                    = optional(string)
+      description                  = optional(string)
+      from_port                    = optional(string)
+      ip_protocol                  = optional(string)
+      prefix_list_id               = optional(string)
+      referenced_security_group_id = optional(string)
+      self                         = optional(bool)
+      tags                         = optional(map(string))
+      to_port                      = optional(string)
+    })))
+    security_group_egress_rules = optional(map(object({
+      name                         = optional(string)
+      cidr_ipv4                    = optional(string)
+      cidr_ipv6                    = optional(string)
+      description                  = optional(string)
+      from_port                    = optional(string)
+      ip_protocol                  = optional(string)
+      prefix_list_id               = optional(string)
+      referenced_security_group_id = optional(string)
+      self                         = optional(bool)
+      tags                         = optional(map(string))
+      to_port                      = optional(string)
+    })))
+    security_group_tags = optional(map(string))
 
     tags = optional(map(string), {})
   })

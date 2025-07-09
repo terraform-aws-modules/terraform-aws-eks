@@ -44,10 +44,6 @@ module "eks" {
 
   enable_cluster_creator_admin_permissions = true
 
-  # Enable EFA support by adding necessary security group rules
-  # to the shared node security group
-  enable_efa_support = true
-
   addons = {
     coredns = {
       most_recent = true
@@ -359,7 +355,7 @@ module "eks" {
 
       # This will:
       # 1. Create a placement group to place the instances close to one another
-      # 2. Ignore subnets that reside in AZs that do not support the instance type
+      # 2. Create and attach the necessary security group rules (and security group)
       # 3. Expose all of the available EFA interfaces on the launch template
       enable_efa_support = true
       enable_efa_only    = true

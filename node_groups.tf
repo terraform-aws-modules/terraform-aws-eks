@@ -163,27 +163,6 @@ locals {
       ipv6_cidr_blocks = var.ip_family == "ipv6" ? ["::/0"] : null
     }
   } : k => v if var.node_security_group_enable_recommended_rules }
-
-  efa_security_group_rules = { for k, v in
-    {
-      ingress_all_self_efa = {
-        description = "Node to node EFA"
-        protocol    = "-1"
-        from_port   = 0
-        to_port     = 0
-        type        = "ingress"
-        self        = true
-      }
-      egress_all_self_efa = {
-        description = "Node to node EFA"
-        protocol    = "-1"
-        from_port   = 0
-        to_port     = 0
-        type        = "egress"
-        self        = true
-      }
-    } : k => v if var.enable_efa_support
-  }
 }
 
 resource "aws_security_group" "node" {
@@ -210,7 +189,6 @@ resource "aws_security_group" "node" {
 
 resource "aws_security_group_rule" "node" {
   for_each = { for k, v in merge(
-    local.efa_security_group_rules,
     local.node_security_group_rules,
     local.node_security_group_recommended_rules,
     var.node_security_group_additional_rules,
@@ -384,6 +362,13 @@ module "eks_managed_node_group" {
   # Security group
   vpc_security_group_ids            = compact(concat([local.node_security_group_id], try(each.value.vpc_security_group_ids, var.eks_managed_node_group_defaults.vpc_security_group_ids, [])))
   cluster_primary_security_group_id = try(each.value.attach_cluster_primary_security_group, var.eks_managed_node_group_defaults.attach_cluster_primary_security_group, false) ? aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id : null
+  create_security_group             = try(each.value.create_security_group, var.eks_managed_node_group_defaults.create_security_group, null)
+  security_group_name               = try(each.value.security_group_name, var.eks_managed_node_group_defaults.security_group_name, null)
+  security_group_use_name_prefix    = try(each.value.security_group_use_name_prefix, var.eks_managed_node_group_defaults.security_group_use_name_prefix, null)
+  security_group_description        = try(each.value.security_group_description, var.eks_managed_node_group_defaults.security_group_description, null)
+  security_group_ingress_rules      = try(each.value.security_group_ingress_rules, var.eks_managed_node_group_defaults.security_group_ingress_rules, null)
+  security_group_egress_rules       = try(each.value.security_group_egress_rules, var.eks_managed_node_group_defaults.security_group_egress_rules, null)
+  security_group_tags               = try(each.value.security_group_tags, var.eks_managed_node_group_defaults.security_group_tags, null)
 
   tags = merge(
     var.tags,
@@ -536,6 +521,13 @@ module "self_managed_node_group" {
   # Security group
   vpc_security_group_ids            = compact(concat([local.node_security_group_id], try(each.value.vpc_security_group_ids, var.self_managed_node_group_defaults.vpc_security_group_ids, [])))
   cluster_primary_security_group_id = try(each.value.attach_cluster_primary_security_group, var.self_managed_node_group_defaults.attach_cluster_primary_security_group, false) ? aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id : null
+  create_security_group             = try(each.value.create_security_group, var.self_managed_node_group_defaults.create_security_group, null)
+  security_group_name               = try(each.value.security_group_name, var.self_managed_node_group_defaults.security_group_name, null)
+  security_group_use_name_prefix    = try(each.value.security_group_use_name_prefix, var.self_managed_node_group_defaults.security_group_use_name_prefix, null)
+  security_group_description        = try(each.value.security_group_description, var.self_managed_node_group_defaults.security_group_description, null)
+  security_group_ingress_rules      = try(each.value.security_group_ingress_rules, var.self_managed_node_group_defaults.security_group_ingress_rules, null)
+  security_group_egress_rules       = try(each.value.security_group_egress_rules, var.self_managed_node_group_defaults.security_group_egress_rules, null)
+  security_group_tags               = try(each.value.security_group_tags, var.self_managed_node_group_defaults.security_group_tags, null)
 
   tags = merge(
     var.tags,

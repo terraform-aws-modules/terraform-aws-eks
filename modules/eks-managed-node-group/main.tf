@@ -72,7 +72,7 @@ locals {
 
 locals {
   launch_template_name = coalesce(var.launch_template_name, "${var.name}-eks-node-group")
-  security_group_ids   = compact(concat([var.cluster_primary_security_group_id], var.vpc_security_group_ids))
+  security_group_ids   = compact(concat([var.cluster_primary_security_group_id], var.vpc_security_group_ids, aws_security_group.this[*].id))
 }
 
 resource "aws_launch_template" "this" {
@@ -655,4 +655,103 @@ resource "aws_placement_group" "this" {
   strategy = "cluster"
 
   tags = var.tags
+}
+
+################################################################################
+# Security Group
+################################################################################
+
+locals {
+  create_security_group = var.create && var.create_security_group && length(merge(local.security_group_ingress_rules, local.security_group_egress_rules)) > 0
+  security_group_name   = coalesce(var.security_group_name, "${var.cluster_name}-${var.name}")
+
+  security_group_ingress_rules = merge({ for k, v in
+    {
+      all_self_efa = {
+        description = "Node to node EFA"
+        protocol    = "-1"
+        from_port   = 0
+        self        = true
+      }
+    } : k => v if var.enable_efa_support
+    },
+    var.security_group_ingress_rules
+  )
+  security_group_egress_rules = merge({ for k, v in
+    {
+      all_self_efa = {
+        description = "Node to node EFA"
+        protocol    = "-1"
+        to_port     = 0
+        self        = true
+      }
+    } : k => v if var.enable_efa_support
+    },
+    var.security_group_egress_rules
+  )
+}
+
+data "aws_subnet" "this" {
+  count = local.create_security_group ? 1 : 0
+
+  id = element(var.subnet_ids, 0)
+}
+
+resource "aws_security_group" "this" {
+  count = local.create_security_group ? 1 : 0
+
+  name        = var.security_group_use_name_prefix ? null : local.security_group_name
+  name_prefix = var.security_group_use_name_prefix ? "${local.security_group_name}-" : null
+  description = var.security_group_description
+  vpc_id      = data.aws_subnet.this[0].vpc_id
+
+  tags = merge(
+    var.tags,
+    { "Name" = local.security_group_name },
+    var.security_group_tags
+  )
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "this" {
+  for_each = { for k, v in local.security_group_ingress_rules : k => v if length(local.security_group_ingress_rules) > 0 && local.create_security_group }
+
+  cidr_ipv4                    = each.value.cidr_ipv4
+  cidr_ipv6                    = each.value.cidr_ipv6
+  description                  = each.value.description
+  from_port                    = each.value.from_port
+  ip_protocol                  = each.value.ip_protocol
+  prefix_list_id               = each.value.prefix_list_id
+  referenced_security_group_id = each.value.self ? aws_security_group.this[0].id : each.value.referenced_security_group_id
+  security_group_id            = aws_security_group.this[0].id
+  tags = merge(
+    var.tags,
+    var.security_group_tags,
+    { "Name" = coalesce(each.value.name, "${local.security_group_name}-${each.key}") },
+    each.value.tags
+  )
+  to_port = try(coalesce(each.value.to_port, each.value.from_port), null)
+}
+
+resource "aws_vpc_security_group_egress_rule" "this" {
+  for_each = { for k, v in local.security_group_egress_rules : k => v if length(local.security_group_egress_rules) && local.create_security_group }
+
+  cidr_ipv4                    = each.value.cidr_ipv4
+  cidr_ipv6                    = each.value.cidr_ipv6
+  description                  = each.value.description
+  from_port                    = try(coalesce(each.value.from_port, each.value.to_port), null)
+  ip_protocol                  = each.value.ip_protocol
+  prefix_list_id               = each.value.prefix_list_id
+  referenced_security_group_id = each.value.self ? aws_security_group.this[0].id : each.value.referenced_security_group_id
+  security_group_id            = aws_security_group.this[0].id
+  tags = merge(
+    var.tags,
+    var.security_group_tags,
+    { "Name" = coalesce(each.value.name, "${local.security_group_name}-${each.key}") },
+    each.value.tags
+  )
+  to_port = each.value.to_port
 }
