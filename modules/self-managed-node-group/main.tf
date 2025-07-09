@@ -870,7 +870,7 @@ resource "aws_iam_instance_profile" "this" {
 ################################################################################
 
 locals {
-  create_iam_role_policy = local.create_iam_instance_profile && var.create_iam_role_policy && length(var.iam_role_policy_statements) > 0
+  create_iam_role_policy = local.create_iam_instance_profile && var.create_iam_role_policy && var.iam_role_policy_statements != null
 }
 
 data "aws_iam_policy_document" "role" {
@@ -1038,7 +1038,7 @@ resource "aws_vpc_security_group_ingress_rule" "this" {
 }
 
 resource "aws_vpc_security_group_egress_rule" "this" {
-  for_each = { for k, v in local.security_group_egress_rules : k => v if length(local.security_group_egress_rules) && local.create_security_group }
+  for_each = { for k, v in local.security_group_egress_rules : k => v if length(local.security_group_egress_rules) > 0 && local.create_security_group }
 
   cidr_ipv4                    = each.value.cidr_ipv4
   cidr_ipv6                    = each.value.cidr_ipv6

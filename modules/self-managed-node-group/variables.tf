@@ -2,6 +2,7 @@ variable "create" {
   description = "Determines whether to create self managed node group or not"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "tags" {
@@ -116,6 +117,7 @@ variable "create_launch_template" {
   description = "Determines whether to create launch template or not"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "launch_template_id" {
@@ -325,6 +327,7 @@ variable "create_placement_group" {
   description = "Determines whether a placement group is created & used by the node group"
   type        = bool
   default     = false
+  nullable    = false
 }
 
 variable "private_dns_name_options" {
@@ -503,6 +506,7 @@ variable "create_autoscaling_group" {
   description = "Determines whether to create autoscaling group or not"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "name" {
@@ -837,6 +841,7 @@ variable "create_iam_instance_profile" {
   description = "Determines whether an IAM instance profile is created or to use an existing IAM instance profile"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "iam_instance_profile_arn" {
@@ -901,6 +906,7 @@ variable "create_iam_role_policy" {
   description = "Determines whether an IAM role policy is created or not"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "iam_role_policy_statements" {
@@ -937,6 +943,7 @@ variable "create_access_entry" {
   description = "Determines whether an access entry is created for the IAM role used by the node group"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "iam_role_arn" {
@@ -953,6 +960,7 @@ variable "create_security_group" {
   description = "Determines if a security group is created"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "security_group_name" {

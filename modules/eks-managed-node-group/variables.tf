@@ -2,6 +2,7 @@ variable "create" {
   description = "Determines whether to create EKS managed node group or not"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "tags" {
@@ -35,7 +36,8 @@ variable "enable_bootstrap_user_data" {
 variable "cluster_name" {
   description = "Name of associated EKS cluster"
   type        = string
-  default     = null
+  default     = ""
+  nullable    = false
 }
 
 variable "cluster_endpoint" {
@@ -110,6 +112,7 @@ variable "create_launch_template" {
   description = "Determines whether to create a launch template or not. If set to `false`, EKS will use its own default launch template"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "use_custom_launch_template" {
@@ -389,6 +392,7 @@ variable "create_placement_group" {
   description = "Determines whether a placement group is created & used by the node group"
   type        = bool
   default     = false
+  nullable    = false
 }
 
 variable "private_dns_name_options" {
@@ -445,6 +449,7 @@ variable "name" {
   description = "Name of the EKS managed node group"
   type        = string
   default     = ""
+  nullable    = false
 }
 
 variable "use_name_prefix" {
@@ -569,6 +574,7 @@ variable "create_iam_role" {
   description = "Determines whether an IAM role is created or to use an existing IAM role"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "cluster_ip_family" {
@@ -639,6 +645,7 @@ variable "create_iam_role_policy" {
   description = "Determines whether an IAM role policy is created or not"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "iam_role_policy_statements" {
@@ -675,6 +682,7 @@ variable "create_security_group" {
   description = "Determines if a security group is created"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "security_group_name" {

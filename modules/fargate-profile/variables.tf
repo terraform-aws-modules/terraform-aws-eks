@@ -2,6 +2,7 @@ variable "create" {
   description = "Determines whether to create Fargate profile or not"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "tags" {
@@ -13,13 +14,13 @@ variable "tags" {
 variable "partition" {
   description = "The AWS partition - pass through value to reduce number of GET requests from data sources"
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "account_id" {
   description = "The AWS account ID - pass through value to reduce number of GET requests from data sources"
   type        = string
-  default     = null
+  default     = ""
 }
 
 ################################################################################
@@ -30,6 +31,7 @@ variable "create_iam_role" {
   description = "Determines whether an IAM role is created or to use an existing IAM role"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "cluster_ip_family" {
@@ -100,6 +102,7 @@ variable "create_iam_role_policy" {
   description = "Determines whether an IAM role policy is created or not"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "iam_role_policy_statements" {
@@ -135,13 +138,14 @@ variable "iam_role_policy_statements" {
 variable "cluster_name" {
   description = "Name of the EKS cluster"
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "name" {
   description = "Name of the EKS Fargate Profile"
   type        = string
   default     = ""
+  nullable    = false
 }
 
 variable "subnet_ids" {

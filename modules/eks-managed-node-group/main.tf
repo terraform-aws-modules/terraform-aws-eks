@@ -361,9 +361,16 @@ resource "aws_launch_template" "this" {
 # AMI SSM Parameter
 ################################################################################
 
+data "aws_eks_cluster_versions" "this" {
+  count = var.create && var.kubernetes_version == null ? 1 : 0
+
+  cluster_type   = "eks"
+  version_status = "STANDARD_SUPPORT"
+}
+
 locals {
   # Just to ensure templating doesn't fail when values are not provided
-  ssm_kubernetes_version = var.kubernetes_version != null ? var.kubernetes_version : ""
+  ssm_kubernetes_version = var.kubernetes_version != null ? var.kubernetes_version : try(data.aws_eks_cluster_versions.this[0].cluster_versions[0].cluster_version, "UNSPECIFIED")
   ssm_ami_type           = var.ami_type != null ? var.ami_type : ""
 
   # Map the AMI type to the respective SSM param path
@@ -737,7 +744,7 @@ resource "aws_vpc_security_group_ingress_rule" "this" {
 }
 
 resource "aws_vpc_security_group_egress_rule" "this" {
-  for_each = { for k, v in local.security_group_egress_rules : k => v if length(local.security_group_egress_rules) && local.create_security_group }
+  for_each = { for k, v in local.security_group_egress_rules : k => v if length(local.security_group_egress_rules) > 0 && local.create_security_group }
 
   cidr_ipv4                    = each.value.cidr_ipv4
   cidr_ipv6                    = each.value.cidr_ipv6

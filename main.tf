@@ -60,7 +60,7 @@ resource "aws_eks_cluster" "this" {
     content {
       enabled       = compute_config.value.enabled
       node_pools    = compute_config.value.node_pools
-      node_role_arn = try(compute_config.value.node_pools, []) > 0 ? try(compute_config.value.node_role_arn, aws_iam_role.eks_auto[0].arn, null) : null
+      node_role_arn = compute_config.value.node_pools != null ? try(compute_config.value.node_role_arn, aws_iam_role.eks_auto[0].arn, null) : null
     }
   }
 
@@ -283,14 +283,14 @@ resource "aws_eks_access_entry" "this" {
   for_each = { for k, v in local.merged_access_entries : k => v if local.create }
 
   cluster_name      = aws_eks_cluster.this[0].id
-  kubernetes_groups = each.value.kubernetes_groups
+  kubernetes_groups = try(each.value.kubernetes_groups, null)
   principal_arn     = each.value.principal_arn
-  type              = each.value.type
-  user_name         = each.value.user_name
+  type              = try(each.value.type, null)
+  user_name         = try(each.value.user_name, null)
 
   tags = merge(
     var.tags,
-    each.value.tags,
+    try(each.value.tags, {}),
   )
 }
 
@@ -403,12 +403,12 @@ resource "aws_security_group_rule" "cluster" {
   from_port                = each.value.from_port
   to_port                  = each.value.to_port
   type                     = each.value.type
-  description              = each.value.description
-  cidr_blocks              = each.value.cidr_blocks
-  ipv6_cidr_blocks         = each.value.ipv6_cidr_blocks
-  prefix_list_ids          = each.value.prefix_list_ids
-  self                     = each.value.self
-  source_security_group_id = each.value.source_node_security_group ? local.node_security_group_id : each.value.source_security_group_id
+  description              = try(each.value.description, null)
+  cidr_blocks              = try(each.value.cidr_blocks, null)
+  ipv6_cidr_blocks         = try(each.value.ipv6_cidr_blocks, null)
+  prefix_list_ids          = try(each.value.prefix_list_ids, null)
+  self                     = try(each.value.self, null)
+  source_security_group_id = try(each.value.source_node_security_group, false) ? local.node_security_group_id : try(each.value.source_security_group_id, null)
 }
 
 ################################################################################
@@ -733,7 +733,7 @@ resource "aws_iam_role_policy_attachment" "custom" {
 data "aws_eks_addon_version" "this" {
   for_each = var.addons != null && local.create && !local.create_outposts_local_cluster ? var.addons : {}
 
-  addon_name         = try(each.value.name, each.key)
+  addon_name         = coalesce(each.value.name, each.key)
   kubernetes_version = coalesce(var.kubernetes_version, aws_eks_cluster.this[0].version)
   most_recent        = each.value.most_recent
 }
@@ -743,7 +743,7 @@ resource "aws_eks_addon" "this" {
   for_each = var.addons != null && local.create && !local.create_outposts_local_cluster ? { for k, v in var.addons : k => v if !v.before_compute } : {}
 
   cluster_name = aws_eks_cluster.this[0].id
-  addon_name   = try(each.value.name, each.key)
+  addon_name   = coalesce(each.value.name, each.key)
 
   addon_version        = try(each.value.addon_version, data.aws_eks_addon_version.this[each.key].version)
   configuration_values = each.value.configuration_values
@@ -786,7 +786,7 @@ resource "aws_eks_addon" "before_compute" {
   for_each = var.addons != null && local.create && !local.create_outposts_local_cluster ? { for k, v in var.addons : k => v if v.before_compute } : {}
 
   cluster_name = aws_eks_cluster.this[0].id
-  addon_name   = try(each.value.name, each.key)
+  addon_name   = coalesce(each.value.name, each.key)
 
   addon_version        = try(each.value.addon_version, data.aws_eks_addon_version.this[each.key].version)
   configuration_values = each.value.configuration_values

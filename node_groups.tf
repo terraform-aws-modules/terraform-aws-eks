@@ -13,12 +13,12 @@ resource "time_sleep" "this" {
   create_duration = var.dataplane_wait_duration
 
   triggers = {
-    cluster_name         = aws_eks_cluster.this[0].id
-    cluster_endpoint     = aws_eks_cluster.this[0].endpoint
-    kubernetes_version   = aws_eks_cluster.this[0].version
-    cluster_service_cidr = var.ip_family == "ipv6" ? try(local.kubernetes_network_config.service_ipv6_cidr, "") : try(local.kubernetes_network_config.service_ipv4_cidr, "")
+    name               = aws_eks_cluster.this[0].id
+    endpoint           = aws_eks_cluster.this[0].endpoint
+    kubernetes_version = aws_eks_cluster.this[0].version
+    service_cidr       = var.ip_family == "ipv6" ? try(local.kubernetes_network_config.service_ipv6_cidr, "") : try(local.kubernetes_network_config.service_ipv4_cidr, "")
 
-    cluster_certificate_authority_data = aws_eks_cluster.this[0].certificate_authority[0].data
+    certificate_authority_data = aws_eks_cluster.this[0].certificate_authority[0].data
   }
 }
 
@@ -199,12 +199,12 @@ resource "aws_security_group_rule" "node" {
   from_port                = each.value.from_port
   to_port                  = each.value.to_port
   type                     = each.value.type
-  description              = each.value.description
-  cidr_blocks              = each.value.cidr_blocks
-  ipv6_cidr_blocks         = each.value.ipv6_cidr_blocks
-  prefix_list_ids          = each.value.prefix_list_ids
-  self                     = each.value.self
-  source_security_group_id = each.value.source_cluster_security_group ? local.security_group_id : each.value.source_security_group_id
+  description              = try(each.value.description, null)
+  cidr_blocks              = try(each.value.cidr_blocks, null)
+  ipv6_cidr_blocks         = try(each.value.ipv6_cidr_blocks, null)
+  prefix_list_ids          = try(each.value.prefix_list_ids, null)
+  self                     = try(each.value.self, null)
+  source_security_group_id = try(each.value.source_cluster_security_group, false) ? local.security_group_id : try(each.value.source_security_group_id, null)
 }
 
 ################################################################################
@@ -223,10 +223,10 @@ module "fargate_profile" {
   account_id = local.account_id
 
   # Fargate Profile
-  cluster_name      = time_sleep.this[0].triggers["cluster_name"]
+  cluster_name      = time_sleep.this[0].triggers["name"]
   cluster_ip_family = var.ip_family
-  name              = try(each.value.name, each.key)
-  subnet_ids        = try(each.value.subnet_ids, var.fargate_profile_defaults.subnet_ids, var.subnet_ids)
+  name              = coalesce(each.value.name, each.key)
+  subnet_ids        = coalesce(each.value.subnet_ids, var.fargate_profile_defaults.subnet_ids, var.subnet_ids)
   selectors         = try(each.value.selectors, var.fargate_profile_defaults.selectors, null)
   timeouts          = try(each.value.timeouts, var.fargate_profile_defaults.timeouts, null)
 
@@ -240,7 +240,7 @@ module "fargate_profile" {
   iam_role_permissions_boundary = try(each.value.iam_role_permissions_boundary, var.fargate_profile_defaults.iam_role_permissions_boundary, null)
   iam_role_tags                 = try(each.value.iam_role_tags, var.fargate_profile_defaults.iam_role_tags, null)
   iam_role_attach_cni_policy    = try(each.value.iam_role_attach_cni_policy, var.fargate_profile_defaults.iam_role_attach_cni_policy, null)
-  iam_role_additional_policies  = try(each.value.iam_role_additional_policies, var.fargate_profile_defaults.iam_role_additional_policies, null)
+  iam_role_additional_policies  = lookup(each.value, "iam_role_additional_policies", lookup(var.fargate_profile_defaults, "iam_role_additional_policies", null))
   create_iam_role_policy        = try(each.value.create_iam_role_policy, var.fargate_profile_defaults.create_iam_role_policy, null)
   iam_role_policy_statements    = try(each.value.iam_role_policy_statements, var.fargate_profile_defaults.iam_role_policy_statements, null)
 
@@ -266,14 +266,14 @@ module "eks_managed_node_group" {
   partition  = local.partition
   account_id = local.account_id
 
-  cluster_name       = time_sleep.this[0].triggers["cluster_name"]
+  cluster_name       = time_sleep.this[0].triggers["name"]
   kubernetes_version = try(each.value.kubernetes_version, var.eks_managed_node_group_defaults.kubernetes_version, time_sleep.this[0].triggers["kubernetes_version"])
 
   # EKS Managed Node Group
-  name            = try(each.value.name, each.key)
+  name            = coalesce(each.value.name, each.key)
   use_name_prefix = try(each.value.use_name_prefix, var.eks_managed_node_group_defaults.use_name_prefix, null)
 
-  subnet_ids = try(each.value.subnet_ids, var.eks_managed_node_group_defaults.subnet_ids, var.subnet_ids)
+  subnet_ids = coalesce(each.value.subnet_ids, var.eks_managed_node_group_defaults.subnet_ids, var.subnet_ids)
 
   min_size     = try(each.value.min_size, var.eks_managed_node_group_defaults.min_size, null)
   max_size     = try(each.value.max_size, var.eks_managed_node_group_defaults.max_size, null)
@@ -296,10 +296,10 @@ module "eks_managed_node_group" {
   timeouts             = try(each.value.timeouts, var.eks_managed_node_group_defaults.timeouts, null)
 
   # User data
-  cluster_endpoint           = try(time_sleep.this[0].triggers["cluster_endpoint"], "")
-  cluster_auth_base64        = try(time_sleep.this[0].triggers["cluster_certificate_authority_data"], "")
+  cluster_endpoint           = try(time_sleep.this[0].triggers["endpoint"], "")
+  cluster_auth_base64        = try(time_sleep.this[0].triggers["certificate_authority_data"], "")
   cluster_ip_family          = var.ip_family
-  cluster_service_cidr       = try(time_sleep.this[0].triggers["cluster_service_cidr"], "")
+  cluster_service_cidr       = try(time_sleep.this[0].triggers["service_cidr"], "")
   enable_bootstrap_user_data = try(each.value.enable_bootstrap_user_data, var.eks_managed_node_group_defaults.enable_bootstrap_user_data, null)
   pre_bootstrap_user_data    = try(each.value.pre_bootstrap_user_data, var.eks_managed_node_group_defaults.pre_bootstrap_user_data, null)
   post_bootstrap_user_data   = try(each.value.post_bootstrap_user_data, var.eks_managed_node_group_defaults.post_bootstrap_user_data, null)
@@ -355,7 +355,7 @@ module "eks_managed_node_group" {
   iam_role_permissions_boundary = try(each.value.iam_role_permissions_boundary, var.eks_managed_node_group_defaults.iam_role_permissions_boundary, null)
   iam_role_tags                 = try(each.value.iam_role_tags, var.eks_managed_node_group_defaults.iam_role_tags, null)
   iam_role_attach_cni_policy    = try(each.value.iam_role_attach_cni_policy, var.eks_managed_node_group_defaults.iam_role_attach_cni_policy, null)
-  iam_role_additional_policies  = try(each.value.iam_role_additional_policies, var.eks_managed_node_group_defaults.iam_role_additional_policies, null)
+  iam_role_additional_policies  = lookup(each.value, "iam_role_additional_policies", lookup(var.eks_managed_node_group_defaults, "iam_role_additional_policies", null))
   create_iam_role_policy        = try(each.value.create_iam_role_policy, var.eks_managed_node_group_defaults.create_iam_role_policy, true)
   iam_role_policy_statements    = try(each.value.iam_role_policy_statements, var.eks_managed_node_group_defaults.iam_role_policy_statements, null)
 
@@ -392,16 +392,16 @@ module "self_managed_node_group" {
   partition  = local.partition
   account_id = local.account_id
 
-  cluster_name = time_sleep.this[0].triggers["cluster_name"]
+  cluster_name = time_sleep.this[0].triggers["name"]
 
   # Autoscaling Group
   create_autoscaling_group = try(each.value.create_autoscaling_group, var.self_managed_node_group_defaults.create_autoscaling_group, null)
 
-  name            = try(each.value.name, each.key)
+  name            = coalesce(each.value.name, each.key)
   use_name_prefix = try(each.value.use_name_prefix, var.self_managed_node_group_defaults.use_name_prefix, null)
 
   availability_zones = try(each.value.availability_zones, var.self_managed_node_group_defaults.availability_zones, null)
-  subnet_ids         = try(each.value.subnet_ids, var.self_managed_node_group_defaults.subnet_ids, var.subnet_ids)
+  subnet_ids         = coalesce(each.value.subnet_ids, var.self_managed_node_group_defaults.subnet_ids, var.subnet_ids)
 
   min_size                  = try(each.value.min_size, var.self_managed_node_group_defaults.min_size, null)
   max_size                  = try(each.value.max_size, var.self_managed_node_group_defaults.max_size, null)
@@ -444,9 +444,9 @@ module "self_managed_node_group" {
 
   # User data
   ami_type                   = try(each.value.ami_type, var.self_managed_node_group_defaults.ami_type, null)
-  cluster_endpoint           = try(time_sleep.this[0].triggers["cluster_endpoint"], "")
-  cluster_auth_base64        = try(time_sleep.this[0].triggers["cluster_certificate_authority_data"], "")
-  cluster_service_cidr       = try(time_sleep.this[0].triggers["cluster_service_cidr"], "")
+  cluster_endpoint           = try(time_sleep.this[0].triggers["endpoint"], "")
+  cluster_auth_base64        = try(time_sleep.this[0].triggers["certificate_authority_data"], "")
+  cluster_service_cidr       = try(time_sleep.this[0].triggers["service_cidr"], "")
   additional_cluster_dns_ips = try(each.value.additional_cluster_dns_ips, var.self_managed_node_group_defaults.additional_cluster_dns_ips, null)
   cluster_ip_family          = var.ip_family
   pre_bootstrap_user_data    = try(each.value.pre_bootstrap_user_data, var.self_managed_node_group_defaults.pre_bootstrap_user_data, null)
@@ -507,7 +507,7 @@ module "self_managed_node_group" {
   iam_role_permissions_boundary = try(each.value.iam_role_permissions_boundary, var.self_managed_node_group_defaults.iam_role_permissions_boundary, null)
   iam_role_tags                 = try(each.value.iam_role_tags, var.self_managed_node_group_defaults.iam_role_tags, null)
   iam_role_attach_cni_policy    = try(each.value.iam_role_attach_cni_policy, var.self_managed_node_group_defaults.iam_role_attach_cni_policy, null)
-  iam_role_additional_policies  = try(each.value.iam_role_additional_policies, var.self_managed_node_group_defaults.iam_role_additional_policies, null)
+  iam_role_additional_policies  = lookup(each.value, "iam_role_additional_policies", lookup(var.self_managed_node_group_defaults, "iam_role_additional_policies", null))
   create_iam_role_policy        = try(each.value.create_iam_role_policy, var.self_managed_node_group_defaults.create_iam_role_policy, null)
   iam_role_policy_statements    = try(each.value.iam_role_policy_statements, var.self_managed_node_group_defaults.iam_role_policy_statements, null)
 

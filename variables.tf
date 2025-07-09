@@ -721,7 +721,7 @@ variable "fargate_profiles" {
 
     # Fargate profile
     name       = optional(string) # Will fall back to map key
-    subnet_ids = optional(list(string), [])
+    subnet_ids = optional(list(string))
     selectors = optional(list(object({
       labels    = optional(map(string))
       namespace = string
@@ -854,7 +854,7 @@ variable "self_managed_node_groups" {
     placement_group                  = optional(string)
     health_check_type                = optional(string)
     health_check_grace_period        = optional(number)
-    ignore_failed_scaling_activities = optional(number)
+    ignore_failed_scaling_activities = optional(bool)
     force_delete                     = optional(bool)
     force_delete_warm_pool           = optional(bool)
     termination_policies             = optional(list(string), [])
@@ -1227,10 +1227,11 @@ variable "self_managed_node_groups" {
     create_access_entry = optional(bool, true)
     iam_role_arn        = optional(string)
     # Security group
-    create_security_group          = optional(bool, true)
-    security_group_name            = optional(string)
-    security_group_use_name_prefix = optional(bool, true)
-    security_group_description     = optional(string)
+    attach_cluster_primary_security_group = optional(bool, false)
+    create_security_group                 = optional(bool, true)
+    security_group_name                   = optional(string)
+    security_group_use_name_prefix        = optional(bool, true)
+    security_group_description            = optional(string)
     security_group_ingress_rules = optional(map(object({
       name                         = optional(string)
       cidr_ipv4                    = optional(string)
@@ -1289,7 +1290,7 @@ variable "self_managed_node_group_defaults" {
     placement_group                  = optional(string)
     health_check_type                = optional(string)
     health_check_grace_period        = optional(number)
-    ignore_failed_scaling_activities = optional(number)
+    ignore_failed_scaling_activities = optional(bool)
     force_delete                     = optional(bool)
     termination_policies             = optional(list(string))
     suspended_processes              = optional(list(string))
@@ -1644,10 +1645,11 @@ variable "self_managed_node_group_defaults" {
     create_access_entry = optional(bool)
     iam_role_arn        = optional(string)
     # Security group
-    create_security_group          = optional(bool)
-    security_group_name            = optional(string)
-    security_group_use_name_prefix = optional(bool)
-    security_group_description     = optional(string)
+    attach_cluster_primary_security_group = optional(bool, false)
+    create_security_group                 = optional(bool)
+    security_group_name                   = optional(string)
+    security_group_use_name_prefix        = optional(bool)
+    security_group_description            = optional(string)
     security_group_ingress_rules = optional(map(object({
       name                         = optional(string)
       cidr_ipv4                    = optional(string)
@@ -1912,12 +1914,13 @@ variable "eks_managed_node_groups" {
       })))
     })))
     # Security group
-    vpc_security_group_ids            = optional(list(string), [])
-    cluster_primary_security_group_id = optional(string)
-    create_security_group             = optional(bool, true)
-    security_group_name               = optional(string)
-    security_group_use_name_prefix    = optional(bool, true)
-    security_group_description        = optional(string)
+    vpc_security_group_ids                = optional(list(string), [])
+    attach_cluster_primary_security_group = optional(bool, false)
+    cluster_primary_security_group_id     = optional(string)
+    create_security_group                 = optional(bool, true)
+    security_group_name                   = optional(string)
+    security_group_use_name_prefix        = optional(bool, true)
+    security_group_description            = optional(string)
     security_group_ingress_rules = optional(map(object({
       name                         = optional(string)
       cidr_ipv4                    = optional(string)
@@ -2171,12 +2174,13 @@ variable "eks_managed_node_group_defaults" {
       })))
     })))
     # Security group
-    vpc_security_group_ids            = optional(list(string))
-    cluster_primary_security_group_id = optional(string)
-    create_security_group             = optional(bool)
-    security_group_name               = optional(string)
-    security_group_use_name_prefix    = optional(bool)
-    security_group_description        = optional(string)
+    vpc_security_group_ids                = optional(list(string))
+    attach_cluster_primary_security_group = optional(bool, false)
+    cluster_primary_security_group_id     = optional(string)
+    create_security_group                 = optional(bool)
+    security_group_name                   = optional(string)
+    security_group_use_name_prefix        = optional(bool)
+    security_group_description            = optional(string)
     security_group_ingress_rules = optional(map(object({
       name                         = optional(string)
       cidr_ipv4                    = optional(string)

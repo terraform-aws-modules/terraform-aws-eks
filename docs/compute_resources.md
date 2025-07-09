@@ -56,22 +56,36 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
 ```hcl
   eks_managed_node_groups = {
     custom_ami = {
-      ami_id = "ami-0caf35bc73450c396"
+      ami_id   = "ami-0caf35bc73450c396"
+      ami_type = "AL2023_x86_64_STANDARD"
 
       # By default, EKS managed node groups will not append bootstrap script;
       # this adds it back in using the default template provided by the module
       # Note: this assumes the AMI provided is an EKS optimized AMI derivative
       enable_bootstrap_user_data = true
 
-      pre_bootstrap_user_data = <<-EOT
-        export FOO=bar
-      EOT
+      cloudinit_pre_nodeadm = [{
+        content      = <<-EOT
+          ---
+          apiVersion: node.eks.aws/v1alpha1
+          kind: NodeConfig
+          spec:
+            kubelet:
+              config:
+                shutdownGracePeriod: 30s
+                featureGates:
+                  DisableKubeletCloudCredentialProviders: true
+        EOT
+        content_type = "application/node.eks.aws"
+      }]
 
-      # Because we have full control over the user data supplied, we can also run additional
-      # scripts/configuration changes after the bootstrap script has been run
-      post_bootstrap_user_data = <<-EOT
-        echo "you are free little kubelet!"
-      EOT
+      # This is only possible when `ami_id` is specified, indicating a custom AMI
+      cloudinit_post_nodeadm = [{
+        content      = <<-EOT
+          echo "All done"
+        EOT
+        content_type = "text/x-shellscript; charset=\"us-ascii\""
+      }]
     }
   }
 ```
@@ -115,7 +129,7 @@ Refer to the [Self Managed Node Group documentation](https://docs.aws.amazon.com
 ```hcl
   kubernetes_version = "1.33"
 
-  # This self managed node group will use the latest AWS EKS Optimized AMI for Kubernetes 1.27
+  # This self managed node group will use the latest AWS EKS Optimized AMI for Kubernetes 1.33
   self_managed_node_groups = {
     default = {}
   }
@@ -152,7 +166,7 @@ For example, the following creates 4 AWS EKS Managed Node Groups:
 
 ```hcl
   eks_managed_node_group_defaults = {
-    ami_type               = "AL2_x86_64"
+    ami_type               = "AL2023_x86_64_STANDARD"
     disk_size              = 50
     instance_types         = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
   }
@@ -166,9 +180,8 @@ For example, the following creates 4 AWS EKS Managed Node Groups:
       instance_types = ["c5.large", "c6i.large", "c6d.large"]
     }
 
-    # This further overrides the instance types and disk size used
+    # This further overrides the instance types
     persistent = {
-      disk_size = 1024
       instance_types = ["r5.xlarge", "r6i.xlarge", "r5b.xlarge"]
     }
 
