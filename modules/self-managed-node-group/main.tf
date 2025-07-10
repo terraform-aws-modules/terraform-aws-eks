@@ -486,7 +486,6 @@ resource "aws_autoscaling_group" "this" {
   availability_zones        = var.availability_zones
   capacity_rebalance        = var.capacity_rebalance
   context                   = var.context
-  default_cooldown          = var.default_cooldown
   default_instance_warmup   = var.default_instance_warmup
   desired_capacity          = var.desired_size
   desired_capacity_type     = var.desired_size_type
@@ -563,7 +562,6 @@ resource "aws_autoscaling_group" "this" {
   max_instance_lifetime = var.max_instance_lifetime
   max_size              = var.max_size
   metrics_granularity   = var.metrics_granularity
-  min_elb_capacity      = var.min_elb_capacity
   min_size              = var.min_size
 
   ignore_failed_scaling_activities = var.ignore_failed_scaling_activities
@@ -724,12 +722,11 @@ resource "aws_autoscaling_group" "this" {
     }
   }
 
-  name                    = var.use_name_prefix ? null : var.name
-  name_prefix             = var.use_name_prefix ? "${var.name}-" : null
-  placement_group         = var.placement_group
-  protect_from_scale_in   = var.protect_from_scale_in
-  service_linked_role_arn = var.service_linked_role_arn
-  suspended_processes     = var.suspended_processes
+  name                  = var.use_name_prefix ? null : var.name
+  name_prefix           = var.use_name_prefix ? "${var.name}-" : null
+  placement_group       = var.placement_group
+  protect_from_scale_in = var.protect_from_scale_in
+  suspended_processes   = var.suspended_processes
 
   dynamic "tag" {
     for_each = merge(
@@ -758,11 +755,8 @@ resource "aws_autoscaling_group" "this" {
     }
   }
 
-  target_group_arns         = var.target_group_arns
-  termination_policies      = var.termination_policies
-  vpc_zone_identifier       = var.subnet_ids
-  wait_for_capacity_timeout = var.wait_for_capacity_timeout
-  wait_for_elb_capacity     = var.wait_for_elb_capacity
+  termination_policies = var.termination_policies
+  vpc_zone_identifier  = var.subnet_ids
 
   dynamic "timeouts" {
     for_each = var.timeouts != null ? [var.timeouts] : []

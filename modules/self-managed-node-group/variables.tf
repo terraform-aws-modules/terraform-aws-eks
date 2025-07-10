@@ -581,30 +581,6 @@ variable "capacity_rebalance" {
   default     = null
 }
 
-variable "min_elb_capacity" {
-  description = "Setting this causes Terraform to wait for this number of instances to show up healthy in the ELB only on creation. Updates will not wait on ELB instance number changes"
-  type        = number
-  default     = null
-}
-
-variable "wait_for_elb_capacity" {
-  description = "Setting this will cause Terraform to wait for exactly this number of healthy instances in all attached load balancers on both create and update operations. Takes precedence over `min_elb_capacity` behavior"
-  type        = number
-  default     = null
-}
-
-variable "wait_for_capacity_timeout" {
-  description = "A maximum duration that Terraform should wait for ASG instances to be healthy before timing out. (See also Waiting for Capacity below.) Setting this to '0' causes Terraform to skip all Capacity Waiting behavior"
-  type        = string
-  default     = null
-}
-
-variable "default_cooldown" {
-  description = "The amount of time, in seconds, after a scaling activity completes before another scaling activity can start"
-  type        = number
-  default     = null
-}
-
 variable "default_instance_warmup" {
   description = "Amount of time, in seconds, until a newly launched instance can contribute to the Amazon CloudWatch metrics. This delay lets an instance finish initializing before Amazon EC2 Auto Scaling aggregates instance metrics, resulting in more reliable usage data"
   type        = number
@@ -615,12 +591,6 @@ variable "protect_from_scale_in" {
   description = "Allows setting instance protection. The autoscaling group will not select instances with this setting for termination during scale in events"
   type        = bool
   default     = false
-}
-
-variable "target_group_arns" {
-  description = "A set of `aws_alb_target_group` ARNs, for use with Application or Network Load Balancing"
-  type        = list(string)
-  default     = []
 }
 
 variable "placement_group" {
@@ -673,12 +643,6 @@ variable "enabled_metrics" {
 
 variable "metrics_granularity" {
   description = "The granularity to associate with the metrics to collect. The only valid value is `1Minute`"
-  type        = string
-  default     = null
-}
-
-variable "service_linked_role_arn" {
-  description = "The ARN of the service-linked role that the ASG will use to call other AWS services"
   type        = string
   default     = null
 }
