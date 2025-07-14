@@ -70,20 +70,18 @@ module "eks" {
     provider_key_arn = module.kms.key_arn
   }
 
-  self_managed_node_group_defaults = {
-    ami_type = "AL2023_x86_64_STANDARD"
-    ami_id   = data.aws_ami.eks_default.image_id
-
-    # enable discovery of autoscaling groups by cluster-autoscaler
-    autoscaling_group_tags = {
-      "k8s.io/cluster-autoscaler/enabled" : true,
-      "k8s.io/cluster-autoscaler/${local.name}" : "owned",
-    }
-  }
-
   self_managed_node_groups = {
     # Default node group - as provisioned by the module defaults
-    default_node_group = {}
+    default_node_group = {
+      ami_type = "AL2023_x86_64_STANDARD"
+      ami_id   = data.aws_ami.eks_default.image_id
+
+      # enable discovery of autoscaling groups by cluster-autoscaler
+      autoscaling_group_tags = {
+        "k8s.io/cluster-autoscaler/enabled" : true,
+        "k8s.io/cluster-autoscaler/${local.name}" : "owned",
+      }
+    }
 
     # Bottlerocket node group
     bottlerocket = {

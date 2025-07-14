@@ -54,12 +54,6 @@ module "eks" {
   create_security_group      = false
   create_node_security_group = false
 
-  fargate_profile_defaults = {
-    iam_role_additional_policies = {
-      additional = aws_iam_policy.additional.arn
-    }
-  }
-
   fargate_profiles = {
     example = {
       name = "example"
@@ -77,6 +71,10 @@ module "eks" {
           }
         }
       ]
+
+      iam_role_additional_policies = {
+        additional = aws_iam_policy.additional.arn
+      }
 
       # Using specific subnets instead of the subnets supplied for the cluster itself
       subnet_ids = [module.vpc.private_subnets[1]]
