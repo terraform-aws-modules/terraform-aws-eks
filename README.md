@@ -84,10 +84,6 @@ module "eks" {
   control_plane_subnet_ids = ["subnet-xyzde987", "subnet-slkjf456", "subnet-qeiru789"]
 
   # EKS Managed Node Group(s)
-  eks_managed_node_group_defaults = {
-    instance_types = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
-  }
-
   eks_managed_node_groups = {
     example = {
       # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups

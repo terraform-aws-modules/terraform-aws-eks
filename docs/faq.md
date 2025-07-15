@@ -23,24 +23,32 @@ By default, EKS creates a cluster primary security group that is created outside
 ```hcl
   create_node_security_group = false # default is true
 
-  eks_managed_node_group_defaults = {
-    attach_cluster_primary_security_group = true # default is false
+  eks_managed_node_group = {
+    example = {
+      attach_cluster_primary_security_group = true # default is false
+    }
   }
   # Or for self-managed
-  self_managed_node_group_defaults = {
-    attach_cluster_primary_security_group = true # default is false
+  self_managed_node_group = {
+    example = {
+      attach_cluster_primary_security_group = true # default is false
+    }
   }
 ```
 
 2. By not attaching the cluster primary security group. The cluster primary security group has quite broad access and the module has instead provided a security group with the minimum amount of access to launch an empty EKS cluster successfully and users are encouraged to open up access when necessary to support their workload.
 
 ```hcl
-  eks_managed_node_group_defaults = {
-    attach_cluster_primary_security_group = true # default is false
+  eks_managed_node_group = {
+    example = {
+      attach_cluster_primary_security_group = true # default is false
+    }
   }
   # Or for self-managed
-  self_managed_node_group_defaults = {
-    attach_cluster_primary_security_group = true # default is false
+  self_managed_node_group = {
+    example = {
+      attach_cluster_primary_security_group = true # default is false
+    }
   }
 ```
 
