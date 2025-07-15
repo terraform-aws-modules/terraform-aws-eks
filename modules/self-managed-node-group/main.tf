@@ -44,6 +44,8 @@ locals {
 data "aws_ssm_parameter" "ami" {
   count = var.create ? 1 : 0
 
+  region = var.region
+
   name = local.ami_type_to_ssm_param[var.ami_type]
 }
 
@@ -82,6 +84,8 @@ module "user_data" {
 data "aws_ec2_instance_type" "this" {
   count = var.create && var.enable_efa_support ? 1 : 0
 
+  region = var.region
+
   instance_type = var.instance_type
 }
 
@@ -116,6 +120,8 @@ locals {
 
 resource "aws_launch_template" "this" {
   count = var.create && var.create_launch_template ? 1 : 0
+
+  region = var.region
 
   dynamic "block_device_mappings" {
     for_each = var.block_device_mappings != null ? var.block_device_mappings : {}
@@ -482,6 +488,8 @@ locals {
 
 resource "aws_autoscaling_group" "this" {
   count = var.create && var.create_autoscaling_group ? 1 : 0
+
+  region = var.region
 
   availability_zones        = var.availability_zones
   capacity_rebalance        = var.capacity_rebalance
@@ -932,6 +940,8 @@ locals {
 resource "aws_placement_group" "this" {
   count = local.create_placement_group ? 1 : 0
 
+  region = var.region
+
   name     = "${var.cluster_name}-${var.name}"
   strategy = "cluster"
 
@@ -944,6 +954,8 @@ resource "aws_placement_group" "this" {
 
 resource "aws_eks_access_entry" "this" {
   count = var.create && var.create_access_entry ? 1 : 0
+
+  region = var.region
 
   cluster_name  = var.cluster_name
   principal_arn = var.create_iam_instance_profile ? aws_iam_role.this[0].arn : var.iam_role_arn
@@ -989,11 +1001,15 @@ locals {
 data "aws_subnet" "this" {
   count = local.create_security_group ? 1 : 0
 
+  region = var.region
+
   id = element(var.subnet_ids, 0)
 }
 
 resource "aws_security_group" "this" {
   count = local.create_security_group ? 1 : 0
+
+  region = var.region
 
   name        = var.security_group_use_name_prefix ? null : local.security_group_name
   name_prefix = var.security_group_use_name_prefix ? "${local.security_group_name}-" : null
@@ -1014,6 +1030,8 @@ resource "aws_security_group" "this" {
 resource "aws_vpc_security_group_ingress_rule" "this" {
   for_each = { for k, v in local.security_group_ingress_rules : k => v if length(local.security_group_ingress_rules) > 0 && local.create_security_group }
 
+  region = var.region
+
   cidr_ipv4                    = each.value.cidr_ipv4
   cidr_ipv6                    = each.value.cidr_ipv6
   description                  = each.value.description
@@ -1033,6 +1051,8 @@ resource "aws_vpc_security_group_ingress_rule" "this" {
 
 resource "aws_vpc_security_group_egress_rule" "this" {
   for_each = { for k, v in local.security_group_egress_rules : k => v if length(local.security_group_egress_rules) > 0 && local.create_security_group }
+
+  region = var.region
 
   cidr_ipv4                    = each.value.cidr_ipv4
   cidr_ipv6                    = each.value.cidr_ipv6

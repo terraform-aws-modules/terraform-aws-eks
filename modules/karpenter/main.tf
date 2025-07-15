@@ -1,5 +1,7 @@
 data "aws_region" "current" {
   count = var.create ? 1 : 0
+
+  region = var.region
 }
 data "aws_partition" "current" {
   count = var.create ? 1 : 0
@@ -93,6 +95,8 @@ resource "aws_iam_role_policy_attachment" "controller_additional" {
 resource "aws_eks_pod_identity_association" "karpenter" {
   count = local.create_iam_role && var.enable_pod_identity && var.create_pod_identity_association ? 1 : 0
 
+  region = var.region
+
   cluster_name    = var.cluster_name
   namespace       = var.namespace
   service_account = var.service_account
@@ -113,6 +117,8 @@ locals {
 
 resource "aws_sqs_queue" "this" {
   count = local.enable_spot_termination ? 1 : 0
+
+  region = var.region
 
   name                              = local.queue_name
   message_retention_seconds         = 300
@@ -165,6 +171,8 @@ data "aws_iam_policy_document" "queue" {
 resource "aws_sqs_queue_policy" "this" {
   count = local.enable_spot_termination ? 1 : 0
 
+  region = var.region
+
   queue_url = aws_sqs_queue.this[0].url
   policy    = data.aws_iam_policy_document.queue[0].json
 }
@@ -213,6 +221,8 @@ locals {
 resource "aws_cloudwatch_event_rule" "this" {
   for_each = { for k, v in local.events : k => v if local.enable_spot_termination }
 
+  region = var.region
+
   name_prefix   = "${var.rule_name_prefix}${each.value.name}-"
   description   = each.value.description
   event_pattern = jsonencode(each.value.event_pattern)
@@ -225,6 +235,8 @@ resource "aws_cloudwatch_event_rule" "this" {
 
 resource "aws_cloudwatch_event_target" "this" {
   for_each = { for k, v in local.events : k => v if local.enable_spot_termination }
+
+  region = var.region
 
   rule      = aws_cloudwatch_event_rule.this[each.key].name
   target_id = "KarpenterInterruptionQueueTarget"
@@ -308,6 +320,8 @@ resource "aws_iam_role_policy_attachment" "node_additional" {
 
 resource "aws_eks_access_entry" "node" {
   count = var.create && var.create_access_entry ? 1 : 0
+
+  region = var.region
 
   cluster_name  = var.cluster_name
   principal_arn = var.create_node_iam_role ? aws_iam_role.node[0].arn : var.node_iam_role_arn

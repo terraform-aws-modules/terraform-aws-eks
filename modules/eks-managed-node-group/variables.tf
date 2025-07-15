@@ -11,6 +11,12 @@ variable "tags" {
   default     = {}
 }
 
+variable "region" {
+  description = "Region where the resource(s) will be managed. Defaults to the Region set in the provider configuration"
+  type        = string
+  default     = null
+}
+
 variable "partition" {
   description = "The AWS partition - pass through value to reduce number of GET requests from data sources"
   type        = string

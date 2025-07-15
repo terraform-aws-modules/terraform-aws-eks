@@ -4,16 +4,22 @@ variable "create" {
   default     = true
 }
 
-variable "tags" {
-  description = "A map of tags to add to all resources"
-  type        = map(string)
-  default     = {}
-}
-
 variable "prefix_separator" {
   description = "The separator to use between the prefix and the generated timestamp for resource names"
   type        = string
   default     = "-"
+}
+
+variable "region" {
+  description = "Region where the resource(s) will be managed. Defaults to the Region set in the provider configuration"
+  type        = string
+  default     = null
+}
+
+variable "tags" {
+  description = "A map of tags to add to all resources"
+  type        = map(string)
+  default     = {}
 }
 
 ################################################################################
@@ -27,7 +33,7 @@ variable "name" {
 }
 
 variable "kubernetes_version" {
-  description = "Kubernetes `<major>.<minor>` version to use for the EKS cluster (i.e.: `1.27`)"
+  description = "Kubernetes `<major>.<minor>` version to use for the EKS cluster (i.e.: `1.33`)"
   type        = string
   default     = null
 }

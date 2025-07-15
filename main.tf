@@ -36,6 +36,8 @@ locals {
 resource "aws_eks_cluster" "this" {
   count = local.create ? 1 : 0
 
+  region = var.region
+
   name                          = var.name
   role_arn                      = local.role_arn
   version                       = var.kubernetes_version
@@ -210,6 +212,8 @@ resource "aws_ec2_tag" "cluster_primary_security_group" {
     k => v if local.create && k != "Name" && var.create_primary_security_group_tags
   }
 
+  region = var.region
+
   resource_id = aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id
   key         = each.key
   value       = each.value
@@ -217,6 +221,8 @@ resource "aws_ec2_tag" "cluster_primary_security_group" {
 
 resource "aws_cloudwatch_log_group" "this" {
   count = local.create && var.create_cloudwatch_log_group ? 1 : 0
+
+  region = var.region
 
   name              = "/aws/eks/${var.name}/cluster"
   retention_in_days = var.cloudwatch_log_group_retention_in_days
@@ -283,6 +289,8 @@ locals {
 resource "aws_eks_access_entry" "this" {
   for_each = { for k, v in local.merged_access_entries : k => v if local.create }
 
+  region = var.region
+
   cluster_name      = aws_eks_cluster.this[0].id
   kubernetes_groups = try(each.value.kubernetes_groups, null)
   principal_arn     = each.value.principal_arn
@@ -297,6 +305,8 @@ resource "aws_eks_access_entry" "this" {
 
 resource "aws_eks_access_policy_association" "this" {
   for_each = { for k, v in local.flattened_access_entries : "${v.entry_key}_${v.pol_key}" => v if local.create }
+
+  region = var.region
 
   access_scope {
     namespaces = each.value.association_access_scope_namespaces
@@ -322,6 +332,8 @@ module "kms" {
   version = "4.0.0" # Note - be mindful of Terraform/provider version compatibility between modules
 
   create = local.create && var.create_kms_key && local.enable_encryption_config # not valid on Outposts
+
+  region = var.region
 
   description             = coalesce(var.kms_key_description, "${var.name} cluster encryption key")
   key_usage               = "ENCRYPT_DECRYPT"
@@ -377,6 +389,8 @@ locals {
 resource "aws_security_group" "cluster" {
   count = local.create_security_group ? 1 : 0
 
+  region = var.region
+
   name        = var.security_group_use_name_prefix ? null : local.security_group_name
   name_prefix = var.security_group_use_name_prefix ? "${local.security_group_name}${var.prefix_separator}" : null
   description = var.security_group_description
@@ -398,6 +412,8 @@ resource "aws_security_group_rule" "cluster" {
     local.cluster_security_group_rules,
     var.security_group_additional_rules
   ) : k => v if local.create_security_group }
+
+  region = var.region
 
   security_group_id        = aws_security_group.cluster[0].id
   protocol                 = each.value.protocol
@@ -734,6 +750,8 @@ resource "aws_iam_role_policy_attachment" "custom" {
 data "aws_eks_addon_version" "this" {
   for_each = var.addons != null && local.create && !local.create_outposts_local_cluster ? var.addons : {}
 
+  region = var.region
+
   addon_name         = coalesce(each.value.name, each.key)
   kubernetes_version = coalesce(var.kubernetes_version, aws_eks_cluster.this[0].version)
   most_recent        = each.value.most_recent
@@ -742,6 +760,8 @@ data "aws_eks_addon_version" "this" {
 resource "aws_eks_addon" "this" {
   # Not supported on outposts
   for_each = var.addons != null && local.create && !local.create_outposts_local_cluster ? { for k, v in var.addons : k => v if !v.before_compute } : {}
+
+  region = var.region
 
   cluster_name = aws_eks_cluster.this[0].id
   addon_name   = coalesce(each.value.name, each.key)
@@ -786,6 +806,8 @@ resource "aws_eks_addon" "before_compute" {
   # Not supported on outposts
   for_each = var.addons != null && local.create && !local.create_outposts_local_cluster ? { for k, v in var.addons : k => v if v.before_compute } : {}
 
+  region = var.region
+
   cluster_name = aws_eks_cluster.this[0].id
   addon_name   = coalesce(each.value.name, each.key)
 
@@ -825,6 +847,8 @@ resource "aws_eks_addon" "before_compute" {
 
 resource "aws_eks_identity_provider_config" "this" {
   for_each = var.identity_providers != null && local.create && !local.create_outposts_local_cluster ? var.identity_providers : {}
+
+  region = var.region
 
   cluster_name = aws_eks_cluster.this[0].id
 

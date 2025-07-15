@@ -1,5 +1,7 @@
 data "aws_region" "current" {
   count = var.create ? 1 : 0
+
+  region = var.region
 }
 data "aws_partition" "current" {
   count = var.create && var.partition == "" ? 1 : 0
@@ -158,6 +160,8 @@ resource "aws_iam_role_policy" "this" {
 
 resource "aws_eks_fargate_profile" "this" {
   count = var.create ? 1 : 0
+
+  region = var.region
 
   cluster_name           = var.cluster_name
   fargate_profile_name   = var.name

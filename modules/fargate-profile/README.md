@@ -78,6 +78,7 @@ No modules.
 | <a name="input_iam_role_use_name_prefix"></a> [iam\_role\_use\_name\_prefix](#input\_iam\_role\_use\_name\_prefix) | Determines whether the IAM role name (`iam_role_name`) is used as a prefix | `bool` | `true` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name of the EKS Fargate Profile | `string` | `""` | no |
 | <a name="input_partition"></a> [partition](#input\_partition) | The AWS partition - pass through value to reduce number of GET requests from data sources | `string` | `""` | no |
+| <a name="input_region"></a> [region](#input\_region) | Region where the resource(s) will be managed. Defaults to the Region set in the provider configuration | `string` | `null` | no |
 | <a name="input_selectors"></a> [selectors](#input\_selectors) | Configuration block(s) for selecting Kubernetes Pods to execute with this Fargate Profile | <pre>list(object({<br/>    labels    = optional(map(string))<br/>    namespace = string<br/>  }))</pre> | `null` | no |
 | <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | A list of subnet IDs for the EKS Fargate Profile | `list(string)` | `[]` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map(string)` | `{}` | no |

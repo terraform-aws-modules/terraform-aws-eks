@@ -168,6 +168,8 @@ locals {
 resource "aws_security_group" "node" {
   count = local.create_node_sg ? 1 : 0
 
+  region = var.region
+
   name        = var.node_security_group_use_name_prefix ? null : local.node_sg_name
   name_prefix = var.node_security_group_use_name_prefix ? "${local.node_sg_name}${var.prefix_separator}" : null
   description = var.node_security_group_description
@@ -194,6 +196,8 @@ resource "aws_security_group_rule" "node" {
     var.node_security_group_additional_rules,
   ) : k => v if local.create_node_sg }
 
+  region = var.region
+
   security_group_id        = aws_security_group.node[0].id
   protocol                 = each.value.protocol
   from_port                = each.value.from_port
@@ -217,6 +221,8 @@ module "fargate_profile" {
   for_each = var.create && !local.create_outposts_local_cluster && length(var.fargate_profiles) > 0 ? var.fargate_profiles : {}
 
   create = each.value.create
+
+  region = var.region
 
   # Pass through values to reduce GET requests from data sources
   partition  = local.partition
@@ -260,6 +266,8 @@ module "eks_managed_node_group" {
   for_each = var.create && !local.create_outposts_local_cluster && length(var.eks_managed_node_groups) > 0 ? var.eks_managed_node_groups : {}
 
   create = each.value.create
+
+  region = var.region
 
   # Pass through values to reduce GET requests from data sources
   partition  = local.partition
@@ -385,6 +393,8 @@ module "self_managed_node_group" {
   for_each = var.create && length(var.self_managed_node_groups) > 0 ? var.self_managed_node_groups : {}
 
   create = each.value.create
+
+  region = var.region
 
   # Pass through values to reduce GET requests from data sources
   partition  = local.partition
