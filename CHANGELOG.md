@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [20.37.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.37.1...v20.37.2) (2025-07-17)
+
+
+### Bug Fixes
+
+* Allow for both `amazonaws.com.cn` and `amazonaws.com` conditions in PassRole as required for AWS CN ([#3422](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3422)) ([83b68fd](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/83b68fda2b0ea818fc980ab847dd8255a2d18334))
+
 ## [20.37.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.37.0...v20.37.1) (2025-06-18)
 
 
