@@ -41,8 +41,6 @@ module "eks_al2023" {
               kubelet:
                 config:
                   shutdownGracePeriod: 30s
-                  featureGates:
-                    DisableKubeletCloudCredentialProviders: true
           EOT
         }
       ]

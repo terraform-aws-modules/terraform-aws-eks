@@ -228,8 +228,6 @@ module "eks" {
             kubelet:
               config:
                 shutdownGracePeriod: 30s
-                featureGates:
-                  DisableKubeletCloudCredentialProviders: true
         EOT
           content_type = "application/node.eks.aws"
         }]

@@ -243,7 +243,7 @@ resource "aws_cloudwatch_log_group" "this" {
 locals {
   # This replaces the one time logic from the EKS API with something that can be
   # better controlled by users through Terraform
-  bootstrap_cluster_creator_admin_permissions = {
+  bootstrap_cluster_creator_admin_permissions = { for k, v in {
     cluster_creator = {
       principal_arn = try(data.aws_iam_session_context.current[0].issuer_arn, "")
       type          = "STANDARD"
@@ -257,11 +257,11 @@ locals {
         }
       }
     }
-  }
+  } : k => v if var.enable_cluster_creator_admin_permissions }
 
   # Merge the bootstrap behavior with the entries that users provide
   merged_access_entries = merge(
-    { for k, v in local.bootstrap_cluster_creator_admin_permissions : k => v if var.enable_cluster_creator_admin_permissions },
+    local.bootstrap_cluster_creator_admin_permissions,
     var.access_entries,
   )
 

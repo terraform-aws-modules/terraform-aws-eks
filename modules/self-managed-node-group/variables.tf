@@ -326,7 +326,7 @@ variable "placement" {
     spread_domain           = optional(string)
     tenancy                 = optional(string)
   })
-  default = {}
+  default = null
 }
 
 variable "create_placement_group" {
@@ -548,7 +548,7 @@ variable "subnet_ids" {
 variable "min_size" {
   description = "The minimum size of the autoscaling group"
   type        = number
-  default     = 0
+  default     = 1
 }
 
 variable "max_size" {

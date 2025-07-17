@@ -305,17 +305,17 @@ resource "aws_launch_template" "this" {
   }
 
   dynamic "placement" {
-    for_each = length(var.placement) > 0 || local.create_placement_group ? [var.placement] : []
+    for_each = var.placement != null || local.create_placement_group ? [var.placement] : []
 
     content {
-      affinity                = placement.value.affinity
-      availability_zone       = placement.value.availability_zone
-      group_name              = try(coalesce(aws_placement_group.this[0].name, placement.value.group_name), null)
-      host_id                 = placement.value.host_id
-      host_resource_group_arn = placement.value.host_resource_group_arn
-      partition_number        = placement.value.partition_number
-      spread_domain           = placement.value.spread_domain
-      tenancy                 = placement.value.tenancy
+      affinity                = try(placement.value.affinity, null)
+      availability_zone       = try(placement.value.availability_zone, null)
+      group_name              = try(aws_placement_group.this[0].name, placement.value.group_name)
+      host_id                 = try(placement.value.host_id, null)
+      host_resource_group_arn = try(placement.value.host_resource_group_arn, null)
+      partition_number        = try(placement.value.partition_number, null)
+      spread_domain           = try(placement.value.spread_domain, null)
+      tenancy                 = try(placement.value.tenancy, null)
     }
   }
 

@@ -105,8 +105,7 @@ module "eks" {
 
     placement_group = {
       create_placement_group = true
-      # forces the subnet lookup to be restricted to this availability zone
-      placement_group_az = element(local.azs, 3)
+      subnet_ids             = slice(module.vpc.private_subnets, 0, 1)
     }
 
     # AL2023 node group utilizing new user data format which utilizes nodeadm
@@ -126,8 +125,6 @@ module "eks" {
               kubelet:
                 config:
                   shutdownGracePeriod: 30s
-                  featureGates:
-                    DisableKubeletCloudCredentialProviders: true
           EOT
         }
       ]
@@ -229,8 +226,6 @@ module "eks" {
             kubelet:
               config:
                 shutdownGracePeriod: 30s
-                featureGates:
-                  DisableKubeletCloudCredentialProviders: true
         EOT
         content_type = "application/node.eks.aws"
       }]
@@ -279,7 +274,7 @@ module "eks" {
       metadata_options = {
         http_endpoint               = "enabled"
         http_tokens                 = "required"
-        http_put_response_hop_limit = 1
+        http_put_response_hop_limit = 2
         instance_metadata_tags      = "disabled"
       }
 

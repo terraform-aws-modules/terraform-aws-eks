@@ -428,7 +428,7 @@ resource "aws_launch_template" "this" {
     content {
       affinity                = placement.value.affinity
       availability_zone       = placement.value.availability_zone
-      group_name              = try(coalesce(aws_placement_group.this[0].name, placement.value.group_name), null)
+      group_name              = try(aws_placement_group.this[0].name, placement.value.group_name)
       host_id                 = placement.value.host_id
       host_resource_group_arn = placement.value.host_resource_group_arn
       partition_number        = placement.value.partition_number

@@ -73,8 +73,6 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
             kubelet:
               config:
                 shutdownGracePeriod: 30s
-                featureGates:
-                  DisableKubeletCloudCredentialProviders: true
         EOT
         content_type = "application/node.eks.aws"
       }]

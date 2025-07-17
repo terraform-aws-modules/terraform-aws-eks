@@ -215,10 +215,10 @@ variable "access_entries" {
     policy_associations = optional(map(object({
       policy_arn = string
       access_scope = object({
-        type = string
+        namespaces = optional(list(string))
+        type       = string
       })
-      namespaces = optional(list(string))
-    })), {})
+    })))
   }))
   default = {}
 }
@@ -789,7 +789,7 @@ variable "self_managed_node_groups" {
     use_name_prefix                  = optional(bool, true)
     availability_zones               = optional(list(string))
     subnet_ids                       = optional(list(string))
-    min_size                         = optional(number, 0)
+    min_size                         = optional(number, 1)
     max_size                         = optional(number, 3)
     desired_size                     = optional(number, 1)
     desired_size_type                = optional(string)
@@ -1118,7 +1118,7 @@ variable "self_managed_node_groups" {
       partition_number        = optional(number)
       spread_domain           = optional(string)
       tenancy                 = optional(string)
-    }), {})
+    }))
     maintenance_options = optional(object({
       auto_recovery = optional(string)
     }))
@@ -1216,7 +1216,7 @@ variable "eks_managed_node_groups" {
     name                           = optional(string) # Will fall back to map key
     use_name_prefix                = optional(bool, true)
     subnet_ids                     = optional(list(string))
-    min_size                       = optional(number, 0)
+    min_size                       = optional(number, 1)
     max_size                       = optional(number, 3)
     desired_size                   = optional(number, 1)
     ami_id                         = optional(string, "")
@@ -1357,7 +1357,7 @@ variable "eks_managed_node_groups" {
       partition_number        = optional(number)
       spread_domain           = optional(string)
       tenancy                 = optional(string)
-    }), {})
+    }))
     network_interfaces = optional(list(object({
       associate_carrier_ip_address = optional(bool)
       associate_public_ip_address  = optional(bool)
