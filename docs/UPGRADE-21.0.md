@@ -208,7 +208,7 @@ module "eks" {
   version = "~> 20.0"
 
   # Truncated for brevity ...
-  # Not all renamed variables are shown here, please refer to the full list above.
+  # Renamed variables are not shown here, please refer to the full list above.
 
   enable_efa_support = true
 
@@ -269,7 +269,7 @@ module "eks" {
   version = "~> 21.0"
 
   # Truncated for brevity ...
-  # Not all renamed variables are shown here, please refer to the full list above.
+  # Renamed variables are not shown here, please refer to the full list above.
 
   eks_managed_node_groups = {
     efa = {
@@ -323,3 +323,5 @@ module "eks" {
 ```
 
 ### State Changes
+
+No state changes required.

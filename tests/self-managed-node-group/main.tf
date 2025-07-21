@@ -45,13 +45,15 @@ module "eks" {
       most_recent = true
     }
     eks-pod-identity-agent = {
-      most_recent = true
+      before_compute = true
+      most_recent    = true
     }
     kube-proxy = {
       most_recent = true
     }
     vpc-cni = {
-      most_recent = true
+      before_compute = true
+      most_recent    = true
       pod_identity_association = [{
         role_arn        = module.aws_vpc_cni_ipv4_pod_identity.iam_role_arn
         service_account = "aws-node"
