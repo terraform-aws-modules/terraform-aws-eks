@@ -444,7 +444,7 @@ data "tls_certificate" "this" {
   # Not available on outposts
   count = local.create_oidc_provider && var.include_oidc_root_ca_thumbprint ? 1 : 0
 
-  url = aws_eks_cluster.this[0].identity[0].oidc[0].issuer
+  url = local.dualstack_oidc_issuer_url
 }
 
 resource "aws_iam_openid_connect_provider" "oidc_provider" {
@@ -453,7 +453,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 
   client_id_list  = distinct(compact(concat(["sts.amazonaws.com"], var.openid_connect_audiences)))
   thumbprint_list = concat(local.oidc_root_ca_thumbprint, var.custom_oidc_thumbprints)
-  url             = aws_eks_cluster.this[0].identity[0].oidc[0].issuer
+  url             = local.dualstack_oidc_issuer_url
 
   tags = merge(
     { Name = "${var.name}-eks-irsa" },

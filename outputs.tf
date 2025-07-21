@@ -1,4 +1,5 @@
 locals {
+  # https://github.com/aws/containers-roadmap/issues/2038#issuecomment-2278450601
   dualstack_oidc_issuer_url = try(replace(replace(aws_eks_cluster.this[0].identity[0].oidc[0].issuer, "https://oidc.eks.", "https://oidc-eks."), ".amazonaws.com/", ".api.aws/"), null)
 }
 

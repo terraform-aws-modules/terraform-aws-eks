@@ -31,6 +31,7 @@ If you find a bug, please open an issue with supporting configuration to reprodu
 - `addons.resolve_conflicts_on_create` is now set to `"NONE"` by default (was `"OVERWRITE"`).
 - `addons.most_recent` is now set to `true` by default (was `false`).
 - `cluster_identity_providers.issuer_url` is now required to be set by users; the prior incorrect default has been removed. See https://github.com/terraform-aws-modules/terraform-aws-eks/pull/3055 and https://github.com/kubernetes/kubernetes/pull/123561 for more details.
+- The OIDC issuer URL for IAM roles for service accounts (IRSA) has been changed to use the new dual stack`oidc-eks` endpoint instead of `oidc.eks`. This is to align with https://github.com/aws/containers-roadmap/issues/2038#issuecomment-2278450601
 
 ## Additional changes
 
