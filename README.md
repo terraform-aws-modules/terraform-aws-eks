@@ -68,9 +68,13 @@ module "eks" {
 
   addons = {
     coredns                = {}
-    eks-pod-identity-agent = {}
+    eks-pod-identity-agent = {
+      before_compute = true
+    }
     kube-proxy             = {}
-    vpc-cni                = {}
+    vpc-cni                = {
+      before_compute = true
+    }
   }
 
   # Optional
