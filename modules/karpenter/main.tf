@@ -28,20 +28,20 @@ locals {
 data "aws_iam_policy_document" "controller_assume_role" {
   count = local.create_iam_role ? 1 : 0
 
+  override_policy_documents = var.iam_role_override_assume_policy_documents
+  source_policy_documents   = var.iam_role_source_assume_policy_documents
+
   # Pod Identity
-  dynamic "statement" {
-    for_each = var.enable_pod_identity ? [1] : []
+  statement {
+    sid = "PodIdentity"
+    actions = [
+      "sts:AssumeRole",
+      "sts:TagSession",
+    ]
 
-    content {
-      actions = [
-        "sts:AssumeRole",
-        "sts:TagSession",
-      ]
-
-      principals {
-        type        = "Service"
-        identifiers = ["pods.eks.amazonaws.com"]
-      }
+    principals {
+      type        = "Service"
+      identifiers = ["pods.eks.amazonaws.com"]
     }
   }
 }
@@ -93,7 +93,7 @@ resource "aws_iam_role_policy_attachment" "controller_additional" {
 ################################################################################
 
 resource "aws_eks_pod_identity_association" "karpenter" {
-  count = local.create_iam_role && var.enable_pod_identity && var.create_pod_identity_association ? 1 : 0
+  count = local.create_iam_role && var.create_pod_identity_association ? 1 : 0
 
   region = var.region
 

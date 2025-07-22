@@ -98,6 +98,18 @@ variable "iam_policy_description" {
   default     = "Karpenter controller IAM policy"
 }
 
+variable "iam_role_override_assume_policy_documents" {
+  description = "A list of IAM policy documents to override the default assume role policy document for the Karpenter controller IAM role"
+  type        = list(string)
+  default     = []
+}
+
+variable "iam_role_source_assume_policy_documents" {
+  description = "A list of IAM policy documents to use as a source for the assume role policy document for the Karpenter controller IAM role"
+  type        = list(string)
+  default     = []
+}
+
 variable "iam_policy_statements" {
   description = "A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed"
   type = list(object({
@@ -134,12 +146,6 @@ variable "ami_id_ssm_parameter_arns" {
   description = "List of SSM Parameter ARNs that Karpenter controller is allowed read access (for retrieving AMI IDs)"
   type        = list(string)
   default     = []
-}
-
-variable "enable_pod_identity" {
-  description = "Determines whether to enable support for EKS pod identity"
-  type        = bool
-  default     = true
 }
 
 ################################################################################
