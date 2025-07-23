@@ -723,7 +723,7 @@ variable "node_iam_role_tags" {
 variable "fargate_profiles" {
   description = "Map of Fargate Profile definitions to create"
   type = map(object({
-    create = optional(bool, true)
+    create = optional(bool)
 
     # Fargate profile
     name       = optional(string) # Will fall back to map key
@@ -738,17 +738,17 @@ variable "fargate_profiles" {
     }))
 
     # IAM role
-    create_iam_role               = optional(bool, true)
+    create_iam_role               = optional(bool)
     iam_role_arn                  = optional(string)
     iam_role_name                 = optional(string)
-    iam_role_use_name_prefix      = optional(bool, true)
+    iam_role_use_name_prefix      = optional(bool)
     iam_role_path                 = optional(string)
-    iam_role_description          = optional(string, "Fargate profile IAM role")
+    iam_role_description          = optional(string)
     iam_role_permissions_boundary = optional(string)
-    iam_role_tags                 = optional(map(string), {})
-    iam_role_attach_cni_policy    = optional(bool, true)
-    iam_role_additional_policies  = optional(map(string), {})
-    create_iam_role_policy        = optional(bool, true)
+    iam_role_tags                 = optional(map(string))
+    iam_role_attach_cni_policy    = optional(bool)
+    iam_role_additional_policies  = optional(map(string))
+    create_iam_role_policy        = optional(bool)
     iam_role_policy_statements = optional(list(object({
       sid           = optional(string)
       actions       = optional(list(string))
@@ -770,9 +770,9 @@ variable "fargate_profiles" {
         variable = string
       })))
     })))
-    tags = optional(map(string), {})
+    tags = optional(map(string))
   }))
-  default = {}
+  default = null
 }
 
 ################################################################################
@@ -784,29 +784,29 @@ variable "self_managed_node_groups" {
   type = map(object({
     create = optional(bool, true)
     # Autoscaling Group
-    create_autoscaling_group         = optional(bool, true)
+    create_autoscaling_group         = optional(bool)
     name                             = optional(string) # Will fall back to map key
-    use_name_prefix                  = optional(bool, true)
+    use_name_prefix                  = optional(bool)
     availability_zones               = optional(list(string))
     subnet_ids                       = optional(list(string))
-    min_size                         = optional(number, 1)
-    max_size                         = optional(number, 3)
-    desired_size                     = optional(number, 1)
+    min_size                         = optional(number)
+    max_size                         = optional(number)
+    desired_size                     = optional(number)
     desired_size_type                = optional(string)
     capacity_rebalance               = optional(bool)
     default_instance_warmup          = optional(number)
-    protect_from_scale_in            = optional(bool, false)
+    protect_from_scale_in            = optional(bool)
     context                          = optional(string)
-    create_placement_group           = optional(bool, false)
+    create_placement_group           = optional(bool)
     placement_group                  = optional(string)
     health_check_type                = optional(string)
     health_check_grace_period        = optional(number)
     ignore_failed_scaling_activities = optional(bool)
     force_delete                     = optional(bool)
-    termination_policies             = optional(list(string), [])
-    suspended_processes              = optional(list(string), [])
+    termination_policies             = optional(list(string))
+    suspended_processes              = optional(list(string))
     max_instance_lifetime            = optional(number)
-    enabled_metrics                  = optional(list(string), [])
+    enabled_metrics                  = optional(list(string))
     metrics_granularity              = optional(string)
     initial_lifecycle_hooks = optional(list(object({
       default_result          = optional(string)
@@ -831,20 +831,15 @@ variable "self_managed_node_groups" {
         checkpoint_percentages       = optional(list(number))
         instance_warmup              = optional(number)
         max_healthy_percentage       = optional(number)
-        min_healthy_percentage       = optional(number, 66)
+        min_healthy_percentage       = optional(number)
         scale_in_protected_instances = optional(string)
         skip_matching                = optional(bool)
         standby_instances            = optional(string)
       }))
-      strategy = optional(string, "Rolling")
+      strategy = optional(string)
       triggers = optional(list(string))
-      }), {
-      strategy = "Rolling"
-      preferences = {
-        min_healthy_percentage = 66
-      }
-    })
-    use_mixed_instances_policy = optional(bool, false)
+    }))
+    use_mixed_instances_policy = optional(bool)
     mixed_instances_policy = optional(object({
       instances_distribution = optional(object({
         on_demand_allocation_strategy            = optional(string)
@@ -922,40 +917,41 @@ variable "self_managed_node_groups" {
     timeouts = optional(object({
       delete = optional(string)
     }))
-    autoscaling_group_tags = optional(map(string), {})
+    autoscaling_group_tags = optional(map(string))
     # User data
-    ami_type                   = optional(string, "AL2023_x86_64_STANDARD")
-    additional_cluster_dns_ips = optional(list(string), [])
-    pre_bootstrap_user_data    = optional(string, "")
-    post_bootstrap_user_data   = optional(string, "")
-    bootstrap_extra_args       = optional(string, "")
-    user_data_template_path    = optional(string, "")
+    ami_type                   = optional(string)
+    additional_cluster_dns_ips = optional(list(string))
+    pre_bootstrap_user_data    = optional(string)
+    post_bootstrap_user_data   = optional(string)
+    bootstrap_extra_args       = optional(string)
+    user_data_template_path    = optional(string)
     cloudinit_pre_nodeadm = optional(list(object({
       content      = string
       content_type = optional(string)
       filename     = optional(string)
       merge_type   = optional(string)
-    })), [])
+    })))
     cloudinit_post_nodeadm = optional(list(object({
       content      = string
       content_type = optional(string)
       filename     = optional(string)
       merge_type   = optional(string)
-    })), [])
+    })))
     # Launch Template
-    create_launch_template                 = optional(bool, true)
-    use_custom_launch_template             = optional(bool, true)
-    launch_template_id                     = optional(string, "")
+    create_launch_template                 = optional(bool)
+    use_custom_launch_template             = optional(bool)
+    launch_template_id                     = optional(string)
     launch_template_name                   = optional(string) # Will fall back to map key
-    launch_template_use_name_prefix        = optional(bool, true)
+    launch_template_use_name_prefix        = optional(bool)
     launch_template_version                = optional(string)
-    update_launch_template_default_version = optional(bool, true)
+    launch_template_default_version        = optional(string)
+    update_launch_template_default_version = optional(bool)
     launch_template_description            = optional(string)
-    launch_template_tags                   = optional(map(string), {})
-    tag_specifications                     = optional(list(string), ["instance", "volume", "network-interface"])
+    launch_template_tags                   = optional(map(string))
+    tag_specifications                     = optional(list(string))
     ebs_optimized                          = optional(bool)
     ami_id                                 = optional(string)
-    instance_type                          = optional(string, "m6i.large")
+    instance_type                          = optional(string)
     key_name                               = optional(string)
     disable_api_termination                = optional(bool)
     instance_initiated_shutdown_behavior   = optional(string)
@@ -1062,20 +1058,16 @@ variable "self_managed_node_groups" {
       license_configuration_arn = string
     })))
     metadata_options = optional(object({
-      http_endpoint               = optional(string, "enabled")
+      http_endpoint               = optional(string)
       http_protocol_ipv6          = optional(string)
-      http_put_response_hop_limit = optional(number, 1)
-      http_tokens                 = optional(string, "required")
+      http_put_response_hop_limit = optional(number)
+      http_tokens                 = optional(string)
       instance_metadata_tags      = optional(string)
-      }), {
-      http_endpoint               = "enabled"
-      http_put_response_hop_limit = 1
-      http_tokens                 = "required"
-    })
-    enable_monitoring  = optional(bool, false)
-    enable_efa_support = optional(bool, false)
-    enable_efa_only    = optional(bool, true)
-    efa_indices        = optional(list(string), [0])
+    }))
+    enable_monitoring  = optional(bool)
+    enable_efa_support = optional(bool)
+    enable_efa_only    = optional(bool)
+    efa_indices        = optional(list(string))
     network_interfaces = optional(list(object({
       associate_carrier_ip_address = optional(bool)
       associate_public_ip_address  = optional(bool)
@@ -1106,9 +1098,9 @@ variable "self_managed_node_groups" {
       network_interface_id = optional(string)
       primary_ipv6         = optional(bool)
       private_ip_address   = optional(string)
-      security_groups      = optional(list(string), [])
+      security_groups      = optional(list(string))
       subnet_id            = optional(string)
-    })), [])
+    })))
     placement = optional(object({
       affinity                = optional(string)
       availability_zone       = optional(string)
@@ -1128,17 +1120,17 @@ variable "self_managed_node_groups" {
       hostname_type                        = optional(string)
     }))
     # IAM role
-    create_iam_instance_profile   = optional(bool, true)
+    create_iam_instance_profile   = optional(bool)
     iam_instance_profile_arn      = optional(string)
     iam_role_name                 = optional(string)
-    iam_role_use_name_prefix      = optional(bool, true)
+    iam_role_use_name_prefix      = optional(bool)
     iam_role_path                 = optional(string)
-    iam_role_description          = optional(string, "Self managed node group IAM role")
+    iam_role_description          = optional(string)
     iam_role_permissions_boundary = optional(string)
-    iam_role_tags                 = optional(map(string), {})
-    iam_role_attach_cni_policy    = optional(bool, true)
-    iam_role_additional_policies  = optional(map(string), {})
-    create_iam_role_policy        = optional(bool, true)
+    iam_role_tags                 = optional(map(string))
+    iam_role_attach_cni_policy    = optional(bool)
+    iam_role_additional_policies  = optional(map(string))
+    create_iam_role_policy        = optional(bool)
     iam_role_policy_statements = optional(list(object({
       sid           = optional(string)
       actions       = optional(list(string))
@@ -1161,13 +1153,13 @@ variable "self_managed_node_groups" {
       })))
     })))
     # Access entry
-    create_access_entry = optional(bool, true)
+    create_access_entry = optional(bool)
     iam_role_arn        = optional(string)
     # Security group
     attach_cluster_primary_security_group = optional(bool, false)
-    create_security_group                 = optional(bool, true)
+    create_security_group                 = optional(bool)
     security_group_name                   = optional(string)
-    security_group_use_name_prefix        = optional(bool, true)
+    security_group_use_name_prefix        = optional(bool)
     security_group_description            = optional(string)
     security_group_ingress_rules = optional(map(object({
       name                         = optional(string)
@@ -1175,31 +1167,31 @@ variable "self_managed_node_groups" {
       cidr_ipv6                    = optional(string)
       description                  = optional(string)
       from_port                    = optional(string)
-      ip_protocol                  = optional(string, "tcp")
+      ip_protocol                  = optional(string)
       prefix_list_id               = optional(string)
       referenced_security_group_id = optional(string)
-      self                         = optional(bool, false)
-      tags                         = optional(map(string), {})
+      self                         = optional(bool)
+      tags                         = optional(map(string))
       to_port                      = optional(string)
-    })), {})
+    })))
     security_group_egress_rules = optional(map(object({
       name                         = optional(string)
       cidr_ipv4                    = optional(string)
       cidr_ipv6                    = optional(string)
       description                  = optional(string)
       from_port                    = optional(string)
-      ip_protocol                  = optional(string, "tcp")
+      ip_protocol                  = optional(string)
       prefix_list_id               = optional(string)
       referenced_security_group_id = optional(string)
-      self                         = optional(bool, false)
-      tags                         = optional(map(string), {})
+      self                         = optional(bool)
+      tags                         = optional(map(string))
       to_port                      = optional(string)
-    })), {})
-    security_group_tags = optional(map(string), {})
+    })))
+    security_group_tags = optional(map(string))
 
-    tags = optional(map(string), {})
+    tags = optional(map(string))
   }))
-  default = {}
+  default = null
 }
 
 ################################################################################
@@ -1209,27 +1201,27 @@ variable "self_managed_node_groups" {
 variable "eks_managed_node_groups" {
   description = "Map of EKS managed node group definitions to create"
   type = map(object({
-    create             = optional(bool, true)
+    create             = optional(bool)
     kubernetes_version = optional(string)
 
     # EKS Managed Node Group
     name                           = optional(string) # Will fall back to map key
-    use_name_prefix                = optional(bool, true)
+    use_name_prefix                = optional(bool)
     subnet_ids                     = optional(list(string))
-    min_size                       = optional(number, 1)
-    max_size                       = optional(number, 3)
-    desired_size                   = optional(number, 1)
-    ami_id                         = optional(string, "")
-    ami_type                       = optional(string, "AL2023_x86_64_STANDARD")
+    min_size                       = optional(number)
+    max_size                       = optional(number)
+    desired_size                   = optional(number)
+    ami_id                         = optional(string)
+    ami_type                       = optional(string)
     ami_release_version            = optional(string)
-    use_latest_ami_release_version = optional(bool, true)
-    capacity_type                  = optional(string, "ON_DEMAND")
+    use_latest_ami_release_version = optional(bool)
+    capacity_type                  = optional(string)
     disk_size                      = optional(number)
     force_update_version           = optional(bool)
     instance_types                 = optional(list(string))
     labels                         = optional(map(string))
     node_repair_config = optional(object({
-      enabled = optional(bool, true)
+      enabled = optional(bool)
     }))
     remote_access = optional(object({
       ec2_ssh_key               = optional(string)
@@ -1243,43 +1235,42 @@ variable "eks_managed_node_groups" {
     update_config = optional(object({
       max_unavailable            = optional(number)
       max_unavailable_percentage = optional(number)
-      }), {
-      max_unavailable_percentage = 33
-    })
+    }))
     timeouts = optional(object({
       create = optional(string)
       update = optional(string)
       delete = optional(string)
     }))
     # User data
-    enable_bootstrap_user_data = optional(bool, false)
-    pre_bootstrap_user_data    = optional(string, "")
-    post_bootstrap_user_data   = optional(string, "")
-    bootstrap_extra_args       = optional(string, "")
-    user_data_template_path    = optional(string, "")
+    enable_bootstrap_user_data = optional(bool)
+    pre_bootstrap_user_data    = optional(string)
+    post_bootstrap_user_data   = optional(string)
+    bootstrap_extra_args       = optional(string)
+    user_data_template_path    = optional(string)
     cloudinit_pre_nodeadm = optional(list(object({
       content      = string
       content_type = optional(string)
       filename     = optional(string)
       merge_type   = optional(string)
-    })), [])
+    })))
     cloudinit_post_nodeadm = optional(list(object({
       content      = string
       content_type = optional(string)
       filename     = optional(string)
       merge_type   = optional(string)
-    })), [])
+    })))
     # Launch Template
-    create_launch_template                 = optional(bool, true)
-    use_custom_launch_template             = optional(bool, true)
-    launch_template_id                     = optional(string, "")
+    create_launch_template                 = optional(bool)
+    use_custom_launch_template             = optional(bool)
+    launch_template_id                     = optional(string)
     launch_template_name                   = optional(string) # Will fall back to map key
-    launch_template_use_name_prefix        = optional(bool, true)
+    launch_template_use_name_prefix        = optional(bool)
     launch_template_version                = optional(string)
-    update_launch_template_default_version = optional(bool, true)
+    launch_template_default_version        = optional(string)
+    update_launch_template_default_version = optional(bool)
     launch_template_description            = optional(string)
-    launch_template_tags                   = optional(map(string), {})
-    tag_specifications                     = optional(list(string), ["instance", "volume", "network-interface"])
+    launch_template_tags                   = optional(map(string))
+    tag_specifications                     = optional(list(string))
     ebs_optimized                          = optional(bool)
     key_name                               = optional(string)
     disable_api_termination                = optional(bool)
@@ -1333,21 +1324,17 @@ variable "eks_managed_node_groups" {
       license_configuration_arn = string
     })))
     metadata_options = optional(object({
-      http_endpoint               = optional(string, "enabled")
+      http_endpoint               = optional(string)
       http_protocol_ipv6          = optional(string)
-      http_put_response_hop_limit = optional(number, 1)
-      http_tokens                 = optional(string, "required")
+      http_put_response_hop_limit = optional(number)
+      http_tokens                 = optional(string)
       instance_metadata_tags      = optional(string)
-      }), {
-      http_endpoint               = "enabled"
-      http_put_response_hop_limit = 1
-      http_tokens                 = "required"
-    })
-    enable_monitoring      = optional(bool, false)
-    enable_efa_support     = optional(bool, false)
-    enable_efa_only        = optional(bool, true)
-    efa_indices            = optional(list(string), [0])
-    create_placement_group = optional(bool, false)
+    }))
+    enable_monitoring      = optional(bool)
+    enable_efa_support     = optional(bool)
+    enable_efa_only        = optional(bool)
+    efa_indices            = optional(list(string))
+    create_placement_group = optional(bool)
     placement = optional(object({
       affinity                = optional(string)
       availability_zone       = optional(string)
@@ -1390,7 +1377,7 @@ variable "eks_managed_node_groups" {
       private_ip_address   = optional(string)
       security_groups      = optional(list(string), [])
       subnet_id            = optional(string)
-    })), [])
+    })))
     maintenance_options = optional(object({
       auto_recovery = optional(string)
     }))
@@ -1400,17 +1387,17 @@ variable "eks_managed_node_groups" {
       hostname_type                        = optional(string)
     }))
     # IAM role
-    creat_iam_role                = optional(bool, true)
+    create_iam_role               = optional(bool)
     iam_role_arn                  = optional(string)
     iam_role_name                 = optional(string)
-    iam_role_use_name_prefix      = optional(bool, true)
+    iam_role_use_name_prefix      = optional(bool)
     iam_role_path                 = optional(string)
-    iam_role_description          = optional(string, "EKS managed node group IAM role")
+    iam_role_description          = optional(string)
     iam_role_permissions_boundary = optional(string)
-    iam_role_tags                 = optional(map(string), {})
-    iam_role_attach_cni_policy    = optional(bool, true)
-    iam_role_additional_policies  = optional(map(string), {})
-    create_iam_role_policy        = optional(bool, true)
+    iam_role_tags                 = optional(map(string))
+    iam_role_attach_cni_policy    = optional(bool)
+    iam_role_additional_policies  = optional(map(string))
+    create_iam_role_policy        = optional(bool)
     iam_role_policy_statements = optional(list(object({
       sid           = optional(string)
       actions       = optional(list(string))
@@ -1436,9 +1423,9 @@ variable "eks_managed_node_groups" {
     vpc_security_group_ids                = optional(list(string), [])
     attach_cluster_primary_security_group = optional(bool, false)
     cluster_primary_security_group_id     = optional(string)
-    create_security_group                 = optional(bool, true)
+    create_security_group                 = optional(bool)
     security_group_name                   = optional(string)
-    security_group_use_name_prefix        = optional(bool, true)
+    security_group_use_name_prefix        = optional(bool)
     security_group_description            = optional(string)
     security_group_ingress_rules = optional(map(object({
       name                         = optional(string)
@@ -1446,31 +1433,31 @@ variable "eks_managed_node_groups" {
       cidr_ipv6                    = optional(string)
       description                  = optional(string)
       from_port                    = optional(string)
-      ip_protocol                  = optional(string, "tcp")
+      ip_protocol                  = optional(string)
       prefix_list_id               = optional(string)
       referenced_security_group_id = optional(string)
-      self                         = optional(bool, false)
-      tags                         = optional(map(string), {})
+      self                         = optional(bool)
+      tags                         = optional(map(string))
       to_port                      = optional(string)
-    })), {})
+    })))
     security_group_egress_rules = optional(map(object({
       name                         = optional(string)
       cidr_ipv4                    = optional(string)
       cidr_ipv6                    = optional(string)
       description                  = optional(string)
       from_port                    = optional(string)
-      ip_protocol                  = optional(string, "tcp")
+      ip_protocol                  = optional(string)
       prefix_list_id               = optional(string)
       referenced_security_group_id = optional(string)
-      self                         = optional(bool, false)
-      tags                         = optional(map(string), {})
+      self                         = optional(bool)
+      tags                         = optional(map(string))
       to_port                      = optional(string)
     })), {})
-    security_group_tags = optional(map(string), {})
+    security_group_tags = optional(map(string))
 
-    tags = optional(map(string), {})
+    tags = optional(map(string))
   }))
-  default = {}
+  default = null
 }
 
 variable "putin_khuylo" {

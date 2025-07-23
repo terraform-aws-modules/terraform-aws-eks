@@ -9,6 +9,7 @@ variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
   default     = {}
+  nullable    = false
 }
 
 variable "region" {
@@ -62,6 +63,7 @@ variable "iam_role_use_name_prefix" {
   description = "Determines whether the IAM role name (`iam_role_name`) is used as a prefix"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "iam_role_path" {
@@ -73,7 +75,8 @@ variable "iam_role_path" {
 variable "iam_role_description" {
   description = "Description of the role"
   type        = string
-  default     = null
+  default     = "Fargate profile IAM role"
+  nullable    = false
 }
 
 variable "iam_role_permissions_boundary" {
@@ -86,18 +89,21 @@ variable "iam_role_attach_cni_policy" {
   description = "Whether to attach the `AmazonEKS_CNI_Policy`/`AmazonEKS_CNI_IPv6_Policy` IAM policy to the IAM IAM role. WARNING: If set `false` the permissions must be assigned to the `aws-node` DaemonSet pods via another method or nodes will not be able to join the cluster"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "iam_role_additional_policies" {
   description = "Additional policies to be added to the IAM role"
   type        = map(string)
   default     = {}
+  nullable    = false
 }
 
 variable "iam_role_tags" {
   description = "A map of additional tags to add to the IAM role created"
   type        = map(string)
   default     = {}
+  nullable    = false
 }
 
 ################################################################################
@@ -158,6 +164,7 @@ variable "subnet_ids" {
   description = "A list of subnet IDs for the EKS Fargate Profile"
   type        = list(string)
   default     = []
+  nullable    = false
 }
 
 variable "selectors" {

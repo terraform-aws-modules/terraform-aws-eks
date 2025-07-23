@@ -42,55 +42,55 @@ variable "cluster_name" {
 variable "cluster_endpoint" {
   description = "Endpoint of associated EKS cluster"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "cluster_auth_base64" {
   description = "Base64 encoded CA of associated EKS cluster"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "cluster_service_cidr" {
   description = "The CIDR block (IPv4 or IPv6) used by the cluster to assign Kubernetes service IP addresses. This is derived from the cluster itself"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "cluster_ip_family" {
   description = "The IP family used to assign Kubernetes pod and service addresses. Valid values are `ipv4` (default) and `ipv6`"
   type        = string
-  default     = "ipv4"
+  default     = null
 }
 
 variable "additional_cluster_dns_ips" {
   description = "Additional DNS IP addresses to use for the cluster. Only used when `ami_type` = `BOTTLEROCKET_*`"
   type        = list(string)
-  default     = []
+  default     = null
 }
 
 variable "pre_bootstrap_user_data" {
   description = "User data that is injected into the user data script ahead of the EKS bootstrap script. Not used when `ami_type` = `BOTTLEROCKET_*`"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "post_bootstrap_user_data" {
   description = "User data that is appended to the user data script after of the EKS bootstrap script. Not used when `ami_type` = `BOTTLEROCKET_*`"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "bootstrap_extra_args" {
   description = "Additional arguments passed to the bootstrap script. When `ami_type` = `BOTTLEROCKET_*`; these are additional [settings](https://github.com/bottlerocket-os/bottlerocket#settings) that are provided to the Bottlerocket user data"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "user_data_template_path" {
   description = "Path to a local, custom user data template file to use when rendering user data"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "cloudinit_pre_nodeadm" {
@@ -101,7 +101,7 @@ variable "cloudinit_pre_nodeadm" {
     filename     = optional(string)
     merge_type   = optional(string)
   }))
-  default = []
+  default = null
 }
 
 variable "cloudinit_post_nodeadm" {
@@ -112,7 +112,7 @@ variable "cloudinit_post_nodeadm" {
     filename     = optional(string)
     merge_type   = optional(string)
   }))
-  default = []
+  default = null
 }
 
 ################################################################################
@@ -142,6 +142,7 @@ variable "launch_template_use_name_prefix" {
   description = "Determines whether to use `launch_template_name` as is or create a unique name beginning with the `launch_template_name` as the prefix"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "launch_template_description" {
@@ -160,6 +161,7 @@ variable "update_launch_template_default_version" {
   description = "Whether to update Default Version each update. Conflicts with `launch_template_default_version`"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "disable_api_termination" {
@@ -311,7 +313,8 @@ variable "network_interfaces" {
     security_groups      = optional(list(string), [])
     subnet_id            = optional(string)
   }))
-  default = []
+  default  = []
+  nullable = false
 }
 
 variable "placement" {
@@ -362,6 +365,7 @@ variable "ami_type" {
   description = "Type of Amazon Machine Image (AMI) associated with the node group. See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#AmazonEKS-Type-Nodegroup-amiType) for valid values"
   type        = string
   default     = "AL2023_x86_64_STANDARD"
+  nullable    = false
 }
 
 variable "kubernetes_version" {
@@ -431,7 +435,8 @@ variable "instance_requirements" {
 variable "instance_type" {
   description = "The type of the instance to launch"
   type        = string
-  default     = null
+  default     = "m6i.large"
+  nullable    = false
 }
 
 variable "key_name" {
@@ -444,6 +449,7 @@ variable "vpc_security_group_ids" {
   description = "A list of security group IDs to associate"
   type        = list(string)
   default     = []
+  nullable    = false
 }
 
 variable "cluster_primary_security_group_id" {
@@ -455,25 +461,29 @@ variable "cluster_primary_security_group_id" {
 variable "enable_monitoring" {
   description = "Enables/disables detailed monitoring"
   type        = bool
-  default     = true
+  default     = false
+  nullable    = false
 }
 
 variable "enable_efa_support" {
   description = "Determines whether to enable Elastic Fabric Adapter (EFA) support"
   type        = bool
   default     = false
+  nullable    = false
 }
 
 variable "enable_efa_only" {
   description = "Determines whether to enable EFA (`false`, default) or EFA and EFA-only (`true`) network interfaces. Note: requires vpc-cni version `v1.18.4` or later"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "efa_indices" {
   description = "The indices of the network interfaces that should be EFA-enabled. Only valid when `enable_efa_support` = `true`"
   type        = list(number)
   default     = [0]
+  nullable    = false
 }
 
 variable "metadata_options" {
@@ -490,18 +500,21 @@ variable "metadata_options" {
     http_put_response_hop_limit = 1
     http_tokens                 = "required"
   }
+  nullable = false
 }
 
 variable "launch_template_tags" {
   description = "A map of additional tags to add to the tag_specifications of launch template created"
   type        = map(string)
   default     = {}
+  nullable    = false
 }
 
 variable "tag_specifications" {
   description = "The tags to apply to the resources during launch"
   type        = list(string)
   default     = ["instance", "volume", "network-interface"]
+  nullable    = false
 }
 
 ################################################################################
@@ -525,6 +538,7 @@ variable "use_name_prefix" {
   description = "Determines whether to use `name` as is or create a unique name beginning with the `name` as the prefix"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "launch_template_version" {
@@ -549,18 +563,21 @@ variable "min_size" {
   description = "The minimum size of the autoscaling group"
   type        = number
   default     = 1
+  nullable    = false
 }
 
 variable "max_size" {
   description = "The maximum size of the autoscaling group"
   type        = number
   default     = 3
+  nullable    = false
 }
 
 variable "desired_size" {
   description = "The number of Amazon EC2 instances that should be running in the autoscaling group"
   type        = number
   default     = 1
+  nullable    = false
 }
 
 variable "desired_size_type" {
@@ -597,6 +614,7 @@ variable "protect_from_scale_in" {
   description = "Allows setting instance protection. The autoscaling group will not select instances with this setting for termination during scale in events"
   type        = bool
   default     = false
+  nullable    = false
 }
 
 variable "placement_group" {
@@ -627,12 +645,14 @@ variable "termination_policies" {
   description = "A list of policies to decide how the instances in the Auto Scaling Group should be terminated. The allowed values are `OldestInstance`, `NewestInstance`, `OldestLaunchConfiguration`, `ClosestToNextInstanceHour`, `OldestLaunchTemplate`, `AllocationStrategy`, `Default`"
   type        = list(string)
   default     = []
+  nullable    = false
 }
 
 variable "suspended_processes" {
   description = "A list of processes to suspend for the Auto Scaling Group. The allowed values are `Launch`, `Terminate`, `HealthCheck`, `ReplaceUnhealthy`, `AZRebalance`, `AlarmNotification`, `ScheduledActions`, `AddToLoadBalancer`. Note that if you suspend either the `Launch` or `Terminate` process types, it can prevent your Auto Scaling Group from functioning properly"
   type        = list(string)
   default     = []
+  nullable    = false
 }
 
 variable "max_instance_lifetime" {
@@ -645,6 +665,7 @@ variable "enabled_metrics" {
   description = "A list of metrics to collect. The allowed values are `GroupDesiredCapacity`, `GroupInServiceCapacity`, `GroupPendingCapacity`, `GroupMinSize`, `GroupMaxSize`, `GroupInServiceInstances`, `GroupPendingInstances`, `GroupStandbyInstances`, `GroupStandbyCapacity`, `GroupTerminatingCapacity`, `GroupTerminatingInstances`, `GroupTotalCapacity`, `GroupTotalInstances`"
   type        = list(string)
   default     = []
+  nullable    = false
 }
 
 variable "metrics_granularity" {
@@ -702,12 +723,14 @@ variable "instance_refresh" {
       min_healthy_percentage = 66
     }
   }
+  nullable = false
 }
 
 variable "use_mixed_instances_policy" {
   description = "Determines whether to use a mixed instances policy in the autoscaling group or not"
   type        = bool
   default     = false
+  nullable    = false
 }
 
 variable "mixed_instances_policy" {
@@ -801,6 +824,7 @@ variable "autoscaling_group_tags" {
   description = "A map of additional tags to add to the autoscaling group created. Tags are applied to the autoscaling group only and are NOT propagated to instances"
   type        = map(string)
   default     = {}
+  nullable    = false
 }
 
 ################################################################################
@@ -830,6 +854,7 @@ variable "iam_role_use_name_prefix" {
   description = "Determines whether cluster IAM role name (`iam_role_name`) is used as a prefix"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "iam_role_path" {
@@ -841,7 +866,8 @@ variable "iam_role_path" {
 variable "iam_role_description" {
   description = "Description of the role"
   type        = string
-  default     = null
+  default     = "Self managed node group IAM role"
+  nullable    = false
 }
 
 variable "iam_role_permissions_boundary" {
@@ -854,18 +880,21 @@ variable "iam_role_attach_cni_policy" {
   description = "Whether to attach the `AmazonEKS_CNI_Policy`/`AmazonEKS_CNI_IPv6_Policy` IAM policy to the IAM IAM role. WARNING: If set `false` the permissions must be assigned to the `aws-node` DaemonSet pods via another method or nodes will not be able to join the cluster"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "iam_role_additional_policies" {
   description = "Additional policies to be added to the IAM role"
   type        = map(string)
   default     = {}
+  nullable    = false
 }
 
 variable "iam_role_tags" {
   description = "A map of additional tags to add to the IAM role created"
   type        = map(string)
   default     = {}
+  nullable    = false
 }
 
 ################################################################################
@@ -943,6 +972,7 @@ variable "security_group_use_name_prefix" {
   description = "Determines whether the security group name (`security_group_name`) is used as a prefix"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "security_group_description" {
@@ -967,7 +997,8 @@ variable "security_group_ingress_rules" {
     tags                         = optional(map(string), {})
     to_port                      = optional(string)
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "security_group_egress_rules" {
@@ -986,11 +1017,13 @@ variable "security_group_egress_rules" {
     tags                         = optional(map(string), {})
     to_port                      = optional(string)
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "security_group_tags" {
   description = "A map of additional tags to add to the security group created"
   type        = map(string)
   default     = {}
+  nullable    = false
 }

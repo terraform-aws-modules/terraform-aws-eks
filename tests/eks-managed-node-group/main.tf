@@ -106,6 +106,7 @@ module "eks" {
     placement_group = {
       create_placement_group = true
       subnet_ids             = slice(module.vpc.private_subnets, 0, 1)
+      instance_types         = ["m5.large", "m5n.large", "m5zn.large"]
     }
 
     # AL2023 node group utilizing new user data format which utilizes nodeadm

@@ -37,55 +37,55 @@ variable "enable_bootstrap_user_data" {
   description = "Determines whether the bootstrap configurations are populated within the user data template. Only valid when using a custom AMI via `ami_id`"
   type        = bool
   default     = false
+  nullable    = false
 }
 
 variable "cluster_name" {
   description = "Name of associated EKS cluster"
   type        = string
   default     = ""
-  nullable    = false
 }
 
 variable "cluster_endpoint" {
   description = "Endpoint of associated EKS cluster"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "cluster_auth_base64" {
   description = "Base64 encoded CA of associated EKS cluster"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "cluster_service_cidr" {
   description = "The CIDR block (IPv4 or IPv6) used by the cluster to assign Kubernetes service IP addresses. This is derived from the cluster itself"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "pre_bootstrap_user_data" {
   description = "User data that is injected into the user data script ahead of the EKS bootstrap script. Not used when `ami_type` = `BOTTLEROCKET_*`"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "post_bootstrap_user_data" {
   description = "User data that is appended to the user data script after of the EKS bootstrap script. Not used when `ami_type` = `BOTTLEROCKET_*`"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "bootstrap_extra_args" {
   description = "Additional arguments passed to the bootstrap script. When `ami_type` = `BOTTLEROCKET_*`; these are additional [settings](https://github.com/bottlerocket-os/bottlerocket#settings) that are provided to the Bottlerocket user data"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "user_data_template_path" {
   description = "Path to a local, custom user data template file to use when rendering user data"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "cloudinit_pre_nodeadm" {
@@ -96,7 +96,7 @@ variable "cloudinit_pre_nodeadm" {
     filename     = optional(string)
     merge_type   = optional(string)
   }))
-  default = []
+  default = null
 }
 
 variable "cloudinit_post_nodeadm" {
@@ -107,7 +107,7 @@ variable "cloudinit_post_nodeadm" {
     filename     = optional(string)
     merge_type   = optional(string)
   }))
-  default = []
+  default = null
 }
 
 ################################################################################
@@ -125,6 +125,7 @@ variable "use_custom_launch_template" {
   description = "Determines whether to use a custom launch template or not. If set to `false`, EKS will use its own default launch template"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "launch_template_id" {
@@ -143,6 +144,7 @@ variable "launch_template_use_name_prefix" {
   description = "Determines whether to use `launch_template_name` as is or create a unique name beginning with the `launch_template_name` as the prefix"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "launch_template_description" {
@@ -173,6 +175,7 @@ variable "vpc_security_group_ids" {
   description = "A list of security group IDs to associate"
   type        = list(string)
   default     = []
+  nullable    = false
 }
 
 variable "cluster_primary_security_group_id" {
@@ -191,6 +194,7 @@ variable "update_launch_template_default_version" {
   description = "Whether to update the launch templates default version on each update. Conflicts with `launch_template_default_version`"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "disable_api_termination" {
@@ -315,30 +319,35 @@ variable "metadata_options" {
     http_put_response_hop_limit = 1
     http_tokens                 = "required"
   }
+  nullable = false
 }
 
 variable "enable_monitoring" {
   description = "Enables/disables detailed monitoring"
   type        = bool
   default     = false
+  nullable    = false
 }
 
 variable "enable_efa_support" {
   description = "Determines whether to enable Elastic Fabric Adapter (EFA) support"
   type        = bool
   default     = false
+  nullable    = false
 }
 
 variable "enable_efa_only" {
   description = "Determines whether to enable EFA (`false`, default) or EFA and EFA-only (`true`) network interfaces. Note: requires vpc-cni version `v1.18.4` or later"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "efa_indices" {
   description = "The indices of the network interfaces that should be EFA-enabled. Only valid when `enable_efa_support` = `true`"
   type        = list(number)
   default     = [0]
+  nullable    = false
 }
 
 variable "network_interfaces" {
@@ -376,7 +385,8 @@ variable "network_interfaces" {
     security_groups      = optional(list(string), [])
     subnet_id            = optional(string)
   }))
-  default = []
+  default  = []
+  nullable = false
 }
 
 variable "placement" {
@@ -421,6 +431,7 @@ variable "tag_specifications" {
   description = "The tags to apply to the resources during launch"
   type        = list(string)
   default     = ["instance", "volume", "network-interface"]
+  nullable    = false
 }
 
 ################################################################################
@@ -437,37 +448,41 @@ variable "min_size" {
   description = "Minimum number of instances/nodes"
   type        = number
   default     = 1
+  nullable    = false
 }
 
 variable "max_size" {
   description = "Maximum number of instances/nodes"
   type        = number
   default     = 3
+  nullable    = false
 }
 
 variable "desired_size" {
   description = "Desired number of instances/nodes"
   type        = number
   default     = 1
+  nullable    = false
 }
 
 variable "name" {
   description = "Name of the EKS managed node group"
   type        = string
   default     = ""
-  nullable    = false
 }
 
 variable "use_name_prefix" {
   description = "Determines whether to use `name` as is or create a unique name beginning with the `name` as the prefix"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "ami_type" {
   description = "Type of Amazon Machine Image (AMI) associated with the EKS Node Group. See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#AmazonEKS-Type-Nodegroup-amiType) for valid values"
   type        = string
   default     = "AL2023_x86_64_STANDARD"
+  nullable    = false
 }
 
 variable "ami_release_version" {
@@ -480,12 +495,14 @@ variable "use_latest_ami_release_version" {
   description = "Determines whether to use the latest AMI release version for the given `ami_type` (except for `CUSTOM`). Note: `ami_type` and `kubernetes_version` must be supplied in order to enable this feature"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "capacity_type" {
   description = "Type of capacity associated with the EKS Node Group. Valid values: `ON_DEMAND`, `SPOT`"
   type        = string
   default     = "ON_DEMAND"
+  nullable    = false
 }
 
 variable "disk_size" {
@@ -552,6 +569,7 @@ variable "update_config" {
   default = {
     max_unavailable_percentage = 33
   }
+  nullable = false
 }
 
 variable "node_repair_config" {
@@ -587,6 +605,7 @@ variable "cluster_ip_family" {
   description = "The IP family used to assign Kubernetes pod and service addresses. Valid values are `ipv4` (default) and `ipv6`"
   type        = string
   default     = "ipv4"
+  nullable    = false
 }
 
 variable "iam_role_arn" {
@@ -605,6 +624,7 @@ variable "iam_role_use_name_prefix" {
   description = "Determines whether the IAM role name (`iam_role_name`) is used as a prefix"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "iam_role_path" {
@@ -616,7 +636,8 @@ variable "iam_role_path" {
 variable "iam_role_description" {
   description = "Description of the role"
   type        = string
-  default     = null
+  default     = "EKS managed node group IAM role"
+  nullable    = false
 }
 
 variable "iam_role_permissions_boundary" {
@@ -629,18 +650,21 @@ variable "iam_role_attach_cni_policy" {
   description = "Whether to attach the `AmazonEKS_CNI_Policy`/`AmazonEKS_CNI_IPv6_Policy` IAM policy to the IAM IAM role. WARNING: If set `false` the permissions must be assigned to the `aws-node` DaemonSet pods via another method or nodes will not be able to join the cluster"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "iam_role_additional_policies" {
   description = "Additional policies to be added to the IAM role"
   type        = map(string)
   default     = {}
+  nullable    = false
 }
 
 variable "iam_role_tags" {
   description = "A map of additional tags to add to the IAM role created"
   type        = map(string)
   default     = {}
+  nullable    = false
 }
 
 ################################################################################
@@ -701,6 +725,7 @@ variable "security_group_use_name_prefix" {
   description = "Determines whether the security group name (`security_group_name`) is used as a prefix"
   type        = bool
   default     = true
+  nullable    = false
 }
 
 variable "security_group_description" {
