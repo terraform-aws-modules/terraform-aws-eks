@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.37.2...v21.0.0) (2025-07-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* Upgrade min AWS provider and Terraform versions to `6.0` and `1.5.7` respectively (#3412)
+
+### Features
+
+* Upgrade min AWS provider and Terraform versions to `6.0` and `1.5.7` respectively ([#3412](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3412)) ([416515a](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/416515a0da1ca96c539977d6460e2bc02f10b4d4))
+
 ## [20.37.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.37.1...v20.37.2) (2025-07-17)
 
 
