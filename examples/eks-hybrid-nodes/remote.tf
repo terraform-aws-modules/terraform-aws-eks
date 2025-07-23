@@ -89,7 +89,7 @@ data "aws_ami" "hybrid_node" {
   provider = aws.remote
 
   most_recent = true
-  name_regex  = "eks-hybrid-ubuntu-${local.cluster_version}-amd64-*"
+  name_regex  = "eks-hybrid-ubuntu-${local.kubernetes_version}-amd64-*"
   owners      = ["self"]
 }
 
@@ -253,7 +253,7 @@ data "aws_availability_zones" "remote" {
 
 module "remote_node_vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
   providers = {
     aws = aws.remote

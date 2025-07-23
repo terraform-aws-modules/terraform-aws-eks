@@ -46,7 +46,7 @@ variable "permissions_boundary_arn" {
 
 variable "tags" {
   description = "A map of additional tags to add the the IAM role"
-  type        = map(any)
+  type        = map(string)
   default     = {}
 }
 
@@ -92,8 +92,28 @@ variable "policy_description" {
 
 variable "policy_statements" {
   description = "A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed"
-  type        = any
-  default     = []
+  type = list(object({
+    sid           = optional(string)
+    actions       = optional(list(string))
+    not_actions   = optional(list(string))
+    effect        = optional(string)
+    resources     = optional(list(string))
+    not_resources = optional(list(string))
+    principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    not_principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    condition = optional(list(object({
+      test     = string
+      values   = list(string)
+      variable = string
+    })))
+  }))
+  default = null
 }
 
 variable "policies" {
@@ -160,8 +180,13 @@ variable "ira_trust_anchor_name" {
 
 variable "ira_trust_anchor_notification_settings" {
   description = "Notification settings for the trust anchor"
-  type        = any
-  default     = []
+  type = list(object({
+    channel   = optional(string)
+    enabled   = optional(bool)
+    event     = optional(string)
+    threshold = optional(number)
+  }))
+  default = null
 }
 
 variable "ira_trust_anchor_acm_pca_arn" {
@@ -228,8 +253,28 @@ variable "intermediate_policy_use_name_prefix" {
 
 variable "intermediate_policy_statements" {
   description = "A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed"
-  type        = any
-  default     = []
+  type = list(object({
+    sid           = optional(string)
+    actions       = optional(list(string))
+    not_actions   = optional(list(string))
+    effect        = optional(string)
+    resources     = optional(list(string))
+    not_resources = optional(list(string))
+    principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    not_principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    condition = optional(list(object({
+      test     = string
+      values   = list(string)
+      variable = string
+    })))
+  }))
+  default = null
 }
 
 variable "intermediate_role_policies" {

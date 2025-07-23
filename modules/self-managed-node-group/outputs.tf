@@ -129,22 +129,8 @@ output "access_entry_arn" {
 }
 
 ################################################################################
-# Autoscaling Group Schedule
-################################################################################
-
-output "autoscaling_group_schedule_arns" {
-  description = "ARNs of autoscaling group schedules"
-  value       = { for k, v in aws_autoscaling_schedule.this : k => v.arn }
-}
-
-################################################################################
 # Additional
 ################################################################################
-
-output "platform" {
-  description = "[DEPRECATED - Will be removed in `v21.0`] Identifies the OS platform as `bottlerocket`, `linux` (AL2), `al2023`, or `windows`"
-  value       = module.user_data.platform
-}
 
 output "image_id" {
   description = "ID of the image"
@@ -154,4 +140,18 @@ output "image_id" {
 output "user_data" {
   description = "Base64 encoded user data"
   value       = try(module.user_data.user_data, null)
+}
+
+################################################################################
+# Security Group
+################################################################################
+
+output "security_group_arn" {
+  description = "Amazon Resource Name (ARN) of the security group"
+  value       = try(aws_security_group.this[0].arn, null)
+}
+
+output "security_group_id" {
+  description = "ID of the security group"
+  value       = try(aws_security_group.this[0].id, null)
 }

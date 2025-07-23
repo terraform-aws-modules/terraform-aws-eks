@@ -15,13 +15,15 @@ locals {
 module "eks_mng_al2_disabled" {
   source = "../../modules/_user_data"
 
-  create = false
+  ami_type = "AL2_x86_64"
+  create   = false
 }
 
 module "eks_mng_al2_no_op" {
   source = "../../modules/_user_data"
 
   # Hard requirement
+  ami_type             = "AL2_x86_64"
   cluster_service_cidr = local.cluster_service_cidr
 }
 
@@ -29,6 +31,7 @@ module "eks_mng_al2_additional" {
   source = "../../modules/_user_data"
 
   # Hard requirement
+  ami_type             = "AL2_x86_64"
   cluster_service_cidr = local.cluster_service_cidr
 
   pre_bootstrap_user_data = <<-EOT
@@ -39,6 +42,7 @@ module "eks_mng_al2_additional" {
 module "eks_mng_al2_custom_ami" {
   source = "../../modules/_user_data"
 
+  ami_type             = "AL2_x86_64"
   cluster_name         = local.name
   cluster_endpoint     = local.cluster_endpoint
   cluster_auth_base64  = local.cluster_auth_base64
@@ -60,6 +64,7 @@ module "eks_mng_al2_custom_ami" {
 module "eks_mng_al2_custom_ami_ipv6" {
   source = "../../modules/_user_data"
 
+  ami_type             = "AL2_x86_64"
   cluster_name         = local.name
   cluster_endpoint     = local.cluster_endpoint
   cluster_auth_base64  = local.cluster_auth_base64
@@ -82,6 +87,7 @@ module "eks_mng_al2_custom_ami_ipv6" {
 module "eks_mng_al2_custom_template" {
   source = "../../modules/_user_data"
 
+  ami_type             = "AL2_x86_64"
   cluster_name         = local.name
   cluster_endpoint     = local.cluster_endpoint
   cluster_auth_base64  = local.cluster_auth_base64
@@ -364,11 +370,14 @@ module "self_mng_al2_no_op" {
   is_eks_managed_node_group = false
 
   # Hard requirement
+  ami_type             = "AL2_x86_64"
   cluster_service_cidr = local.cluster_service_cidr
 }
 
 module "self_mng_al2_bootstrap" {
   source = "../../modules/_user_data"
+
+  ami_type = "AL2_x86_64"
 
   enable_bootstrap_user_data = true
   is_eks_managed_node_group  = false
@@ -393,6 +402,8 @@ module "self_mng_al2_bootstrap" {
 module "self_mng_al2_bootstrap_ipv6" {
   source = "../../modules/_user_data"
 
+  ami_type = "AL2_x86_64"
+
   enable_bootstrap_user_data = true
   is_eks_managed_node_group  = false
 
@@ -416,6 +427,8 @@ module "self_mng_al2_bootstrap_ipv6" {
 
 module "self_mng_al2_custom_template" {
   source = "../../modules/_user_data"
+
+  ami_type = "AL2_x86_64"
 
   enable_bootstrap_user_data = true
   is_eks_managed_node_group  = false
