@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  schemaVersion: v1.0.0
+  name: terraform-aws-eks-location
+  description: Links to additional entities in the terraform-aws-eks repository.
+  annotations:
+    github.com/project-slug: Bandwidth/terraform-aws-eks
+spec:
+  targets:
+    - ./component.yaml
