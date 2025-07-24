@@ -1,0 +1,19 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  schemaVersion: v1.0.0
+  name: terraform-aws-eks
+  description: Forked from https://github.com/terraform-aws-modules/terraform-aws-eks
+  annotations:
+    github.com/project-slug: Bandwidth/terraform-aws-eks
+  organization: BW
+  costCenter: undefined
+  platformType: AWS
+  buildPlatform: GitHub Actions
+spec:
+  type: Infrastructure as Code
+  owner: github/band-swi
+  lifecycle: Prototype
+  dependsOn:
+    - resource:platform/GitHub Actions
+    - resource:cost-center/undefined
