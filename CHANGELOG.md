@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.0.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.2...v21.0.3) (2025-07-24)
+
+
+### Bug Fixes
+
+* Correct variable defaults for `ami_id` and `kubernetes_version` ([#3437](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3437)) ([8807e0b](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/8807e0bb55fdc49ed894b5b51c14131526dbfb91))
+
 ## [21.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.1...v21.0.2) (2025-07-24)
 
 
