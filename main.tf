@@ -62,7 +62,7 @@ resource "aws_eks_cluster" "this" {
     content {
       enabled       = compute_config.value.enabled
       node_pools    = compute_config.value.node_pools
-      node_role_arn = compute_config.value.node_pools != null ? try(compute_config.value.node_role_arn, aws_iam_role.eks_auto[0].arn, null) : null
+      node_role_arn = compute_config.value.node_pools != null ? try(aws_iam_role.eks_auto[0].arn, compute_config.value.node_role_arn) : null
     }
   }
 
@@ -444,7 +444,7 @@ data "tls_certificate" "this" {
   # Not available on outposts
   count = local.create_oidc_provider && var.include_oidc_root_ca_thumbprint ? 1 : 0
 
-  url = local.dualstack_oidc_issuer_url
+  url = aws_eks_cluster.this[0].identity[0].oidc[0].issuer
 }
 
 resource "aws_iam_openid_connect_provider" "oidc_provider" {
@@ -453,7 +453,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 
   client_id_list  = distinct(compact(concat(["sts.amazonaws.com"], var.openid_connect_audiences)))
   thumbprint_list = concat(local.oidc_root_ca_thumbprint, var.custom_oidc_thumbprints)
-  url             = local.dualstack_oidc_issuer_url
+  url             = aws_eks_cluster.this[0].identity[0].oidc[0].issuer
 
   tags = merge(
     { Name = "${var.name}-eks-irsa" },
@@ -856,7 +856,7 @@ resource "aws_eks_identity_provider_config" "this" {
     client_id                     = each.value.client_id
     groups_claim                  = each.value.groups_claim
     groups_prefix                 = each.value.groups_prefix
-    identity_provider_config_name = try(each.value.identity_provider_config_name, each.key)
+    identity_provider_config_name = coalesce(each.value.identity_provider_config_name, each.key)
     issuer_url                    = each.value.issuer_url
     required_claims               = each.value.required_claims
     username_claim                = each.value.username_claim

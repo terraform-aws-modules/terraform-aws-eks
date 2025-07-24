@@ -660,6 +660,7 @@ variable "identity_providers" {
     required_claims               = optional(map(string))
     username_claim                = optional(string)
     username_prefix               = optional(string)
+    tags                          = optional(map(string), {})
   }))
   default = null
 }
