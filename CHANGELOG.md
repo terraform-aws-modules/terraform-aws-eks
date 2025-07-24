@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.1...v21.0.2) (2025-07-24)
+
+
+### Bug Fixes
+
+* Move `encryption_config` default for `resources` out of type definition and to default variable value to allow disabling encryption ([#3436](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3436)) ([b37368f](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/b37368fdbc608a026f9c17952d964467f5e44e8a))
+
 ## [21.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.0...v21.0.1) (2025-07-24)
 
 
