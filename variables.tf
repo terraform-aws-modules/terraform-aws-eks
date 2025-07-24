@@ -165,9 +165,11 @@ variable "encryption_config" {
   description = "Configuration block with encryption configuration for the cluster"
   type = object({
     provider_key_arn = optional(string)
-    resources        = optional(list(string), ["secrets"])
+    resources        = optional(list(string))
   })
-  default = {}
+  default = {
+    resources = ["secrets"]
+  }
 }
 
 variable "attach_encryption_policy" {
