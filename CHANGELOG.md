@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.0...v21.0.1) (2025-07-24)
+
+
+### Bug Fixes
+
+* Correct logic to try to use module created IAM role before falli… ([#3433](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3433)) ([97d4ebb](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/97d4ebbe68a23aa431a534fd7ed56a76f9b37801))
+
 ## [21.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.37.2...v21.0.0) (2025-07-23)
 
 
