@@ -24,7 +24,7 @@ locals {
   role_arn = try(aws_iam_role.this[0].arn, var.iam_role_arn)
 
   create_outposts_local_cluster = var.outpost_config != null
-  enable_encryption_config      = length(var.encryption_config) > 0 && !local.create_outposts_local_cluster
+  enable_encryption_config      = var.encryption_config != {} && !local.create_outposts_local_cluster
 
   auto_mode_enabled = try(var.compute_config.enabled, false)
 }
