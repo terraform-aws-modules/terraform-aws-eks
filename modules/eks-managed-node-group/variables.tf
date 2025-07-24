@@ -163,6 +163,7 @@ variable "ami_id" {
   description = "The AMI from which to launch the instance. If not supplied, EKS will use its own default image"
   type        = string
   default     = ""
+  nullable    = false
 }
 
 variable "key_name" {

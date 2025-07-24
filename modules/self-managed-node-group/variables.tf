@@ -359,6 +359,7 @@ variable "ami_id" {
   description = "The AMI from which to launch the instance"
   type        = string
   default     = ""
+  nullable    = false
 }
 
 variable "ami_type" {
