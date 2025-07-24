@@ -1,7 +1,6 @@
 module "eks_al2023" {
-  # source  = "terraform-aws-modules/eks/aws"
-  # version = "~> 20.0"
-  source = "../.."
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 21.0"
 
   name               = "${local.name}-al2023"
   kubernetes_version = "1.33"

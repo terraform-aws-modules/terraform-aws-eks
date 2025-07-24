@@ -62,7 +62,7 @@ resource "aws_eks_cluster" "this" {
     content {
       enabled       = compute_config.value.enabled
       node_pools    = compute_config.value.node_pools
-      node_role_arn = compute_config.value.node_pools != null ? try(compute_config.value.node_role_arn, aws_iam_role.eks_auto[0].arn, null) : null
+      node_role_arn = compute_config.value.node_pools != null ? try(aws_iam_role.eks_auto[0].arn, compute_config.value.node_role_arn) : null
     }
   }
 
@@ -856,7 +856,7 @@ resource "aws_eks_identity_provider_config" "this" {
     client_id                     = each.value.client_id
     groups_claim                  = each.value.groups_claim
     groups_prefix                 = each.value.groups_prefix
-    identity_provider_config_name = try(each.value.identity_provider_config_name, each.key)
+    identity_provider_config_name = coalesce(each.value.identity_provider_config_name, each.key)
     issuer_url                    = each.value.issuer_url
     required_claims               = each.value.required_claims
     username_claim                = each.value.username_claim
