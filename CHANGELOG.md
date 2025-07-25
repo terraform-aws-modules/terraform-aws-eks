@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.0.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.3...v21.0.4) (2025-07-25)
+
+
+### Bug Fixes
+
+* Correct encryption configuration enable logic; avoid creating Auto Mode policy when Auto Mode is not enabled ([#3439](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3439)) ([6b8a3d9](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/6b8a3d94777346d79a64ccd8287c96b525348013))
+
 ## [21.0.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.2...v21.0.3) (2025-07-24)
 
 
