@@ -24,7 +24,7 @@ locals {
   role_arn = try(aws_iam_role.this[0].arn, var.iam_role_arn)
 
   create_outposts_local_cluster = var.outpost_config != null
-  enable_encryption_config      = length(var.encryption_config) > 0 && !local.create_outposts_local_cluster
+  enable_encryption_config      = var.encryption_config != null && !local.create_outposts_local_cluster
 
   auto_mode_enabled = try(var.compute_config.enabled, false)
 }
@@ -590,7 +590,7 @@ resource "aws_iam_policy" "cluster_encryption" {
 }
 
 data "aws_iam_policy_document" "custom" {
-  count = local.create_iam_role && var.enable_auto_mode_custom_tags ? 1 : 0
+  count = local.create_iam_role && local.auto_mode_enabled && var.enable_auto_mode_custom_tags ? 1 : 0
 
   dynamic "statement" {
     for_each = var.enable_auto_mode_custom_tags ? [1] : []
@@ -724,7 +724,7 @@ data "aws_iam_policy_document" "custom" {
 }
 
 resource "aws_iam_policy" "custom" {
-  count = local.create_iam_role && var.enable_auto_mode_custom_tags ? 1 : 0
+  count = local.create_iam_role && local.auto_mode_enabled && var.enable_auto_mode_custom_tags ? 1 : 0
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
@@ -737,7 +737,7 @@ resource "aws_iam_policy" "custom" {
 }
 
 resource "aws_iam_role_policy_attachment" "custom" {
-  count = local.create_iam_role && var.enable_auto_mode_custom_tags ? 1 : 0
+  count = local.create_iam_role && local.auto_mode_enabled && var.enable_auto_mode_custom_tags ? 1 : 0
 
   policy_arn = aws_iam_policy.custom[0].arn
   role       = aws_iam_role.this[0].name
