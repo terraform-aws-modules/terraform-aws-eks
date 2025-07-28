@@ -120,6 +120,7 @@ If you find a bug, please open an issue with supporting configuration to reprodu
         - `cluster_addons` -> `addons`
         - `cluster_addons_timeouts` -> `addons_timeouts`
         - `cluster_identity_providers` -> `identity_providers`
+        - `fargate_profile_defaults` -> `fargate_profiles` - iam_role_additional_policies sub value was moved to same level as selectors under fargate_profiles
     - `eks-managed-node-group` sub-module
         - `cluster_version` -> `kubernetes_version`
     - `self-managed-node-group` sub-module
