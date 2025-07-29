@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.0.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.4...v21.0.5) (2025-07-29)
+
+
+### Bug Fixes
+
+* Correct addon logic lookup to pull latest addon version ([#3449](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3449)) ([55d7fa2](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/55d7fa23a356f518ae7b73ec2ddb0ab5947f9a42))
+
 ## [21.0.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.3...v21.0.4) (2025-07-25)
 
 
