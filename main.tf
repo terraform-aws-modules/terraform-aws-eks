@@ -766,7 +766,7 @@ resource "aws_eks_addon" "this" {
   cluster_name = aws_eks_cluster.this[0].id
   addon_name   = coalesce(each.value.name, each.key)
 
-  addon_version        = try(each.value.addon_version, data.aws_eks_addon_version.this[each.key].version)
+  addon_version        = coalesce(each.value.addon_version, data.aws_eks_addon_version.this[each.key].version)
   configuration_values = each.value.configuration_values
 
   dynamic "pod_identity_association" {
@@ -784,9 +784,9 @@ resource "aws_eks_addon" "this" {
   service_account_role_arn    = each.value.service_account_role_arn
 
   timeouts {
-    create = try(each.value.timeouts.create, var.addons_timeouts.create, null)
-    update = try(each.value.timeouts.update, var.addons_timeouts.update, null)
-    delete = try(each.value.timeouts.delete, var.addons_timeouts.delete, null)
+    create = try(coalesce(each.value.timeouts.create, var.addons_timeouts.create), null)
+    update = try(coalesce(each.value.timeouts.update, var.addons_timeouts.update), null)
+    delete = try(coalesce(each.value.timeouts.delete, var.addons_timeouts.delete), null)
   }
 
   tags = merge(
@@ -811,7 +811,7 @@ resource "aws_eks_addon" "before_compute" {
   cluster_name = aws_eks_cluster.this[0].id
   addon_name   = coalesce(each.value.name, each.key)
 
-  addon_version        = try(each.value.addon_version, data.aws_eks_addon_version.this[each.key].version)
+  addon_version        = coalesce(each.value.addon_version, data.aws_eks_addon_version.this[each.key].version)
   configuration_values = each.value.configuration_values
 
   dynamic "pod_identity_association" {
@@ -829,9 +829,9 @@ resource "aws_eks_addon" "before_compute" {
   service_account_role_arn    = each.value.service_account_role_arn
 
   timeouts {
-    create = try(each.value.timeouts.create, var.addons_timeouts.create, null)
-    update = try(each.value.timeouts.update, var.addons_timeouts.update, null)
-    delete = try(each.value.timeouts.delete, var.addons_timeouts.delete, null)
+    create = try(coalesce(each.value.timeouts.create, var.addons_timeouts.create), null)
+    update = try(coalesce(each.value.timeouts.update, var.addons_timeouts.update), null)
+    delete = try(coalesce(each.value.timeouts.delete, var.addons_timeouts.delete), null)
   }
 
   tags = merge(
