@@ -22,6 +22,12 @@ variable "tags" {
   default     = {}
 }
 
+variable "enable_data_source_optimizations" {
+  description = "Enable data source optimizations to reduce API calls."
+  type        = bool
+  default     = true
+}
+
 ################################################################################
 # Cluster
 ################################################################################

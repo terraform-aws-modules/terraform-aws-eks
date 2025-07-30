@@ -18,8 +18,8 @@ data "aws_iam_session_context" "current" {
 locals {
   create = var.create && var.putin_khuylo
 
-  account_id = try(data.aws_caller_identity.current[0].account_id, "")
-  partition  = try(data.aws_partition.current[0].partition, "")
+  account_id = var.enable_data_source_optimizations ? try(data.aws_caller_identity.current[0].account_id, "") : ""
+  partition  = var.enable_data_source_optimizations ? try(data.aws_partition.current[0].partition, "") : ""
 
   role_arn = try(aws_iam_role.this[0].arn, var.iam_role_arn)
 
