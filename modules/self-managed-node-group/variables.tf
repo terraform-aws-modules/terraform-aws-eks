@@ -437,7 +437,6 @@ variable "instance_type" {
   description = "The type of the instance to launch"
   type        = string
   default     = "m6i.large"
-  nullable    = false
 }
 
 variable "key_name" {
