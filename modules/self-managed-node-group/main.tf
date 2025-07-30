@@ -321,7 +321,7 @@ resource "aws_launch_template" "this" {
     }
   }
 
-  instance_type = var.instance_type
+  instance_type = var.instance_requirements != null ? null : var.instance_type
   kernel_id     = var.kernel_id
   key_name      = var.key_name
 
