@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.0.6](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.5...v21.0.6) (2025-07-30)
+
+
+### Bug Fixes
+
+* Allow `instance_requirements` to be set in self-managed node groups ([#3455](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3455)) ([5322bf7](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/5322bf72fbbff4afb6a02ae283b21419d9de5b17))
+
 ## [21.0.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.4...v21.0.5) (2025-07-29)
 
 
