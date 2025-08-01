@@ -8,11 +8,11 @@ provider "aws" {
 }
 
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     host                   = module.eks.cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
 
-    exec {
+    exec = {
       api_version = "client.authentication.k8s.io/v1beta1"
       command     = "aws"
       # This requires the awscli to be installed locally where Terraform is executed
@@ -21,21 +21,14 @@ provider "helm" {
   }
 }
 
-provider "kubectl" {
-  apply_retry_count      = 5
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-  load_config_file       = false
-
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+data "aws_availability_zones" "available" {
+  # Exclude local zones
+  filter {
+    name   = "opt-in-status"
+    values = ["opt-in-not-required"]
   }
 }
 
-data "aws_availability_zones" "available" {}
 data "aws_ecrpublic_authorization_token" "token" {
   provider = aws.virginia
 }
@@ -61,19 +54,23 @@ locals {
 module "eks" {
   source = "../.."
 
-  cluster_name    = local.name
-  cluster_version = "1.31"
+  name               = local.name
+  kubernetes_version = "1.33"
 
   # Gives Terraform identity admin access to cluster which will
   # allow deploying resources (Karpenter) into the cluster
   enable_cluster_creator_admin_permissions = true
-  cluster_endpoint_public_access           = true
+  endpoint_public_access                   = true
 
-  cluster_addons = {
-    coredns                = {}
-    eks-pod-identity-agent = {}
-    kube-proxy             = {}
-    vpc-cni                = {}
+  addons = {
+    coredns = {}
+    eks-pod-identity-agent = {
+      before_compute = true
+    }
+    kube-proxy = {}
+    vpc-cni = {
+      before_compute = true
+    }
   }
 
   vpc_id                   = module.vpc.vpc_id
@@ -82,30 +79,19 @@ module "eks" {
 
   eks_managed_node_groups = {
     karpenter = {
-      ami_type       = "AL2023_x86_64_STANDARD"
+      ami_type       = "BOTTLEROCKET_x86_64"
       instance_types = ["m5.large"]
 
       min_size     = 2
       max_size     = 3
       desired_size = 2
 
-      taints = {
-        # This Taint aims to keep just EKS Addons and Karpenter running on this MNG
-        # The pods that do not tolerate this taint should run on nodes created by Karpenter
-        addons = {
-          key    = "CriticalAddonsOnly"
-          value  = "true"
-          effect = "NO_SCHEDULE"
-        },
+      labels = {
+        # Used to ensure Karpenter runs on nodes that it does not manage
+        "karpenter.sh/controller" = "true"
       }
     }
   }
-
-  # cluster_tags = merge(local.tags, {
-  #   NOTE - only use this option if you are using "attach_cluster_primary_security_group"
-  #   and you know what you're doing. In this case, you can remove the "node_security_group_tags" below.
-  #  "karpenter.sh/discovery" = local.name
-  # })
 
   node_security_group_tags = merge(local.tags, {
     # NOTE - if creating multiple security groups with this module, only tag the
@@ -126,9 +112,9 @@ module "karpenter" {
 
   cluster_name = module.eks.cluster_name
 
-  enable_v1_permissions = true
-
-  enable_pod_identity             = true
+  # Name needs to match role name passed to the EC2NodeClass
+  node_iam_role_use_name_prefix   = false
+  node_iam_role_name              = local.name
   create_pod_identity_association = true
 
   # Used to attach additional IAM policies to the Karpenter node IAM role
@@ -157,110 +143,21 @@ resource "helm_release" "karpenter" {
   repository_username = data.aws_ecrpublic_authorization_token.token.user_name
   repository_password = data.aws_ecrpublic_authorization_token.token.password
   chart               = "karpenter"
-  version             = "1.0.6"
+  version             = "1.6.0"
   wait                = false
 
   values = [
     <<-EOT
-    serviceAccount:
-      name: ${module.karpenter.service_account}
+    nodeSelector:
+      karpenter.sh/controller: 'true'
+    dnsPolicy: Default
     settings:
       clusterName: ${module.eks.cluster_name}
       clusterEndpoint: ${module.eks.cluster_endpoint}
       interruptionQueue: ${module.karpenter.queue_name}
+    webhook:
+      enabled: false
     EOT
-  ]
-}
-
-resource "kubectl_manifest" "karpenter_node_class" {
-  yaml_body = <<-YAML
-    apiVersion: karpenter.k8s.aws/v1beta1
-    kind: EC2NodeClass
-    metadata:
-      name: default
-    spec:
-      amiFamily: AL2023
-      role: ${module.karpenter.node_iam_role_name}
-      subnetSelectorTerms:
-        - tags:
-            karpenter.sh/discovery: ${module.eks.cluster_name}
-      securityGroupSelectorTerms:
-        - tags:
-            karpenter.sh/discovery: ${module.eks.cluster_name}
-      tags:
-        karpenter.sh/discovery: ${module.eks.cluster_name}
-  YAML
-
-  depends_on = [
-    helm_release.karpenter
-  ]
-}
-
-resource "kubectl_manifest" "karpenter_node_pool" {
-  yaml_body = <<-YAML
-    apiVersion: karpenter.sh/v1beta1
-    kind: NodePool
-    metadata:
-      name: default
-    spec:
-      template:
-        spec:
-          nodeClassRef:
-            name: default
-          requirements:
-            - key: "karpenter.k8s.aws/instance-category"
-              operator: In
-              values: ["c", "m", "r"]
-            - key: "karpenter.k8s.aws/instance-cpu"
-              operator: In
-              values: ["4", "8", "16", "32"]
-            - key: "karpenter.k8s.aws/instance-hypervisor"
-              operator: In
-              values: ["nitro"]
-            - key: "karpenter.k8s.aws/instance-generation"
-              operator: Gt
-              values: ["2"]
-      limits:
-        cpu: 1000
-      disruption:
-        consolidationPolicy: WhenEmpty
-        consolidateAfter: 30s
-  YAML
-
-  depends_on = [
-    kubectl_manifest.karpenter_node_class
-  ]
-}
-
-# Example deployment using the [pause image](https://www.ianlewis.org/en/almighty-pause-container)
-# and starts with zero replicas
-resource "kubectl_manifest" "karpenter_example_deployment" {
-  yaml_body = <<-YAML
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: inflate
-    spec:
-      replicas: 0
-      selector:
-        matchLabels:
-          app: inflate
-      template:
-        metadata:
-          labels:
-            app: inflate
-        spec:
-          terminationGracePeriodSeconds: 0
-          containers:
-            - name: inflate
-              image: public.ecr.aws/eks-distro/kubernetes/pause:3.7
-              resources:
-                requests:
-                  cpu: 1
-  YAML
-
-  depends_on = [
-    helm_release.karpenter
   ]
 }
 
@@ -270,7 +167,7 @@ resource "kubectl_manifest" "karpenter_example_deployment" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
   name = local.name
   cidr = local.vpc_cidr

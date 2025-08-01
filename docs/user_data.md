@@ -10,7 +10,8 @@ Users can see the various methods of using and providing user data through the [
   - AMI types of `BOTTLEROCKET_*`, user data must be in TOML format
   - AMI types of `WINDOWS_*`, user data must be in powershell/PS1 script format
 - Self Managed Node Groups
-  - `AL2_x86_64` AMI type (default) -> the user data template (bash/shell script) provided by the module is used as the default; users are able to provide their own user data template
+  - `AL2_*` AMI types -> the user data template (bash/shell script) provided by the module is used as the default; users are able to provide their own user data template
+  - `AL2023_*` AMI types -> the user data template (MIME multipart format) provided by the module is used as the default; users are able to provide their own user data template
   - `BOTTLEROCKET_*` AMI types -> the user data template (TOML file) provided by the module is used as the default; users are able to provide their own user data template
   - `WINDOWS_*` AMI types -> the user data template (powershell/PS1 script) provided by the module is used as the default; users are able to provide their own user data template
 
@@ -24,9 +25,24 @@ When using an EKS managed node group, users have 2 primary routes for interactin
 
    - Users can use the following variables to facilitate this process:
 
-     ```hcl
-     pre_bootstrap_user_data = "..."
-     ```
+    For `AL2_*`, `BOTTLEROCKET_*`, and `WINDOWS_*`:
+    ```hcl
+    pre_bootstrap_user_data = "..."
+    ```
+
+    For `AL2023_*`
+    ```hcl
+    cloudinit_pre_nodeadm = [{
+      content      = <<-EOT
+        ---
+        apiVersion: node.eks.aws/v1alpha1
+        kind: NodeConfig
+        spec:
+          ...
+      EOT
+      content_type = "application/node.eks.aws"
+    }]
+    ```
 
 2. If a custom AMI is used, then per the [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami), users will need to supply the necessary user data to bootstrap and register nodes with the cluster when launched. There are two routes to facilitate this bootstrapping process:
    - If the AMI used is a derivative of the [AWS EKS Optimized AMI ](https://github.com/awslabs/amazon-eks-ami), users can opt in to using a template provided by the module that provides the minimum necessary configuration to bootstrap the node when launched:

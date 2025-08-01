@@ -2,6 +2,178 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.0.6](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.5...v21.0.6) (2025-07-30)
+
+
+### Bug Fixes
+
+* Allow `instance_requirements` to be set in self-managed node groups ([#3455](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3455)) ([5322bf7](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/5322bf72fbbff4afb6a02ae283b21419d9de5b17))
+
+## [21.0.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.4...v21.0.5) (2025-07-29)
+
+
+### Bug Fixes
+
+* Correct addon logic lookup to pull latest addon version ([#3449](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3449)) ([55d7fa2](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/55d7fa23a356f518ae7b73ec2ddb0ab5947f9a42))
+
+## [21.0.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.3...v21.0.4) (2025-07-25)
+
+
+### Bug Fixes
+
+* Correct encryption configuration enable logic; avoid creating Auto Mode policy when Auto Mode is not enabled ([#3439](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3439)) ([6b8a3d9](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/6b8a3d94777346d79a64ccd8287c96b525348013))
+
+## [21.0.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.2...v21.0.3) (2025-07-24)
+
+
+### Bug Fixes
+
+* Correct variable defaults for `ami_id` and `kubernetes_version` ([#3437](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3437)) ([8807e0b](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/8807e0bb55fdc49ed894b5b51c14131526dbfb91))
+
+## [21.0.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.1...v21.0.2) (2025-07-24)
+
+
+### Bug Fixes
+
+* Move `encryption_config` default for `resources` out of type definition and to default variable value to allow disabling encryption ([#3436](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3436)) ([b37368f](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/b37368fdbc608a026f9c17952d964467f5e44e8a))
+
+## [21.0.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.0...v21.0.1) (2025-07-24)
+
+
+### Bug Fixes
+
+* Correct logic to try to use module created IAM role before falli… ([#3433](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3433)) ([97d4ebb](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/97d4ebbe68a23aa431a534fd7ed56a76f9b37801))
+
+## [21.0.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.37.2...v21.0.0) (2025-07-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* Upgrade min AWS provider and Terraform versions to `6.0` and `1.5.7` respectively (#3412)
+
+### Features
+
+* Upgrade min AWS provider and Terraform versions to `6.0` and `1.5.7` respectively ([#3412](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3412)) ([416515a](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/416515a0da1ca96c539977d6460e2bc02f10b4d4))
+
+## [20.37.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.37.1...v20.37.2) (2025-07-17)
+
+
+### Bug Fixes
+
+* Allow for both `amazonaws.com.cn` and `amazonaws.com` conditions in PassRole as required for AWS CN ([#3422](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3422)) ([83b68fd](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/83b68fda2b0ea818fc980ab847dd8255a2d18334))
+
+## [20.37.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.37.0...v20.37.1) (2025-06-18)
+
+
+### Bug Fixes
+
+* Restrict AWS provider max version due to v6 provider breaking changes ([#3384](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3384)) ([681a868](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/681a868d624878474fd9f92d1b04d3fec0120db7))
+
+## [20.37.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.36.1...v20.37.0) (2025-06-09)
+
+
+### Features
+
+* Add AL2023 ARM64 NVIDIA variants ([#3369](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3369)) ([715d42b](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/715d42bf146791cad911b0b6979c5ce67bc0d2f6))
+
+## [20.36.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.36.0...v20.36.1) (2025-06-09)
+
+
+### Bug Fixes
+
+* Ensure `additional_cluster_dns_ips` is passed through from root module ([#3376](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3376)) ([7a83b1b](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/7a83b1b3db9c7475fe6ec46d1c300c0a18f19b2a))
+
+## [20.36.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.35.0...v20.36.0) (2025-04-18)
+
+
+### Features
+
+* Add support for cluster `force_update_version` ([#3345](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3345)) ([207d73f](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/207d73fbaa5eebe6e98b94e95b83fd0a5a13c307))
+
+## [20.35.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.34.0...v20.35.0) (2025-03-29)
+
+
+### Features
+
+* Default to not changing autoscaling schedule values at the scheduled time ([#3322](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3322)) ([abf76f6](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/abf76f60144fe645bbf500d98505377fd4a9da79))
+
+## [20.34.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.33.1...v20.34.0) (2025-03-07)
+
+
+### Features
+
+* Add capacity reservation permissions to Karpenter IAM policy ([#3318](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3318)) ([770ee99](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/770ee99d9c4b61c509d9988eac62de4db113af91))
+
+## [20.33.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.33.0...v20.33.1) (2025-01-22)
+
+
+### Bug Fixes
+
+* Allow `"EC2"` access entry type for EKS Auto Mode custom node pools ([#3281](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3281)) ([3e2ea83](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/3e2ea83267d7532cb66fa4de7f0d2a944b43c3d5))
+
+## [20.33.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.32.0...v20.33.0) (2025-01-17)
+
+
+### Features
+
+* Add node repair config to managed node group ([#3271](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3271)) ([edd7ef3](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/edd7ef36dd0f6b6801275cbecbb6780f03fc7aed)), closes [terraform-aws-modules/terraform-aws-eks#3249](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3249)
+
+## [20.32.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.6...v20.32.0) (2025-01-17)
+
+
+### Features
+
+* Add Bottlerocket FIPS image variants ([#3275](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3275)) ([d876ac4](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/d876ac4ef1bb45e4f078d0928630033b659c9aa0))
+
+## [20.31.6](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.5...v20.31.6) (2024-12-20)
+
+
+### Bug Fixes
+
+* Revert changes to disabling auto mode [#3253](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3253) ([#3255](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3255)) ([1ac67b8](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/1ac67b8a60e336285c4dca03e550dfc78d64acce))
+
+## [20.31.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.4...v20.31.5) (2024-12-20)
+
+
+### Bug Fixes
+
+* Correct Auto Mode disable ([#3253](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3253)) ([2a6a57a](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/2a6a57a9bb1c6563608985bbdbfb7f47eec971df))
+
+## [20.31.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.3...v20.31.4) (2024-12-14)
+
+
+### Bug Fixes
+
+* Auto Mode custom tag policy should apply to cluster role, not node role ([#3242](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3242)) ([a07013a](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/a07013a1f4d4d56b56eb2e6265a6f38041a4540b))
+
+## [20.31.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.2...v20.31.3) (2024-12-12)
+
+
+### Bug Fixes
+
+* Update min provider version to remediate cluster replacement when enabling EKS Auto Mode ([#3240](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3240)) ([012e51c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/012e51c05551da48a7f380d4a7b75880b0c24fe1))
+
+## [20.31.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.1...v20.31.2) (2024-12-12)
+
+
+### Bug Fixes
+
+* Avoid trying to attach the node role when Auto Mode nodepools are not specified ([#3239](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3239)) ([ce34f1d](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/ce34f1db3f7824167d9a766e6c90dee3a6dcf1c3))
+
+## [20.31.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.31.0...v20.31.1) (2024-12-09)
+
+
+### Bug Fixes
+
+* Create EKS Auto Mode role when Auto Mode is enabled, regardless of built-in node pool use ([#3234](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3234)) ([e2846be](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e2846be8b110e59d36d6f868b74531a6d8ca4987))
+
+## [20.31.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.30.1...v20.31.0) (2024-12-04)
+
+
+### Features
+
+* Add support for EKS Auto Mode and EKS Hybrid nodes ([#3225](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3225)) ([3b974d3](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/3b974d33ad79e142566dd7bcb4bf10472cc91899))
+
 ## [20.30.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v20.30.0...v20.30.1) (2024-11-26)
 
 

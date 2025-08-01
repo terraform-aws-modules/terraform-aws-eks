@@ -12,23 +12,44 @@
 
 `disk_size`, and `remote_access` can only be set when using the EKS managed node group default launch template. This module defaults to providing a custom launch template to allow for custom security groups, tag propagation, etc. If you wish to forgo the custom launch template route, you can set `use_custom_launch_template = false` and then you can set `disk_size` and `remote_access`.
 
-### I received an error: `expect exactly one securityGroup tagged with kubernetes.io/cluster/<NAME> ...`
+### I received an error: `expect exactly one securityGroup tagged with kubernetes.io/cluster/<CLUSTER_NAME> ...`
+
+⚠️ `<CLUSTER_NAME>` would be the name of your cluster
 
 By default, EKS creates a cluster primary security group that is created outside of the module and the EKS service adds the tag `{ "kubernetes.io/cluster/<CLUSTER_NAME>" = "owned" }`. This on its own does not cause any conflicts for addons such as the AWS Load Balancer Controller until users decide to attach both the cluster primary security group and the shared node security group created by the module (by setting `attach_cluster_primary_security_group = true`). The issue is not with having multiple security groups in your account with this tag key:value combination, but having multiple security groups with this tag key:value combination attached to nodes in the same cluster. There are a few ways to resolve this depending on your use case/intentions:
-
-⚠️ `<CLUSTER_NAME>` below needs to be replaced with the name of your cluster
 
 1. If you want to use the cluster primary security group, you can disable the creation of the shared node security group with:
 
 ```hcl
-  create_node_security_group            = false # default is true
-  attach_cluster_primary_security_group = true # default is false
+  create_node_security_group = false # default is true
+
+  eks_managed_node_group = {
+    example = {
+      attach_cluster_primary_security_group = true # default is false
+    }
+  }
+  # Or for self-managed
+  self_managed_node_group = {
+    example = {
+      attach_cluster_primary_security_group = true # default is false
+    }
+  }
 ```
 
 2. By not attaching the cluster primary security group. The cluster primary security group has quite broad access and the module has instead provided a security group with the minimum amount of access to launch an empty EKS cluster successfully and users are encouraged to open up access when necessary to support their workload.
 
 ```hcl
-  attach_cluster_primary_security_group = false # this is the default for the module
+  eks_managed_node_group = {
+    example = {
+      attach_cluster_primary_security_group = true # default is false
+    }
+  }
+  # Or for self-managed
+  self_managed_node_group = {
+    example = {
+      attach_cluster_primary_security_group = true # default is false
+    }
+  }
 ```
 
 In theory, if you are attaching the cluster primary security group, you shouldn't need to use the shared node security group created by the module. However, this is left up to users to decide for their requirements and use case.
@@ -57,6 +78,8 @@ If you require a public endpoint, setting up both (public and private) and restr
 ### Why are there no changes when a node group's `desired_size` is modified?
 
 The module is configured to ignore this value. Unfortunately, Terraform does not support variables within the `lifecycle` block. The setting is ignored to allow autoscaling via controllers such as cluster autoscaler or Karpenter to work properly and without interference by Terraform. Changing the desired count must be handled outside of Terraform once the node group is created.
+
+:info: See [this](https://github.com/bryantbiggs/eks-desired-size-hack) for a workaround to this limitation.
 
 ### How do I access compute resource attributes?
 
@@ -89,6 +112,10 @@ aws eks describe-addon-versions --query 'addons[*].addonName'
 ```
 
 ### What configuration values are available for an add-on?
+
+> [!NOTE]
+> The available configuration values will vary between add-on versions,
+> typically more configuration values will be added in later versions as functionality is enabled by EKS.
 
 You can retrieve the configuration value schema for a given addon using the following command:
 
@@ -286,7 +313,3 @@ Returns (at the time of writing):
   }
 }
 ```
-
-> [!NOTE]
-> The available configuration values will vary between add-on versions,
-> typically more configuration values will be added in later versions as functionality is enabled by EKS.

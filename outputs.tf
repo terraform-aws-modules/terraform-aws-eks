@@ -1,5 +1,5 @@
 locals {
-  dualstack_oidc_issuer_url = try(replace(replace(aws_eks_cluster.this[0].identity[0].oidc[0].issuer, "https://oidc.eks.", "https://oidc-eks."), ".amazonaws.com/", ".api.aws/"), null)
+
 }
 
 ################################################################################
@@ -58,7 +58,8 @@ output "cluster_oidc_issuer_url" {
 
 output "cluster_dualstack_oidc_issuer_url" {
   description = "Dual-stack compatible URL on the EKS cluster for the OpenID Connect identity provider"
-  value       = local.dualstack_oidc_issuer_url
+  # https://github.com/aws/containers-roadmap/issues/2038#issuecomment-2278450601
+  value = try(replace(replace(aws_eks_cluster.this[0].identity[0].oidc[0].issuer, "https://oidc.eks.", "https://oidc-eks."), ".amazonaws.com/", ".api.aws/"), null)
 }
 
 output "cluster_version" {
@@ -83,7 +84,7 @@ output "cluster_primary_security_group_id" {
 
 output "cluster_service_cidr" {
   description = "The CIDR block where Kubernetes pod and service IP addresses are assigned from"
-  value       = var.cluster_ip_family == "ipv6" ? try(aws_eks_cluster.this[0].kubernetes_network_config[0].service_ipv6_cidr, null) : try(aws_eks_cluster.this[0].kubernetes_network_config[0].service_ipv4_cidr, null)
+  value       = var.ip_family == "ipv6" ? try(aws_eks_cluster.this[0].kubernetes_network_config[0].service_ipv6_cidr, null) : try(aws_eks_cluster.this[0].kubernetes_network_config[0].service_ipv4_cidr, null)
 }
 
 output "cluster_ip_family" {
@@ -176,18 +177,37 @@ output "cluster_tls_certificate_sha1_fingerprint" {
 ################################################################################
 
 output "cluster_iam_role_name" {
-  description = "IAM role name of the EKS cluster"
+  description = "Cluster IAM role name"
   value       = try(aws_iam_role.this[0].name, null)
 }
 
 output "cluster_iam_role_arn" {
-  description = "IAM role ARN of the EKS cluster"
+  description = "Cluster IAM role ARN"
   value       = try(aws_iam_role.this[0].arn, null)
 }
 
 output "cluster_iam_role_unique_id" {
   description = "Stable and unique string identifying the IAM role"
   value       = try(aws_iam_role.this[0].unique_id, null)
+}
+
+################################################################################
+# EKS Auto Node IAM Role
+################################################################################
+
+output "node_iam_role_name" {
+  description = "EKS Auto node IAM role name"
+  value       = try(aws_iam_role.eks_auto[0].name, null)
+}
+
+output "node_iam_role_arn" {
+  description = "EKS Auto node IAM role ARN"
+  value       = try(aws_iam_role.eks_auto[0].arn, null)
+}
+
+output "node_iam_role_unique_id" {
+  description = "Stable and unique string identifying the IAM role"
+  value       = try(aws_iam_role.eks_auto[0].unique_id, null)
 }
 
 ################################################################################

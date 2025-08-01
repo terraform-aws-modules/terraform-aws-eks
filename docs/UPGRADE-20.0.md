@@ -10,7 +10,7 @@ Please consult the `examples` directory for reference example configurations. If
 - The default/fallback value for the `preserve` argument of `cluster_addons`is now set to `true`. This has shown to be useful for users deprovisioning clusters while avoiding the situation where the CNI is deleted too early and causes resources to be left orphaned resulting in conflicts.
 - The Karpenter sub-module's use of the `irsa` naming convention has been removed, along with an update to the Karpenter controller IAM policy to align with Karpenter's `v1beta1`/`v0.32` changes. Instead of referring to the role as `irsa` or `pod_identity`, its simply just an IAM role used by the Karpenter controller and there is support for use with either IRSA and/or Pod Identity (default) at this time
 - The `aws-auth` ConfigMap resources have been moved to a standalone sub-module. This removes the Kubernetes provider requirement from the main module and allows for the `aws-auth` ConfigMap to be managed independently of the main module. This sub-module will be removed entirely in the next major release.
-- Support for cluster access management has been added with the default authentication mode set as `API_AND_CONFIG_MAP`. This is a one way change if applied; if you wish to use `CONFIG_MAP`, you will need to set `authentication_mode = "CONFIG_MAP"` explicitly when upgrading.
+- Support for cluster access management has been added with the default authentication mode set as `API_AND_CONFIG_MAP`. Support for `CONFIG_MAP` is no longer supported; instead you will need to use `API_AND_CONFIG_MAP` at minimum
 - Karpenter EventBridge rule key `spot_interrupt` updated to correct mis-spelling (was `spot_interupt`). This will cause the rule to be replaced
 
 ### ⚠️ Upcoming Changes Planned in v21.0 ⚠️
@@ -220,28 +220,12 @@ To give users advanced notice and provide some future direction for this module,
 
 Changing the `authentication_mode` is a one-way decision. See [announcement blog](https://aws.amazon.com/blogs/containers/a-deep-dive-into-simplified-amazon-eks-access-management-controls/) for further details:
 
-> Switching authentication modes on an existing cluster is a one-way operation. You can switch from CONFIG_MAP to API_AND_CONFIG_MAP. You can then switch from API_AND_CONFIG_MAP to API. You cannot revert these operations in the opposite direction. Meaning you cannot switch back to CONFIG_MAP or API_AND_CONFIG_MAP from API. And you cannot switch back to CONFIG_MAP from API_AND_CONFIG_MAP.
+> Switching authentication modes on an existing cluster is a one-way operation. You can switch from CONFIG_MAP to API_AND_CONFIG_MAP. You can then switch from API_AND_CONFIG_MAP to API. You cannot revert these operations in the opposite direction. Meaning you cannot switch back to CONFIG_MAP or API_AND_CONFIG_MAP from API.
 
 > [!IMPORTANT]
 > If migrating to cluster access entries and you will NOT have any entries that remain in the `aws-auth` ConfigMap, you do not need to remove the configmap from the statefile. You can simply follow the migration guide and once access entries have been created, you can let Terraform remove/delete the `aws-auth` ConfigMap.
 >
 > If you WILL have entries that remain in the `aws-auth` ConfigMap, then you will need to remove the ConfigMap resources from the statefile to avoid any disruptions. When you add the new `aws-auth` sub-module and apply the changes, the sub-module will upsert the ConfigMap on the cluster. Provided the necessary entries are defined in that sub-module's definition, it will "re-adopt" the ConfigMap under Terraform's control.
-
-### authentication_mode = "CONFIG_MAP"
-
-If using `authentication_mode = "CONFIG_MAP"`, before making any changes, you will first need to remove the configmap from the statefile to avoid any disruptions:
-
-```sh
-terraform state rm 'module.eks.kubernetes_config_map_v1_data.aws_auth[0]'
-terraform state rm 'module.eks.kubernetes_config_map.aws_auth[0]' # include if Terraform created the original configmap
-```
-
-Once the configmap has been removed from the statefile, you can add the new `aws-auth` sub-module and copy the relevant definitions from the EKS module over to the new `aws-auth` sub-module definition (see before after diff above).
-
-> [!CAUTION]
-> You will need to add entries to the `aws-auth` sub-module for any IAM roles used by node groups and/or Fargate profiles - the module no longer handles this in the background on behalf of users.
->
-> When you apply the changes with the new sub-module, the configmap in the cluster will get updated with the contents provided in the sub-module definition, so please be sure all of the necessary entries are added before applying the changes.
 
 ### authentication_mode = "API_AND_CONFIG_MAP"
 
