@@ -218,7 +218,7 @@ variable "access_entries" {
         namespaces = optional(list(string))
         type       = string
       })
-    })))
+    })), {})
   }))
   default = {}
 }

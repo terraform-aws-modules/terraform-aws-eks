@@ -269,7 +269,7 @@ locals {
   # associations within a single entry
   flattened_access_entries = flatten([
     for entry_key, entry_val in local.merged_access_entries : [
-      for pol_key, pol_val in try(entry_val.policy_associations, {}) :
+      for pol_key, pol_val in entry_val.policy_associations :
       merge(
         {
           principal_arn = entry_val.principal_arn
