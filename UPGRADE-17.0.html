@@ -8,28 +8,28 @@
       
       
       
-        <link rel="canonical" href="https://terraform-aws-modules/terraform-aws-eks/network_connectivity/">
+        <link rel="canonical" href="https://terraform-aws-modules/terraform-aws-eks/UPGRADE-17.0.html">
       
       
-        <link rel="prev" href="../local/">
+        <link rel="prev" href="index.html">
       
       
-        <link rel="next" href="../user_data/">
+        <link rel="next" href="UPGRADE-18.0.html">
       
       
-      <link rel="icon" href="../assets/logo.png">
+      <link rel="icon" href="assets/logo.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.26">
     
     
       
-        <title>Network Connectivity - Terraform AWS EKS</title>
+        <title>How to handle the terraform-aws-eks module upgrade - Terraform AWS EKS</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.6543a935.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.6543a935.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
       
       
   
@@ -89,7 +89,7 @@
       
     
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -113,7 +113,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#network-connectivity" class="md-skip">
+        <a href="#how-to-handle-the-terraform-aws-eks-module-upgrade" class="md-skip">
           Skip to content
         </a>
       
@@ -133,9 +133,9 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="Terraform AWS EKS" class="md-header__button md-logo" aria-label="Terraform AWS EKS" data-md-component="logo">
+    <a href="index.html" title="Terraform AWS EKS" class="md-header__button md-logo" aria-label="Terraform AWS EKS" data-md-component="logo">
       
-  <img src="../assets/terraform-aws.png" alt="logo">
+  <img src="assets/terraform-aws.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -152,7 +152,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Network Connectivity
+              How to handle the terraform-aws-eks module upgrade
             
           </span>
         </div>
@@ -239,9 +239,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="Terraform AWS EKS" class="md-nav__button md-logo" aria-label="Terraform AWS EKS" data-md-component="logo">
+    <a href="index.html" title="Terraform AWS EKS" class="md-nav__button md-logo" aria-label="Terraform AWS EKS" data-md-component="logo">
       
-  <img src="../assets/terraform-aws.png" alt="logo">
+  <img src="assets/terraform-aws.png" alt="logo">
 
     </a>
     Terraform AWS EKS
@@ -268,7 +268,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="index.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -288,7 +288,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../local/" class="md-nav__link">
+      <a href="local.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -328,33 +328,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#cluster-endpoint" class="md-nav__link">
+  <a href="#upgrade-module-to-v1700-for-managed-node-groups" class="md-nav__link">
     <span class="md-ellipsis">
-      Cluster Endpoint
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Cluster Endpoint">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#public-endpoint-w-restricted-cidrs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Public Endpoint w/ Restricted CIDRs
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#security-groups" class="md-nav__link">
-    <span class="md-ellipsis">
-      Security Groups
+      Upgrade module to v17.0.0 for Managed Node Groups
     </span>
   </a>
   
@@ -378,70 +354,66 @@
   
 
 
-<h1 id="network-connectivity">Network Connectivity<a class="headerlink" href="#network-connectivity" title="Permanent link">&para;</a></h1>
-<h2 id="cluster-endpoint">Cluster Endpoint<a class="headerlink" href="#cluster-endpoint" title="Permanent link">&para;</a></h2>
-<h3 id="public-endpoint-w-restricted-cidrs">Public Endpoint w/ Restricted CIDRs<a class="headerlink" href="#public-endpoint-w-restricted-cidrs" title="Permanent link">&para;</a></h3>
-<p>When restricting the clusters public endpoint to only the CIDRs specified by users, it is recommended that you also enable the private endpoint, or ensure that the CIDR blocks that you specify include the addresses that nodes and Fargate pods (if you use them) access the public endpoint from.</p>
-<p>Please refer to the <a href="https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html">AWS documentation</a> for further information</p>
-<h2 id="security-groups">Security Groups<a class="headerlink" href="#security-groups" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Cluster Security Group</li>
-<li>This module by default creates a cluster security group ("additional" security group when viewed from the console) in addition to the default security group created by the AWS EKS service. This "additional" security group allows users to customize inbound and outbound rules via the module as they see fit<ul>
-<li>The default inbound/outbound rules provided by the module are derived from the <a href="https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html">AWS minimum recommendations</a> in addition to NTP and HTTPS public internet egress rules (without, these show up in VPC flow logs as rejects - they are used for clock sync and downloading necessary packages/updates)</li>
-<li>The minimum inbound/outbound rules are provided for cluster and node creation to succeed without errors, but users will most likely need to add the necessary port and protocol for node-to-node communication (this is user specific based on how nodes are configured to communicate across the cluster)</li>
-<li>Users have the ability to opt out of the security group creation and instead provide their own externally created security group if so desired</li>
-<li>The security group that is created is designed to handle the bare minimum communication necessary between the control plane and the nodes, as well as any external egress to allow the cluster to successfully launch without error</li>
-</ul>
-</li>
-<li>Users also have the option to supply additional, externally created security groups to the cluster as well via the <code>cluster_additional_security_group_ids</code> variable</li>
-<li>
-<p>Lastly, users are able to opt in to attaching the primary security group automatically created by the EKS service by setting <code>attach_cluster_primary_security_group</code> = <code>true</code> from the root module for the respective node group (or set it within the node group defaults). This security group is not managed by the module; it is created by the EKS service. It permits all traffic within the domain of the security group as well as all egress traffic to the internet.</p>
-</li>
-<li>
-<p>Node Group Security Group(s)</p>
-</li>
-<li>Users have the option to assign their own externally created security group(s) to the node group via the <code>vpc_security_group_ids</code> variable</li>
-</ul>
-<p>See the example snippet below which adds additional security group rules to the cluster security group as well as the shared node security group (for node-to-node access). Users can use this extensibility to open up network access as they see fit using the security groups provided by the module:</p>
-<p><div class="language-hcl highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="w">  </span><span class="p">...</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1">  # Extend cluster security group rules</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nb">security_group_additional_rules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="nb">egress_nodes_ephemeral_ports_tcp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">      </span><span class="na">description</span><span class="w">                </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;To node 1025-65535&quot;</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">      </span><span class="na">protocol</span><span class="w">                   </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;tcp&quot;</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">      </span><span class="na">from_port</span><span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="m">1025</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">      </span><span class="na">to_port</span><span class="w">                    </span><span class="o">=</span><span class="w"> </span><span class="m">65535</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">      </span><span class="na">type</span><span class="w">                       </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;egress&quot;</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">      </span><span class="na">source_node_security_group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">true</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">    </span><span class="p">}</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">  </span><span class="p">}</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="c1">  # Extend node-to-node security group rules</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">  </span><span class="nb">node_security_group_additional_rules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">    </span><span class="nb">ingress_self_all</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">      </span><span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Node to node all ports/protocols&quot;</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">      </span><span class="na">protocol</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;-1&quot;</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">      </span><span class="na">from_port</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">      </span><span class="na">to_port</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">      </span><span class="na">type</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;ingress&quot;</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">      </span><span class="na">self</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="no">true</span>
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="w">    </span><span class="p">}</span>
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="w">    </span><span class="nb">egress_all</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="w">      </span><span class="na">description</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Node all egress&quot;</span>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="w">      </span><span class="na">protocol</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;-1&quot;</span>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="w">      </span><span class="na">from_port</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="w">      </span><span class="na">to_port</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="w">      </span><span class="na">type</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;egress&quot;</span>
-</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a><span class="w">      </span><span class="na">cidr_blocks</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;0.0.0.0/0&quot;</span><span class="p">]</span>
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a><span class="w">      </span><span class="na">ipv6_cidr_blocks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;::/0&quot;</span><span class="p">]</span>
-</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a><span class="w">    </span><span class="p">}</span>
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a><span class="w">  </span><span class="p">}</span>
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a><span class="w">  </span><span class="p">...</span>
+<h1 id="how-to-handle-the-terraform-aws-eks-module-upgrade">How to handle the terraform-aws-eks module upgrade<a class="headerlink" href="#how-to-handle-the-terraform-aws-eks-module-upgrade" title="Permanent link">&para;</a></h1>
+<h2 id="upgrade-module-to-v1700-for-managed-node-groups">Upgrade module to v17.0.0 for Managed Node Groups<a class="headerlink" href="#upgrade-module-to-v1700-for-managed-node-groups" title="Permanent link">&para;</a></h2>
+<p>In this release, we now decided to remove random_pet resources in Managed Node Groups (MNG). Those were used to recreate MNG if something changed. But they were causing a lot of issues. To upgrade the module without recreating your MNG, you will need to explicitly reuse their previous name and set them in your MNG <code>name</code> argument.</p>
+<ol>
+<li>Run <code>terraform apply</code> with the module version v16.2.0</li>
+<li>Get your worker group names</li>
+</ol>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>~<span class="w"> </span>terraform<span class="w"> </span>state<span class="w"> </span>show<span class="w"> </span><span class="s1">&#39;module.eks.module.node_groups.aws_eks_node_group.workers[&quot;example&quot;]&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>node_group_name
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">node_group_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test-eks-mwIwsvui-example-sincere-squid&quot;</span>
 </span></code></pre></div>
-The security groups created by this module are depicted in the image shown below along with their default inbound/outbound rules:</p>
-<p align="center">
-  <img src="https://raw.githubusercontent.com/terraform-aws-modules/terraform-aws-eks/master/.github/images/security_groups.svg" alt="Security Groups" width="100%">
-</p>
+<ol>
+<li>Upgrade your module and configure your node groups to use existing names</li>
+</ol>
+<div class="language-hcl highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kr">module</span><span class="w"> </span><span class="nv">&quot;eks&quot;</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="na">source</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;terraform-aws-modules/eks/aws&quot;</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="na">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;17.0.0&quot;</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="na">cluster_name</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test-eks-mwIwsvui&quot;</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="na">cluster_version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;1.20&quot;</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1">  # ...</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">  </span><span class="nb">node_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="nb">example</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">      </span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test-eks-mwIwsvui-example-sincere-squid&quot;</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="c1">      # ...</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="c1">  # ...</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="p">}</span>
+</span></code></pre></div>
+<ol>
+<li>Run <code>terraform plan</code>, you should see that only <code>random_pets</code> will be destroyed</li>
+</ol>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Terraform<span class="w"> </span>will<span class="w"> </span>perform<span class="w"> </span>the<span class="w"> </span>following<span class="w"> </span>actions:
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="c1"># module.eks.module.node_groups.random_pet.node_groups[&quot;example&quot;] will be destroyed</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span>-<span class="w"> </span>resource<span class="w"> </span><span class="s2">&quot;random_pet&quot;</span><span class="w"> </span><span class="s2">&quot;node_groups&quot;</span><span class="w"> </span><span class="o">{</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">      </span>-<span class="w"> </span><span class="nv">id</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;sincere-squid&quot;</span><span class="w"> </span>-&gt;<span class="w"> </span>null
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">      </span>-<span class="w"> </span><span class="nv">keepers</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="o">{</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">          </span>-<span class="w"> </span><span class="s2">&quot;ami_type&quot;</span><span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;AL2_x86_64&quot;</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">          </span>-<span class="w"> </span><span class="s2">&quot;capacity_type&quot;</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;SPOT&quot;</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">          </span>-<span class="w"> </span><span class="s2">&quot;disk_size&quot;</span><span class="w">                 </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;50&quot;</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">          </span>-<span class="w"> </span><span class="s2">&quot;iam_role_arn&quot;</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;arn:aws:iam::123456789123:role/test-eks-mwIwsvui20210527220853611600000009&quot;</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">          </span>-<span class="w"> </span><span class="s2">&quot;instance_types&quot;</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;t3.large&quot;</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">          </span>-<span class="w"> </span><span class="s2">&quot;key_name&quot;</span><span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">          </span>-<span class="w"> </span><span class="s2">&quot;node_group_name&quot;</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test-eks-mwIwsvui-example&quot;</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">          </span>-<span class="w"> </span><span class="s2">&quot;source_security_group_ids&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">          </span>-<span class="w"> </span><span class="s2">&quot;subnet_ids&quot;</span><span class="w">                </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;subnet-xxxxxxxxxxxx|subnet-xxxxxxxxxxxx|subnet-xxxxxxxxxxxx&quot;</span>
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">        </span><span class="o">}</span><span class="w"> </span>-&gt;<span class="w"> </span>null
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">      </span>-<span class="w"> </span><span class="nv">length</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="w"> </span>-&gt;<span class="w"> </span>null
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">      </span>-<span class="w"> </span><span class="nv">separator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;-&quot;</span><span class="w"> </span>-&gt;<span class="w"> </span>null
+</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">    </span><span class="o">}</span>
+</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>
+</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>Plan:<span class="w"> </span><span class="m">0</span><span class="w"> </span>to<span class="w"> </span>add,<span class="w"> </span><span class="m">0</span><span class="w"> </span>to<span class="w"> </span>change,<span class="w"> </span><span class="m">1</span><span class="w"> </span>to<span class="w"> </span>destroy.
+</span></code></pre></div>
+<ol>
+<li>If everything sounds good to you, run <code>terraform apply</code></li>
+</ol>
+<p>After the first apply, we recommend you to create a new node group and let the module use the <code>node_group_name_prefix</code> (by removing the <code>name</code> argument) to generate names and avoid collision during node groups re-creation if needed, because the lifecycle is <code>create_before_destroy = true</code>.</p>
 
 
 
@@ -488,10 +460,10 @@ The security groups created by this module are depicted in the image shown below
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.tabs.sticky"], "search": "assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.ad660dcc.min.js"></script>
+      <script src="assets/javascripts/bundle.ad660dcc.min.js"></script>
       
     
   </body>

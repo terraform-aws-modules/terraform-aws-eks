@@ -8,28 +8,26 @@
       
       
       
-        <link rel="canonical" href="https://terraform-aws-modules/terraform-aws-eks/UPGRADE-17.0/">
+        <link rel="canonical" href="https://terraform-aws-modules/terraform-aws-eks/local.html">
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="index.html">
       
       
-        <link rel="next" href="../UPGRADE-18.0/">
       
-      
-      <link rel="icon" href="../assets/logo.png">
+      <link rel="icon" href="assets/logo.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.26">
     
     
       
-        <title>How to handle the terraform-aws-eks module upgrade - Terraform AWS EKS</title>
+        <title>Local Develpment - Terraform AWS EKS</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.6543a935.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.6543a935.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
       
       
   
@@ -89,7 +87,7 @@
       
     
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -113,7 +111,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#how-to-handle-the-terraform-aws-eks-module-upgrade" class="md-skip">
+        <a href="#local-development" class="md-skip">
           Skip to content
         </a>
       
@@ -133,9 +131,9 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="Terraform AWS EKS" class="md-header__button md-logo" aria-label="Terraform AWS EKS" data-md-component="logo">
+    <a href="index.html" title="Terraform AWS EKS" class="md-header__button md-logo" aria-label="Terraform AWS EKS" data-md-component="logo">
       
-  <img src="../assets/terraform-aws.png" alt="logo">
+  <img src="assets/terraform-aws.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -152,7 +150,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              How to handle the terraform-aws-eks module upgrade
+              Local Develpment
             
           </span>
         </div>
@@ -239,9 +237,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="Terraform AWS EKS" class="md-nav__button md-logo" aria-label="Terraform AWS EKS" data-md-component="logo">
+    <a href="index.html" title="Terraform AWS EKS" class="md-nav__button md-logo" aria-label="Terraform AWS EKS" data-md-component="logo">
       
-  <img src="../assets/terraform-aws.png" alt="logo">
+  <img src="assets/terraform-aws.png" alt="logo">
 
     </a>
     Terraform AWS EKS
@@ -268,7 +266,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="index.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -285,10 +283,30 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../local/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Local Develpment
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="local.html" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -297,6 +315,35 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#documentation-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation Site
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -328,9 +375,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#upgrade-module-to-v1700-for-managed-node-groups" class="md-nav__link">
+  <a href="#documentation-site" class="md-nav__link">
     <span class="md-ellipsis">
-      Upgrade module to v17.0.0 for Managed Node Groups
+      Documentation Site
     </span>
   </a>
   
@@ -354,66 +401,23 @@
   
 
 
-<h1 id="how-to-handle-the-terraform-aws-eks-module-upgrade">How to handle the terraform-aws-eks module upgrade<a class="headerlink" href="#how-to-handle-the-terraform-aws-eks-module-upgrade" title="Permanent link">&para;</a></h1>
-<h2 id="upgrade-module-to-v1700-for-managed-node-groups">Upgrade module to v17.0.0 for Managed Node Groups<a class="headerlink" href="#upgrade-module-to-v1700-for-managed-node-groups" title="Permanent link">&para;</a></h2>
-<p>In this release, we now decided to remove random_pet resources in Managed Node Groups (MNG). Those were used to recreate MNG if something changed. But they were causing a lot of issues. To upgrade the module without recreating your MNG, you will need to explicitly reuse their previous name and set them in your MNG <code>name</code> argument.</p>
-<ol>
-<li>Run <code>terraform apply</code> with the module version v16.2.0</li>
-<li>Get your worker group names</li>
-</ol>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>~<span class="w"> </span>terraform<span class="w"> </span>state<span class="w"> </span>show<span class="w"> </span><span class="s1">&#39;module.eks.module.node_groups.aws_eks_node_group.workers[&quot;example&quot;]&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>node_group_name
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">node_group_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test-eks-mwIwsvui-example-sincere-squid&quot;</span>
+<h1 id="local-development">Local Development<a class="headerlink" href="#local-development" title="Permanent link">&para;</a></h1>
+<h2 id="documentation-site">Documentation Site<a class="headerlink" href="#documentation-site" title="Permanent link">&para;</a></h2>
+<p>In order to run the documentation site locally, you will need to have the following installed locally:</p>
+<ul>
+<li><a href="https://www.python.org/downloads/">Python 3.x</a></li>
+<li><a href="https://www.mkdocs.org/user-guide/installation/">mkdocs</a></li>
+<li>The following pip packages for mkdocs (i.e. - <code>pip install ...</code>)<ul>
+<li><code>mkdocs-material</code></li>
+<li><code>mkdocs-include-markdown-plugin</code></li>
+<li><code>mkdocs-awesome-pages-plugin</code></li>
+</ul>
+</li>
+</ul>
+<p>To run the documentation site locally, run the following command from the root of the repository:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>mkdocs<span class="w"> </span>serve
 </span></code></pre></div>
-<ol>
-<li>Upgrade your module and configure your node groups to use existing names</li>
-</ol>
-<div class="language-hcl highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kr">module</span><span class="w"> </span><span class="nv">&quot;eks&quot;</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="na">source</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;terraform-aws-modules/eks/aws&quot;</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="na">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;17.0.0&quot;</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="na">cluster_name</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test-eks-mwIwsvui&quot;</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="na">cluster_version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;1.20&quot;</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1">  # ...</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">  </span><span class="nb">node_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="nb">example</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">      </span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test-eks-mwIwsvui-example-sincere-squid&quot;</span>
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="c1">      # ...</span>
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="p">}</span>
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">  </span><span class="p">}</span>
-</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="c1">  # ...</span>
-</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="p">}</span>
-</span></code></pre></div>
-<ol>
-<li>Run <code>terraform plan</code>, you should see that only <code>random_pets</code> will be destroyed</li>
-</ol>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Terraform<span class="w"> </span>will<span class="w"> </span>perform<span class="w"> </span>the<span class="w"> </span>following<span class="w"> </span>actions:
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="c1"># module.eks.module.node_groups.random_pet.node_groups[&quot;example&quot;] will be destroyed</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span>-<span class="w"> </span>resource<span class="w"> </span><span class="s2">&quot;random_pet&quot;</span><span class="w"> </span><span class="s2">&quot;node_groups&quot;</span><span class="w"> </span><span class="o">{</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">      </span>-<span class="w"> </span><span class="nv">id</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;sincere-squid&quot;</span><span class="w"> </span>-&gt;<span class="w"> </span>null
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">      </span>-<span class="w"> </span><span class="nv">keepers</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="o">{</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">          </span>-<span class="w"> </span><span class="s2">&quot;ami_type&quot;</span><span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;AL2_x86_64&quot;</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">          </span>-<span class="w"> </span><span class="s2">&quot;capacity_type&quot;</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;SPOT&quot;</span>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">          </span>-<span class="w"> </span><span class="s2">&quot;disk_size&quot;</span><span class="w">                 </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;50&quot;</span>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">          </span>-<span class="w"> </span><span class="s2">&quot;iam_role_arn&quot;</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;arn:aws:iam::123456789123:role/test-eks-mwIwsvui20210527220853611600000009&quot;</span>
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">          </span>-<span class="w"> </span><span class="s2">&quot;instance_types&quot;</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;t3.large&quot;</span>
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">          </span>-<span class="w"> </span><span class="s2">&quot;key_name&quot;</span><span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
-</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">          </span>-<span class="w"> </span><span class="s2">&quot;node_group_name&quot;</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test-eks-mwIwsvui-example&quot;</span>
-</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">          </span>-<span class="w"> </span><span class="s2">&quot;source_security_group_ids&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
-</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">          </span>-<span class="w"> </span><span class="s2">&quot;subnet_ids&quot;</span><span class="w">                </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;subnet-xxxxxxxxxxxx|subnet-xxxxxxxxxxxx|subnet-xxxxxxxxxxxx&quot;</span>
-</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">        </span><span class="o">}</span><span class="w"> </span>-&gt;<span class="w"> </span>null
-</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">      </span>-<span class="w"> </span><span class="nv">length</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="w"> </span>-&gt;<span class="w"> </span>null
-</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">      </span>-<span class="w"> </span><span class="nv">separator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;-&quot;</span><span class="w"> </span>-&gt;<span class="w"> </span>null
-</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">    </span><span class="o">}</span>
-</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>
-</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>Plan:<span class="w"> </span><span class="m">0</span><span class="w"> </span>to<span class="w"> </span>add,<span class="w"> </span><span class="m">0</span><span class="w"> </span>to<span class="w"> </span>change,<span class="w"> </span><span class="m">1</span><span class="w"> </span>to<span class="w"> </span>destroy.
-</span></code></pre></div>
-<ol>
-<li>If everything sounds good to you, run <code>terraform apply</code></li>
-</ol>
-<p>After the first apply, we recommend you to create a new node group and let the module use the <code>node_group_name_prefix</code> (by removing the <code>name</code> argument) to generate names and avoid collision during node groups re-creation if needed, because the lifecycle is <code>create_before_destroy = true</code>.</p>
+<p>Opening the documentation at the link posted in the terminal output (i.e. - <a href="http://127.0.0.1:8000/terraform-aws-eks/">http://127.0.0.1:8000/terraform-aws-eks/</a>)</p>
 
 
 
@@ -460,10 +464,10 @@
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.tabs.sticky"], "search": "assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.ad660dcc.min.js"></script>
+      <script src="assets/javascripts/bundle.ad660dcc.min.js"></script>
       
     
   </body>
