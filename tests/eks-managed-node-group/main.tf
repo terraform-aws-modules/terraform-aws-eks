@@ -408,6 +408,12 @@ module "eks" {
         }
       }
     }
+
+    no-policy = {
+      kubernetes_groups = ["something"]
+      principal_arn     = data.aws_caller_identity.current.arn
+      user_name         = "someone"
+    }
   }
 
   tags = local.tags
