@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.0.7](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.6...v21.0.7) (2025-08-02)
+
+
+### Bug Fixes
+
+* Correct access policy logic to support not providing a policy to associate ([#3464](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3464)) ([39be61d](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/39be61d70232ba156fbf92ef90243b93fe5a9eee))
+
 ## [21.0.6](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.5...v21.0.6) (2025-07-30)
 
 
