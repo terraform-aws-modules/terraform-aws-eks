@@ -841,7 +841,15 @@ variable "self_managed_node_groups" {
       }))
       strategy = optional(string)
       triggers = optional(list(string))
-    }))
+      }),
+      # Default
+      {
+        strategy = "Rolling"
+        preferences = {
+          min_healthy_percentage = 66
+        }
+      }
+    )
     use_mixed_instances_policy = optional(bool)
     mixed_instances_policy = optional(object({
       instances_distribution = optional(object({
