@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.0.8](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.7...v21.0.8) (2025-08-07)
+
+
+### Bug Fixes
+
+* Allow disabling instance refresh on self-managed node groups ([#3473](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3473)) ([6a887ad](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/6a887ad38686299c27333a83eb62310ed3106684))
+
 ## [21.0.7](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.6...v21.0.7) (2025-08-02)
 
 
