@@ -710,12 +710,12 @@ variable "instance_refresh" {
       checkpoint_percentages       = optional(list(number))
       instance_warmup              = optional(number)
       max_healthy_percentage       = optional(number)
-      min_healthy_percentage       = optional(number, 66)
+      min_healthy_percentage       = optional(number)
       scale_in_protected_instances = optional(string)
       skip_matching                = optional(bool)
       standby_instances            = optional(string)
     }))
-    strategy = optional(string, "Rolling")
+    strategy = optional(string)
     triggers = optional(list(string))
   })
   default = {
@@ -724,6 +724,7 @@ variable "instance_refresh" {
       min_healthy_percentage = 66
     }
   }
+  nullable = false
 }
 
 variable "use_mixed_instances_policy" {
