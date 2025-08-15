@@ -42,7 +42,7 @@ resource "aws_eks_cluster" "this" {
   role_arn                      = local.role_arn
   version                       = var.kubernetes_version
   enabled_cluster_log_types     = var.enabled_log_types
-  enable_deletion_protection    = var.enable_deletion_protection
+  deletion_protection           = var.deletion_protection
   bootstrap_self_managed_addons = false
   force_update_version          = var.force_update_version
 

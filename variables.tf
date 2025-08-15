@@ -44,10 +44,10 @@ variable "enabled_log_types" {
   default     = ["audit", "api", "authenticator"]
 }
 
-variable "enable_deletion_protection" {
-  description = "Whether to enable deletion protection for the EKS cluster"
+variable "deletion_protection" {
+  description = "Whether to enable deletion protection for the cluster. When enabled, the cluster cannot be deleted unless deletion protection is first disabled"
   type        = bool
-  default     = false
+  default     = null
 }
 
 variable "force_update_version" {
