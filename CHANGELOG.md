@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.9...v21.1.0) (2025-08-15)
+
+
+### Features
+
+* Add support for deletion protection functionality in the cluster ([#3475](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3475)) ([83c9cd1](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/83c9cd187a36c10f46472e82a197212e897f7f0d))
+
 ## [21.0.9](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.8...v21.0.9) (2025-08-13)
 
 
