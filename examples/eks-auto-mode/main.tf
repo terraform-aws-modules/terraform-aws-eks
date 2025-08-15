@@ -35,6 +35,7 @@ module "eks" {
   name                   = local.name
   kubernetes_version     = local.kubernetes_version
   endpoint_public_access = true
+  deletion_protection    = true
 
   enable_cluster_creator_admin_permissions = true
 
