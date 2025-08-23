@@ -35,17 +35,18 @@ module "eks" {
   name                   = local.name
   kubernetes_version     = local.kubernetes_version
   endpoint_public_access = true
-  deletion_protection    = true
+  deletion_protection    = false
 
   enable_cluster_creator_admin_permissions = true
 
   compute_config = {
     enabled    = true
-    node_pools = ["general-purpose"]
+    node_pools = []
   }
 
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
+  create_node_iam_role = true
+  vpc_id               = module.vpc.vpc_id
+  subnet_ids           = module.vpc.private_subnets
 
   tags = local.tags
 }
