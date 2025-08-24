@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.1.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.1.0...v21.1.1) (2025-08-24)
+
+
+### Bug Fixes
+
+* Correct metadata options loop condition due to variable definition defaults ([#3490](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3490)) ([b40968a](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/b40968a503f1134adcb986af9b4c7f3f3514b811))
+
 ## [21.1.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.0.9...v21.1.0) (2025-08-15)
 
 
