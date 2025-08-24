@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.1.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.1.2...v21.1.3) (2025-08-24)
+
+
+### Bug Fixes
+
+* Correct addon timeout lookup/override logic to support global and addon specific settings ([#3492](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3492)) ([b236208](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/b236208d5ce9ff14447f3d8d580b71790c8074e9))
+
 ## [21.1.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.1.1...v21.1.2) (2025-08-24)
 
 
