@@ -785,9 +785,9 @@ resource "aws_eks_addon" "this" {
   service_account_role_arn    = each.value.service_account_role_arn
 
   timeouts {
-    create = try(coalesce(each.value.timeouts.create, var.addons_timeouts.create), null)
-    update = try(coalesce(each.value.timeouts.update, var.addons_timeouts.update), null)
-    delete = try(coalesce(each.value.timeouts.delete, var.addons_timeouts.delete), null)
+    create = each.value.timeouts.create != null ? each.value.timeouts.create : var.addons_timeouts.create
+    update = each.value.timeouts.update != null ? each.value.timeouts.update : var.addons_timeouts.update
+    delete = each.value.timeouts.delete != null ? each.value.timeouts.delete : var.addons_timeouts.delete
   }
 
   tags = merge(
@@ -830,9 +830,9 @@ resource "aws_eks_addon" "before_compute" {
   service_account_role_arn    = each.value.service_account_role_arn
 
   timeouts {
-    create = try(coalesce(each.value.timeouts.create, var.addons_timeouts.create), null)
-    update = try(coalesce(each.value.timeouts.update, var.addons_timeouts.update), null)
-    delete = try(coalesce(each.value.timeouts.delete, var.addons_timeouts.delete), null)
+    create = each.value.timeouts.create != null ? each.value.timeouts.create : var.addons_timeouts.create
+    update = each.value.timeouts.update != null ? each.value.timeouts.update : var.addons_timeouts.update
+    delete = each.value.timeouts.delete != null ? each.value.timeouts.delete : var.addons_timeouts.delete
   }
 
   tags = merge(

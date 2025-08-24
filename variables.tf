@@ -635,7 +635,7 @@ variable "addons" {
       create = optional(string)
       update = optional(string)
       delete = optional(string)
-    }))
+    }), {})
     tags = optional(map(string), {})
   }))
   default = null
@@ -648,7 +648,7 @@ variable "addons_timeouts" {
     update = optional(string)
     delete = optional(string)
   })
-  default = null
+  default = {}
 }
 
 ################################################################################
