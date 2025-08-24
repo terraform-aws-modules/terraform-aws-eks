@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.1.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.1.1...v21.1.2) (2025-08-24)
+
+
+### Bug Fixes
+
+* Remediate type mismatch for EFA interfaces and ensure correct (local) definition is used ([#3491](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3491)) ([3959b65](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/3959b65672286c84c03012e12a2e7c8630db6c11))
+
 ## [21.1.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.1.0...v21.1.1) (2025-08-24)
 
 
