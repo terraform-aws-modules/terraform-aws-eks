@@ -360,7 +360,7 @@ resource "aws_launch_template" "this" {
 
   update_default_version = var.update_launch_template_default_version
   user_data              = module.user_data.user_data
-  vpc_security_group_ids = length(local.network_interfaces) > 0 ? [] : var.vpc_security_group_ids
+  vpc_security_group_ids = length(local.network_interfaces) > 0 ? [] : local.security_group_ids
 
   tags = merge(
     var.tags,
