@@ -433,7 +433,7 @@ resource "aws_launch_template" "this" {
       primary_ipv6         = network_interfaces.value.primary_ipv6
       private_ip_address   = network_interfaces.value.private_ip_address
       # Ref: https://github.com/hashicorp/terraform-provider-aws/issues/4570
-      security_groups = compact(concat(network_interfaces.value.security_groups, var.vpc_security_group_ids))
+      security_groups = compact(concat(network_interfaces.value.security_groups, local.security_group_ids))
       # Set on EKS managed node group, will fail if set here
       # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-basics
       # subnet_id       = try(network_interfaces.value.subnet_id, null)
