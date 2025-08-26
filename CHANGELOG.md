@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.1.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.1.4...v21.1.5) (2025-08-26)
+
+
+### Bug Fixes
+
+* Ensure module created security group is included on any network interfaces created ([#3495](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3495)) ([fa1d422](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/fa1d4221c8fd346927e88d617181fdb75790ecf8))
+
 ## [21.1.4](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.1.3...v21.1.4) (2025-08-25)
 
 
