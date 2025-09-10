@@ -460,6 +460,25 @@ variable "efs_csi_driver_role_arn" {
   type        = string
 }
 
+# FSx CSI driver variables
+variable "enable_aws_fsx_csi_driver_addon" {
+  description = "Whether or not to install the fsx driver addon in the cluster"
+  type        = bool
+  default     = false
+}
+
+variable "aws_fsx_csi_driver_version" {
+  description = "Version of the fsx csi driver container to install"
+  type        = string
+  default     = ""
+}
+
+variable "aws_fsx_csi_driver_resolve_conflicts" {
+  description = "Whether or not to force overwrite of the config. Options: NONE, OVERWRITE"
+  type        = string
+  default     = "NONE"
+}
+
 variable "encryption" {
   description = "toggle for enabling encryption"
   type        = bool

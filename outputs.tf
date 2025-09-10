@@ -121,3 +121,8 @@ output "karpenter_iam_role_name" {
   description = "value of the IAM role name for Karpenter Node Group"
   value       = aws_iam_role.karpenter_role[0].name
 }
+
+output "fsx_csi_driver_role_arn" {
+  description = "IAM role ARN for FSx CSI driver"
+  value       = var.enable_aws_fsx_csi_driver_addon && length(module.fsx_csi_irsa) > 0 ? module.fsx_csi_irsa[0].iam_role_arn : ""
+}
