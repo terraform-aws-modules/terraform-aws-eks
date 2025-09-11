@@ -297,7 +297,7 @@ resource "aws_iam_role_policy_attachment" "node" {
   for_each = { for k, v in merge(
     {
       AmazonEKSWorkerNodePolicy          = "${local.node_iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy"
-      AmazonEC2ContainerRegistryReadOnly = "${local.node_iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly"
+      AmazonEC2ContainerRegistryPullOnly = "${local.node_iam_role_policy_prefix}/AmazonEC2ContainerRegistryPullOnly"
     },
     local.ipv4_cni_policy,
     local.ipv6_cni_policy

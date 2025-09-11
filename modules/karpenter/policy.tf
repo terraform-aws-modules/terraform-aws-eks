@@ -50,6 +50,7 @@ data "aws_iam_policy_document" "controller" {
       "arn:${local.partition}:ec2:${local.region}:*:network-interface/*",
       "arn:${local.partition}:ec2:${local.region}:*:launch-template/*",
       "arn:${local.partition}:ec2:${local.region}:*:spot-instances-request/*",
+      "arn:${local.partition}:ec2:${local.region}:*:capacity-reservation/*"
     ]
     actions = [
       "ec2:RunInstances",
@@ -180,7 +181,6 @@ data "aws_iam_policy_document" "controller" {
     sid       = "AllowRegionalReadActions"
     resources = ["*"]
     actions = [
-      "ec2:DescribeCapacityReservations",
       "ec2:DescribeAvailabilityZones",
       "ec2:DescribeImages",
       "ec2:DescribeInstances",
@@ -347,6 +347,12 @@ data "aws_iam_policy_document" "controller" {
     sid       = "AllowInstanceProfileReadActions"
     resources = ["arn:${local.partition}:iam::${local.account_id}:instance-profile/*"]
     actions   = ["iam:GetInstanceProfile"]
+  }
+
+  statement {
+    sid       = "AllowUnscopedInstanceProfileListAction"
+    resources = ["*"]
+    actions   = ["iam:ListInstanceProfiles"]
   }
 
   statement {
