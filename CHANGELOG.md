@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.1.5...v21.2.0) (2025-09-11)
+
+
+### Features
+
+* Update Karpenter controller policy and permissions to match upstream project ([#3510](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3510)) ([131db39](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/131db3973f7eaf539c33b73014058a94ac0d0528))
+
 ## [21.1.5](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.1.4...v21.1.5) (2025-08-26)
 
 
