@@ -66,7 +66,7 @@ variable "compute_config" {
   description = "Configuration block for the cluster compute configuration"
   type = object({
     enabled       = optional(bool, false)
-    node_pools    = optional(list(string))
+    node_pools    = optional(list(string), [])
     node_role_arn = optional(string)
   })
   default = null

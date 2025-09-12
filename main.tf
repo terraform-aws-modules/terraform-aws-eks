@@ -63,7 +63,7 @@ resource "aws_eks_cluster" "this" {
     content {
       enabled       = compute_config.value.enabled
       node_pools    = compute_config.value.enabled ? compute_config.value.node_pools : []
-      node_role_arn = compute_config.value.node_pools != null ? try(aws_iam_role.eks_auto[0].arn, compute_config.value.node_role_arn) : null
+      node_role_arn = compute_config.value.enabled ? (length(compute_config.value.node_pools) > 0 ? try(aws_iam_role.eks_auto[0].arn, compute_config.value.node_role_arn) : null) : null
     }
   }
 
