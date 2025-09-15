@@ -26,7 +26,7 @@ locals {
   create_outposts_local_cluster = var.outpost_config != null
   enable_encryption_config      = var.encryption_config != null && !local.create_outposts_local_cluster
 
-  auto_mode_enabled = try(var.compute_config.enabled, false)
+  create_auto_mode_iam_resources = var.compute_config.enabled || var.create_auto_mode_iam_resources
 }
 
 ################################################################################
@@ -58,7 +58,7 @@ resource "aws_eks_cluster" "this" {
   }
 
   dynamic "compute_config" {
-    for_each = var.compute_config != null ? [var.compute_config] : []
+    for_each = [var.compute_config]
 
     content {
       enabled       = compute_config.value.enabled
@@ -81,10 +81,10 @@ resource "aws_eks_cluster" "this" {
 
     content {
       dynamic "elastic_load_balancing" {
-        for_each = local.auto_mode_enabled ? [1] : []
+        for_each = [var.compute_config]
 
         content {
-          enabled = local.auto_mode_enabled
+          enabled = elastic_load_balancing.value.enabled
         }
       }
 
@@ -148,11 +148,11 @@ resource "aws_eks_cluster" "this" {
   }
 
   dynamic "storage_config" {
-    for_each = local.auto_mode_enabled ? [1] : []
+    for_each = [var.compute_config]
 
     content {
       block_storage {
-        enabled = local.auto_mode_enabled
+        enabled = storage_config.value.enabled
       }
     }
   }
@@ -476,7 +476,7 @@ locals {
   # Standard EKS cluster
   eks_standard_iam_role_policies = { for k, v in {
     AmazonEKSClusterPolicy = "${local.iam_role_policy_prefix}/AmazonEKSClusterPolicy",
-  } : k => v if !local.create_outposts_local_cluster && !local.auto_mode_enabled }
+  } : k => v if !local.create_outposts_local_cluster && !local.create_auto_mode_iam_resources }
 
   # EKS cluster with EKS auto mode enabled
   eks_auto_mode_iam_role_policies = { for k, v in {
@@ -485,12 +485,12 @@ locals {
     AmazonEKSBlockStoragePolicy  = "${local.iam_role_policy_prefix}/AmazonEKSBlockStoragePolicy"
     AmazonEKSLoadBalancingPolicy = "${local.iam_role_policy_prefix}/AmazonEKSLoadBalancingPolicy"
     AmazonEKSNetworkingPolicy    = "${local.iam_role_policy_prefix}/AmazonEKSNetworkingPolicy"
-  } : k => v if !local.create_outposts_local_cluster && local.auto_mode_enabled }
+  } : k => v if !local.create_outposts_local_cluster && local.create_auto_mode_iam_resources }
 
   # EKS local cluster on Outposts
   eks_outpost_iam_role_policies = { for k, v in {
     AmazonEKSClusterPolicy = "${local.iam_role_policy_prefix}/AmazonEKSLocalOutpostClusterPolicy"
-  } : k => v if local.create_outposts_local_cluster && !local.auto_mode_enabled }
+  } : k => v if local.create_outposts_local_cluster && !local.create_auto_mode_iam_resources }
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
@@ -591,7 +591,7 @@ resource "aws_iam_policy" "cluster_encryption" {
 }
 
 data "aws_iam_policy_document" "custom" {
-  count = local.create_iam_role && local.auto_mode_enabled && var.enable_auto_mode_custom_tags ? 1 : 0
+  count = local.create_iam_role && local.create_auto_mode_iam_resources && var.enable_auto_mode_custom_tags ? 1 : 0
 
   dynamic "statement" {
     for_each = var.enable_auto_mode_custom_tags ? [1] : []
@@ -725,7 +725,7 @@ data "aws_iam_policy_document" "custom" {
 }
 
 resource "aws_iam_policy" "custom" {
-  count = local.create_iam_role && local.auto_mode_enabled && var.enable_auto_mode_custom_tags ? 1 : 0
+  count = local.create_iam_role && local.create_auto_mode_iam_resources && var.enable_auto_mode_custom_tags ? 1 : 0
 
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
@@ -738,7 +738,7 @@ resource "aws_iam_policy" "custom" {
 }
 
 resource "aws_iam_role_policy_attachment" "custom" {
-  count = local.create_iam_role && local.auto_mode_enabled && var.enable_auto_mode_custom_tags ? 1 : 0
+  count = local.create_iam_role && local.create_auto_mode_iam_resources && var.enable_auto_mode_custom_tags ? 1 : 0
 
   policy_arn = aws_iam_policy.custom[0].arn
   role       = aws_iam_role.this[0].name
@@ -875,7 +875,7 @@ resource "aws_eks_identity_provider_config" "this" {
 ################################################################################
 
 locals {
-  create_node_iam_role = local.create && var.create_node_iam_role && local.auto_mode_enabled
+  create_node_iam_role = local.create && var.create_node_iam_role && local.create_auto_mode_iam_resources
   node_iam_role_name   = coalesce(var.node_iam_role_name, "${var.name}-eks-auto")
 }
 
