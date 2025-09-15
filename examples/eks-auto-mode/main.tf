@@ -50,6 +50,27 @@ module "eks" {
   tags = local.tags
 }
 
+module "eks_custom_node_pools" {
+  source = "../.."
+
+  name                   = "${local.name}-cnp"
+  kubernetes_version     = local.kubernetes_version
+  endpoint_public_access = true
+  deletion_protection    = true
+
+  enable_cluster_creator_admin_permissions = true
+
+  compute_config = {
+    enabled    = true
+    node_pools = []
+  }
+
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
+
+  tags = local.tags
+}
+
 module "disabled_eks" {
   source = "../.."
 
