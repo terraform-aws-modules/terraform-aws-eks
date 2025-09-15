@@ -39,6 +39,7 @@ Note that this example may create resources which cost money. Run `terraform des
 |------|--------|---------|
 | <a name="module_disabled_eks"></a> [disabled\_eks](#module\_disabled\_eks) | ../.. | n/a |
 | <a name="module_eks"></a> [eks](#module\_eks) | ../.. | n/a |
+| <a name="module_eks_custom_node_pools"></a> [eks\_custom\_node\_pools](#module\_eks\_custom\_node\_pools) | ../.. | n/a |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 6.0 |
 
 ## Resources
