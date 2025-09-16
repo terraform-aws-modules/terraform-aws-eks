@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.2.0...v21.3.0) (2025-09-16)
+
+
+### Features
+
+* Support EKS Auto Mode custom node pools only creation ([#3514](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3514)) ([165d7c8](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/165d7c8c3bb15b260c23bf07fa0443c0d3accd2f))
+
 ## [21.2.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.1.5...v21.2.0) (2025-09-11)
 
 
