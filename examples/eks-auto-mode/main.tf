@@ -35,7 +35,6 @@ module "eks" {
   name                   = local.name
   kubernetes_version     = local.kubernetes_version
   endpoint_public_access = true
-  deletion_protection    = true
 
   enable_cluster_creator_admin_permissions = true
 
@@ -43,6 +42,24 @@ module "eks" {
     enabled    = true
     node_pools = ["general-purpose"]
   }
+
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
+
+  tags = local.tags
+}
+
+module "eks_auto_custom_node_pools" {
+  source = "../.."
+
+  name                   = "${local.name}-custom"
+  kubernetes_version     = local.kubernetes_version
+  endpoint_public_access = true
+
+  enable_cluster_creator_admin_permissions = true
+
+  # Create just the IAM resources for EKS Auto Mode for use with custom node pools
+  create_auto_mode_iam_resources = true
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets

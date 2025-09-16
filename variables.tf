@@ -69,7 +69,8 @@ variable "compute_config" {
     node_pools    = optional(list(string))
     node_role_arn = optional(string)
   })
-  default = null
+  default  = {}
+  nullable = false
 }
 
 variable "upgrade_policy" {
@@ -609,6 +610,12 @@ variable "enable_auto_mode_custom_tags" {
   description = "Determines whether to enable permissions for custom tags resources created by EKS Auto Mode"
   type        = bool
   default     = true
+}
+
+variable "create_auto_mode_iam_resources" {
+  description = "Determines whether to create/attach IAM resources for EKS Auto Mode. Useful for when using only custom node pools and not built-in EKS Auto Mode node pools"
+  type        = bool
+  default     = false
 }
 
 ################################################################################
