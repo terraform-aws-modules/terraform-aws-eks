@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.3.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.3.0...v21.3.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* Sync Karpenter IAM permissions with upstream ([#3517](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3517)) ([c8bb152](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c8bb152839c411247321194531eadbd7dcdeced4))
+
 ## [21.3.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.2.0...v21.3.0) (2025-09-16)
 
 
