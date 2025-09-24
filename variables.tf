@@ -174,7 +174,7 @@ variable "encryption_config" {
     provider_key_arn = optional(string)
     resources        = optional(list(string), ["secrets"])
   })
-  default = {}
+  default = null
 }
 
 variable "attach_encryption_policy" {
