@@ -8,6 +8,7 @@ data "aws_caller_identity" "current" {
 locals {
   partition  = try(data.aws_partition.current[0].partition, var.partition)
   account_id = try(data.aws_caller_identity.current[0].account_id, var.account_id)
+  ami_type   = upper(var.ami_type)
 }
 
 ################################################################################
@@ -20,23 +21,23 @@ locals {
 
   # Map the AMI type to the respective SSM param path
   ami_type_to_ssm_param = {
-    AL2_x86_64                 = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2/recommended/image_id"
-    AL2_x86_64_GPU             = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2-gpu/recommended/image_id"
+    AL2_X86_64                 = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2/recommended/image_id"
+    AL2_X86_64_GPU             = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2-gpu/recommended/image_id"
     AL2_ARM_64                 = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2-arm64/recommended/image_id"
     BOTTLEROCKET_ARM_64        = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}/arm64/latest/image_id"
-    BOTTLEROCKET_x86_64        = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}/x86_64/latest/image_id"
+    BOTTLEROCKET_X86_64        = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}/x86_64/latest/image_id"
     BOTTLEROCKET_ARM_64_FIPS   = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-fips/arm64/latest/image_id"
-    BOTTLEROCKET_x86_64_FIPS   = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-fips/x86_64/latest/image_id"
+    BOTTLEROCKET_X86_64_FIPS   = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-fips/x86_64/latest/image_id"
     BOTTLEROCKET_ARM_64_NVIDIA = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-nvidia/arm64/latest/image_id"
-    BOTTLEROCKET_x86_64_NVIDIA = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-nvidia/x86_64/latest/image_id"
-    WINDOWS_CORE_2019_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-EKS_Optimized-${local.ssm_kubernetes_version}/image_id"
-    WINDOWS_FULL_2019_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Core-EKS_Optimized-${local.ssm_kubernetes_version}/image_id"
-    WINDOWS_CORE_2022_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Full-EKS_Optimized-${local.ssm_kubernetes_version}/image_id"
-    WINDOWS_FULL_2022_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Core-EKS_Optimized-${local.ssm_kubernetes_version}/image_id"
-    AL2023_x86_64_STANDARD     = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/x86_64/standard/recommended/image_id"
+    BOTTLEROCKET_X86_64_NVIDIA = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-nvidia/x86_64/latest/image_id"
+    WINDOWS_CORE_2019_X86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-EKS_Optimized-${local.ssm_kubernetes_version}/image_id"
+    WINDOWS_FULL_2019_X86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Core-EKS_Optimized-${local.ssm_kubernetes_version}/image_id"
+    WINDOWS_CORE_2022_X86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Full-EKS_Optimized-${local.ssm_kubernetes_version}/image_id"
+    WINDOWS_FULL_2022_X86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Core-EKS_Optimized-${local.ssm_kubernetes_version}/image_id"
+    AL2023_X86_64_STANDARD     = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/x86_64/standard/recommended/image_id"
     AL2023_ARM_64_STANDARD     = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/arm64/standard/recommended/image_id"
-    AL2023_x86_64_NEURON       = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/x86_64/neuron/recommended/image_id"
-    AL2023_x86_64_NVIDIA       = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/x86_64/nvidia/recommended/image_id"
+    AL2023_X86_64_NEURON       = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/x86_64/neuron/recommended/image_id"
+    AL2023_X86_64_NVIDIA       = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/x86_64/nvidia/recommended/image_id"
     AL2023_ARM_64_NVIDIA       = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/arm64/nvidia/recommended/image_id"
   }
 }
@@ -46,7 +47,7 @@ data "aws_ssm_parameter" "ami" {
 
   region = var.region
 
-  name = local.ami_type_to_ssm_param[var.ami_type]
+  name = local.ami_type_to_ssm_param[local.ami_type]
 }
 
 ################################################################################
@@ -57,7 +58,7 @@ module "user_data" {
   source = "../_user_data"
 
   create                    = var.create
-  ami_type                  = var.ami_type
+  ami_type                  = local.ami_type
   is_eks_managed_node_group = false
 
   cluster_name               = var.cluster_name
@@ -977,7 +978,7 @@ resource "aws_eks_access_entry" "this" {
 
   cluster_name  = var.cluster_name
   principal_arn = var.create_iam_instance_profile ? aws_iam_role.this[0].arn : var.iam_role_arn
-  type          = startswith(var.ami_type, "WINDOWS_") ? "EC2_WINDOWS" : "EC2_LINUX"
+  type          = startswith(local.ami_type, "WINDOWS_") ? "EC2_WINDOWS" : "EC2_LINUX"
 
   tags = var.tags
 }
