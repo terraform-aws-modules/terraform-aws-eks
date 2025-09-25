@@ -382,6 +382,10 @@ module "eks_managed_node_group" {
     var.tags,
     each.value.tags,
   )
+
+  depends_on = [
+    aws_eks_addon.before_compute,
+  ]
 }
 
 ################################################################################
@@ -533,4 +537,8 @@ module "self_managed_node_group" {
     var.tags,
     each.value.tags,
   )
+
+  depends_on = [
+    aws_eks_addon.before_compute,
+  ]
 }
