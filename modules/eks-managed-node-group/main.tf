@@ -8,6 +8,7 @@ data "aws_caller_identity" "current" {
 locals {
   partition  = try(data.aws_partition.current[0].partition, var.partition)
   account_id = try(data.aws_caller_identity.current[0].account_id, var.account_id)
+  ami_type   = upper(var.ami_type)
 }
 
 ################################################################################
@@ -18,7 +19,7 @@ module "user_data" {
   source = "../_user_data"
 
   create   = var.create
-  ami_type = var.ami_type
+  ami_type = local.ami_type
 
   cluster_name         = var.cluster_name
   cluster_endpoint     = var.cluster_endpoint
@@ -395,28 +396,28 @@ data "aws_eks_cluster_versions" "this" {
 locals {
   # Just to ensure templating doesn't fail when values are not provided
   ssm_kubernetes_version = var.kubernetes_version != null ? var.kubernetes_version : try(data.aws_eks_cluster_versions.this[0].cluster_versions[0].cluster_version, "UNSPECIFIED")
-  ssm_ami_type           = var.ami_type != null ? var.ami_type : ""
+  ssm_ami_type           = local.ami_type != null ? local.ami_type : ""
 
   # Map the AMI type to the respective SSM param path
   ssm_ami_type_to_ssm_param = {
-    AL2_x86_64                 = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2/recommended/release_version"
-    AL2_x86_64_GPU             = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2-gpu/recommended/release_version"
+    AL2_X86_64                 = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2/recommended/release_version"
+    AL2_X86_64_GPU             = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2-gpu/recommended/release_version"
     AL2_ARM_64                 = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2-arm64/recommended/release_version"
     CUSTOM                     = "NONE"
     BOTTLEROCKET_ARM_64        = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}/arm64/latest/image_version"
-    BOTTLEROCKET_x86_64        = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}/x86_64/latest/image_version"
+    BOTTLEROCKET_X86_64        = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}/x86_64/latest/image_version"
     BOTTLEROCKET_ARM_64_FIPS   = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-fips/arm64/latest/image_version"
-    BOTTLEROCKET_x86_64_FIPS   = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-fips/x86_64/latest/image_version"
+    BOTTLEROCKET_X86_64_FIPS   = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-fips/x86_64/latest/image_version"
     BOTTLEROCKET_ARM_64_NVIDIA = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-nvidia/arm64/latest/image_version"
-    BOTTLEROCKET_x86_64_NVIDIA = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-nvidia/x86_64/latest/image_version"
-    WINDOWS_CORE_2019_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-EKS_Optimized-${local.ssm_kubernetes_version}"
-    WINDOWS_FULL_2019_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Core-EKS_Optimized-${local.ssm_kubernetes_version}"
-    WINDOWS_CORE_2022_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Full-EKS_Optimized-${local.ssm_kubernetes_version}"
-    WINDOWS_FULL_2022_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Core-EKS_Optimized-${local.ssm_kubernetes_version}"
-    AL2023_x86_64_STANDARD     = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/x86_64/standard/recommended/release_version"
+    BOTTLEROCKET_X86_64_NVIDIA = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-nvidia/x86_64/latest/image_version"
+    WINDOWS_CORE_2019_X86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-EKS_Optimized-${local.ssm_kubernetes_version}"
+    WINDOWS_FULL_2019_X86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Core-EKS_Optimized-${local.ssm_kubernetes_version}"
+    WINDOWS_CORE_2022_X86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Full-EKS_Optimized-${local.ssm_kubernetes_version}"
+    WINDOWS_FULL_2022_X86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Core-EKS_Optimized-${local.ssm_kubernetes_version}"
+    AL2023_X86_64_STANDARD     = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/x86_64/standard/recommended/release_version"
     AL2023_ARM_64_STANDARD     = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/arm64/standard/recommended/release_version"
-    AL2023_x86_64_NEURON       = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/x86_64/neuron/recommended/release_version"
-    AL2023_x86_64_NVIDIA       = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/x86_64/nvidia/recommended/release_version"
+    AL2023_X86_64_NEURON       = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/x86_64/neuron/recommended/release_version"
+    AL2023_X86_64_NVIDIA       = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/x86_64/nvidia/recommended/release_version"
     AL2023_ARM_64_NVIDIA       = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/arm64/nvidia/recommended/release_version"
   }
 
@@ -431,7 +432,7 @@ data "aws_ssm_parameter" "ami" {
 
   region = var.region
 
-  name = local.ssm_ami_type_to_ssm_param[var.ami_type]
+  name = local.ssm_ami_type_to_ssm_param[local.ami_type]
 }
 
 ################################################################################
@@ -465,7 +466,7 @@ resource "aws_eks_node_group" "this" {
   node_group_name_prefix = var.use_name_prefix ? "${var.name}-" : null
 
   # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
-  ami_type        = var.ami_id != "" ? null : var.ami_type
+  ami_type        = var.ami_id != "" ? null : local.ami_type
   release_version = var.ami_id != "" ? null : var.use_latest_ami_release_version ? local.latest_ami_release_version : var.ami_release_version
   version         = var.ami_id != "" ? null : var.kubernetes_version
 

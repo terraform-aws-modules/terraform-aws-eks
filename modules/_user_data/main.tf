@@ -14,36 +14,37 @@ resource "null_resource" "validate_cluster_service_cidr" {
 }
 
 locals {
-  is_al2    = startswith(var.ami_type, "AL2_")
-  is_al2023 = startswith(var.ami_type, "AL2023_")
+  ami_type = upper(var.ami_type)
+  is_al2    = startswith(local.ami_type, "AL2_")
+  is_al2023 = startswith(local.ami_type, "AL2023_")
 
   # Converts AMI type into user data template path
   ami_type_to_user_data_path = {
     AL2_ARM_64     = "${path.module}/../../templates/al2_user_data.tpl"
-    AL2_x86_64     = "${path.module}/../../templates/al2_user_data.tpl"
-    AL2_x86_64_GPU = "${path.module}/../../templates/al2_user_data.tpl"
+    AL2_X86_64     = "${path.module}/../../templates/al2_user_data.tpl"
+    AL2_X86_64_GPU = "${path.module}/../../templates/al2_user_data.tpl"
 
-    AL2023_x86_64_STANDARD = "${path.module}/../../templates/al2023_user_data.tpl"
+    AL2023_X86_64_STANDARD = "${path.module}/../../templates/al2023_user_data.tpl"
     AL2023_ARM_64_STANDARD = "${path.module}/../../templates/al2023_user_data.tpl"
-    AL2023_x86_64_NEURON   = "${path.module}/../../templates/al2023_user_data.tpl"
-    AL2023_x86_64_NVIDIA   = "${path.module}/../../templates/al2023_user_data.tpl"
+    AL2023_X86_64_NEURON   = "${path.module}/../../templates/al2023_user_data.tpl"
+    AL2023_X86_64_NVIDIA   = "${path.module}/../../templates/al2023_user_data.tpl"
     AL2023_ARM_64_NVIDIA   = "${path.module}/../../templates/al2023_user_data.tpl"
 
     BOTTLEROCKET_ARM_64        = "${path.module}/../../templates/bottlerocket_user_data.tpl"
-    BOTTLEROCKET_x86_64        = "${path.module}/../../templates/bottlerocket_user_data.tpl"
+    BOTTLEROCKET_X86_64        = "${path.module}/../../templates/bottlerocket_user_data.tpl"
     BOTTLEROCKET_ARM_64_FIPS   = "${path.module}/../../templates/bottlerocket_user_data.tpl"
-    BOTTLEROCKET_x86_64_FIPS   = "${path.module}/../../templates/bottlerocket_user_data.tpl"
+    BOTTLEROCKET_X86_64_FIPS   = "${path.module}/../../templates/bottlerocket_user_data.tpl"
     BOTTLEROCKET_ARM_64_NVIDIA = "${path.module}/../../templates/bottlerocket_user_data.tpl"
-    BOTTLEROCKET_x86_64_NVIDIA = "${path.module}/../../templates/bottlerocket_user_data.tpl"
+    BOTTLEROCKET_X86_64_NVIDIA = "${path.module}/../../templates/bottlerocket_user_data.tpl"
 
-    WINDOWS_CORE_2019_x86_64 = "${path.module}/../../templates/windows_user_data.tpl"
-    WINDOWS_FULL_2019_x86_64 = "${path.module}/../../templates/windows_user_data.tpl"
-    WINDOWS_CORE_2022_x86_64 = "${path.module}/../../templates/windows_user_data.tpl"
-    WINDOWS_FULL_2022_x86_64 = "${path.module}/../../templates/windows_user_data.tpl"
+    WINDOWS_CORE_2019_X86_64 = "${path.module}/../../templates/windows_user_data.tpl"
+    WINDOWS_FULL_2019_X86_64 = "${path.module}/../../templates/windows_user_data.tpl"
+    WINDOWS_CORE_2022_X86_64 = "${path.module}/../../templates/windows_user_data.tpl"
+    WINDOWS_FULL_2022_X86_64 = "${path.module}/../../templates/windows_user_data.tpl"
 
     CUSTOM = var.user_data_template_path
   }
-  user_data_path = coalesce(var.user_data_template_path, local.ami_type_to_user_data_path[var.ami_type])
+  user_data_path = coalesce(var.user_data_template_path, local.ami_type_to_user_data_path[local.ami_type])
 
   cluster_dns_ips = flatten(concat([try(cidrhost(var.cluster_service_cidr, 10), "")], var.additional_cluster_dns_ips))
 
