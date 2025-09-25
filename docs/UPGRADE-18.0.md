@@ -353,7 +353,7 @@ module "eks" {
 
   # Managed Node Groups
   node_groups_defaults = {
-    ami_type  = "AL2_x86_64"
+    ami_type  = "AL2_X86_64"
     disk_size = 50
   }
 
@@ -456,7 +456,7 @@ module "cluster_after" {
   subnet_ids = module.vpc.private_subnets
 
   eks_managed_node_group_defaults = {
-    ami_type  = "AL2_x86_64"
+    ami_type  = "AL2_X86_64"
     disk_size = 50
   }
 
@@ -593,7 +593,7 @@ module "cluster_after" {
 -  # Managed Node Groups
 -  node_groups_defaults = {
 +  eks_managed_node_group_defaults = {
-     ami_type  = "AL2_x86_64"
+     ami_type  = "AL2_X86_64"
      disk_size = 50
    }
 

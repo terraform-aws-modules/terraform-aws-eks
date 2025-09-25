@@ -22,7 +22,7 @@ module "eks_bottlerocket" {
 
   eks_managed_node_groups = {
     example = {
-      ami_type       = "BOTTLEROCKET_x86_64"
+      ami_type       = "BOTTLEROCKET_X86_64"
       instance_types = ["m6i.large"]
 
       min_size = 2

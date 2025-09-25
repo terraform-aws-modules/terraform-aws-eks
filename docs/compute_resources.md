@@ -30,7 +30,7 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
     bottlerocket_default = {
       use_custom_launch_template = false
 
-      ami_type = "BOTTLEROCKET_x86_64"
+      ami_type = "BOTTLEROCKET_X86_64"
     }
   }
 ```
@@ -40,7 +40,7 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
 ```hcl
   eks_managed_node_groups = {
     bottlerocket_prepend_userdata = {
-      ami_type = "BOTTLEROCKET_x86_64"
+      ami_type = "BOTTLEROCKET_X86_64"
 
       bootstrap_extra_args = <<-EOT
         # extra args added
@@ -57,7 +57,7 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
   eks_managed_node_groups = {
     custom_ami = {
       ami_id   = "ami-0caf35bc73450c396"
-      ami_type = "AL2023_x86_64_STANDARD"
+      ami_type = "AL2023_X86_64_STANDARD"
 
       # By default, EKS managed node groups will not append bootstrap script;
       # this adds it back in using the default template provided by the module
@@ -94,7 +94,7 @@ Refer to the [EKS Managed Node Group documentation](https://docs.aws.amazon.com/
   eks_managed_node_groups = {
     bottlerocket_custom_ami = {
       ami_id   = "ami-0ff61e0bcfc81dc94"
-      ami_type = "BOTTLEROCKET_x86_64"
+      ami_type = "BOTTLEROCKET_X86_64"
 
       # use module user data template to bootstrap
       enable_bootstrap_user_data = true
@@ -141,7 +141,7 @@ Refer to the [Self Managed Node Group documentation](https://docs.aws.amazon.com
   self_managed_node_groups = {
     bottlerocket = {
       ami_id   = data.aws_ami.bottlerocket_ami.id
-      ami_type = "BOTTLEROCKET_x86_64"
+      ami_type = "BOTTLEROCKET_X86_64"
     }
   }
 ```

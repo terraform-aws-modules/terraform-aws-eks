@@ -75,7 +75,7 @@ module "eks" {
   self_managed_node_groups = {
     # Default node group - as provisioned by the module defaults
     default_node_group = {
-      ami_type = "AL2023_x86_64_STANDARD"
+      ami_type = "AL2023_X86_64_STANDARD"
       ami_id   = data.aws_ami.eks_default.image_id
 
       # enable discovery of autoscaling groups by cluster-autoscaler
@@ -89,7 +89,7 @@ module "eks" {
     bottlerocket = {
       name = "bottlerocket-self-mng"
 
-      ami_type      = "BOTTLEROCKET_x86_64"
+      ami_type      = "BOTTLEROCKET_X86_64"
       ami_id        = data.aws_ami.eks_default_bottlerocket.id
       instance_type = "m5.large"
       desired_size  = 2
@@ -311,7 +311,7 @@ module "eks" {
     efa = {
       # The EKS AL2023 NVIDIA AMI provides all of the necessary components
       # for accelerated workloads w/ EFA
-      ami_type       = "AL2023_x86_64_NVIDIA"
+      ami_type       = "AL2023_X86_64_NVIDIA"
       instance_types = ["p4d.24xlarge"]
 
       # Setting to zero so all resources are created *EXCEPT the EC2 instances

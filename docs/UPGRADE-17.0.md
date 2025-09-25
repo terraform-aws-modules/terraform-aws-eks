@@ -43,7 +43,7 @@ Terraform will perform the following actions:
   - resource "random_pet" "node_groups" {
       - id        = "sincere-squid" -> null
       - keepers   = {
-          - "ami_type"                  = "AL2_x86_64"
+          - "ami_type"                  = "AL2_X86_64"
           - "capacity_type"             = "SPOT"
           - "disk_size"                 = "50"
           - "iam_role_arn"              = "arn:aws:iam::123456789123:role/test-eks-mwIwsvui20210527220853611600000009"

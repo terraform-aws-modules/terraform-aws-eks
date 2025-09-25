@@ -121,7 +121,7 @@ module "eks" {
   eks_managed_node_groups = {
     example = {
       # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
-      ami_type       = "AL2023_x86_64_STANDARD"
+      ami_type       = "AL2023_X86_64_STANDARD"
       instance_types = ["m5.xlarge"]
 
       min_size     = 2
@@ -292,7 +292,7 @@ module "eks" {
     example = {
       # The EKS AL2023 NVIDIA AMI provides all of the necessary components
       # for accelerated workloads w/ EFA
-      ami_type       = "AL2023_x86_64_NVIDIA"
+      ami_type       = "AL2023_X86_64_NVIDIA"
       instance_types = ["p5.48xlarge"]
 
       # Exposes all EFA interfaces on the launch template created by the node group(s)

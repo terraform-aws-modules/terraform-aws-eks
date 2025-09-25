@@ -112,7 +112,7 @@ module "eks" {
     # AL2023 node group utilizing new user data format which utilizes nodeadm
     # to join nodes to the cluster (instead of /etc/eks/bootstrap.sh)
     al2023_nodeadm = {
-      ami_type                       = "AL2023_x86_64_STANDARD"
+      ami_type                       = "AL2023_X86_64_STANDARD"
       use_latest_ami_release_version = true
 
       cloudinit_pre_nodeadm = [
@@ -137,12 +137,12 @@ module "eks" {
       # so we need to disable it to use the default template provided by the AWS EKS managed node group service
       use_custom_launch_template = false
 
-      ami_type = "BOTTLEROCKET_x86_64"
+      ami_type = "BOTTLEROCKET_X86_64"
     }
 
     # Adds to the AWS provided user data
     bottlerocket_add = {
-      ami_type = "BOTTLEROCKET_x86_64"
+      ami_type = "BOTTLEROCKET_X86_64"
 
       use_latest_ami_release_version = true
 
@@ -158,7 +158,7 @@ module "eks" {
     bottlerocket_custom = {
       # Current bottlerocket AMI
       ami_id   = data.aws_ami.eks_default_bottlerocket.image_id
-      ami_type = "BOTTLEROCKET_x86_64"
+      ami_type = "BOTTLEROCKET_X86_64"
 
       # Use module user data template to bootstrap
       enable_bootstrap_user_data = true
@@ -320,7 +320,7 @@ module "eks" {
     efa = {
       # The EKS AL2023 NVIDIA AMI provides all of the necessary components
       # for accelerated workloads w/ EFA
-      ami_type       = "AL2023_x86_64_NVIDIA"
+      ami_type       = "AL2023_X86_64_NVIDIA"
       instance_types = ["p4d.24xlarge"]
 
       # Setting to zero so all resources are created *EXCEPT the EC2 instances
@@ -438,7 +438,7 @@ module "eks_managed_node_group" {
   cluster_primary_security_group_id = module.eks.cluster_primary_security_group_id
   vpc_security_group_ids            = [module.eks.node_security_group_id]
 
-  ami_type = "BOTTLEROCKET_x86_64"
+  ami_type = "BOTTLEROCKET_X86_64"
 
   # this will get added to what AWS provides
   bootstrap_extra_args = <<-EOT

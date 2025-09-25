@@ -15,7 +15,7 @@ locals {
 module "eks_mng_al2_disabled" {
   source = "../../modules/_user_data"
 
-  ami_type = "AL2_x86_64"
+  ami_type = "AL2_X86_64"
   create   = false
 }
 
@@ -23,7 +23,7 @@ module "eks_mng_al2_no_op" {
   source = "../../modules/_user_data"
 
   # Hard requirement
-  ami_type             = "AL2_x86_64"
+  ami_type             = "AL2_X86_64"
   cluster_service_cidr = local.cluster_service_cidr
 }
 
@@ -31,7 +31,7 @@ module "eks_mng_al2_additional" {
   source = "../../modules/_user_data"
 
   # Hard requirement
-  ami_type             = "AL2_x86_64"
+  ami_type             = "AL2_X86_64"
   cluster_service_cidr = local.cluster_service_cidr
 
   pre_bootstrap_user_data = <<-EOT
@@ -42,7 +42,7 @@ module "eks_mng_al2_additional" {
 module "eks_mng_al2_custom_ami" {
   source = "../../modules/_user_data"
 
-  ami_type             = "AL2_x86_64"
+  ami_type             = "AL2_X86_64"
   cluster_name         = local.name
   cluster_endpoint     = local.cluster_endpoint
   cluster_auth_base64  = local.cluster_auth_base64
@@ -64,7 +64,7 @@ module "eks_mng_al2_custom_ami" {
 module "eks_mng_al2_custom_ami_ipv6" {
   source = "../../modules/_user_data"
 
-  ami_type             = "AL2_x86_64"
+  ami_type             = "AL2_X86_64"
   cluster_name         = local.name
   cluster_endpoint     = local.cluster_endpoint
   cluster_auth_base64  = local.cluster_auth_base64
@@ -87,7 +87,7 @@ module "eks_mng_al2_custom_ami_ipv6" {
 module "eks_mng_al2_custom_template" {
   source = "../../modules/_user_data"
 
-  ami_type             = "AL2_x86_64"
+  ami_type             = "AL2_X86_64"
   cluster_name         = local.name
   cluster_endpoint     = local.cluster_endpoint
   cluster_auth_base64  = local.cluster_auth_base64
@@ -114,7 +114,7 @@ module "eks_mng_al2_custom_template" {
 module "eks_mng_al2023_no_op" {
   source = "../../modules/_user_data"
 
-  ami_type = "AL2023_x86_64_STANDARD"
+  ami_type = "AL2023_X86_64_STANDARD"
 
   # Hard requirement
   cluster_service_cidr = local.cluster_service_cidr
@@ -123,7 +123,7 @@ module "eks_mng_al2023_no_op" {
 module "eks_mng_al2023_additional" {
   source = "../../modules/_user_data"
 
-  ami_type = "AL2023_x86_64_STANDARD"
+  ami_type = "AL2023_X86_64_STANDARD"
 
   # Hard requirement
   cluster_service_cidr = local.cluster_service_cidr
@@ -147,7 +147,7 @@ module "eks_mng_al2023_additional" {
 module "eks_mng_al2023_custom_ami" {
   source = "../../modules/_user_data"
 
-  ami_type = "AL2023_x86_64_STANDARD"
+  ami_type = "AL2023_X86_64_STANDARD"
 
   cluster_name         = local.name
   cluster_endpoint     = local.cluster_endpoint
@@ -182,7 +182,7 @@ module "eks_mng_al2023_custom_ami" {
 module "eks_mng_al2023_custom_template" {
   source = "../../modules/_user_data"
 
-  ami_type = "AL2023_x86_64_STANDARD"
+  ami_type = "AL2023_X86_64_STANDARD"
 
   cluster_name         = local.name
   cluster_endpoint     = local.cluster_endpoint
@@ -222,7 +222,7 @@ module "eks_mng_al2023_custom_template" {
 module "eks_mng_bottlerocket_no_op" {
   source = "../../modules/_user_data"
 
-  ami_type = "BOTTLEROCKET_x86_64"
+  ami_type = "BOTTLEROCKET_X86_64"
 
   # Hard requirement
   cluster_service_cidr = local.cluster_service_cidr
@@ -231,7 +231,7 @@ module "eks_mng_bottlerocket_no_op" {
 module "eks_mng_bottlerocket_additional" {
   source = "../../modules/_user_data"
 
-  ami_type             = "BOTTLEROCKET_x86_64"
+  ami_type             = "BOTTLEROCKET_X86_64"
   cluster_service_cidr = local.cluster_service_cidr
 
   bootstrap_extra_args = <<-EOT
@@ -244,7 +244,7 @@ module "eks_mng_bottlerocket_additional" {
 module "eks_mng_bottlerocket_custom_ami" {
   source = "../../modules/_user_data"
 
-  ami_type = "BOTTLEROCKET_x86_64"
+  ami_type = "BOTTLEROCKET_X86_64"
 
   cluster_name         = local.name
   cluster_endpoint     = local.cluster_endpoint
@@ -266,7 +266,7 @@ module "eks_mng_bottlerocket_custom_ami" {
 module "eks_mng_bottlerocket_custom_template" {
   source = "../../modules/_user_data"
 
-  ami_type = "BOTTLEROCKET_x86_64"
+  ami_type = "BOTTLEROCKET_X86_64"
 
   cluster_name        = local.name
   cluster_endpoint    = local.cluster_endpoint
@@ -290,7 +290,7 @@ module "eks_mng_bottlerocket_custom_template" {
 module "eks_mng_windows_no_op" {
   source = "../../modules/_user_data"
 
-  ami_type = "WINDOWS_CORE_2022_x86_64"
+  ami_type = "WINDOWS_CORE_2022_X86_64"
 
   # Hard requirement
   cluster_service_cidr = local.cluster_service_cidr
@@ -299,7 +299,7 @@ module "eks_mng_windows_no_op" {
 module "eks_mng_windows_additional" {
   source = "../../modules/_user_data"
 
-  ami_type = "WINDOWS_CORE_2022_x86_64"
+  ami_type = "WINDOWS_CORE_2022_X86_64"
 
   # Hard requirement
   cluster_service_cidr = local.cluster_service_cidr
@@ -312,7 +312,7 @@ module "eks_mng_windows_additional" {
 module "eks_mng_windows_custom_ami" {
   source = "../../modules/_user_data"
 
-  ami_type = "WINDOWS_CORE_2022_x86_64"
+  ami_type = "WINDOWS_CORE_2022_X86_64"
 
   cluster_name        = local.name
   cluster_endpoint    = local.cluster_endpoint
@@ -336,7 +336,7 @@ module "eks_mng_windows_custom_ami" {
 module "eks_mng_windows_custom_template" {
   source = "../../modules/_user_data"
 
-  ami_type = "WINDOWS_CORE_2022_x86_64"
+  ami_type = "WINDOWS_CORE_2022_X86_64"
 
   cluster_name        = local.name
   cluster_endpoint    = local.cluster_endpoint
@@ -370,14 +370,14 @@ module "self_mng_al2_no_op" {
   is_eks_managed_node_group = false
 
   # Hard requirement
-  ami_type             = "AL2_x86_64"
+  ami_type             = "AL2_X86_64"
   cluster_service_cidr = local.cluster_service_cidr
 }
 
 module "self_mng_al2_bootstrap" {
   source = "../../modules/_user_data"
 
-  ami_type = "AL2_x86_64"
+  ami_type = "AL2_X86_64"
 
   enable_bootstrap_user_data = true
   is_eks_managed_node_group  = false
@@ -402,7 +402,7 @@ module "self_mng_al2_bootstrap" {
 module "self_mng_al2_bootstrap_ipv6" {
   source = "../../modules/_user_data"
 
-  ami_type = "AL2_x86_64"
+  ami_type = "AL2_X86_64"
 
   enable_bootstrap_user_data = true
   is_eks_managed_node_group  = false
@@ -428,7 +428,7 @@ module "self_mng_al2_bootstrap_ipv6" {
 module "self_mng_al2_custom_template" {
   source = "../../modules/_user_data"
 
-  ami_type = "AL2_x86_64"
+  ami_type = "AL2_X86_64"
 
   enable_bootstrap_user_data = true
   is_eks_managed_node_group  = false
@@ -459,7 +459,7 @@ module "self_mng_al2_custom_template" {
 module "self_mng_al2023_no_op" {
   source = "../../modules/_user_data"
 
-  ami_type = "AL2023_x86_64_STANDARD"
+  ami_type = "AL2023_X86_64_STANDARD"
 
   is_eks_managed_node_group = false
 
@@ -470,7 +470,7 @@ module "self_mng_al2023_no_op" {
 module "self_mng_al2023_bootstrap" {
   source = "../../modules/_user_data"
 
-  ami_type = "AL2023_x86_64_STANDARD"
+  ami_type = "AL2023_X86_64_STANDARD"
 
   enable_bootstrap_user_data = true
   is_eks_managed_node_group  = false
@@ -506,7 +506,7 @@ module "self_mng_al2023_bootstrap" {
 module "self_mng_al2023_custom_template" {
   source = "../../modules/_user_data"
 
-  ami_type = "AL2023_x86_64_STANDARD"
+  ami_type = "AL2023_X86_64_STANDARD"
 
   enable_bootstrap_user_data = true
   is_eks_managed_node_group  = false
@@ -548,7 +548,7 @@ module "self_mng_al2023_custom_template" {
 module "self_mng_bottlerocket_no_op" {
   source = "../../modules/_user_data"
 
-  ami_type = "BOTTLEROCKET_x86_64"
+  ami_type = "BOTTLEROCKET_X86_64"
 
   is_eks_managed_node_group = false
 
@@ -559,7 +559,7 @@ module "self_mng_bottlerocket_no_op" {
 module "self_mng_bottlerocket_bootstrap" {
   source = "../../modules/_user_data"
 
-  ami_type = "BOTTLEROCKET_x86_64"
+  ami_type = "BOTTLEROCKET_X86_64"
 
   enable_bootstrap_user_data = true
   is_eks_managed_node_group  = false
@@ -581,7 +581,7 @@ module "self_mng_bottlerocket_bootstrap" {
 module "self_mng_bottlerocket_custom_template" {
   source = "../../modules/_user_data"
 
-  ami_type = "BOTTLEROCKET_x86_64"
+  ami_type = "BOTTLEROCKET_X86_64"
 
   enable_bootstrap_user_data = true
   is_eks_managed_node_group  = false
@@ -609,7 +609,7 @@ module "self_mng_bottlerocket_custom_template" {
 module "self_mng_windows_no_op" {
   source = "../../modules/_user_data"
 
-  ami_type = "WINDOWS_CORE_2022_x86_64"
+  ami_type = "WINDOWS_CORE_2022_X86_64"
 
   is_eks_managed_node_group = false
 
@@ -620,7 +620,7 @@ module "self_mng_windows_no_op" {
 module "self_mng_windows_bootstrap" {
   source = "../../modules/_user_data"
 
-  ami_type = "WINDOWS_CORE_2022_x86_64"
+  ami_type = "WINDOWS_CORE_2022_X86_64"
 
   enable_bootstrap_user_data = true
   is_eks_managed_node_group  = false
@@ -646,7 +646,7 @@ module "self_mng_windows_bootstrap" {
 module "self_mng_windows_custom_template" {
   source = "../../modules/_user_data"
 
-  ami_type = "WINDOWS_CORE_2022_x86_64"
+  ami_type = "WINDOWS_CORE_2022_X86_64"
 
   enable_bootstrap_user_data = true
   is_eks_managed_node_group  = false

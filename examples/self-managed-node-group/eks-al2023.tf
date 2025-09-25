@@ -22,7 +22,7 @@ module "eks_al2023" {
 
   self_managed_node_groups = {
     example = {
-      ami_type      = "AL2023_x86_64_STANDARD"
+      ami_type      = "AL2023_X86_64_STANDARD"
       instance_type = "m6i.large"
 
       min_size = 2

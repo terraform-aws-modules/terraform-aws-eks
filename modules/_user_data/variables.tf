@@ -8,7 +8,7 @@ variable "create" {
 variable "ami_type" {
   description = "Type of Amazon Machine Image (AMI) associated with the EKS Node Group. See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#AmazonEKS-Type-Nodegroup-amiType) for valid values"
   type        = string
-  default     = "AL2023_x86_64_STANDARD"
+  default     = "AL2023_X86_64_STANDARD"
   nullable    = false
 }
 

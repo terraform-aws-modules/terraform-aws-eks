@@ -13,14 +13,14 @@ If you find a bug, please open an issue with supporting configuration to reprodu
 - When enabling `enable_efa_support` or creating placement groups within a node group, users must now specify the correct `subnet_ids`; the module no longer tries to automatically select a suitable subnet.
 - EKS managed node group:
     - IMDS now default to a hop limit of 1 (previously was 2)
-    - `ami_type` now defaults to `AL2023_x86_64_STANDARD`
+    - `ami_type` now defaults to `AL2023_X86_64_STANDARD`
     - `enable_monitoring` is now set to `false` by default
     - `enable_efa_only` is now set to `true` by default
     - `use_latest_ami_release_version` is now set to `true` by default
     - Support for autoscaling group schedules has been removed
 - Self-managed node group:
     - IMDS now default to a hop limit of 1 (previously was 2)
-    - `ami_type` now defaults to `AL2023_x86_64_STANDARD`
+    - `ami_type` now defaults to `AL2023_X86_64_STANDARD`
     - `enable_monitoring` is now set to `false` by default
     - `enable_efa_only` is now set to `true` by default
     - Support for autoscaling group schedules has been removed
@@ -221,7 +221,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     efa = {
-      ami_type       = "AL2023_x86_64_NVIDIA"
+      ami_type       = "AL2023_X86_64_NVIDIA"
       instance_types = ["p5e.48xlarge"]
 
       enable_efa_support = true
@@ -274,7 +274,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     efa = {
-      ami_type       = "AL2023_x86_64_NVIDIA"
+      ami_type       = "AL2023_X86_64_NVIDIA"
       instance_types = ["p5e.48xlarge"]
 
       iam_role_additional_policies = {
