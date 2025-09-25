@@ -32,6 +32,7 @@ If you find a bug, please open an issue with supporting configuration to reprodu
 - `addons.most_recent` is now set to `true` by default (was `false`).
 - `cluster_identity_providers.issuer_url` is now required to be set by users; the prior incorrect default has been removed. See https://github.com/terraform-aws-modules/terraform-aws-eks/pull/3055 and https://github.com/kubernetes/kubernetes/pull/123561 for more details.
 - The OIDC issuer URL for IAM roles for service accounts (IRSA) has been changed to use the new dual stack`oidc-eks` endpoint instead of `oidc.eks`. This is to align with https://github.com/aws/containers-roadmap/issues/2038#issuecomment-2278450601
+- `encryption_config` (formerly `cluster_encryption_config`) is now enabled by default.  If you are migrating a cluster from v20 that used the previously disabled default and wish to preserve this same behavior, you will need to explicitly set this variable to `null`.  If using the new behavior is preferred when migrating you will additionally need to supply a value for the `encryption_config` [key_arn](../variables.tf#L174).
 
 ## Additional changes
 
