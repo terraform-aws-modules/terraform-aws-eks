@@ -14,7 +14,7 @@ resource "null_resource" "validate_cluster_service_cidr" {
 }
 
 locals {
-  ami_type = upper(var.ami_type)
+  ami_type  = upper(var.ami_type)
   is_al2    = startswith(local.ami_type, "AL2_")
   is_al2023 = startswith(local.ami_type, "AL2023_")
 
