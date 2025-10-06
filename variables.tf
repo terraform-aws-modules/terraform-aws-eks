@@ -69,8 +69,7 @@ variable "compute_config" {
     node_pools    = optional(list(string))
     node_role_arn = optional(string)
   })
-  default  = {}
-  nullable = false
+  default = null
 }
 
 variable "upgrade_policy" {

@@ -60,6 +60,9 @@ module "eks_auto_custom_node_pools" {
 
   # Create just the IAM resources for EKS Auto Mode for use with custom node pools
   create_auto_mode_iam_resources = true
+  compute_config = {
+    enabled = true
+  }
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
