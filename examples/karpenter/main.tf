@@ -2,11 +2,6 @@ provider "aws" {
   region = local.region
 }
 
-provider "aws" {
-  region = "us-east-1"
-  alias  = "virginia"
-}
-
 provider "helm" {
   kubernetes = {
     host                   = module.eks.cluster_endpoint
@@ -30,7 +25,7 @@ data "aws_availability_zones" "available" {
 }
 
 data "aws_ecrpublic_authorization_token" "token" {
-  provider = aws.virginia
+  region = "us-east-1"
 }
 
 locals {
