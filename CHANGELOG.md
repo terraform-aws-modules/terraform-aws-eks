@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.3.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.3.1...v21.3.2) (2025-10-06)
+
+
+### Bug Fixes
+
+* Incorporate AWS provider `v6.15` corrections for EKS Auto Mode to support enabling/disabling EKS Auto Mode without affecting non-Auto Mode users ([#3526](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3526)) ([f5f6dae](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f5f6dae50737137d8709b5fe2f4129a1251eacca))
+
 ## [21.3.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.3.0...v21.3.1) (2025-09-16)
 
 
