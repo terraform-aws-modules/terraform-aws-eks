@@ -26,7 +26,7 @@ locals {
   create_outposts_local_cluster = var.outpost_config != null
   enable_encryption_config      = var.encryption_config != null && !local.create_outposts_local_cluster
 
-  create_auto_mode_iam_resources = var.compute_config.enabled || var.create_auto_mode_iam_resources
+  create_auto_mode_iam_resources = try(var.compute_config.enabled, false) == true || var.create_auto_mode_iam_resources
 }
 
 ################################################################################
@@ -58,7 +58,7 @@ resource "aws_eks_cluster" "this" {
   }
 
   dynamic "compute_config" {
-    for_each = [var.compute_config]
+    for_each = var.compute_config != null ? [var.compute_config] : []
 
     content {
       enabled       = compute_config.value.enabled
@@ -81,7 +81,7 @@ resource "aws_eks_cluster" "this" {
 
     content {
       dynamic "elastic_load_balancing" {
-        for_each = [var.compute_config]
+        for_each = var.compute_config != null ? [var.compute_config] : []
 
         content {
           enabled = elastic_load_balancing.value.enabled
@@ -148,7 +148,7 @@ resource "aws_eks_cluster" "this" {
   }
 
   dynamic "storage_config" {
-    for_each = [var.compute_config]
+    for_each = var.compute_config != null ? [var.compute_config] : []
 
     content {
       block_storage {
