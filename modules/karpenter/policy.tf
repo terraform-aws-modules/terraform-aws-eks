@@ -234,7 +234,7 @@ data "aws_iam_policy_document" "controller" {
     condition {
       test     = "StringEquals"
       variable = "iam:PassedToService"
-      values   = [data.aws_service_principal.ec2.name]
+      values   = [local.ec2_service_principal_name]
     }
   }
 
