@@ -274,7 +274,7 @@ data "aws_iam_policy_document" "node_assume_role" {
 
     principals {
       type        = "Service"
-      identifiers = [aws_service_principal.ec2.name]
+      identifiers = [data.aws_service_principal.ec2.name]
     }
   }
 }
