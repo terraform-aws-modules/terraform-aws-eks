@@ -234,7 +234,7 @@ data "aws_iam_policy_document" "controller" {
     condition {
       test     = "StringEquals"
       variable = "iam:PassedToService"
-      values   = distinct(["ec2.${local.dns_suffix}", "ec2.amazonaws.com"])
+      values   = [aws_service_principal.ec2.name]
     }
   }
 

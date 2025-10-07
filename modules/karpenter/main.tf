@@ -12,7 +12,6 @@ data "aws_caller_identity" "current" {
 
 locals {
   account_id = try(data.aws_caller_identity.current[0].account_id, "")
-  dns_suffix = try(data.aws_partition.current[0].dns_suffix, "")
   partition  = try(data.aws_partition.current[0].partition, "")
   region     = try(data.aws_region.current[0].region, "")
 }
@@ -23,6 +22,10 @@ locals {
 
 locals {
   create_iam_role = var.create && var.create_iam_role
+}
+
+data "aws_service_principal" "ec2" {
+  service_name = "ec2"
 }
 
 data "aws_iam_policy_document" "controller_assume_role" {
@@ -271,7 +274,7 @@ data "aws_iam_policy_document" "node_assume_role" {
 
     principals {
       type        = "Service"
-      identifiers = ["ec2.${local.dns_suffix}"]
+      identifiers = [aws_service_principal.ec2.name]
     }
   }
 }
