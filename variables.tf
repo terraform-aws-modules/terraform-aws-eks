@@ -263,6 +263,12 @@ variable "enable_kms_key_rotation" {
   default     = true
 }
 
+variable "kms_key_rotation_period_in_days" {
+  description = "Custom period of time between each key rotation date. If you specify a value, it must be between `90` and `2560`, inclusive. If you do not specify a value, it defaults to `365`"
+  type        = number
+  default     = null
+}
+
 variable "kms_key_enable_default_policy" {
   description = "Specifies whether to enable the default key policy"
   type        = bool
