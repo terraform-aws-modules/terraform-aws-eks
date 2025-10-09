@@ -204,6 +204,32 @@ variable "queue_kms_data_key_reuse_period_seconds" {
   default     = null
 }
 
+variable "queue_policy_additional_statements" {
+  description = "Additional policy statements to add to the SQS queue policy"
+  type = list(object({
+    sid           = optional(string)
+    actions       = optional(list(string))
+    not_actions   = optional(list(string))
+    effect        = optional(string)
+    resources     = optional(list(string))
+    not_resources = optional(list(string))
+    principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    not_principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    condition = optional(list(object({
+      test     = string
+      values   = list(string)
+      variable = string
+    })))
+  }))
+  default = null
+}
+
 ################################################################################
 # Node IAM Role
 ################################################################################
