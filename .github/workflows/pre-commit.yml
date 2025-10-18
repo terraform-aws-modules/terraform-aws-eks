@@ -7,8 +7,8 @@ on:
       - master
 
 env:
-  TERRAFORM_DOCS_VERSION: v0.19.0
-  TFLINT_VERSION: v0.53.0
+  TERRAFORM_DOCS_VERSION: v0.20.0
+  TFLINT_VERSION: v0.59.1
 
 jobs:
   collectInputs:
@@ -18,11 +18,11 @@ jobs:
       directories: ${{ steps.dirs.outputs.directories }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Get root directories
         id: dirs
-        uses: clowdhaus/terraform-composite-actions/directories@v1.9.0
+        uses: clowdhaus/terraform-composite-actions/directories@v1.14.0
 
   preCommitMinVersions:
     name: Min TF pre-commit
@@ -32,27 +32,50 @@ jobs:
       matrix:
         directory: ${{ fromJson(needs.collectInputs.outputs.directories) }}
     steps:
+      - name: Install rmz
+        uses: jaxxstorm/action-install-gh-release@v2.1.0
+        with:
+          repo: SUPERCILEX/fuc
+          asset-name: x86_64-unknown-linux-gnu-rmz
+          rename-to: rmz
+          chmod: 0755
+          extension-matching: disable
+
       # https://github.com/orgs/community/discussions/25678#discussioncomment-5242449
-      - name: Delete huge unnecessary tools folder
+      - name: Delete unnecessary files
         run: |
-          rm -rf /opt/hostedtoolcache/CodeQL
-          rm -rf /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk
-          rm -rf /opt/hostedtoolcache/Ruby
-          rm -rf /opt/hostedtoolcache/go
+          formatByteCount() { echo $(numfmt --to=iec-i --suffix=B --padding=7 $1'000'); }
+          getAvailableSpace() { echo $(df -a $1 | awk 'NR > 1 {avail+=$4} END {print avail}'); }
+
+          BEFORE=$(getAvailableSpace)
+
+          ln -s /opt/hostedtoolcache/SUPERCILEX/x86_64-unknown-linux-gnu-rmz/latest/linux-x64/rmz /usr/local/bin/rmz
+          sudo rmz -f /usr/share/dotnet &
+          sudo rmz -f /usr/local/.ghcup &
+          rmz -f /opt/hostedtoolcache/CodeQL &
+          rmz -f /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk &
+          rmz -f /opt/hostedtoolcache/PyPy &
+          rmz -f /opt/hostedtoolcache/Ruby &
+          rmz -f /opt/hostedtoolcache/go &
+          wait
+
+          AFTER=$(getAvailableSpace)
+          SAVED=$((AFTER-BEFORE))
+          echo "=> Saved $(formatByteCount $SAVED)"
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Terraform min/max versions
         id: minMax
-        uses: clowdhaus/terraform-min-max@v1.3.1
+        uses: clowdhaus/terraform-min-max@v2.1.0
         with:
           directory: ${{ matrix.directory }}
 
       - name: Pre-commit Terraform ${{ steps.minMax.outputs.minVersion }}
         # Run only validate pre-commit check on min version supported
         if: ${{ matrix.directory !=  '.' }}
-        uses: clowdhaus/terraform-composite-actions/pre-commit@v1.11.1
+        uses: clowdhaus/terraform-composite-actions/pre-commit@v1.14.0
         with:
           terraform-version: ${{ steps.minMax.outputs.minVersion }}
           tflint-version: ${{ env.TFLINT_VERSION }}
@@ -61,7 +84,7 @@ jobs:
       - name: Pre-commit Terraform ${{ steps.minMax.outputs.minVersion }}
         # Run only validate pre-commit check on min version supported
         if: ${{ matrix.directory ==  '.' }}
-        uses: clowdhaus/terraform-composite-actions/pre-commit@v1.11.1
+        uses: clowdhaus/terraform-composite-actions/pre-commit@v1.14.0
         with:
           terraform-version: ${{ steps.minMax.outputs.minVersion }}
           tflint-version: ${{ env.TFLINT_VERSION }}
@@ -72,26 +95,49 @@ jobs:
     runs-on: ubuntu-latest
     needs: collectInputs
     steps:
+      - name: Install rmz
+        uses: jaxxstorm/action-install-gh-release@v2.1.0
+        with:
+          repo: SUPERCILEX/fuc
+          asset-name: x86_64-unknown-linux-gnu-rmz
+          rename-to: rmz
+          chmod: 0755
+          extension-matching: disable
+
       # https://github.com/orgs/community/discussions/25678#discussioncomment-5242449
-      - name: Delete huge unnecessary tools folder
+      - name: Delete unnecessary files
         run: |
-          rm -rf /opt/hostedtoolcache/CodeQL
-          rm -rf /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk
-          rm -rf /opt/hostedtoolcache/Ruby
-          rm -rf /opt/hostedtoolcache/go
+          formatByteCount() { echo $(numfmt --to=iec-i --suffix=B --padding=7 $1'000'); }
+          getAvailableSpace() { echo $(df -a $1 | awk 'NR > 1 {avail+=$4} END {print avail}'); }
+
+          BEFORE=$(getAvailableSpace)
+
+          ln -s /opt/hostedtoolcache/SUPERCILEX/x86_64-unknown-linux-gnu-rmz/latest/linux-x64/rmz /usr/local/bin/rmz
+          sudo rmz -f /usr/share/dotnet &
+          sudo rmz -f /usr/local/.ghcup &
+          rmz -f /opt/hostedtoolcache/CodeQL &
+          rmz -f /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk &
+          rmz -f /opt/hostedtoolcache/PyPy &
+          rmz -f /opt/hostedtoolcache/Ruby &
+          rmz -f /opt/hostedtoolcache/go &
+          wait
+
+          AFTER=$(getAvailableSpace)
+          SAVED=$((AFTER-BEFORE))
+          echo "=> Saved $(formatByteCount $SAVED)"
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - name: Terraform min/max versions
         id: minMax
-        uses: clowdhaus/terraform-min-max@v1.3.1
+        uses: clowdhaus/terraform-min-max@v2.1.0
 
       - name: Pre-commit Terraform ${{ steps.minMax.outputs.maxVersion }}
-        uses: clowdhaus/terraform-composite-actions/pre-commit@v1.11.1
+        uses: clowdhaus/terraform-composite-actions/pre-commit@v1.14.0
         with:
           terraform-version: ${{ steps.minMax.outputs.maxVersion }}
           tflint-version: ${{ env.TFLINT_VERSION }}
