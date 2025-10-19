@@ -32,6 +32,8 @@ terraform.rc
 builds/
 __pycache__/
 *.zip
+.tox
 
+# Local editors/macos files
 .DS_Store
 .idea

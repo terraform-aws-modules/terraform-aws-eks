@@ -118,8 +118,7 @@ jobs:
           rmz -f /opt/hostedtoolcache/Ruby &
           rmz -f /opt/hostedtoolcache/go &
 
-          if ${{ github.repository }} == 'terraform-aws-modules/terraform-aws-security-group';
-          then
+          if [[ ${{ github.repository }} == terraform-aws-modules/terraform-aws-security-group ]]; then
             sudo rmz -f /usr/local/lib/android &
             sudo rmz -f /usr/share/dotnet &
             sudo rmz -f /usr/local/.ghcup &
@@ -140,6 +139,11 @@ jobs:
       - name: Terraform min/max versions
         id: minMax
         uses: clowdhaus/terraform-min-max@v2.1.0
+
+      - name: Hide template dir
+        # Special to this repo, we don't want to check this dir
+        if: ${{ github.repository ==  'terraform-aws-modules/terraform-aws-security-group' }}
+        run: rm -rf modules/_templates
 
       - name: Pre-commit Terraform ${{ steps.minMax.outputs.maxVersion }}
         uses: clowdhaus/terraform-composite-actions/pre-commit@v1.14.0
