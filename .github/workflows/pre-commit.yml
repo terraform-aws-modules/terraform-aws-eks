@@ -50,13 +50,12 @@ jobs:
           BEFORE=$(getAvailableSpace)
 
           ln -s /opt/hostedtoolcache/SUPERCILEX/x86_64-unknown-linux-gnu-rmz/latest/linux-x64/rmz /usr/local/bin/rmz
-          sudo rmz -f /usr/share/dotnet &
-          sudo rmz -f /usr/local/.ghcup &
           rmz -f /opt/hostedtoolcache/CodeQL &
           rmz -f /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk &
           rmz -f /opt/hostedtoolcache/PyPy &
           rmz -f /opt/hostedtoolcache/Ruby &
           rmz -f /opt/hostedtoolcache/go &
+
           wait
 
           AFTER=$(getAvailableSpace)
@@ -113,13 +112,19 @@ jobs:
           BEFORE=$(getAvailableSpace)
 
           ln -s /opt/hostedtoolcache/SUPERCILEX/x86_64-unknown-linux-gnu-rmz/latest/linux-x64/rmz /usr/local/bin/rmz
-          sudo rmz -f /usr/share/dotnet &
-          sudo rmz -f /usr/local/.ghcup &
           rmz -f /opt/hostedtoolcache/CodeQL &
           rmz -f /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk &
           rmz -f /opt/hostedtoolcache/PyPy &
           rmz -f /opt/hostedtoolcache/Ruby &
           rmz -f /opt/hostedtoolcache/go &
+
+          if ${{ github.repository }} == 'terraform-aws-modules/terraform-aws-security-group';
+          then
+            sudo rmz -f /usr/local/lib/android &
+            sudo rmz -f /usr/share/dotnet &
+            sudo rmz -f /usr/local/.ghcup &
+          fi
+
           wait
 
           AFTER=$(getAvailableSpace)

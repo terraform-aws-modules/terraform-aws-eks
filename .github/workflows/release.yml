@@ -25,13 +25,22 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
+      - name: Set correct Node.js version
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: |
+          npm install \
+            @semantic-release/changelog@6.0.3 \
+            @semantic-release/git@10.0.1 \
+            conventional-changelog-conventionalcommits@9.1.0
+
       - name: Release
         uses: cycjimmy/semantic-release-action@v5
         with:
           semantic_version: 25.0.0
-          extra_plugins: |
-            @semantic-release/changelog@6.0.3
-            @semantic-release/git@10.0.1
-            conventional-changelog-conventionalcommits@7.1.1
+          working_directory: docs/
         env:
           GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_TOKEN }}
