@@ -117,11 +117,25 @@ jobs:
           rmz -f /opt/hostedtoolcache/PyPy &
           rmz -f /opt/hostedtoolcache/Ruby &
           rmz -f /opt/hostedtoolcache/go &
+          sudo rmz -f /usr/local/lib/android &
 
           if [[ ${{ github.repository }} == terraform-aws-modules/terraform-aws-security-group ]]; then
-            sudo rmz -f /usr/local/lib/android &
             sudo rmz -f /usr/share/dotnet &
             sudo rmz -f /usr/local/.ghcup &
+            sudo apt-get -qq remove -y 'azure-.*'
+            sudo apt-get -qq remove -y 'cpp-.*'
+            sudo apt-get -qq remove -y 'dotnet-runtime-.*'
+            sudo apt-get -qq remove -y 'google-.*'
+            sudo apt-get -qq remove -y 'libclang-.*'
+            sudo apt-get -qq remove -y 'libllvm.*'
+            sudo apt-get -qq remove -y 'llvm-.*'
+            sudo apt-get -qq remove -y 'mysql-.*'
+            sudo apt-get -qq remove -y 'postgresql-.*'
+            sudo apt-get -qq remove -y 'php.*'
+            sudo apt-get -qq remove -y 'temurin-.*'
+            sudo apt-get -qq remove -y kubectl firefox mono-devel
+            sudo apt-get -qq autoremove -y
+            sudo apt-get -qq clean
           fi
 
           wait
