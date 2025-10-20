@@ -112,7 +112,7 @@ variable "iam_role_source_assume_policy_documents" {
 
 variable "iam_policy_statements" {
   description = "A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed"
-  type = list(object({
+  type = list(object({ # TODO - change to `map(object({...}))` in next major version
     sid           = optional(string)
     actions       = optional(list(string))
     not_actions   = optional(list(string))
@@ -206,7 +206,7 @@ variable "queue_kms_data_key_reuse_period_seconds" {
 
 variable "queue_policy_additional_statements" {
   description = "Additional policy statements to add to the SQS queue policy"
-  type = list(object({
+  type = map(object({
     sid           = optional(string)
     actions       = optional(list(string))
     not_actions   = optional(list(string))

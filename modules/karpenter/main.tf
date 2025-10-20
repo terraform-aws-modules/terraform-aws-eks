@@ -145,6 +145,7 @@ data "aws_iam_policy_document" "queue" {
       ]
     }
   }
+
   statement {
     sid    = "DenyHTTP"
     effect = "Deny"
@@ -168,9 +169,10 @@ data "aws_iam_policy_document" "queue" {
   }
 
   dynamic "statement" {
-    for_each = var.queue_policy_additional_statements != null ? var.queue_policy_additional_statements : []
+    for_each = var.queue_policy_additional_statements != null ? var.queue_policy_additional_statements : {}
+
     content {
-      sid           = statement.value.sid
+      sid           = try(coalesce(statement.value.sid, statement.key))
       actions       = statement.value.actions
       not_actions   = statement.value.not_actions
       effect        = statement.value.effect
