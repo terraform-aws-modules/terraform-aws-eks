@@ -41,6 +41,5 @@ jobs:
         uses: cycjimmy/semantic-release-action@v5
         with:
           semantic_version: 25.0.0
-          working_directory: docs/
         env:
           GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_TOKEN }}
