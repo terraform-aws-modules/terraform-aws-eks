@@ -204,8 +204,8 @@ variable "queue_kms_data_key_reuse_period_seconds" {
   default     = null
 }
 
-variable "queue_policy_additional_statements" {
-  description = "Additional policy statements to add to the SQS queue policy"
+variable "queue_policy_statements" {
+  description = "A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific SQS queue policy permissions as needed"
   type = map(object({
     sid           = optional(string)
     actions       = optional(list(string))
