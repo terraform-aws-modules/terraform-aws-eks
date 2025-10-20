@@ -340,6 +340,7 @@ module "kms" {
   key_usage               = "ENCRYPT_DECRYPT"
   deletion_window_in_days = var.kms_key_deletion_window_in_days
   enable_key_rotation     = var.enable_kms_key_rotation
+  rotation_period_in_days = var.kms_key_rotation_period_in_days
 
   # Policy
   enable_default_policy     = var.kms_key_enable_default_policy

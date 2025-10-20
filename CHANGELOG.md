@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.4.0...v21.5.0) (2025-10-20)
+
+
+### Features
+
+* Allow for additional policy statements on sqs queue policy ([#3543](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3543)) ([67557e8](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/67557e8fe866dafd318a9c1d79b08bd9615a839b))
+
+## [21.4.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.3.2...v21.4.0) (2025-10-14)
+
+
+### Features
+
+* Allow setting KMS key rotation period ([#3546](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3546)) ([fd490ea](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/fd490ea897117f3c9346c600cceece6b3fead7e7))
+
 ## [21.3.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.3.1...v21.3.2) (2025-10-06)
 
 
