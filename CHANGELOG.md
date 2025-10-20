@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.6.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.5.0...v21.6.0) (2025-10-20)
+
+
+### Features
+
+* Use `aws_service_principal` data source for deriving IAM service prinicpals ([#3539](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3539)) ([0b0ca66](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/0b0ca6601923e8542f2f692994d5cb0671823c46))
+
 ## [21.5.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.4.0...v21.5.0) (2025-10-20)
 
 
