@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.6.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.6.0...v21.6.1) (2025-10-21)
+
+### Bug Fixes
+
+* Update CI workflow versions to latest ([#3554](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3554)) ([e4e25b1](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e4e25b1c4883698a209b23155005fb2a5257c265))
+
 ## [21.6.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.5.0...v21.6.0) (2025-10-20)
 
 
