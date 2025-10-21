@@ -1,0 +1,1148 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://terraform-aws-modules/terraform-aws-eks/CHANGELOG.pre-v11.0.0/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../UPGRADE-17.0/">
+      
+      
+      <link rel="icon" href="../assets/logo.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.26">
+    
+    
+      
+        <title>Change Log - Terraform AWS EKS</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.6543a935.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+  
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+    
+  
+  
+  <style>:root{--md-admonition-icon--note:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M1 7.775V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 0 1 0 2.474l-5.026 5.026a1.75 1.75 0 0 1-2.474 0l-6.25-6.25A1.752 1.752 0 0 1 1 7.775Zm1.5 0c0 .066.026.13.073.177l6.25 6.25a.25.25 0 0 0 .354 0l5.025-5.025a.25.25 0 0 0 0-.354l-6.25-6.25a.25.25 0 0 0-.177-.073H2.75a.25.25 0 0 0-.25.25ZM6 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/></svg>');--md-admonition-icon--abstract:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M2.5 1.75v11.5c0 .138.112.25.25.25h3.17a.75.75 0 0 1 0 1.5H2.75A1.75 1.75 0 0 1 1 13.25V1.75C1 .784 1.784 0 2.75 0h8.5C12.216 0 13 .784 13 1.75v7.736a.75.75 0 0 1-1.5 0V1.75a.25.25 0 0 0-.25-.25h-8.5a.25.25 0 0 0-.25.25Zm13.274 9.537v-.001l-4.557 4.45a.75.75 0 0 1-1.055-.008l-1.943-1.95a.75.75 0 0 1 1.062-1.058l1.419 1.425 4.026-3.932a.75.75 0 1 1 1.048 1.074ZM4.75 4h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM4 7.75A.75.75 0 0 1 4.75 7h2a.75.75 0 0 1 0 1.5h-2A.75.75 0 0 1 4 7.75Z"/></svg>');--md-admonition-icon--info:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/></svg>');--md-admonition-icon--tip:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.499.75a.75.75 0 0 1 1.5 0v.996C5.9 2.903 6.793 3.65 7.662 4.376l.24.202c-.036-.694.055-1.422.426-2.163C9.1.873 10.794-.045 12.622.26 14.408.558 16 1.94 16 4.25c0 1.278-.954 2.575-2.44 2.734l.146.508.065.22c.203.701.412 1.455.476 2.226.142 1.707-.4 3.03-1.487 3.898C11.714 14.671 10.27 15 8.75 15h-6a.75.75 0 0 1 0-1.5h1.376a4.484 4.484 0 0 1-.563-1.191 3.835 3.835 0 0 1-.05-2.063 4.647 4.647 0 0 1-2.025-.293.75.75 0 0 1 .525-1.406c1.357.507 2.376-.006 2.698-.318l.009-.01a.747.747 0 0 1 1.06 0 .748.748 0 0 1-.012 1.074c-.912.92-.992 1.835-.768 2.586.221.74.745 1.337 1.196 1.621H8.75c1.343 0 2.398-.296 3.074-.836.635-.507 1.036-1.31.928-2.602-.05-.603-.216-1.224-.422-1.93l-.064-.221c-.12-.407-.246-.84-.353-1.29a2.425 2.425 0 0 1-.507-.441 3.075 3.075 0 0 1-.633-1.248.75.75 0 0 1 1.455-.364c.046.185.144.436.31.627.146.168.353.305.712.305.738 0 1.25-.615 1.25-1.25 0-1.47-.95-2.315-2.123-2.51-1.172-.196-2.227.387-2.706 1.345-.46.92-.27 1.774.019 3.062l.042.19a.884.884 0 0 1 .01.05c.348.443.666.949.94 1.553a.75.75 0 1 1-1.365.62c-.553-1.217-1.32-1.94-2.3-2.768L6.7 5.527c-.814-.68-1.75-1.462-2.692-2.619a3.737 3.737 0 0 0-1.023.88c-.406.495-.663 1.036-.722 1.508.116.122.306.21.591.239.388.038.797-.06 1.032-.19a.75.75 0 0 1 .728 1.31c-.515.287-1.23.439-1.906.373-.682-.067-1.473-.38-1.879-1.193L.75 5.677V5.5c0-.984.48-1.94 1.077-2.664.46-.559 1.05-1.055 1.673-1.353V.75Z"/></svg>');--md-admonition-icon--success:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"/></svg>');--md-admonition-icon--question:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.92 6.085h.001a.749.749 0 1 1-1.342-.67c.169-.339.436-.701.849-.977C6.845 4.16 7.369 4 8 4a2.756 2.756 0 0 1 1.637.525c.503.377.863.965.863 1.725 0 .448-.115.83-.329 1.15-.205.307-.47.513-.692.662-.109.072-.22.138-.313.195l-.006.004a6.24 6.24 0 0 0-.26.16.952.952 0 0 0-.276.245.75.75 0 0 1-1.248-.832c.184-.264.42-.489.692-.661.103-.067.207-.132.313-.195l.007-.004c.1-.061.182-.11.258-.161a.969.969 0 0 0 .277-.245C8.96 6.514 9 6.427 9 6.25a.612.612 0 0 0-.262-.525A1.27 1.27 0 0 0 8 5.5c-.369 0-.595.09-.74.187a1.01 1.01 0 0 0-.34.398ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/></svg>');--md-admonition-icon--warning:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"/></svg>');--md-admonition-icon--failure:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M2.344 2.343h-.001a8 8 0 0 1 11.314 11.314A8.002 8.002 0 0 1 .234 10.089a8 8 0 0 1 2.11-7.746Zm1.06 10.253a6.5 6.5 0 1 0 9.108-9.275 6.5 6.5 0 0 0-9.108 9.275ZM6.03 4.97 8 6.94l1.97-1.97a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l1.97 1.97a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-1.97 1.97a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L6.94 8 4.97 6.03a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018Z"/></svg>');--md-admonition-icon--danger:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M9.504.43a1.516 1.516 0 0 1 2.437 1.713L10.415 5.5h2.123c1.57 0 2.346 1.909 1.22 3.004l-7.34 7.142a1.249 1.249 0 0 1-.871.354h-.302a1.25 1.25 0 0 1-1.157-1.723L5.633 10.5H3.462c-1.57 0-2.346-1.909-1.22-3.004L9.503.429Zm1.047 1.074L3.286 8.571A.25.25 0 0 0 3.462 9H6.75a.75.75 0 0 1 .694 1.034l-1.713 4.188 6.982-6.793A.25.25 0 0 0 12.538 7H9.25a.75.75 0 0 1-.683-1.06l2.008-4.418.003-.006a.036.036 0 0 0-.004-.009l-.006-.006-.008-.001c-.003 0-.006.002-.009.004Z"/></svg>');--md-admonition-icon--bug:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M4.72.22a.75.75 0 0 1 1.06 0l1 .999a3.488 3.488 0 0 1 2.441 0l.999-1a.748.748 0 0 1 1.265.332.75.75 0 0 1-.205.729l-.775.776c.616.63.995 1.493.995 2.444v.327c0 .1-.009.197-.025.292.408.14.764.392 1.029.722l1.968-.787a.75.75 0 0 1 .556 1.392L13 7.258V9h2.25a.75.75 0 0 1 0 1.5H13v.5c0 .409-.049.806-.141 1.186l2.17.868a.75.75 0 0 1-.557 1.392l-2.184-.873A4.997 4.997 0 0 1 8 16a4.997 4.997 0 0 1-4.288-2.427l-2.183.873a.75.75 0 0 1-.558-1.392l2.17-.868A5.036 5.036 0 0 1 3 11v-.5H.75a.75.75 0 0 1 0-1.5H3V7.258L.971 6.446a.75.75 0 0 1 .558-1.392l1.967.787c.265-.33.62-.583 1.03-.722a1.677 1.677 0 0 1-.026-.292V4.5c0-.951.38-1.814.995-2.444L4.72 1.28a.75.75 0 0 1 0-1.06Zm.53 6.28a.75.75 0 0 0-.75.75V11a3.5 3.5 0 1 0 7 0V7.25a.75.75 0 0 0-.75-.75ZM6.173 5h3.654A.172.172 0 0 0 10 4.827V4.5a2 2 0 1 0-4 0v.327c0 .096.077.173.173.173Z"/></svg>');--md-admonition-icon--example:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M5 5.782V2.5h-.25a.75.75 0 0 1 0-1.5h6.5a.75.75 0 0 1 0 1.5H11v3.282l3.666 5.76C15.619 13.04 14.543 15 12.767 15H3.233c-1.776 0-2.852-1.96-1.899-3.458Zm-2.4 6.565a.75.75 0 0 0 .633 1.153h9.534a.75.75 0 0 0 .633-1.153L12.225 10.5h-8.45ZM9.5 2.5h-3V6c0 .143-.04.283-.117.403L4.73 9h6.54L9.617 6.403A.746.746 0 0 1 9.5 6Z"/></svg>');--md-admonition-icon--quote:url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M1.75 2.5h10.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5Zm4 5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5Zm0 5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5ZM2.5 7.75v6a.75.75 0 0 1-1.5 0v-6a.75.75 0 0 1 1.5 0Z"/></svg>');}</style>
+
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=ember:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"ember";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indgo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#change-log" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Terraform AWS EKS" class="md-header__button md-logo" aria-label="Terraform AWS EKS" data-md-component="logo">
+      
+  <img src="../assets/terraform-aws.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Terraform AWS EKS
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Change Log
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/terraform-aws-modules/terraform-aws-eks" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    terraform-aws-eks
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Terraform AWS EKS" class="md-nav__button md-logo" aria-label="Terraform AWS EKS" data-md-component="logo">
+      
+  <img src="../assets/terraform-aws.png" alt="logo">
+
+    </a>
+    Terraform AWS EKS
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/terraform-aws-modules/terraform-aws-eks" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    terraform-aws-eks
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../local/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Local Develpment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#v1000-2020-03-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      v10.0.0 - 2020-03-12
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v900-2020-02-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      v9.0.0 - 2020-02-27
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v9.0.0 - 2020-02-27">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important notes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v820-2020-01-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      v8.2.0 - 2020-01-29
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v810-2020-01-17" class="md-nav__link">
+    <span class="md-ellipsis">
+      v8.1.0 - 2020-01-17
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v800-2020-01-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      v8.0.0 - 2020-01-09
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v8.0.0 - 2020-01-09">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-notes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important notes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v701-2019-12-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      v7.0.1 - 2019-12-11
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v700-2019-10-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      v7.0.0 - 2019-10-30
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v7.0.0 - 2019-10-30">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-notes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important notes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v602-2019-10-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      v6.0.2 - 2019-10-07
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v601-2019-09-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      v6.0.1 - 2019-09-25
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v600-2019-09-17" class="md-nav__link">
+    <span class="md-ellipsis">
+      v6.0.0 - 2019-09-17
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="v6.0.0 - 2019-09-17">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-notes_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important notes
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v511-2019-07-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      v5.1.1 - 2019-07-30
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v510-2019-07-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      v5.1.0 - 2019-07-30
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v500-2019-06-19" class="md-nav__link">
+    <span class="md-ellipsis">
+      v5.0.0 - 2019-06-19
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v402-2019-05-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.0.2 - 2019-05-07
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v401-2019-05-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.0.1 - 2019-05-07
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v400-2019-05-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      v4.0.0 - 2019-05-07
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v300-2019-04-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      v3.0.0 - 2019-04-15
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v231-2019-03-26" class="md-nav__link">
+    <span class="md-ellipsis">
+      v2.3.1 - 2019-03-26
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v230-2019-03-20" class="md-nav__link">
+    <span class="md-ellipsis">
+      v2.3.0 - 2019-03-20
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v222-2019-02-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      v2.2.2 - 2019-02-25
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v221-2019-02-18" class="md-nav__link">
+    <span class="md-ellipsis">
+      v2.2.1 - 2019-02-18
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v220-2019-02-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      v2.2.0 - 2019-02-07
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v210-2019-01-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      v2.1.0 - 2019-01-15
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v200-2018-12-14" class="md-nav__link">
+    <span class="md-ellipsis">
+      v2.0.0 - 2018-12-14
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v180-2018-12-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.8.0 - 2018-12-04
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v170-2018-10-09" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.7.0 - 2018-10-09
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v160-2018-09-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.6.0 - 2018-09-04
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v150-2018-08-30" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.5.0 - 2018-08-30
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v140-2018-08-02" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.4.0 - 2018-08-02
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v130-2018-07-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.3.0 - 2018-07-11
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v120-2018-07-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.2.0 - 2018-07-01
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v110-2018-06-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.1.0 - 2018-06-25
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v100-2018-06-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      v1.0.0 - 2018-06-11
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v020-2018-06-08" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.2.0 - 2018-06-08
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v011-2018-06-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      v0.1.1 - 2018-06-07
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v010-2018-06-07" class="md-nav__link">
+    <span class="md-ellipsis">
+      [v0.1.0] - 2018-06-07
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="change-log">Change Log<a class="headerlink" href="#change-log" title="Permanent link">&para;</a></h1>
+<p>All notable changes to this project will be documented in this file.</p>
+<p>The format is based on <a href="http://keepachangelog.com/">Keep a Changelog</a> and this
+project adheres to <a href="http://semver.org/">Semantic Versioning</a>.</p>
+<h2 id="v1000-2020-03-12"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v9.0.0...v10.0.0">v10.0.0</a> - 2020-03-12<a class="headerlink" href="#v1000-2020-03-12" title="Permanent link">&para;</a></h2>
+<p>BREAKING CHANGES:</p>
+<ul>
+<li>Added support for EKS 1.15 (by @sc250024)</li>
+</ul>
+<p>ENHANCEMENTS:</p>
+<ul>
+<li>Ensuring that ami lookup hierarchy is worker_group_launch_templates and worker_groups -&gt; worker_group_defaults -&gt; and finally aws ami lookup (by @ck3mp3r)</li>
+<li>Adding <code>encrypted</code> option to worker's root_block_device as read from the worker configurations (by @craig-rueda)</li>
+<li>Add support for ASG max instance lifetime (by @sidprak)</li>
+<li>Add <code>default_cooldown</code> and <code>health_check_grace_period</code> options to workers ASG (by @ArieLevs)</li>
+<li>Add support for envelope encryption of Secrets (by @babilen5)</li>
+</ul>
+<p>BUG FIXES:</p>
+<ul>
+<li>Fix issue with terraform plan phase when IRSA was enabled and create_eks switches to false (by @daroga0002)</li>
+<li>Remove obsolete assumption from README (kubectl &amp; aws-iam-authenticator) (by @pierresteiner)</li>
+<li>Fix doc about spot instances, cluster-autoscaler should be scheduled on normal instances instead of spot (by @simowaer)</li>
+<li>Use correct policy arns for CN regions (cn-north-1, cn-northwest-1) (by @cofyc)</li>
+<li>Fix support for ASG max instance lifetime for workers (by @barryib)</li>
+</ul>
+<p>NOTES:</p>
+<p>From EKS 1.15, the VPC tag <code>kubernetes.io/cluster/&lt;cluster-name&gt;: shared</code> is no longer required. So we droped those tags from exemples.</p>
+<h2 id="v900-2020-02-27"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.2.0...v9.0.0">v9.0.0</a> - 2020-02-27<a class="headerlink" href="#v900-2020-02-27" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Breaking:</strong> Removal of autoscaling IAM policy and tags (by @max-rocket-internet)</li>
+<li>Revert #631. Add back manage security group flags. (by @ryanooi)</li>
+<li>Changed timeout for creating EKS (by @confiq)</li>
+<li>Added instructions for how to add Windows nodes (by @ivanguravel)</li>
+<li>[CI] Switch <code>Validate</code> github action to use env vars (by @max-rocket-internet)</li>
+<li>[CI] Bump pre-commit-terraform version (by @barryib)</li>
+<li>Added example <code>examples/irsa</code> for IAM Roles for Service Accounts (by @max-rocket-internet)</li>
+<li>Add <code>iam:{Create,Delete,Get}OpenIDConnectProvider</code> grants to the list of required IAM permissions in <code>docs/iam-permissions.md</code> (by @danielelisi)</li>
+<li>Add a <code>name</code> parameter to be able to manually name EKS Managed Node Groups (by @splieth)</li>
+<li>Pinned kubernetes provider version to exactly 1.10.0 across all examples and README.md's (by @andres-de-castro)</li>
+<li>Change variable default <code>wait_for_cluster_cmd</code> from curl to wget (by @daroga0002)</li>
+</ul>
+<h4 id="important-notes">Important notes<a class="headerlink" href="#important-notes" title="Permanent link">&para;</a></h4>
+<p>Autoscaling policy and tags have been removed from this module. This reduces complexity and increases security as the policy was attached to the node group IAM role. To manage it outside of this module either follow the example in <code>examples/irsa</code> to attach an IAM role to the cluster-autoscaler <code>serviceAccount</code> or create <a href="https://github.com/terraform-aws-modules/terraform-aws-eks/blob/v8.2.0/workers.tf#L361-L416">the policy</a> outside this module and pass it in using the <code>workers_additional_policies</code> variable.</p>
+<h2 id="v820-2020-01-29"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.1.0...v8.2.0">v8.2.0</a> - 2020-01-29<a class="headerlink" href="#v820-2020-01-29" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Include ability to configure custom os-specific command for waiting until kube cluster is healthy (@sanjeevgiri)</li>
+<li>Disable creation of ingress rules if worker nodes security groups are exists (@andjelx)</li>
+<li>[CI] Update pre-commit and re-generate docs to work with terraform-docs &gt;= 0.8.1 (@barryib)</li>
+</ul>
+<h2 id="v810-2020-01-17"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...v8.1.0">v8.1.0</a> - 2020-01-17<a class="headerlink" href="#v810-2020-01-17" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fix index reference on destroy for output <code>oidc_provider_arn</code> (@stevie-)</li>
+<li>Add support for restricting access to the public API endpoint (@sidprak)</li>
+<li>Add an <code>ignore_lifecycle</code> rule to prevent Terraform from scaling down ASG behind AWS EKS Managed Node Group (by @davidalger)</li>
+</ul>
+<h2 id="v800-2020-01-09"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v8.0.0...v7.0.1">v8.0.0</a> - 2020-01-09<a class="headerlink" href="#v800-2020-01-09" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Breaking:</strong> Change logic of security group whitelisting. Will always whitelist worker security group on control plane security group either provide one or create new one. See Important notes below for upgrade notes (by @ryanooi)</li>
+<li><strong>Breaking:</strong> Configure the aws-auth configmap using the terraform kubernetes providers. See Important notes below for upgrade notes (by @sdehaes)</li>
+<li>Wait for cluster to respond to kubectl before applying auth map_config (@shaunc)</li>
+<li>Added flag <code>create_eks</code> to conditionally create resources (by @syst0m / @tbeijen)</li>
+<li>Support for AWS EKS Managed Node Groups. (by @wmorgan6796)</li>
+<li>Added a if check on <code>aws-auth</code> configmap when <code>map_roles</code> is empty (by @shanmugakarna)</li>
+<li>Removed no longer used variable <code>write_aws_auth_config</code> (by @tbeijen)</li>
+<li>Exit with error code when <code>aws-auth</code> configmap is unable to be updated (by @knittingdev)</li>
+<li>Fix deprecated interpolation-only expression (by @angelabad)</li>
+<li>Updated required version of AWS Provider to &gt;= v2.38.0 for Managed Node Groups (by @wmorgan6796)</li>
+<li>Updated minimum version of Terraform to avoid a bug (by @dpiddockcmp)</li>
+<li>Fix cluster_oidc_issuer_url output from list to string (by @chewvader)</li>
+<li>Fix idempotency issues for node groups with no remote_access configuration (by @jeffmhastings)</li>
+<li>Fix aws-auth config map for managed node groups (by @wbertelsen)</li>
+<li>Added support to create IAM OpenID Connect Identity Provider to enable EKS Identity Roles for Service Accounts (IRSA). (by @alaa)</li>
+<li>Adding node group iam role arns to outputs. (by @mukgupta)</li>
+<li>Added the OIDC Provider ARN to outputs. (by @eytanhanig)</li>
+<li>Move <code>eks_node_group</code> resources to a submodule (by @dpiddockcmp)</li>
+<li>Add complex output <code>node_groups</code> (by @TBeijen)</li>
+</ul>
+<h4 id="important-notes_1">Important notes<a class="headerlink" href="#important-notes_1" title="Permanent link">&para;</a></h4>
+<p>The way the <code>aws-auth</code> configmap in the <code>kube-system</code> namespaces is managed has been changed. Before this was managed via kubectl using a null resources. This was changed to be managed by the terraform Kubernetes provider.</p>
+<p>To upgrade you have to add the kubernetes provider to the place you are calling the module. You can see examples in
+the <a href="https://github.com/terraform-aws-modules/terraform-aws-eks/tree/93636625740c63fd89ad8bc60ad180761288c54d/examples">examples</a> folder. Then you should import the configmap into Terraform:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>terraform import module.cluster1.kubernetes_config_map.aws_auth[0] kube-system/aws-auth
+</span></code></pre></div>
+<p>You could also delete the aws-auth config map before doing an apply but this means you need to the apply with the <strong>same user/role that created the cluster</strong>.</p>
+<p>For security group whitelisting change. After upgrade, have to remove <code>cluster_create_security_group</code> and <code>worker_create_security_group</code> variable. If you have whitelist worker security group before, you will have to delete it(and apply again) or import it.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>terraform import module.eks.aws_security_group_rule.cluster_https_worker_ingress &lt;CONTROL_PLANE_SECURITY_GROUP_ID&gt;_ingress_tcp_443_443_&lt;WORKER_SECURITY_GROUP_ID&gt;
+</span></code></pre></div>
+<h2 id="v701-2019-12-11"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v7.0.1...v7.0.0">v7.0.1</a> - 2019-12-11<a class="headerlink" href="#v701-2019-12-11" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Test against minimum versions specified in <code>versions.tf</code> (by @dpiddockcmp)</li>
+<li>Updated <code>instance_profile_names</code> and <code>instance_profile_arns</code> outputs to also consider launch template as well as asg (by @ankitwal)</li>
+<li>Fix broken terraform plan/apply on a cluster &lt; 1.14 (by @hodduc)</li>
+<li>Updated application of <code>aws-auth</code> configmap to create <code>kube_config.yaml</code> and <code>aws_auth_configmap.yaml</code> in sequence (and not parallel) to <code>kubectl apply</code> (by @knittingdev)</li>
+</ul>
+<h2 id="v700-2019-10-30"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.2...v7.0.0">v7.0.0</a> - 2019-10-30<a class="headerlink" href="#v700-2019-10-30" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Breaking:</strong> Allow for specifying a custom AMI for the worker nodes. (by @bmcstdio)</li>
+<li>Added support for Windows workers AMIs (by @hodduc)</li>
+<li>Allow for replacing the full userdata text with a <code>userdata_template_file</code> template and <code>userdata_template_extra_args</code> in <code>worker_groups</code> (by @snstanton)</li>
+<li><strong>Breaking:</strong> The <code>kubectl</code> configuration file can now be fully-specified using <code>config_output_path</code>. Previously it was assumed that <code>config_output_path</code> referred to a directory and always ended with a forward slash. This is a breaking change if <code>config_output_path</code> does <strong>not</strong> end with a forward slash (which was advised against by the documentation). (by @joshuaspence)</li>
+<li>Changed logic for setting default <code>ebs_optimized</code> to only require maintaining a list of instance types that don't support it (by @jeffmhastings)</li>
+<li>Bumped minimum terraform version to 0.12.2 to prevent an error on yamlencode function (by @toadjaune)</li>
+<li>Access conditional resource using join function in combination with splat syntax (by @miguelaferreira)</li>
+</ul>
+<h4 id="important-notes_2">Important notes<a class="headerlink" href="#important-notes_2" title="Permanent link">&para;</a></h4>
+<p>An AMI is now specified using the whole name, for example <code>amazon-eks-node-1.14-v20190927</code>.</p>
+<h2 id="v602-2019-10-07"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.1...v6.0.2">v6.0.2</a> - 2019-10-07<a class="headerlink" href="#v602-2019-10-07" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added <code>tags</code> to <code>aws_eks_cluster</code> introduced by terraform-provider-aws 2.31.0 (by @morganchristiansson)</li>
+<li>Add option to enable lifecycle hooks creation (by @barryib)</li>
+<li>Remove helm chart value <code>sslCertPath</code> described in <code>docs/autoscaling.md</code> (by @wi1dcard)</li>
+<li>Attaching of IAM policies for autoscaler and CNI to the worker nodes now optional (by @dpiddockcmp)</li>
+</ul>
+<h2 id="v601-2019-09-25"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v6.0.0...v6.0.1">v6.0.1</a> - 2019-09-25<a class="headerlink" href="#v601-2019-09-25" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added support for different workers AMI's, i.e. with GPU support (by @rvoitenko)</li>
+<li>Use null as default value for <code>target_group_arns</code> attribute of worker autoscaling group (by @tatusl)</li>
+<li>Output empty string when cluster identity is empty (by @tbarry)</li>
+</ul>
+<h2 id="v600-2019-09-17"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.1.0...v6.0.0">v6.0.0</a> - 2019-09-17<a class="headerlink" href="#v600-2019-09-17" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added <code>market_type</code> to <code>workers_launch_template.tf</code> allow the usage of spot nodegroups without mixed instances policy.</li>
+<li>Added support for log group tag in <code>./cluster.tf</code> (@lucas-giaco)</li>
+<li>Added support for workers iam role tag in <code>./workers.tf</code> (@lucas-giaco)</li>
+<li>Added <code>required_providers</code> to enforce provider minimum versions (by @dpiddockcmp)</li>
+<li>Updated <code>local.spot_allocation_strategy</code> docstring to indicate availability of new <code>capacity-optimized</code> option. (by @sc250024)</li>
+<li>Added support for initial lifecycle hooks for autosacling groups (@barryib)</li>
+<li>Added option to recreate ASG when LT or LC changes (by @barryib)</li>
+<li>Ability to specify workers role name (by @ivanich)</li>
+<li>Added output for OIDC Issuer URL (by @russwhelan)</li>
+<li>Added support for Mixed Instance ASG using <code>worker_groups_launch_template</code> variable  (by @sppwf)</li>
+<li>Changed ASG Tags generation using terraform 12 <code>for</code> utility  (by @sppwf)</li>
+<li><strong>Breaking:</strong> Removed <code>worker_groups_launch_template_mixed</code> variable (by @sppwf)</li>
+<li>Update to EKS 1.14 (by @nauxliu)</li>
+<li><strong>Breaking:</strong> Support map users and roles to multiple groups (by @nauxliu)</li>
+<li>Fixed errors sometimes happening during destroy due to usage of coalesce() in local.tf (by @petrikero)</li>
+<li>Removed historical mention of adding caller's IPv4 to cluster security group (by @dpiddockcmp)</li>
+<li>Wrapped <code>kubelet_extra_args</code> in double quotes instead of singe quotes (by @nxf5025)</li>
+<li>Make terraform plan more consistent and avoid unnecessary "(known after apply)" (by @barryib)</li>
+<li>Made sure that <code>market_type</code> was correctly passed to <code>workers_launch_template</code> (by @to266)</li>
+</ul>
+<h4 id="important-notes_3">Important notes<a class="headerlink" href="#important-notes_3" title="Permanent link">&para;</a></h4>
+<p>You will need to move worker groups from <code>worker_groups_launch_template_mixed</code> to <code>worker_groups_launch_template</code>. You can rename terraform resources in the state to avoid an destructive changes.</p>
+<p>Map roles need to rename <code>role_arn</code> to <code>rolearn</code> and <code>group = ""</code> to <code>groups = [""]</code>.</p>
+<h2 id="v511-2019-07-30"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.1.0...v5.1.1">v5.1.1</a> - 2019-07-30<a class="headerlink" href="#v511-2019-07-30" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added new tag in <code>worker.tf</code> with autoscaling_enabled = true flag (by @insider89)</li>
+</ul>
+<h2 id="v510-2019-07-30"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v5.0.0...v5.1.0">v5.1.0</a> - 2019-07-30<a class="headerlink" href="#v510-2019-07-30" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Option to set a KMS key for the log group and encrypt it (by @till-krauss)</li>
+<li>Output the name of the cloudwatch log group (by @gbooth27)</li>
+<li>Added <code>cpu_credits</code> param for the workers defined in <code>worker_groups_launch_template</code> (by @a-shink)</li>
+<li>Added support for EBS Volumes tag in <code>worker_groups_launch_template</code> and <code>workers_launch_template_mixed.tf</code> (by @sppwf)</li>
+<li>Basic example now tags networks correctly, as per <a href="https://docs.aws.amazon.com/eks/latest/userguide/load-balancing.html">ELB documentation</a> and <a href="https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html">ALB documentation</a> (by @karolinepauls)</li>
+<li>Update default override instance types to work with Cluster Autoscaler (by @nauxliu on behalf of RightCapital)</li>
+<li>Examples now specify <code>enable_dns_hostnames = true</code>, as per <a href="https://docs.aws.amazon.com/eks/latest/userguide/network_reqs.html">EKS documentation</a> (by @karolinepauls)</li>
+</ul>
+<h2 id="v500-2019-06-19"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.2...v5.0.0">v5.0.0</a> - 2019-06-19<a class="headerlink" href="#v500-2019-06-19" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added Termination Policy Option to worker ASGs (by @undeadops)</li>
+<li>Update EBS optimized instances type (by @gloutsch)</li>
+<li>Added tagging for iam role created in <code>./cluster.tf</code> (@camilosantana)</li>
+<li>Enable log retention for cloudwatch log groups (by @yuriipolishchuk)</li>
+<li>Update to EKS 1.13 (by @gloutsch)</li>
+<li>Finally, Terraform 0.12 support, <a href="https://github.com/terraform-aws-modules/terraform-aws-eks/pull/394">Upgrade Guide</a> (by @alex-goncharov @nauxliu @timboven)</li>
+<li>All the xx_count variables have been removed (by @nauxliu on behalf of RightCapital)</li>
+<li>Use actual lists in the workers group maps instead of strings with commas (by @nauxliu on behalf of RightCapital)</li>
+<li>Move variable <code>worker_group_tags</code> to workers group's attribute <code>tags</code> (by @nauxliu on behalf of RightCapital)</li>
+<li>Change override instance_types to list (by @nauxliu on behalf of RightCapital)</li>
+<li>Fix toggle for IAM instance profile creation for mixed launch templates (by @jnozo)</li>
+</ul>
+<h2 id="v402-2019-05-07"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.1...v4.0.2">v4.0.2</a> - 2019-05-07<a class="headerlink" href="#v402-2019-05-07" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added 2 new examples, also tidy up basic example (by @max-rocket-internet)</li>
+<li>Updates to travis, PR template (by @max-rocket-internet)</li>
+<li>Fix typo in data.tf (by @max-rocket-internet)</li>
+<li>Add missing launch template items in <code>aws_auth.tf</code> (by @max-rocket-internet)</li>
+</ul>
+<h2 id="v401-2019-05-07"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v4.0.0...v4.0.1">v4.0.1</a> - 2019-05-07<a class="headerlink" href="#v401-2019-05-07" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fix annoying typo: worker_group_xx vs worker_groups_xx (by @max-rocket-internet)</li>
+</ul>
+<h2 id="v400-2019-05-07"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v3.0.0...v4.0.0">v4.0.0</a> - 2019-05-07<a class="headerlink" href="#v400-2019-05-07" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added support for custom service linked role for Auto Scaling group (by @voanhduy1512)</li>
+<li>Added support for custom IAM roles for cluster and workers (by @erks)</li>
+<li>Added cluster ARN to outputs (by @alexsn)</li>
+<li>Added outputs for <code>workers_user_data</code> and <code>workers_default_ami_id</code> (by @max-rocket-internet)</li>
+<li>Added doc about spot instances (by @max-rocket-internet)</li>
+<li>Added new worker group option with a mixed instances policy (by @max-rocket-internet)</li>
+<li>Set default suspended processes for ASG to <code>AZRebalance</code> (by @max-rocket-internet)</li>
+<li>4 small changes to <code>aws_launch_template</code> resource (by @max-rocket-internet)</li>
+<li>(Breaking Change) Rewritten and de-duplicated code related to Launch Templates (by @max-rocket-internet)</li>
+<li>Add .prettierignore file (by @rothandrew)</li>
+<li>Switch to https for the pre-commit repos (by @rothandrew)</li>
+<li>Add instructions on how to enable the docker bridge network (by @rothandrew)</li>
+</ul>
+<h2 id="v300-2019-04-15"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.3.1...v3.0.0">v3.0.0</a> - 2019-04-15<a class="headerlink" href="#v300-2019-04-15" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Fixed: Ability to destroy clusters due to security groups being attached to ENI's (by @whiskeyjimbo)</li>
+<li>Added outputs for worker IAM instance profile(s) (by @soapergem)</li>
+<li>Added support for cluster logging via the <code>cluster_enabled_log_types</code> variable (by @sc250024)</li>
+<li>Updated vpc module version and aws provider version. (by @chenrui333)</li>
+<li>Upgraded default kubernetes version from 1.11 to 1.12 (by @stijndehaes)</li>
+</ul>
+<h2 id="v231-2019-03-26"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.3.0...v2.3.1">v2.3.1</a> - 2019-03-26<a class="headerlink" href="#v231-2019-03-26" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added support for eks public and private endpoints (by @stijndehaes)</li>
+<li>Added minimum inbound traffic rule to the cluster worker security group as per the <a href="https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html">EKS security group requirements</a> (by @sc250024)</li>
+<li>(Breaking Change) Replaced <code>enable_docker_bridge</code> with a generic option called <code>bootstrap_extra_args</code> to resolve <a href="https://github.com/terraform-aws-modules/terraform-aws-eks/issues/310">310</a> (by @max-rocket-internet)</li>
+</ul>
+<h2 id="v230-2019-03-20"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.1...v2.3.0">v2.3.0</a> - 2019-03-20<a class="headerlink" href="#v230-2019-03-20" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Allow additional policies to be attached to worker nodes (by @rottenbytes)</li>
+<li>Ability to specify a placement group for each worker group (by @matheuss)</li>
+<li>"k8s.io/cluster-autoscaler/{cluster-name}" and "k8s.io/cluster-autoscaler/node-template/resources/ephemeral-storage" tags for autoscaling groups (by @tbarrella)</li>
+<li>Added "ec2:DescribeLaunchTemplateVersions" action to worker instance role (by @skang0601)</li>
+<li>Adding ebs encryption for workers launched using workers_launch_template (by @russki)</li>
+<li>Added output for generated kubeconfig filename (by @syst0m)</li>
+<li>Added outputs for cluster role ARN and name (by @spingel)</li>
+<li>Added optional name filter variable to be able to pin worker AMI to a release (by @max-rocket-internet)</li>
+<li>Added <code>--enable-docker-bridge</code> option for bootstrap.sh in AMI (by @michaelmccord)</li>
+</ul>
+<h2 id="v222-2019-02-25"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.1...v2.2.2">v2.2.2</a> - 2019-02-25<a class="headerlink" href="#v222-2019-02-25" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Ability to specify a path for IAM roles (by @tekn0ir)</li>
+</ul>
+<h2 id="v221-2019-02-18"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.2.0...v2.2.1">v2.2.1</a> - 2019-02-18<a class="headerlink" href="#v221-2019-02-18" title="Permanent link">&para;</a></h2>
+<h2 id="v220-2019-02-07"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.1.0...v2.2.0">v2.2.0</a> - 2019-02-07<a class="headerlink" href="#v220-2019-02-07" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Ability to specify a permissions_boundary for IAM roles (by @dylanhellems)</li>
+<li>Ability to configure force_delete for the worker group ASG (by @stefansedich)</li>
+<li>Ability to configure worker group ASG tags (by @stefansedich)</li>
+<li>Added EBS optimized mapping for the g3s.xlarge instance type (by @stefansedich)</li>
+<li><code>enabled_metrics</code> input (by @zanitete)</li>
+<li>write_aws_auth_config to input (by @yutachaos)</li>
+<li>Change worker group ASG to use create_before_destroy (by @stefansedich)</li>
+<li>Fixed a bug where worker group defaults were being used for launch template user data (by @leonsodhi-lf)</li>
+<li>Managed_aws_auth option is true, the aws-auth configmap file is no longer created, and write_aws_auth_config must be set to true to generate config_map. (by @yutachaos)</li>
+</ul>
+<h2 id="v210-2019-01-15"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v2.0.0...v2.1.0">v2.1.0</a> - 2019-01-15<a class="headerlink" href="#v210-2019-01-15" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Initial support for worker groups based on Launch Templates (by @skang0601)</li>
+<li>Updated the <code>update_config_map_aws_auth</code> resource to trigger when the EKS cluster endpoint changes. This likely means that a new cluster was spun up so our ConfigMap won't exist (fixes #234) (by @elatt)</li>
+<li>Removed invalid action from worker_autoscaling iam policy (by @marcelloromani)</li>
+<li>Fixed zsh-specific syntax in retry loop for aws auth config map (by @marcelloromani)</li>
+<li>Fix: fail deployment if applying the aws auth config map still fails after 10 attempts (by @marcelloromani)</li>
+</ul>
+<h2 id="v200-2018-12-14"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.8.0...v2.0.0">v2.0.0</a> - 2018-12-14<a class="headerlink" href="#v200-2018-12-14" title="Permanent link">&para;</a></h2>
+<ul>
+<li>(Breaking Change) New input variables <code>map_accounts_count</code>, <code>map_roles_count</code> and <code>map_users_count</code> to allow using computed values as part of <code>map_accounts</code>, <code>map_roles</code> and <code>map_users</code> configs (by @chili-man on behalf of OpenGov).</li>
+<li>(Breaking Change) New variables <code>cluster_create_security_group</code> and <code>worker_create_security_group</code> to stop <code>value of 'count' cannot be computed</code> error.</li>
+<li>Added ability to choose local-exec interpreter (by @rothandrew)</li>
+<li>Added <code>--with-aggregate-type-defaults</code> option to terraform-docs (by @max-rocket-internet)</li>
+<li>Updated AMI ID filtering to only filter AMIs from current cluster k8s version (by @max-rocket-internet)</li>
+<li>Added <code>pre-commit-terraform</code> git hook to automatically create documentation of inputs/outputs (by @antonbabenko)</li>
+<li>Travis fixes (by @RothAndrew)</li>
+<li>Fixed some Windows compatibility issues (by @RothAndrew)</li>
+</ul>
+<h2 id="v180-2018-12-04"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.7.0...v1.8.0">v1.8.0</a> - 2018-12-04<a class="headerlink" href="#v180-2018-12-04" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Support for using AWS Launch Templates to define autoscaling groups (by @skang0601)</li>
+<li><code>suspended_processes</code> to <code>worker_groups</code> input (by @bkmeneguello)</li>
+<li><code>target_group_arns</code> to <code>worker_groups</code> input (by @zihaoyu)</li>
+<li><code>force_detach_policies</code> to <code>aws_iam_role</code> <code>cluster</code> and <code>workers</code> (by @marky-mark)</li>
+<li>Added sleep while trying to apply the kubernetes configurations if failed, up to 50 seconds (by @rmakram-ims)</li>
+<li><code>cluster_create_security_group</code> and <code>worker_create_security_group</code>. This allows using computed cluster and worker security groups. (by @rmakram-ims)</li>
+<li>new variables worker_groups_launch_template and worker_group_count_launch_template (by @skang0601)</li>
+<li>Remove aws_iam_service_linked_role (by @max-rocket-internet)</li>
+<li>Adjust the order and correct/update the ec2 instance type info. (@chenrui333)</li>
+<li>Removed providers from <code>main.tf</code>. (by @max-rocket-internet)</li>
+<li>Removed <code>configure_kubectl_session</code> references in documentation <a href="https://github.com/terraform-aws-modules/terraform-aws-eks/pull/171">#171</a> (by @dominik-k)</li>
+</ul>
+<h2 id="v170-2018-10-09"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.6.0...v1.7.0">v1.7.0</a> - 2018-10-09<a class="headerlink" href="#v170-2018-10-09" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Worker groups can be created with a specified IAM profile. (from @laverya)</li>
+<li>exposed <code>aws_eks_cluster</code> create and destroy timeouts (by @RGPosadas)</li>
+<li>exposed <code>placement_tenancy</code> for autoscaling group (by @monsterxx03)</li>
+<li>Allow port 443 from EKS service to nodes to run <code>metrics-server</code>. (by @max-rocket-internet)</li>
+<li>fix default worker subnets not working (by @erks)</li>
+<li>fix default worker autoscaling_enabled not working (by @erks)</li>
+<li>Cosmetic syntax changes to improve readability. (by @max-rocket-internet)</li>
+<li>add <code>protect_from_scale_in</code> to solve issue #134 (by @kinghajj)</li>
+</ul>
+<h2 id="v160-2018-09-04"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.5.0...v1.6.0">v1.6.0</a> - 2018-09-04<a class="headerlink" href="#v160-2018-09-04" title="Permanent link">&para;</a></h2>
+<ul>
+<li>add support for <a href="https://aws.amazon.com/blogs/opensource/improvements-eks-worker-node-provisioning/"><code>amazon-eks-node-*</code> AMI with bootstrap script</a> (by @erks)</li>
+<li>expose <code>kubelet_extra_args</code> worker group option (replacing <code>kubelet_node_labels</code>) to allow specifying arbitrary kubelet options (e.g. taints and labels) (by @erks)</li>
+<li>add optional input <code>worker_additional_security_group_ids</code> to allow one or more additional security groups to be added to all worker launch configurations - #47 (by @hhobbsh @mr-joshua)</li>
+<li>add optional input <code>additional_security_group_ids</code> to allow one or more additional security groups to be added to a specific worker launch configuration - #47 (by @mr-joshua)</li>
+<li>allow a custom AMI to be specified as a default (by @erks)</li>
+<li>bugfix for above change (by @max-rocket-internet)</li>
+<li><strong>Breaking change</strong> Removed support for <code>eks-worker-*</code> AMI. The cluster specifying a custom AMI based off of <code>eks-worker-*</code> AMI will have to rebuild the AMI from <code>amazon-eks-node-*</code>.  (by @erks)</li>
+<li><strong>Breaking change</strong> Removed <code>kubelet_node_labels</code> worker group option in favor of <code>kubelet_extra_args</code>. (by @erks)</li>
+</ul>
+<h2 id="v150-2018-08-30"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.4.0...v1.5.0">v1.5.0</a> - 2018-08-30<a class="headerlink" href="#v150-2018-08-30" title="Permanent link">&para;</a></h2>
+<ul>
+<li>add spot_price option to aws_launch_configuration</li>
+<li>add enable_monitoring option to aws_launch_configuration</li>
+<li>add t3 instance class settings</li>
+<li>add aws_iam_service_linked_role for elasticloadbalancing. (by @max-rocket-internet)</li>
+<li>Added autoscaling policies into module that are optionally attached when enabled for a worker group. (by @max-rocket-internet)</li>
+<li><strong>Breaking change</strong> Removed <code>workstation_cidr</code> variable, http callout and unnecessary security rule. (by @dpiddockcmp)
+  If you are upgrading from 1.4 you should fix state after upgrade: <code>terraform state rm module.eks.data.http.workstation_external_ip</code></li>
+<li>Can now selectively override keys in <code>workers_group_defaults</code> variable rather than callers maintaining a duplicate of the whole map. (by @dpiddockcmp)</li>
+</ul>
+<h2 id="v140-2018-08-02"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.3.0...v1.4.0">v1.4.0</a> - 2018-08-02<a class="headerlink" href="#v140-2018-08-02" title="Permanent link">&para;</a></h2>
+<ul>
+<li>manage eks workers' root volume size and type.</li>
+<li><code>workers_asg_names</code> added to outputs. (kudos to @laverya)</li>
+<li>New top level variable <code>worker_group_count</code> added to replace the use of <code>length(var.worker_groups)</code>. This allows using computed values as part of worker group configs. (complaints to @laverya)</li>
+</ul>
+<h2 id="v130-2018-07-11"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.2.0...v1.3.0">v1.3.0</a> - 2018-07-11<a class="headerlink" href="#v130-2018-07-11" title="Permanent link">&para;</a></h2>
+<ul>
+<li>New variables <code>map_accounts</code>, <code>map_roles</code> and <code>map_users</code> in order to manage additional entries in the <code>aws-auth</code> configmap. (by @max-rocket-internet)</li>
+<li>kubelet_node_labels worker group option allows setting --node-labels= in kubelet. (Hat-tip, @bshelton229 👒)</li>
+<li><code>worker_iam_role_arn</code> added to outputs. Sweet, @hatemosphere 🔥</li>
+<li>Worker subnets able to be specified as a dedicated list per autoscaling group. (up top, @bshelton229 🙏)</li>
+</ul>
+<h2 id="v120-2018-07-01"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.1.0...v1.2.0">v1.2.0</a> - 2018-07-01<a class="headerlink" href="#v120-2018-07-01" title="Permanent link">&para;</a></h2>
+<ul>
+<li>new variable <code>pre_userdata</code> added to worker launch configuration allows to run scripts before the plugin does anything. (W00t, @jimbeck 🦉)</li>
+<li>kubeconfig made much more flexible. (Bang up job, @sdavids13 💥)</li>
+<li>ASG desired capacity is now ignored as ASG size is more effectively handed by k8s. (Thanks, @ozbillwang 💇‍♂️)</li>
+<li>Providing security groups didn't behave as expected. This has been fixed. (Good catch, @jimbeck 🔧)</li>
+<li>workstation cidr to be allowed by created security group is now more flexible. (A welcome addition, @jimbeck 🔐)</li>
+</ul>
+<h2 id="v110-2018-06-25"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v1.0.0...v1.1.0">v1.1.0</a> - 2018-06-25<a class="headerlink" href="#v110-2018-06-25" title="Permanent link">&para;</a></h2>
+<ul>
+<li>new variable <code>worker_sg_ingress_from_port</code> allows to change the minimum port number from which pods will accept communication (Thanks, @ilyasotkov 👏).</li>
+<li>expanded on worker example to show how multiple worker autoscaling groups can be created.</li>
+<li>IPv4 is used explicitly to resolve testing from IPv6 networks (thanks, @tsub 🙏).</li>
+<li>Configurable public IP attachment and ssh keys for worker groups. Defaults defined in <code>worker_group_defaults</code>. Nice, @hatemosphere 🌂</li>
+<li><code>worker_iam_role_name</code> now an output. Sweet, @artursmet 🕶️</li>
+<li>IAM test role repaired by @lcharkiewicz 💅</li>
+<li><code>kube-proxy</code> restart no longer needed in userdata. Good catch, @hatemosphere 🔥</li>
+<li>worker ASG reattachment wasn't possible when using <code>name</code>. Moved to <code>name_prefix</code> to allow recreation of resources. Kudos again, @hatemosphere 🐧</li>
+</ul>
+<h2 id="v100-2018-06-11"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v0.2.0...v1.0.0">v1.0.0</a> - 2018-06-11<a class="headerlink" href="#v100-2018-06-11" title="Permanent link">&para;</a></h2>
+<ul>
+<li>security group id can be provided for either/both of the cluster and the workers. If not provided, security groups will be created with sufficient rules to allow cluster-worker communication. - kudos to @tanmng on the idea ⭐</li>
+<li>outputs of security group ids and worker ASG arns added for working with these resources outside the module.</li>
+<li>Worker build out refactored to allow multiple autoscaling groups each having differing specs. If none are given, a single ASG is created with a set of sane defaults - big thanks to @kppullin 🥨</li>
+</ul>
+<h2 id="v020-2018-06-08"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v0.1.1...v0.2.0">v0.2.0</a> - 2018-06-08<a class="headerlink" href="#v020-2018-06-08" title="Permanent link">&para;</a></h2>
+<ul>
+<li>ability to specify extra userdata code to execute following kubelet services start.</li>
+<li>EBS optimization used whenever possible for the given instance type.</li>
+<li>When <code>configure_kubectl_session</code> is set to true the current shell will be configured to talk to the kubernetes cluster using config files output from the module.</li>
+<li>files rendered from dedicated templates to separate out raw code and config from <code>hcl</code></li>
+<li><code>workers_ami_id</code> is now made optional. If not specified, the module will source the latest AWS supported EKS AMI instead.</li>
+</ul>
+<h2 id="v011-2018-06-07"><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v0.1.0...v0.1.1">v0.1.1</a> - 2018-06-07<a class="headerlink" href="#v011-2018-06-07" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Pre-commit hooks fixed and working.</li>
+<li>Made progress on CI, advancing the build to the final <code>kitchen test</code> stage before failing.</li>
+</ul>
+<h2 id="v010-2018-06-07">[v0.1.0] - 2018-06-07<a class="headerlink" href="#v010-2018-06-07" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Everything! Initial release of the module.</li>
+<li>added a local variable to do a lookup against for a dynamic value in userdata which was previously static. Kudos to @tanmng for finding and fixing bug #1!</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs.sticky"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.ad660dcc.min.js"></script>
+      
+    
+  </body>
+</html>
