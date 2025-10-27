@@ -77,7 +77,6 @@ resource "aws_iam_role_policy" "controller" {
   name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}-" : null
   role        = aws_iam_role.controller[0].name
   policy      = data.aws_iam_policy_document.controller[0].json
-
 }
 
 resource "aws_iam_policy" "controller" {
