@@ -71,7 +71,7 @@ resource "aws_iam_role" "controller" {
 }
 
 resource "aws_iam_role_policy" "controller" {
-  count = local.create_iam_role && var.enable_controller_inline_policy ? 1 : 0
+  count = local.create_iam_role && var.enable_inline_policy ? 1 : 0
 
   name        = var.iam_policy_use_name_prefix ? null : var.iam_policy_name
   name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}-" : null
