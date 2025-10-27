@@ -128,7 +128,7 @@ locals {
     }
     # metrics-server, current EKS default port
     ingress_cluster_10251_webhook = {
-      description                   = "Cluster API to node 4443/tcp webhook"
+      description                   = "Cluster API to node 10251/tcp webhook"
       protocol                      = "tcp"
       from_port                     = 10251
       to_port                       = 10251
