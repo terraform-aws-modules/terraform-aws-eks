@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.7.0...v21.8.0) (2025-10-27)
+
+### Features
+
+* Allow using inline policy for Karpenter controller role to mitigate policy size `LimitExceeded` error ([#3563](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3563)) ([0659a8d](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/0659a8d1cca0d62a7d79d4d4534bf9a2c78eed8a)), closes [#3512](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3512)
+
 ## [21.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.6.1...v21.7.0) (2025-10-27)
 
 ### Features
