@@ -32,6 +32,13 @@ variable "create_iam_role" {
   default     = true
 }
 
+variable "enable_controller_inline_policy" {
+  description = "Determines whether controller role policy is inlined"
+  type        = bool
+  default     = false
+}
+
+
 variable "iam_role_name" {
   description = "Name of the IAM role"
   type        = string

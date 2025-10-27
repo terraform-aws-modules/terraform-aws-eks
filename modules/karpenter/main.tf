@@ -70,8 +70,18 @@ resource "aws_iam_role" "controller" {
   tags = merge(var.tags, var.iam_role_tags)
 }
 
+resource "aws_iam_role_policy" "controller" {
+  count = local.create_iam_role && var.enable_controller_inline_policy ? 1 : 0
+
+  name        = var.iam_policy_use_name_prefix ? null : var.iam_policy_name
+  name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}-" : null
+  role        = aws_iam_role.controller[0].name
+  policy      = data.aws_iam_policy_document.controller[0].json
+
+}
+
 resource "aws_iam_policy" "controller" {
-  count = local.create_iam_role ? 1 : 0
+  count = local.create_iam_role && !var.enable_controller_inline_policy ? 1 : 0
 
   name        = var.iam_policy_use_name_prefix ? null : var.iam_policy_name
   name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}-" : null
@@ -83,7 +93,7 @@ resource "aws_iam_policy" "controller" {
 }
 
 resource "aws_iam_role_policy_attachment" "controller" {
-  count = local.create_iam_role ? 1 : 0
+  count = local.create_iam_role && !var.enable_controller_inline_policy ? 1 : 0
 
   role       = aws_iam_role.controller[0].name
   policy_arn = aws_iam_policy.controller[0].arn
