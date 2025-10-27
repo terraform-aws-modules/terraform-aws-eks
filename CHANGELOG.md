@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.7.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.6.1...v21.7.0) (2025-10-27)
+
+### Features
+
+* Add recommended security group rule for port `10251` to match EKS addon for `metrics-server` ([#3562](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3562)) ([de8c550](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/de8c550d5d10017eba4b2c0b492360511fe0c34b))
+
 ## [21.6.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.6.0...v21.6.1) (2025-10-21)
 
 ### Bug Fixes
