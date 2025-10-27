@@ -117,12 +117,21 @@ locals {
       type        = "ingress"
       self        = true
     }
-    # metrics-server
+    # metrics-server, legacy port - TODO: remove this on the next breaking change at v22
     ingress_cluster_4443_webhook = {
       description                   = "Cluster API to node 4443/tcp webhook"
       protocol                      = "tcp"
       from_port                     = 4443
       to_port                       = 4443
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }
+    # metrics-server, current EKS default port
+    ingress_cluster_10251_webhook = {
+      description                   = "Cluster API to node 10251/tcp webhook"
+      protocol                      = "tcp"
+      from_port                     = 10251
+      to_port                       = 10251
       type                          = "ingress"
       source_cluster_security_group = true
     }
