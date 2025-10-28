@@ -117,12 +117,21 @@ locals {
       type        = "ingress"
       self        = true
     }
-    # metrics-server
+    # metrics-server, legacy port - TODO: remove this on the next breaking change at v22
     ingress_cluster_4443_webhook = {
       description                   = "Cluster API to node 4443/tcp webhook"
       protocol                      = "tcp"
       from_port                     = 4443
       to_port                       = 4443
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }
+    # metrics-server, current EKS default port
+    ingress_cluster_10251_webhook = {
+      description                   = "Cluster API to node 10251/tcp webhook"
+      protocol                      = "tcp"
+      from_port                     = 10251
+      to_port                       = 10251
       type                          = "ingress"
       source_cluster_security_group = true
     }
@@ -274,7 +283,8 @@ module "eks_managed_node_group" {
   account_id = local.account_id
 
   cluster_name       = time_sleep.this[0].triggers["name"]
-  kubernetes_version = try(each.value.kubernetes_version, time_sleep.this[0].triggers["kubernetes_version"])
+  kubernetes_version = each.value.kubernetes_version != null ? each.value.kubernetes_version : time_sleep.this[0].triggers["kubernetes_version"]
+
 
   # EKS Managed Node Group
   name            = coalesce(each.value.name, each.key)
@@ -445,88 +455,88 @@ module "self_managed_node_group" {
   autoscaling_group_tags = each.value.autoscaling_group_tags
 
   # User data
-  ami_type                   = try(each.value.ami_type, null)
+  ami_type                   = each.value.ami_type
   cluster_endpoint           = try(time_sleep.this[0].triggers["endpoint"], "")
   cluster_auth_base64        = try(time_sleep.this[0].triggers["certificate_authority_data"], "")
   cluster_service_cidr       = try(time_sleep.this[0].triggers["service_cidr"], "")
-  additional_cluster_dns_ips = try(each.value.additional_cluster_dns_ips, null)
+  additional_cluster_dns_ips = each.value.additional_cluster_dns_ips
   cluster_ip_family          = var.ip_family
-  pre_bootstrap_user_data    = try(each.value.pre_bootstrap_user_data, null)
-  post_bootstrap_user_data   = try(each.value.post_bootstrap_user_data, null)
-  bootstrap_extra_args       = try(each.value.bootstrap_extra_args, null)
-  user_data_template_path    = try(each.value.user_data_template_path, null)
-  cloudinit_pre_nodeadm      = try(each.value.cloudinit_pre_nodeadm, null)
-  cloudinit_post_nodeadm     = try(each.value.cloudinit_post_nodeadm, null)
+  pre_bootstrap_user_data    = each.value.pre_bootstrap_user_data
+  post_bootstrap_user_data   = each.value.post_bootstrap_user_data
+  bootstrap_extra_args       = each.value.bootstrap_extra_args
+  user_data_template_path    = each.value.user_data_template_path
+  cloudinit_pre_nodeadm      = each.value.cloudinit_pre_nodeadm
+  cloudinit_post_nodeadm     = each.value.cloudinit_post_nodeadm
 
   # Launch Template
-  create_launch_template                 = try(each.value.create_launch_template, null)
-  launch_template_id                     = try(each.value.launch_template_id, null)
+  create_launch_template                 = each.value.create_launch_template
+  launch_template_id                     = each.value.launch_template_id
   launch_template_name                   = coalesce(each.value.launch_template_name, each.key)
-  launch_template_use_name_prefix        = try(each.value.launch_template_use_name_prefix, null)
-  launch_template_version                = try(each.value.launch_template_version, null)
-  launch_template_default_version        = try(each.value.launch_template_default_version, null)
-  update_launch_template_default_version = try(each.value.update_launch_template_default_version, null)
+  launch_template_use_name_prefix        = each.value.launch_template_use_name_prefix
+  launch_template_version                = each.value.launch_template_version
+  launch_template_default_version        = each.value.launch_template_default_version
+  update_launch_template_default_version = each.value.update_launch_template_default_version
   launch_template_description            = coalesce(each.value.launch_template_description, "Custom launch template for ${coalesce(each.value.name, each.key)} self managed node group")
-  launch_template_tags                   = try(each.value.launch_template_tags, null)
-  tag_specifications                     = try(each.value.tag_specifications, null)
+  launch_template_tags                   = each.value.launch_template_tags
+  tag_specifications                     = each.value.tag_specifications
 
-  ebs_optimized      = try(each.value.ebs_optimized, null)
-  ami_id             = try(each.value.ami_id, null)
-  kubernetes_version = try(each.value.kubernetes_version, time_sleep.this[0].triggers["kubernetes_version"])
-  instance_type      = try(each.value.instance_type, null)
-  key_name           = try(each.value.key_name, null)
+  ebs_optimized      = each.value.ebs_optimized
+  ami_id             = each.value.ami_id
+  kubernetes_version = each.value.kubernetes_version != null ? each.value.kubernetes_version : time_sleep.this[0].triggers["kubernetes_version"]
+  instance_type      = each.value.instance_type
+  key_name           = each.value.key_name
 
-  disable_api_termination              = try(each.value.disable_api_termination, null)
-  instance_initiated_shutdown_behavior = try(each.value.instance_initiated_shutdown_behavior, null)
-  kernel_id                            = try(each.value.kernel_id, null)
-  ram_disk_id                          = try(each.value.ram_disk_id, null)
+  disable_api_termination              = each.value.disable_api_termination
+  instance_initiated_shutdown_behavior = each.value.instance_initiated_shutdown_behavior
+  kernel_id                            = each.value.kernel_id
+  ram_disk_id                          = each.value.ram_disk_id
 
-  block_device_mappings              = try(each.value.block_device_mappings, null)
-  capacity_reservation_specification = try(each.value.capacity_reservation_specification, null)
-  cpu_options                        = try(each.value.cpu_options, null)
-  credit_specification               = try(each.value.credit_specification, null)
-  enclave_options                    = try(each.value.enclave_options, null)
-  instance_requirements              = try(each.value.instance_requirements, null)
-  instance_market_options            = try(each.value.instance_market_options, null)
-  license_specifications             = try(each.value.license_specifications, null)
-  metadata_options                   = try(each.value.metadata_options, null)
-  enable_monitoring                  = try(each.value.enable_monitoring, null)
-  enable_efa_support                 = try(each.value.enable_efa_support, null)
-  enable_efa_only                    = try(each.value.enable_efa_only, null)
-  efa_indices                        = try(each.value.efa_indices, null)
-  network_interfaces                 = try(each.value.network_interfaces, null)
-  placement                          = try(each.value.placement, null)
-  maintenance_options                = try(each.value.maintenance_options, null)
-  private_dns_name_options           = try(each.value.private_dns_name_options, null)
+  block_device_mappings              = each.value.block_device_mappings
+  capacity_reservation_specification = each.value.capacity_reservation_specification
+  cpu_options                        = each.value.cpu_options
+  credit_specification               = each.value.credit_specification
+  enclave_options                    = each.value.enclave_options
+  instance_requirements              = each.value.instance_requirements
+  instance_market_options            = each.value.instance_market_options
+  license_specifications             = each.value.license_specifications
+  metadata_options                   = each.value.metadata_options
+  enable_monitoring                  = each.value.enable_monitoring
+  enable_efa_support                 = each.value.enable_efa_support
+  enable_efa_only                    = each.value.enable_efa_only
+  efa_indices                        = each.value.efa_indices
+  network_interfaces                 = each.value.network_interfaces
+  placement                          = each.value.placement
+  maintenance_options                = each.value.maintenance_options
+  private_dns_name_options           = each.value.private_dns_name_options
 
   # IAM role
-  create_iam_instance_profile   = try(each.value.create_iam_instance_profile, null)
-  iam_instance_profile_arn      = try(each.value.iam_instance_profile_arn, null)
-  iam_role_name                 = try(each.value.iam_role_name, null)
-  iam_role_use_name_prefix      = try(each.value.iam_role_use_name_prefix, true)
-  iam_role_path                 = try(each.value.iam_role_path, null)
-  iam_role_description          = try(each.value.iam_role_description, null)
-  iam_role_permissions_boundary = try(each.value.iam_role_permissions_boundary, null)
-  iam_role_tags                 = try(each.value.iam_role_tags, null)
-  iam_role_attach_cni_policy    = try(each.value.iam_role_attach_cni_policy, null)
+  create_iam_instance_profile   = each.value.create_iam_instance_profile
+  iam_instance_profile_arn      = each.value.iam_instance_profile_arn
+  iam_role_name                 = each.value.iam_role_name
+  iam_role_use_name_prefix      = each.value.iam_role_use_name_prefix
+  iam_role_path                 = each.value.iam_role_path
+  iam_role_description          = each.value.iam_role_description
+  iam_role_permissions_boundary = each.value.iam_role_permissions_boundary
+  iam_role_tags                 = each.value.iam_role_tags
+  iam_role_attach_cni_policy    = each.value.iam_role_attach_cni_policy
   iam_role_additional_policies  = lookup(each.value, "iam_role_additional_policies", null)
-  create_iam_role_policy        = try(each.value.create_iam_role_policy, null)
-  iam_role_policy_statements    = try(each.value.iam_role_policy_statements, null)
+  create_iam_role_policy        = each.value.create_iam_role_policy
+  iam_role_policy_statements    = each.value.iam_role_policy_statements
 
   # Access entry
-  create_access_entry = try(each.value.create_access_entry, null)
-  iam_role_arn        = try(each.value.iam_role_arn, null)
+  create_access_entry = each.value.create_access_entry
+  iam_role_arn        = each.value.iam_role_arn
 
   # Security group
-  vpc_security_group_ids            = compact(concat([local.node_security_group_id], try(each.value.vpc_security_group_ids, [])))
-  cluster_primary_security_group_id = try(each.value.attach_cluster_primary_security_group, false) ? aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id : null
-  create_security_group             = try(each.value.create_security_group, null)
-  security_group_name               = try(each.value.security_group_name, null)
-  security_group_use_name_prefix    = try(each.value.security_group_use_name_prefix, null)
-  security_group_description        = try(each.value.security_group_description, null)
-  security_group_ingress_rules      = try(each.value.security_group_ingress_rules, null)
-  security_group_egress_rules       = try(each.value.security_group_egress_rules, null)
-  security_group_tags               = try(each.value.security_group_tags, null)
+  vpc_security_group_ids            = compact(concat([local.node_security_group_id], each.value.vpc_security_group_ids))
+  cluster_primary_security_group_id = each.value.attach_cluster_primary_security_group ? aws_eks_cluster.this[0].vpc_config[0].cluster_security_group_id : null
+  create_security_group             = each.value.create_security_group
+  security_group_name               = each.value.security_group_name
+  security_group_use_name_prefix    = each.value.security_group_use_name_prefix
+  security_group_description        = each.value.security_group_description
+  security_group_ingress_rules      = each.value.security_group_ingress_rules
+  security_group_egress_rules       = each.value.security_group_egress_rules
+  security_group_tags               = each.value.security_group_tags
 
   tags = merge(
     var.tags,

@@ -164,7 +164,79 @@ module "eks" {
       }
     }
 
-    # Complete
+    instance_attributes = {
+      name = "instance-attributes"
+
+      min_size     = 1
+      max_size     = 2
+      desired_size = 1
+
+      cloudinit_pre_nodeadm = [{
+        content      = <<-EOT
+          ---
+          apiVersion: node.eks.aws/v1alpha1
+          kind: NodeConfig
+          spec:
+            kubelet:
+              config:
+                shutdownGracePeriod: 30s
+        EOT
+        content_type = "application/node.eks.aws"
+      }]
+
+      instance_type = null
+
+      # launch template configuration
+      instance_requirements = {
+        cpu_manufacturers                           = ["intel"]
+        instance_generations                        = ["current", "previous"]
+        spot_max_price_percentage_over_lowest_price = 100
+
+        memory_mib = {
+          min = 8192
+        }
+
+        vcpu_count = {
+          min = 1
+        }
+
+        allowed_instance_types = ["t*", "m*"]
+      }
+
+      use_mixed_instances_policy = true
+      mixed_instances_policy = {
+        instances_distribution = {
+          on_demand_base_capacity                  = 0
+          on_demand_percentage_above_base_capacity = 0
+          on_demand_allocation_strategy            = "lowest-price"
+          spot_allocation_strategy                 = "price-capacity-optimized"
+        }
+
+        # ASG configuration
+        launch_template = {
+          override = [
+            {
+              instance_requirements = {
+                cpu_manufacturers                           = ["intel"]
+                instance_generations                        = ["current", "previous"]
+                spot_max_price_percentage_over_lowest_price = 100
+
+                memory_mib = {
+                  min = 8192
+                }
+
+                vcpu_count = {
+                  min = 1
+                }
+
+                allowed_instance_types = ["t*", "m*"]
+              }
+            }
+          ]
+        }
+      }
+    }
+
     complete = {
       name            = "complete-self-mng"
       use_name_prefix = false
@@ -212,73 +284,6 @@ module "eks" {
         }
       }
 
-      instance_attributes = {
-        name = "instance-attributes"
-
-        min_size     = 1
-        max_size     = 2
-        desired_size = 1
-
-        bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-
-        cloudinit_pre_nodeadm = [{
-          content      = <<-EOT
-          ---
-          apiVersion: node.eks.aws/v1alpha1
-          kind: NodeConfig
-          spec:
-            kubelet:
-              config:
-                shutdownGracePeriod: 30s
-        EOT
-          content_type = "application/node.eks.aws"
-        }]
-
-        instance_type = null
-
-        # launch template configuration
-        instance_requirements = {
-          cpu_manufacturers                           = ["intel"]
-          instance_generations                        = ["current", "previous"]
-          spot_max_price_percentage_over_lowest_price = 100
-
-          vcpu_count = {
-            min = 1
-          }
-
-          allowed_instance_types = ["t*", "m*"]
-        }
-
-        use_mixed_instances_policy = true
-        mixed_instances_policy = {
-          instances_distribution = {
-            on_demand_base_capacity                  = 0
-            on_demand_percentage_above_base_capacity = 0
-            on_demand_allocation_strategy            = "lowest-price"
-            spot_allocation_strategy                 = "price-capacity-optimized"
-          }
-
-          # ASG configuration
-          launch_template = {
-            override = [
-              {
-                instance_requirements = {
-                  cpu_manufacturers                           = ["intel"]
-                  instance_generations                        = ["current", "previous"]
-                  spot_max_price_percentage_over_lowest_price = 100
-
-                  vcpu_count = {
-                    min = 1
-                  }
-
-                  allowed_instance_types = ["t*", "m*"]
-                }
-              }
-            ]
-          }
-        }
-      }
-
       metadata_options = {
         http_endpoint               = "enabled"
         http_tokens                 = "required"
@@ -304,14 +309,15 @@ module "eks" {
     }
 
     efa = {
-      # Disabling automatic creation due to instance type/quota availability
-      # Can be enabled when appropriate for testing/validation
-      create = false
-
       # The EKS AL2023 NVIDIA AMI provides all of the necessary components
       # for accelerated workloads w/ EFA
       ami_type       = "AL2023_x86_64_NVIDIA"
-      instance_types = ["p5e.48xlarge"]
+      instance_types = ["p4d.24xlarge"]
+
+      # Setting to zero so all resources are created *EXCEPT the EC2 instances
+      min_size     = 0
+      max_size     = 1
+      desired_size = 0
 
       # Mount instance store volumes in RAID-0 for kubelet and containerd
       # https://github.com/awslabs/amazon-eks-ami/blob/master/doc/USER_GUIDE.md#raid-0-for-kubelet-and-containerd-raid0
@@ -336,11 +342,7 @@ module "eks" {
       # 3. Expose all of the available EFA interfaces on the launch template
       enable_efa_support = true
       enable_efa_only    = true
-      efa_indices        = [0, 4, 8, 12]
-
-      min_size     = 2
-      max_size     = 2
-      desired_size = 2
+      efa_indices        = [0]
 
       labels = {
         "vpc.amazonaws.com/efa.present" = "true"

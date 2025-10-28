@@ -41,7 +41,7 @@ module "user_data" {
 ################################################################################
 
 data "aws_ec2_instance_type" "this" {
-  count = var.create && var.enable_efa_support ? 1 : 0
+  count = local.enable_efa_support ? 1 : 0
 
   region = var.region
 
@@ -62,6 +62,24 @@ locals {
       device_index                = i == 0 ? 0 : 1
       network_card_index          = i
       interface_type              = var.enable_efa_only ? contains(concat([0], var.efa_indices), i) ? "efa" : "efa-only" : "efa"
+
+      # Null out due to error: The true and false result expressions must have consistent types. The 'true' value is tuple, but the 'false' value is list of objects.
+      associate_carrier_ip_address      = null
+      connection_tracking_specification = null
+      description                       = "EFA${var.enable_efa_only ? "-only" : ""} Network Interface ${i}"
+      ena_srd_specification             = null
+      ipv4_address_count                = null
+      ipv4_addresses                    = null
+      ipv4_prefix_count                 = null
+      ipv4_prefixes                     = null
+      ipv6_address_count                = null
+      ipv6_addresses                    = null
+      ipv6_prefix_count                 = null
+      ipv6_prefixes                     = null
+      network_interface_id              = null
+      primary_ipv6                      = null
+      private_ip_address                = null
+      security_groups                   = []
     }
   ]
 
@@ -224,7 +242,7 @@ resource "aws_launch_template" "this" {
   }
 
   dynamic "metadata_options" {
-    for_each = var.metadata_options != null ? [var.metadata_options] : []
+    for_each = [var.metadata_options]
 
     content {
       http_endpoint               = metadata_options.value.http_endpoint
@@ -247,7 +265,7 @@ resource "aws_launch_template" "this" {
   name_prefix = var.launch_template_use_name_prefix ? "${local.launch_template_name}-" : null
 
   dynamic "network_interfaces" {
-    for_each = length(var.network_interfaces) > 0 ? var.network_interfaces : []
+    for_each = length(local.network_interfaces) > 0 ? local.network_interfaces : []
 
     content {
       associate_carrier_ip_address = network_interfaces.value.associate_carrier_ip_address
@@ -297,7 +315,7 @@ resource "aws_launch_template" "this" {
       primary_ipv6         = network_interfaces.value.primary_ipv6
       private_ip_address   = network_interfaces.value.private_ip_address
       # Ref: https://github.com/hashicorp/terraform-provider-aws/issues/4570
-      security_groups = compact(concat(network_interfaces.value.security_groups, var.vpc_security_group_ids))
+      security_groups = compact(concat(network_interfaces.value.security_groups, local.security_group_ids))
       # Set on EKS managed node group, will fail if set here
       # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-basics
       # subnet_id       = try(network_interfaces.value.subnet_id, null)
@@ -688,9 +706,16 @@ locals {
     {
       all_self_efa = {
         description = "Node to node EFA"
-        protocol    = "-1"
-        from_port   = 0
+        ip_protocol = "-1"
         self        = true
+
+        # Null out due to variable type and not using `try()` in resource
+        cidr_ipv4      = null
+        cidr_ipv6      = null
+        from_port      = null
+        name           = null
+        prefix_list_id = null
+        tags           = {}
       }
     } : k => v if var.enable_efa_support
     },
@@ -700,9 +725,16 @@ locals {
     {
       all_self_efa = {
         description = "Node to node EFA"
-        protocol    = "-1"
-        to_port     = 0
+        ip_protocol = "-1"
         self        = true
+
+        # Null out due to variable type and not using `try()` in resource
+        cidr_ipv4      = null
+        cidr_ipv6      = null
+        to_port        = null
+        name           = null
+        prefix_list_id = null
+        tags           = {}
       }
     } : k => v if var.enable_efa_support
     },

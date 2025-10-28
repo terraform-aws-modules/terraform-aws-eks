@@ -163,6 +163,7 @@ variable "ami_id" {
   description = "The AMI from which to launch the instance. If not supplied, EKS will use its own default image"
   type        = string
   default     = ""
+  nullable    = false
 }
 
 variable "key_name" {
@@ -383,7 +384,6 @@ variable "network_interfaces" {
     primary_ipv6         = optional(bool)
     private_ip_address   = optional(string)
     security_groups      = optional(list(string), [])
-    subnet_id            = optional(string)
   }))
   default  = []
   nullable = false

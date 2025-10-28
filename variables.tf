@@ -44,6 +44,12 @@ variable "enabled_log_types" {
   default     = ["audit", "api", "authenticator"]
 }
 
+variable "deletion_protection" {
+  description = "Whether to enable deletion protection for the cluster. When enabled, the cluster cannot be deleted unless deletion protection is first disabled"
+  type        = bool
+  default     = null
+}
+
 variable "force_update_version" {
   description = "Force version update by overriding upgrade-blocking readiness checks when updating a cluster"
   type        = bool
@@ -218,7 +224,7 @@ variable "access_entries" {
         namespaces = optional(list(string))
         type       = string
       })
-    })))
+    })), {})
   }))
   default = {}
 }
@@ -255,6 +261,12 @@ variable "enable_kms_key_rotation" {
   description = "Specifies whether key rotation is enabled"
   type        = bool
   default     = true
+}
+
+variable "kms_key_rotation_period_in_days" {
+  description = "Custom period of time between each key rotation date. If you specify a value, it must be between `90` and `2560`, inclusive. If you do not specify a value, it defaults to `365`"
+  type        = number
+  default     = null
 }
 
 variable "kms_key_enable_default_policy" {
@@ -605,6 +617,12 @@ variable "enable_auto_mode_custom_tags" {
   default     = true
 }
 
+variable "create_auto_mode_iam_resources" {
+  description = "Determines whether to create/attach IAM resources for EKS Auto Mode. Useful for when using only custom node pools and not built-in EKS Auto Mode node pools"
+  type        = bool
+  default     = false
+}
+
 ################################################################################
 # EKS Addons
 ################################################################################
@@ -629,7 +647,7 @@ variable "addons" {
       create = optional(string)
       update = optional(string)
       delete = optional(string)
-    }))
+    }), {})
     tags = optional(map(string), {})
   }))
   default = null
@@ -642,7 +660,7 @@ variable "addons_timeouts" {
     update = optional(string)
     delete = optional(string)
   })
-  default = null
+  default = {}
 }
 
 ################################################################################
@@ -783,7 +801,9 @@ variable "fargate_profiles" {
 variable "self_managed_node_groups" {
   description = "Map of self-managed node group definitions to create"
   type = map(object({
-    create = optional(bool, true)
+    create             = optional(bool)
+    kubernetes_version = optional(string)
+
     # Autoscaling Group
     create_autoscaling_group         = optional(bool)
     name                             = optional(string) # Will fall back to map key
@@ -839,7 +859,8 @@ variable "self_managed_node_groups" {
       }))
       strategy = optional(string)
       triggers = optional(list(string))
-    }))
+      })
+    )
     use_mixed_instances_policy = optional(bool)
     mixed_instances_policy = optional(object({
       instances_distribution = optional(object({
@@ -1157,6 +1178,7 @@ variable "self_managed_node_groups" {
     create_access_entry = optional(bool)
     iam_role_arn        = optional(string)
     # Security group
+    vpc_security_group_ids                = optional(list(string), [])
     attach_cluster_primary_security_group = optional(bool, false)
     create_security_group                 = optional(bool)
     security_group_name                   = optional(string)

@@ -32,6 +32,12 @@ variable "create_iam_role" {
   default     = true
 }
 
+variable "enable_inline_policy" {
+  description = "Determines whether the controller policy is created as a standard IAM policy or inline IAM policy. This can be enabled when the error `LimitExceeded: Cannot exceed quota for PolicySize: 6144` is received since standard IAM policies have a limit of 6,144 characters versus an inline role policy's limit of 10,240 ([Reference](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html))"
+  type        = bool
+  default     = false
+}
+
 variable "iam_role_name" {
   description = "Name of the IAM role"
   type        = string
@@ -112,7 +118,7 @@ variable "iam_role_source_assume_policy_documents" {
 
 variable "iam_policy_statements" {
   description = "A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed"
-  type = list(object({
+  type = list(object({ # TODO - change to `map(object({...}))` in next major version
     sid           = optional(string)
     actions       = optional(list(string))
     not_actions   = optional(list(string))
@@ -202,6 +208,32 @@ variable "queue_kms_data_key_reuse_period_seconds" {
   description = "The length of time, in seconds, for which Amazon SQS can reuse a data key to encrypt or decrypt messages before calling AWS KMS again"
   type        = number
   default     = null
+}
+
+variable "queue_policy_statements" {
+  description = "A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific SQS queue policy permissions as needed"
+  type = map(object({
+    sid           = optional(string)
+    actions       = optional(list(string))
+    not_actions   = optional(list(string))
+    effect        = optional(string)
+    resources     = optional(list(string))
+    not_resources = optional(list(string))
+    principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    not_principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    condition = optional(list(object({
+      test     = string
+      values   = list(string)
+      variable = string
+    })))
+  }))
+  default = null
 }
 
 ################################################################################

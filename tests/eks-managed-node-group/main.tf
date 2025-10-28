@@ -318,14 +318,15 @@ module "eks" {
     }
 
     efa = {
-      # Disabling automatic creation due to instance type/quota availability
-      # Can be enabled when appropriate for testing/validation
-      create = false
-
       # The EKS AL2023 NVIDIA AMI provides all of the necessary components
       # for accelerated workloads w/ EFA
       ami_type       = "AL2023_x86_64_NVIDIA"
-      instance_types = ["p5e.48xlarge"]
+      instance_types = ["p4d.24xlarge"]
+
+      # Setting to zero so all resources are created *EXCEPT the EC2 instances
+      min_size     = 0
+      max_size     = 1
+      desired_size = 0
 
       # Mount instance store volumes in RAID-0 for kubelet and containerd
       # https://github.com/awslabs/amazon-eks-ami/blob/master/doc/USER_GUIDE.md#raid-0-for-kubelet-and-containerd-raid0
@@ -350,11 +351,7 @@ module "eks" {
       # 3. Expose all of the available EFA interfaces on the launch template
       enable_efa_support = true
       enable_efa_only    = true
-      efa_indices        = [0, 4, 8, 12]
-
-      min_size     = 1
-      max_size     = 1
-      desired_size = 1
+      efa_indices        = [0]
 
       labels = {
         "vpc.amazonaws.com/efa.present" = "true"
@@ -407,6 +404,12 @@ module "eks" {
           }
         }
       }
+    }
+
+    no-policy = {
+      kubernetes_groups = ["something"]
+      principal_arn     = data.aws_caller_identity.current.arn
+      user_name         = "someone"
     }
   }
 

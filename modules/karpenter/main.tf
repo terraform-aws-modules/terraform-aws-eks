@@ -3,18 +3,26 @@ data "aws_region" "current" {
 
   region = var.region
 }
+
 data "aws_partition" "current" {
   count = var.create ? 1 : 0
 }
+
 data "aws_caller_identity" "current" {
   count = var.create ? 1 : 0
 }
 
+data "aws_service_principal" "ec2" {
+  count = var.create ? 1 : 0
+
+  service_name = "ec2"
+}
+
 locals {
-  account_id = try(data.aws_caller_identity.current[0].account_id, "")
-  dns_suffix = try(data.aws_partition.current[0].dns_suffix, "")
-  partition  = try(data.aws_partition.current[0].partition, "")
-  region     = try(data.aws_region.current[0].region, "")
+  account_id  = try(data.aws_caller_identity.current[0].account_id, "")
+  ec2_sp_name = try(data.aws_service_principal.ec2[0].name, "")
+  partition   = try(data.aws_partition.current[0].partition, "")
+  region      = try(data.aws_region.current[0].region, "")
 }
 
 ################################################################################
@@ -62,8 +70,17 @@ resource "aws_iam_role" "controller" {
   tags = merge(var.tags, var.iam_role_tags)
 }
 
+resource "aws_iam_role_policy" "controller" {
+  count = local.create_iam_role && var.enable_inline_policy ? 1 : 0
+
+  name        = var.iam_policy_use_name_prefix ? null : var.iam_policy_name
+  name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}-" : null
+  role        = aws_iam_role.controller[0].name
+  policy      = data.aws_iam_policy_document.controller[0].json
+}
+
 resource "aws_iam_policy" "controller" {
-  count = local.create_iam_role ? 1 : 0
+  count = local.create_iam_role && !var.enable_inline_policy ? 1 : 0
 
   name        = var.iam_policy_use_name_prefix ? null : var.iam_policy_name
   name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}-" : null
@@ -75,7 +92,7 @@ resource "aws_iam_policy" "controller" {
 }
 
 resource "aws_iam_role_policy_attachment" "controller" {
-  count = local.create_iam_role ? 1 : 0
+  count = local.create_iam_role && !var.enable_inline_policy ? 1 : 0
 
   role       = aws_iam_role.controller[0].name
   policy_arn = aws_iam_policy.controller[0].arn
@@ -145,6 +162,7 @@ data "aws_iam_policy_document" "queue" {
       ]
     }
   }
+
   statement {
     sid    = "DenyHTTP"
     effect = "Deny"
@@ -164,6 +182,47 @@ data "aws_iam_policy_document" "queue" {
       identifiers = [
         "*"
       ]
+    }
+  }
+
+  dynamic "statement" {
+    for_each = var.queue_policy_statements != null ? var.queue_policy_statements : {}
+
+    content {
+      sid           = try(coalesce(statement.value.sid, statement.key))
+      actions       = statement.value.actions
+      not_actions   = statement.value.not_actions
+      effect        = statement.value.effect
+      resources     = statement.value.resources
+      not_resources = statement.value.not_resources
+
+      dynamic "principals" {
+        for_each = statement.value.principals != null ? statement.value.principals : []
+
+        content {
+          type        = principals.value.type
+          identifiers = principals.value.identifiers
+        }
+      }
+
+      dynamic "not_principals" {
+        for_each = statement.value.not_principals != null ? statement.value.not_principals : []
+
+        content {
+          type        = not_principals.value.type
+          identifiers = not_principals.value.identifiers
+        }
+      }
+
+      dynamic "condition" {
+        for_each = statement.value.condition != null ? statement.value.condition : []
+
+        content {
+          test     = condition.value.test
+          values   = condition.value.values
+          variable = condition.value.variable
+        }
+      }
     }
   }
 }
@@ -271,7 +330,7 @@ data "aws_iam_policy_document" "node_assume_role" {
 
     principals {
       type        = "Service"
-      identifiers = ["ec2.${local.dns_suffix}"]
+      identifiers = [local.ec2_sp_name]
     }
   }
 }
@@ -297,7 +356,7 @@ resource "aws_iam_role_policy_attachment" "node" {
   for_each = { for k, v in merge(
     {
       AmazonEKSWorkerNodePolicy          = "${local.node_iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy"
-      AmazonEC2ContainerRegistryReadOnly = "${local.node_iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly"
+      AmazonEC2ContainerRegistryPullOnly = "${local.node_iam_role_policy_prefix}/AmazonEC2ContainerRegistryPullOnly"
     },
     local.ipv4_cni_policy,
     local.ipv6_cni_policy
