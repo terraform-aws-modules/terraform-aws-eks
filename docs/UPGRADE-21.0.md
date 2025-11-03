@@ -84,6 +84,7 @@ If you find a bug, please open an issue with supporting configuration to reprodu
         - `irsa_oidc_provider_arn`
         - `irsa_namespace_service_accounts`
         - `irsa_assume_role_condition_test`
+    - `self-managed-node-group-defaults`
 
 2. Renamed variables:
 
