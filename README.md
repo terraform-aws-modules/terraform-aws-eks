@@ -37,7 +37,7 @@ Please note that we strive to provide a comprehensive suite of documentation for
 > }
 >```
 >
-> If you try to disable by simply removing the `compute_config` block, this will fail to disble EKS Auto Mode. Only after applying with `enabled = false` can you then remove the `compute_config` block from your configurations.
+> If you try to disable by simply removing the `compute_config` block, this will fail to disable EKS Auto Mode. Only after applying with `enabled = false` can you then remove the `compute_config` block from your configurations.
 
 ```hcl
 module "eks" {
