@@ -1,13 +1,9 @@
-data "aws_partition" "current" {
-  count = var.create && var.partition == "" ? 1 : 0
-}
-data "aws_caller_identity" "current" {
-  count = var.create && var.account_id == "" ? 1 : 0
-}
+data "aws_partition" "current" {}
+data "aws_caller_identity" "current" {}
 
 locals {
-  partition  = try(data.aws_partition.current[0].partition, var.partition)
-  account_id = try(data.aws_caller_identity.current[0].account_id, var.account_id)
+  partition  = var.partition == "" ? data.aws_partition.current.partition : var.partition 
+  account_id = var.account_id == "" ? data.aws_caller_identity.current.account_id : var.account_id
 }
 
 ################################################################################
