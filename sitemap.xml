@@ -2,50 +2,50 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://terraform-aws-modules/terraform-aws-eks/</loc>
-         <lastmod>2025-11-12</lastmod>
+         <lastmod>2025-11-14</lastmod>
     </url>
     <url>
          <loc>https://terraform-aws-modules/terraform-aws-eks/CHANGELOG.pre-v11.0.0/</loc>
-         <lastmod>2025-11-12</lastmod>
+         <lastmod>2025-11-14</lastmod>
     </url>
     <url>
          <loc>https://terraform-aws-modules/terraform-aws-eks/UPGRADE-17.0/</loc>
-         <lastmod>2025-11-12</lastmod>
+         <lastmod>2025-11-14</lastmod>
     </url>
     <url>
          <loc>https://terraform-aws-modules/terraform-aws-eks/UPGRADE-18.0/</loc>
-         <lastmod>2025-11-12</lastmod>
+         <lastmod>2025-11-14</lastmod>
     </url>
     <url>
          <loc>https://terraform-aws-modules/terraform-aws-eks/UPGRADE-19.0/</loc>
-         <lastmod>2025-11-12</lastmod>
+         <lastmod>2025-11-14</lastmod>
     </url>
     <url>
          <loc>https://terraform-aws-modules/terraform-aws-eks/UPGRADE-20.0/</loc>
-         <lastmod>2025-11-12</lastmod>
+         <lastmod>2025-11-14</lastmod>
     </url>
     <url>
          <loc>https://terraform-aws-modules/terraform-aws-eks/UPGRADE-21.0/</loc>
-         <lastmod>2025-11-12</lastmod>
+         <lastmod>2025-11-14</lastmod>
     </url>
     <url>
          <loc>https://terraform-aws-modules/terraform-aws-eks/compute_resources/</loc>
-         <lastmod>2025-11-12</lastmod>
+         <lastmod>2025-11-14</lastmod>
     </url>
     <url>
          <loc>https://terraform-aws-modules/terraform-aws-eks/faq/</loc>
-         <lastmod>2025-11-12</lastmod>
+         <lastmod>2025-11-14</lastmod>
     </url>
     <url>
          <loc>https://terraform-aws-modules/terraform-aws-eks/local/</loc>
-         <lastmod>2025-11-12</lastmod>
+         <lastmod>2025-11-14</lastmod>
     </url>
     <url>
          <loc>https://terraform-aws-modules/terraform-aws-eks/network_connectivity/</loc>
-         <lastmod>2025-11-12</lastmod>
+         <lastmod>2025-11-14</lastmod>
     </url>
     <url>
          <loc>https://terraform-aws-modules/terraform-aws-eks/user_data/</loc>
-         <lastmod>2025-11-12</lastmod>
+         <lastmod>2025-11-14</lastmod>
     </url>
 </urlset>
