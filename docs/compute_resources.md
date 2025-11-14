@@ -150,4 +150,4 @@ See the [`examples/self-managed-node-group/` example](https://github.com/terrafo
 
 ### Fargate Profiles
 
-Fargate profiles are straightforward to use and therefore no further details are provided here. See the [`tests/fargate-profile/` tests](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/tests/fargate-profile) for a working example of various configurations.
+Fargate profiles are straightforward to use and therefore no further details are provided here. See the [`tests/eks-fargate-profile/` tests](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/tests/eks-fargate-profile) for a working example of various configurations.
