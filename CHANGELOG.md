@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.9.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.8.0...v21.9.0) (2025-11-16)
+
+### Features
+
+* Add support for node repair configuration arguments ([#3585](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3585)) ([c0ed29b](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c0ed29b922d22c5950161ddde9c458b1f60708da))
+
 ## [21.8.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.7.0...v21.8.0) (2025-10-27)
 
 ### Features
