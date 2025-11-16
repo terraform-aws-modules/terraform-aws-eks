@@ -517,7 +517,22 @@ resource "aws_eks_node_group" "this" {
     for_each = var.node_repair_config != null ? [var.node_repair_config] : []
 
     content {
-      enabled = node_repair_config.value.enabled
+      enabled                                 = node_repair_config.value.enabled
+      max_parallel_nodes_repaired_count       = node_repair_config.value.max_parallel_nodes_repaired_count
+      max_parallel_nodes_repaired_percentage  = node_repair_config.value.max_parallel_nodes_repaired_percentage
+      max_unhealthy_node_threshold_count      = node_repair_config.value.max_unhealthy_node_threshold_count
+      max_unhealthy_node_threshold_percentage = node_repair_config.value.max_unhealthy_node_threshold_percentage
+
+      dynamic "node_repair_config_overrides" {
+        for_each = node_repair_config.value.node_repair_config_overrides != null ? node_repair_config.value.node_repair_config_overrides : []
+
+        content {
+          min_repair_wait_time_mins = node_repair_config_overrides.value.min_repair_wait_time_mins
+          node_monitoring_condition = node_repair_config_overrides.value.node_monitoring_condition
+          node_unhealthy_reason     = node_repair_config_overrides.value.node_unhealthy_reason
+          repair_action             = node_repair_config_overrides.value.repair_action
+        }
+      }
     }
   }
 

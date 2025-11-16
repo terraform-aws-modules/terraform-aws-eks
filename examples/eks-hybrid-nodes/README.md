@@ -26,7 +26,7 @@ Note that this example may create resources which cost money. Run `terraform des
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.15 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.20 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 3.0 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | >= 3.4 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.5 |
@@ -36,8 +36,8 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.15 |
-| <a name="provider_aws.remote"></a> [aws.remote](#provider\_aws.remote) | >= 6.15 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.20 |
+| <a name="provider_aws.remote"></a> [aws.remote](#provider\_aws.remote) | >= 6.20 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | >= 3.0 |
 | <a name="provider_http"></a> [http](#provider\_http) | >= 3.4 |
 | <a name="provider_local"></a> [local](#provider\_local) | >= 2.5 |
