@@ -440,6 +440,7 @@ locals {
   create_oidc_provider = local.create && var.enable_irsa && !local.create_outposts_local_cluster
 
   oidc_root_ca_thumbprint = local.create_oidc_provider && var.include_oidc_root_ca_thumbprint ? [data.tls_certificate.this[0].certificates[0].sha1_fingerprint] : []
+  oidc_thumprint_list     = concat(local.oidc_root_ca_thumbprint, var.custom_oidc_thumbprints)
 }
 
 data "tls_certificate" "this" {
@@ -454,7 +455,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
   count = local.create_oidc_provider ? 1 : 0
 
   client_id_list  = distinct(compact(concat(["sts.amazonaws.com"], var.openid_connect_audiences)))
-  thumbprint_list = concat(local.oidc_root_ca_thumbprint, var.custom_oidc_thumbprints)
+  thumbprint_list = length(local.oidc_thumprint_list) == 0 ? null : local.oidc_thumprint_list
   url             = aws_eks_cluster.this[0].identity[0].oidc[0].issuer
 
   tags = merge(
