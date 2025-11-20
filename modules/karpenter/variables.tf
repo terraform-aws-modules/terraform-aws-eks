@@ -349,7 +349,7 @@ variable "rule_name_prefix" {
 }
 
 variable "rule_name_use_terraform_prefix" {
-  description = "Determines whether the generated rule name is used by Terraform as a prefix"
+  description = "Determines whether the generated rule name (`rule_name_prefix` + internal rule suffix) is used by Terraform as a prefix"
   type        = bool
   default     = true
 }
