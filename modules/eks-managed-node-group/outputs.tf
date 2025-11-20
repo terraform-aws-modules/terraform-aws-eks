@@ -93,3 +93,23 @@ output "security_group_id" {
   description = "ID of the security group"
   value       = try(aws_security_group.this[0].id, null)
 }
+
+################################################################################
+# Placement Group
+################################################################################
+
+
+output "placement_group_id" {
+  description = "The ID of the created placement group"
+  value       = try(aws_placement_group.this[0].id, null)
+}
+
+output "placement_group_arn" {
+  description = "The ARN of the created placement group"
+  value       = try(aws_placement_group.this[0].arn, null)
+}
+
+output "placement_group_name" {
+  description = "The name of the created placement group"
+  value       = try(aws_placement_group.this[0].name, null)
+}
