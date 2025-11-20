@@ -282,7 +282,9 @@ resource "aws_cloudwatch_event_rule" "this" {
 
   region = var.region
 
-  name_prefix   = "${var.rule_name_prefix}${each.value.name}-"
+  name        = var.rule_name_use_terraform_prefix ? null : "${var.rule_name_prefix}${each.value.name}"
+  name_prefix = var.rule_name_use_terraform_prefix ? "${var.rule_name_prefix}${each.value.name}-" : null
+
   description   = each.value.description
   event_pattern = jsonencode(each.value.event_pattern)
 

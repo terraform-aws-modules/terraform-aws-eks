@@ -347,3 +347,9 @@ variable "rule_name_prefix" {
   type        = string
   default     = "Karpenter"
 }
+
+variable "rule_name_use_terraform_prefix" {
+  description = "Determines whether the generated rule name is used by Terraform as a prefix"
+  type        = bool
+  default     = true
+}
