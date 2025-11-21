@@ -253,7 +253,7 @@ variable "cluster_ip_family" {
 }
 
 variable "node_iam_role_arn" {
-  description = "Existing IAM role ARN for the IAM instance profile. Required if `create_iam_role` is set to `false`"
+  description = "Existing IAM role ARN for the IAM instance profile. Required if `create_node_iam_role` is set to `false`"
   type        = string
   default     = null
 }
