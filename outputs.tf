@@ -88,6 +88,11 @@ output "cluster_ip_family" {
   value       = try(aws_eks_cluster.this[0].kubernetes_network_config[0].ip_family, null)
 }
 
+output "cluster_control_plane_scaling_tier" {
+  description = "The EKS Provisioned Control Plane scaling tier for the cluster"
+  value       = try(aws_eks_cluster.this[0].control_plane_scaling_config[0].tier, null)
+}
+
 ################################################################################
 # Access Entry
 ################################################################################

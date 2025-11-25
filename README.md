@@ -100,6 +100,39 @@ module "eks" {
 }
 ```
 
+### EKS Provisioned Control Plane
+
+EKS Provisioned Control Plane allows you to provision a control plane with increased capacity for larger workloads. Valid tier values are `standard`, `tier-xl`, `tier-2xl`, and `tier-4xl`.
+
+```hcl
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 21.0"
+
+  name               = "my-cluster"
+  kubernetes_version = "1.33"
+
+  # Optional
+  endpoint_public_access = true
+
+  # Optional: Adds the current caller identity as an administrator via cluster access entry
+  enable_cluster_creator_admin_permissions = true
+
+  # EKS Provisioned Control Plane configuration
+  control_plane_scaling_config = {
+    tier = "tier-xl"
+  }
+
+  vpc_id     = "vpc-1234556abcdef"
+  subnet_ids = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
+
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
+}
+```
+
 ### EKS Managed Node Group
 
 ```hcl

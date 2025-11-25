@@ -57,6 +57,14 @@ resource "aws_eks_cluster" "this" {
     bootstrap_cluster_creator_admin_permissions = false
   }
 
+  dynamic "control_plane_scaling_config" {
+    for_each = var.control_plane_scaling_config != null ? [var.control_plane_scaling_config] : []
+
+    content {
+      tier = control_plane_scaling_config.value.tier
+    }
+  }
+
   dynamic "compute_config" {
     for_each = var.compute_config != null ? [var.compute_config] : []
 

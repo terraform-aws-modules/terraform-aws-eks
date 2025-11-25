@@ -72,6 +72,14 @@ variable "compute_config" {
   default = null
 }
 
+variable "control_plane_scaling_config" {
+  description = "Configuration block for the EKS Provisioned Control Plane scaling tier. Valid values for tier are `standard`, `tier-xl`, `tier-2xl`, and `tier-4xl`"
+  type = object({
+    tier = string
+  })
+  default = null
+}
+
 variable "upgrade_policy" {
   description = "Configuration block for the cluster upgrade policy"
   type = object({
