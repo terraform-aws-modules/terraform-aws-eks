@@ -5,6 +5,12 @@ variable "create" {
   nullable    = false
 }
 
+variable "prefix_separator" {
+  description = "The separator to use between the prefix and the generated timestamp for resource names"
+  type        = string
+  default     = "-"
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)

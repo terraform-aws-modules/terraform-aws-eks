@@ -415,8 +415,9 @@ module "self_managed_node_group" {
   # Autoscaling Group
   create_autoscaling_group = each.value.create_autoscaling_group
 
-  name            = coalesce(each.value.name, each.key)
-  use_name_prefix = each.value.use_name_prefix
+  name             = coalesce(each.value.name, each.key)
+  use_name_prefix  = each.value.use_name_prefix
+  prefix_separator = var.prefix_separator
 
   availability_zones = each.value.availability_zones
   subnet_ids         = coalesce(each.value.subnet_ids, var.subnet_ids)
