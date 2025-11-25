@@ -569,12 +569,8 @@ locals {
   iam_role_name          = coalesce(var.iam_role_name, "${var.name}-eks-node-group")
   iam_role_policy_prefix = "arn:${local.partition}:iam::aws:policy"
 
-  ipv4_cni_policy = { for k, v in {
-    AmazonEKS_CNI_Policy = "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
-  } : k => v if var.iam_role_attach_cni_policy && var.cluster_ip_family == "ipv4" }
-  ipv6_cni_policy = { for k, v in {
-    AmazonEKS_CNI_IPv6_Policy = "arn:${local.partition}:iam::${local.account_id}:policy/AmazonEKS_CNI_IPv6_Policy"
-  } : k => v if var.iam_role_attach_cni_policy && var.cluster_ip_family == "ipv6" }
+  base_cni_policy = "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
+  ipv6_cni_policy = "arn:${local.partition}:iam::${local.account_id}:policy/AmazonEKS_CNI_IPv6_Policy"
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
@@ -613,8 +609,12 @@ resource "aws_iam_role_policy_attachment" "this" {
       AmazonEKSWorkerNodePolicy          = "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy"
       AmazonEC2ContainerRegistryReadOnly = "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly"
     },
-    local.ipv4_cni_policy,
-    local.ipv6_cni_policy
+    var.iam_role_attach_cni_policy ? {
+        AmazonEKS_CNI_Policy = local.base_cni_policy,
+    } : {},
+    (var.iam_role_attach_cni_policy && var.cluster_ip_family == "ipv6") ? {
+        AmazonEKS_CNI_IPv6_Policy = local.ipv6_cni_policy,
+    } : {},
   ) : k => v if local.create_iam_role }
 
   policy_arn = each.value
