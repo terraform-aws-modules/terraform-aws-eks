@@ -808,6 +808,7 @@ variable "self_managed_node_groups" {
     create_autoscaling_group         = optional(bool)
     name                             = optional(string) # Will fall back to map key
     use_name_prefix                  = optional(bool)
+    prefix_separator                 = optional(string)
     availability_zones               = optional(list(string))
     subnet_ids                       = optional(list(string))
     min_size                         = optional(number)

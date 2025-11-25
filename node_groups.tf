@@ -417,7 +417,7 @@ module "self_managed_node_group" {
 
   name             = coalesce(each.value.name, each.key)
   use_name_prefix  = each.value.use_name_prefix
-  prefix_separator = var.prefix_separator
+  prefix_separator = each.value.prefix_separator
 
   availability_zones = each.value.availability_zones
   subnet_ids         = coalesce(each.value.subnet_ids, var.subnet_ids)
