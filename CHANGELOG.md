@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.10.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.9.0...v21.10.0) (2025-11-27)
+
+### Features
+
+* Add support for Provisioned Control Plane ([#3597](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3597)) ([d3d6697](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/d3d6697b33dd3ce283626caf4d36fc9ba7a99827))
+
 ## [21.9.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.8.0...v21.9.0) (2025-11-16)
 
 ### Features
