@@ -100,6 +100,39 @@ module "eks" {
 }
 ```
 
+### EKS Provisioned Control Plane
+
+EKS Provisioned Control Plane allows you to provision a control plane with increased capacity for larger workloads. Valid tier values are `standard`, `tier-xl`, `tier-2xl`, and `tier-4xl`.
+
+```hcl
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 21.0"
+
+  name               = "my-cluster"
+  kubernetes_version = "1.33"
+
+  # Optional
+  endpoint_public_access = true
+
+  # Optional: Adds the current caller identity as an administrator via cluster access entry
+  enable_cluster_creator_admin_permissions = true
+
+  # EKS Provisioned Control Plane configuration
+  control_plane_scaling_config = {
+    tier = "tier-xl"
+  }
+
+  vpc_id     = "vpc-1234556abcdef"
+  subnet_ids = ["subnet-abcde012", "subnet-bcde012a", "subnet-fghi345a"]
+
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
+}
+```
+
 ### EKS Managed Node Group
 
 ```hcl
@@ -437,6 +470,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | <a name="input_cloudwatch_log_group_tags"></a> [cloudwatch\_log\_group\_tags](#input\_cloudwatch\_log\_group\_tags) | A map of additional tags to add to the cloudwatch log group created | `map(string)` | `{}` | no |
 | <a name="input_cluster_tags"></a> [cluster\_tags](#input\_cluster\_tags) | A map of additional tags to add to the cluster | `map(string)` | `{}` | no |
 | <a name="input_compute_config"></a> [compute\_config](#input\_compute\_config) | Configuration block for the cluster compute configuration | <pre>object({<br/>    enabled       = optional(bool, false)<br/>    node_pools    = optional(list(string))<br/>    node_role_arn = optional(string)<br/>  })</pre> | `null` | no |
+| <a name="input_control_plane_scaling_config"></a> [control\_plane\_scaling\_config](#input\_control\_plane\_scaling\_config) | Configuration block for the EKS Provisioned Control Plane scaling tier. Valid values for tier are `standard`, `tier-xl`, `tier-2xl`, and `tier-4xl` | <pre>object({<br/>    tier = string<br/>  })</pre> | `null` | no |
 | <a name="input_control_plane_subnet_ids"></a> [control\_plane\_subnet\_ids](#input\_control\_plane\_subnet\_ids) | A list of subnet IDs where the EKS cluster control plane (ENIs) will be provisioned. Used for expanding the pool of subnets used by nodes/node groups without replacing the EKS control plane | `list(string)` | `[]` | no |
 | <a name="input_create"></a> [create](#input\_create) | Controls if resources should be created (affects nearly all resources) | `bool` | `true` | no |
 | <a name="input_create_auto_mode_iam_resources"></a> [create\_auto\_mode\_iam\_resources](#input\_create\_auto\_mode\_iam\_resources) | Determines whether to create/attach IAM resources for EKS Auto Mode. Useful for when using only custom node pools and not built-in EKS Auto Mode node pools | `bool` | `false` | no |
@@ -539,6 +573,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | <a name="output_cluster_addons"></a> [cluster\_addons](#output\_cluster\_addons) | Map of attribute maps for all EKS cluster addons enabled |
 | <a name="output_cluster_arn"></a> [cluster\_arn](#output\_cluster\_arn) | The Amazon Resource Name (ARN) of the cluster |
 | <a name="output_cluster_certificate_authority_data"></a> [cluster\_certificate\_authority\_data](#output\_cluster\_certificate\_authority\_data) | Base64 encoded certificate data required to communicate with the cluster |
+| <a name="output_cluster_control_plane_scaling_tier"></a> [cluster\_control\_plane\_scaling\_tier](#output\_cluster\_control\_plane\_scaling\_tier) | The EKS Provisioned Control Plane scaling tier for the cluster |
 | <a name="output_cluster_dualstack_oidc_issuer_url"></a> [cluster\_dualstack\_oidc\_issuer\_url](#output\_cluster\_dualstack\_oidc\_issuer\_url) | Dual-stack compatible URL on the EKS cluster for the OpenID Connect identity provider |
 | <a name="output_cluster_endpoint"></a> [cluster\_endpoint](#output\_cluster\_endpoint) | Endpoint for your Kubernetes API server |
 | <a name="output_cluster_iam_role_arn"></a> [cluster\_iam\_role\_arn](#output\_cluster\_iam\_role\_arn) | Cluster IAM role ARN |

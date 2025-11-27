@@ -57,6 +57,11 @@ module "eks" {
   enable_cluster_creator_admin_permissions = true
   endpoint_public_access                   = true
 
+  # EKS Provisioned Control Plane configuration
+  control_plane_scaling_config = {
+    tier = "standard"
+  }
+
   addons = {
     coredns = {}
     eks-pod-identity-agent = {
