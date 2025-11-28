@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.10.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.10.0...v21.10.1) (2025-11-28)
+
+### Bug Fixes
+
+* Update minimum required version of AWS provider for provisioned control plane ([#3603](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3603)) ([dc4de4f](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/dc4de4fec0d1c50669ac957fbedc26cac0ebe940))
+
 ## [21.10.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.9.0...v21.10.0) (2025-11-27)
 
 ### Features
