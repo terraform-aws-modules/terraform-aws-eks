@@ -4,15 +4,15 @@ data "aws_region" "current" {
   region = var.region
 }
 data "aws_partition" "current" {
-  count = var.create && var.partition == "" ? 1 : 0
+  count = var.create ? 1 : 0
 }
 data "aws_caller_identity" "current" {
-  count = var.create && var.account_id == "" ? 1 : 0
+  count = var.create ? 1 : 0
 }
 
 locals {
-  account_id = try(data.aws_caller_identity.current[0].account_id, var.account_id)
-  partition  = try(data.aws_partition.current[0].partition, var.partition)
+  account_id = try(data.aws_caller_identity.current[0].account_id, "")
+  partition  = try(data.aws_partition.current[0].partition, "")
   region     = try(data.aws_region.current[0].region, "")
 }
 
