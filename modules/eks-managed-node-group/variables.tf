@@ -186,6 +186,12 @@ variable "update_launch_template_default_version" {
   nullable    = false
 }
 
+variable "disable_api_stop" {
+  description = "If true, enables EC2 instance stop protection"
+  type        = bool
+  default     = null
+}
+
 variable "disable_api_termination" {
   description = "If true, enables EC2 instance termination protection"
   type        = bool

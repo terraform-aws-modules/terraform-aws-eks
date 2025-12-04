@@ -332,6 +332,7 @@ module "eks_managed_node_group" {
 
   ebs_optimized           = each.value.ebs_optimized
   key_name                = each.value.key_name
+  disable_api_stop        = each.value.disable_api_stop
   disable_api_termination = each.value.disable_api_termination
   kernel_id               = each.value.kernel_id
   ram_disk_id             = each.value.ram_disk_id
@@ -474,6 +475,7 @@ module "self_managed_node_group" {
   instance_type      = each.value.instance_type
   key_name           = each.value.key_name
 
+  disable_api_stop                     = each.value.disable_api_stop
   disable_api_termination              = each.value.disable_api_termination
   instance_initiated_shutdown_behavior = each.value.instance_initiated_shutdown_behavior
   kernel_id                            = each.value.kernel_id

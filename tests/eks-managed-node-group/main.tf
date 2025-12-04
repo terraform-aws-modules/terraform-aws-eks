@@ -255,6 +255,7 @@ module "eks" {
 
       ebs_optimized           = true
       disable_api_termination = false
+      disable_api_stop        = false
       enable_monitoring       = true
 
       block_device_mappings = {
