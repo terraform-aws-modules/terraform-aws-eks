@@ -164,6 +164,7 @@ resource "aws_launch_template" "this" {
   default_version         = var.launch_template_default_version
   description             = var.launch_template_description
   disable_api_termination = var.disable_api_termination
+  disable_api_stop        = var.disable_api_stop
   ebs_optimized           = var.ebs_optimized
 
   dynamic "enclave_options" {
