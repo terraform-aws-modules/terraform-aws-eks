@@ -233,6 +233,10 @@ module "fargate_profile" {
 
   region = var.region
 
+  # Pass through values to reduce GET requests from data sources
+  partition  = local.partition
+  account_id = local.account_id
+  
   # Fargate Profile
   cluster_name      = time_sleep.this[0].triggers["name"]
   cluster_ip_family = var.ip_family
@@ -273,6 +277,10 @@ module "eks_managed_node_group" {
   create = each.value.create
 
   region = var.region
+
+  # Pass through values to reduce GET requests from data sources
+  partition  = local.partition
+  account_id = local.account_id
 
   cluster_name       = time_sleep.this[0].triggers["name"]
   kubernetes_version = each.value.kubernetes_version != null ? each.value.kubernetes_version : time_sleep.this[0].triggers["kubernetes_version"]
@@ -398,6 +406,10 @@ module "self_managed_node_group" {
   create = each.value.create
 
   region = var.region
+
+  # Pass through values to reduce GET requests from data sources
+  partition  = local.partition
+  account_id = local.account_id
 
   cluster_name = time_sleep.this[0].triggers["name"]
 
