@@ -17,6 +17,18 @@ variable "region" {
   default     = null
 }
 
+variable "partition" {
+  description = "The AWS partition - pass through value to reduce number of GET requests from data sources"
+  type        = string
+  default     = ""
+}
+
+variable "account_id" {
+  description = "The AWS account ID - pass through value to reduce number of GET requests from data sources"
+  type        = string
+  default     = ""
+}
+
 ################################################################################
 # User Data
 ################################################################################
