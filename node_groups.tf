@@ -236,7 +236,7 @@ module "fargate_profile" {
   # Pass through values to reduce GET requests from data sources
   partition  = local.partition
   account_id = local.account_id
-  
+
   # Fargate Profile
   cluster_name      = time_sleep.this[0].triggers["name"]
   cluster_ip_family = var.ip_family
