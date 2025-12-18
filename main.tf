@@ -182,7 +182,6 @@ resource "aws_eks_cluster" "this" {
   }
 
   tags = merge(
-    { terraform-aws-modules = "eks" },
     var.tags,
     var.cluster_tags,
   )
@@ -367,7 +366,6 @@ module "kms" {
   }
 
   tags = merge(
-    { terraform-aws-modules = "eks" },
     var.tags,
   )
 }
