@@ -37,7 +37,8 @@ data "aws_iam_policy_document" "cni_ipv6_policy" {
       "ec2:DescribeInstances",
       "ec2:DescribeTags",
       "ec2:DescribeNetworkInterfaces",
-      "ec2:DescribeInstanceTypes"
+      "ec2:DescribeInstanceTypes",
+      "ec2:ModifyNetworkInterfaceAttribute"
     ]
     resources = ["*"]
   }
