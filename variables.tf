@@ -176,12 +176,12 @@ variable "outpost_config" {
 }
 
 variable "encryption_config" {
-  description = "Configuration block with encryption configuration for the cluster"
+  description = "Configuration block with encryption configuration for the cluster. When set to `null` (default), EKS will use AWS-managed encryption. Set `create_kms_key = true` to create a customer-managed key, or provide your own key ARN via `provider_key_arn`"
   type = object({
     provider_key_arn = optional(string)
     resources        = optional(list(string), ["secrets"])
   })
-  default = {}
+  default = null
 }
 
 variable "attach_encryption_policy" {
