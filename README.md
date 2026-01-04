@@ -184,6 +184,33 @@ module "eks" {
 }
 ```
 
+### Minimal Managed Node Group Example
+
+> This is a simple, beginner-friendly example of defining a managed node group with minimal configuration.
+
+```hcl
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 21.0"
+
+  name               = "my-eks-cluster"
+  kubernetes_version = "1.28"
+
+  vpc_id     = "vpc-xxxxxx"
+  subnet_ids = ["subnet-xxxxxx", "subnet-yyyyyy"]
+
+  eks_managed_node_groups = {
+    example = {
+      instance_types = ["t3.medium"]
+
+      min_size     = 1
+      max_size     = 3
+      desired_size = 2
+    }
+  }
+}
+```
+
 ### Cluster Access Entry
 
 When enabling `authentication_mode = "API_AND_CONFIG_MAP"`, EKS will automatically create an access entry for the IAM role(s) used by managed node group(s) and Fargate profile(s). There are no additional actions required by users. For self-managed node groups and the Karpenter sub-module, this project automatically adds the access entry on behalf of users so there are no additional actions required by users.
