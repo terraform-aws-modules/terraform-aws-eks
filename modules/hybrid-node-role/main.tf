@@ -93,17 +93,44 @@ resource "aws_iam_role" "this" {
 data "aws_iam_policy_document" "this" {
   count = var.create ? 1 : 0
 
-  statement {
-    actions = [
-      "ssm:DeregisterManagedInstance",
-      "ssm:DescribeInstanceInformation",
-    ]
+  dynamic "statement" {
+    for_each = var.enable_ira ? [] : [1]
 
-    resources = ["*"]
+    content {
+      sid       = "AllowDeregisterOwnInstance"
+      actions   = ["ssm:DeregisterManagedInstance"]
+      resources = ["arn:${local.partition}:ssm:*:*:managed-instance/*"]
+
+      condition {
+        test     = "ArnLike"
+        variable = "ssm:SourceInstanceARN"
+        values   = ["arn:${local.partition}:ssm:*:*:managed-instance/*"]
+      }
+    }
+  }
+
+  dynamic "statement" {
+    for_each = var.enable_ira ? [] : [1]
+
+    content {
+      sid       = "AllowDescribeInstances"
+      actions   = ["ssm:DescribeInstanceInformation"]
+      resources = ["*"]
+
+      condition {
+        test     = "ArnLike"
+        variable = "ssm:SourceInstanceARN"
+        values   = ["arn:${local.partition}:ssm:*:*:managed-instance/*"]
+      }
+    }
   }
 
   statement {
-    actions   = ["eks:DescribeCluster"]
+    sid = "DescribeEKSCluster"
+    actions = [
+      "eks:DescribeCluster",
+      "eks:ListAccessEntries",
+    ]
     resources = var.cluster_arns
   }
 
