@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.12.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.11.0...v21.12.0) (2026-01-08)
+
+### Features
+
+* Add provider meta user-agent, replacing static tag ([#3614](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3614)) ([391b11e](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/391b11e0411212c362147e8da37bd2436f250e6d))
+
 ## [21.11.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.10.1...v21.11.0) (2026-01-05)
 
 ### Features
