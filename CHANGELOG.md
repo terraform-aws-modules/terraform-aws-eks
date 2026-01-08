@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.11.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.10.1...v21.11.0) (2026-01-05)
+
+### Features
+
+* Update Hybrid Node IAM role permissions ([#3620](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3620)) ([60dcc45](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/60dcc4506399000610e8f2b592f7a68a5131ac33))
+
 ## [21.10.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.10.0...v21.10.1) (2025-11-28)
 
 ### Bug Fixes
