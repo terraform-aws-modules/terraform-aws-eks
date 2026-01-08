@@ -4,7 +4,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 6.23"
+      version = ">= 6.28"
     }
     tls = {
       source  = "hashicorp/tls"
@@ -14,5 +14,11 @@ terraform {
       source  = "hashicorp/time"
       version = ">= 0.9"
     }
+  }
+
+  provider_meta "aws" {
+    user_agent = [
+      "github.com/terraform-aws-modules/terraform-aws-eks"
+    ]
   }
 }

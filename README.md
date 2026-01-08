@@ -394,7 +394,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.23 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.28 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9 |
 | <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 4.0 |
 
@@ -402,7 +402,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.23 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.28 |
 | <a name="provider_time"></a> [time](#provider\_time) | >= 0.9 |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | >= 4.0 |
 
