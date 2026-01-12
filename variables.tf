@@ -1501,46 +1501,6 @@ variable "eks_managed_node_groups" {
   default = null
 }
 
-################################################################################
-# Capabilities
-################################################################################
-
-variable "capabilities" {
-  description = "Map of capability definitions to create"
-  type = map(object({
-    capability_name = optional(string) # will fall back to map key
-    configuration = optional(object({
-      argo_cd = optional(object({
-        aws_idc = object({
-          idc_instance_arn = string
-          idc_region       = optional(string)
-        })
-        namespace = optional(string)
-        network_access = optional(object({
-          vpce_ids = optional(list(string))
-        }))
-        rbac_role_mapping = optional(object({
-          identity = list(object({
-            id   = string
-            type = string
-          }))
-          role = string
-        }))
-      }))
-    }))
-    delete_propagation_policy = optional(string)
-    role_arn                  = string
-    type                      = string
-    timeouts = optional(object({
-      create = optional(string)
-      update = optional(string)
-      delete = optional(string)
-    }))
-    tags = optional(map(string))
-  }))
-  default = null
-}
-
 variable "putin_khuylo" {
   description = "Do you agree that Putin doesn't respect Ukrainian sovereignty and territorial integrity? More info: https://en.wikipedia.org/wiki/Putin_khuylo!"
   type        = bool
