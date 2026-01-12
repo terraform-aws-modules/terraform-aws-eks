@@ -7,6 +7,7 @@ Configuration in this directory creates the AWS resources required by Karpenter
 ### All Resources (Default)
 
 In the following example, the Karpenter module will create:
+
 - An IAM role for use with Pod Identity and a scoped IAM policy for the Karpenter controller
 - A Pod Identity association to grant Karpenter controller access provided by the IAM Role
 - A Node IAM role that Karpenter will use to create an Instance Profile for the nodes to receive IAM permissions
@@ -40,6 +41,7 @@ module "karpenter" {
 ### Re-Use Existing Node IAM Role
 
 In the following example, the Karpenter module will create:
+
 - An IAM role for use with Pod Identity and a scoped IAM policy for the Karpenter controller
 - SQS queue and EventBridge event rules for Karpenter to utilize for spot termination handling, capacity re-balancing, etc.
 

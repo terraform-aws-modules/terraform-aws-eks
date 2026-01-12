@@ -1,7 +1,19 @@
-data "aws_service_principal" "capabilities" {
+data "aws_service_principal" "capabilities_eks" {
   count = var.create ? 1 : 0
 
-  service_name = "capabilities"
+  service_name = "capabilities.eks"
+}
+
+# It appears that the EKS capability API checks for the IAM role trust policy *VERY* early in the process
+# Our standard approach to ordering IAM role/permission dependencies does not work here, so we add an explicit wait
+resource "time_sleep" "this" {
+  count = var.create ? 1 : 0
+
+  create_duration = var.wait_duration
+
+  triggers = {
+    iam_role_arn = local.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
+  }
 }
 
 ################################################################################
@@ -13,7 +25,7 @@ resource "aws_eks_capability" "this" {
 
   region = var.region
 
-  capability_name = var.name
+  capability_name = try(coalesce(var.name, lower(var.type)))
   cluster_name    = var.cluster_name
 
   dynamic "configuration" {
@@ -65,7 +77,7 @@ resource "aws_eks_capability" "this" {
   }
 
   delete_propagation_policy = var.delete_propagation_policy
-  role_arn                  = var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
+  role_arn                  = time_sleep.this[0].triggers["iam_role_arn"]
   type                      = var.type
 
   dynamic "timeouts" {
@@ -79,6 +91,11 @@ resource "aws_eks_capability" "this" {
   }
 
   tags = var.tags
+
+  depends_on = [
+    aws_iam_role_policy_attachment.this,
+    aws_iam_role_policy_attachment.additional,
+  ]
 }
 
 ################################################################################
@@ -87,7 +104,7 @@ resource "aws_eks_capability" "this" {
 
 locals {
   create_iam_role = var.create && var.create_iam_role
-  iam_role_name   = try(coalesce(var.iam_role_name, "${var.name}-${var.cluster_name}"), null)
+  iam_role_name   = try(coalesce(var.iam_role_name, var.name), "")
 }
 
 data "aws_iam_policy_document" "assume_role" {
@@ -105,7 +122,7 @@ data "aws_iam_policy_document" "assume_role" {
 
     principals {
       type        = "Service"
-      identifiers = [data.aws_service_principal.capabilities[0].name]
+      identifiers = [data.aws_service_principal.capabilities_eks[0].name]
     }
   }
 }
@@ -116,7 +133,7 @@ resource "aws_iam_role" "this" {
   name        = var.iam_role_use_name_prefix ? null : local.iam_role_name
   name_prefix = var.iam_role_use_name_prefix ? "${local.iam_role_name}-" : null
   path        = var.iam_role_path
-  description = coalesce(var.iam_role_description, "EKS Capability IAM role for ${var.type}/${var.name} capability")
+  description = coalesce(var.iam_role_description, "EKS Capability IAM role for ${var.type} capability in cluster ${var.cluster_name}")
 
   assume_role_policy    = data.aws_iam_policy_document.assume_role[0].json
   max_session_duration  = var.iam_role_max_session_duration
@@ -132,7 +149,7 @@ resource "aws_iam_role" "this" {
 
 locals {
   create_iam_role_policy = local.create_iam_role && var.iam_policy_statements != null
-  iam_policy_name        = try(coalesce(var.iam_policy_name, local.iam_role_name), null)
+  iam_policy_name        = try(coalesce(var.iam_policy_name, local.iam_role_name), "")
 }
 
 data "aws_iam_policy_document" "this" {
@@ -186,7 +203,7 @@ resource "aws_iam_policy" "this" {
   name        = var.iam_policy_use_name_prefix ? null : local.iam_policy_name
   name_prefix = var.iam_policy_use_name_prefix ? "${local.iam_policy_name}-" : null
   path        = var.iam_policy_path
-  description = coalesce(var.iam_policy_description, "IAM policy for EKS Capability ${var.type}/${var.name}")
+  description = coalesce(var.iam_policy_description, "IAM policy for EKS Capability ${var.type} capability in cluster ${var.cluster_name}")
   policy      = data.aws_iam_policy_document.this[0].json
 }
 

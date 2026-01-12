@@ -376,6 +376,7 @@ module "eks" {
 ## Examples
 
 - [EKS Auto Mode](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks-auto-mode): EKS Cluster with EKS Auto Mode
+- [EKS Capabilities](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks-capabilities): EKS Cluster with EKS Capabilities
 - [EKS Hybrid Nodes](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks-hybrid-nodes): EKS Cluster with EKS Hybrid nodes
 - [EKS Managed Node Group](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/eks-managed-node-group): EKS Cluster with EKS managed node group(s)
 - [Karpenter](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/karpenter): EKS Cluster with [Karpenter](https://karpenter.sh/) provisioned for intelligent data plane management

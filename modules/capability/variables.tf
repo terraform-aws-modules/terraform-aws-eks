@@ -35,33 +35,31 @@ variable "cluster_name" {
 variable "configuration" {
   description = "Configuration for the capability"
   type = object({
-    configuration = optional(object({
-      argo_cd = optional(object({
-        aws_idc = object({
-          idc_instance_arn = string
-          idc_region       = optional(string)
-        })
-        namespace = optional(string)
-        network_access = optional(object({
-          vpce_ids = optional(list(string))
-        }))
-        rbac_role_mapping = optional(object({
-          identity = list(object({
-            id   = string
-            type = string
-          }))
-          role = string
-        }))
+    argo_cd = optional(object({
+      aws_idc = object({
+        idc_instance_arn = string
+        idc_region       = optional(string)
+      })
+      namespace = optional(string)
+      network_access = optional(object({
+        vpce_ids = optional(list(string))
       }))
+      rbac_role_mapping = optional(list(object({
+        identity = list(object({
+          id   = string
+          type = string
+        }))
+        role = string
+      })))
     }))
   })
   default = null
 }
 
 variable "delete_propagation_policy" {
-  description = "The propagation policy to use when deleting the capability"
+  description = "The propagation policy to use when deleting the capability. Valid values: `RETAIN`"
   type        = string
-  default     = null
+  default     = "RETAIN"
 }
 
 variable "type" {
@@ -78,6 +76,12 @@ variable "timeouts" {
     delete = optional(string)
   })
   default = null
+}
+
+variable "wait_duration" {
+  description = "Duration to wait between creating the IAM role/policy and creating the capability"
+  type        = string
+  default     = "20s"
 }
 
 ################################################################################
