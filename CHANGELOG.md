@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.13.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.12.0...v21.13.0) (2026-01-13)
+
+### Features
+
+* Add support for EKS Capabilities ([#3624](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3624)) ([990050b](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/990050b224f92c1470f1fa2014bf5bb3b6b2f021))
+
 ## [21.12.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.11.0...v21.12.0) (2026-01-08)
 
 ### Features
