@@ -510,6 +510,7 @@ resource "aws_eks_node_group" "this" {
     content {
       max_unavailable_percentage = update_config.value.max_unavailable_percentage
       max_unavailable            = update_config.value.max_unavailable
+      update_strategy            = update_config.value.update_strategy
     }
   }
 
