@@ -1,4 +1,4 @@
-# EKS Auto Mode
+# EKS Auto Mode Example
 
 ## Usage
 
