@@ -1276,6 +1276,7 @@ variable "eks_managed_node_groups" {
     update_config = optional(object({
       max_unavailable            = optional(number)
       max_unavailable_percentage = optional(number)
+      update_strategy            = optional(string)
     }))
     timeouts = optional(object({
       create = optional(string)
