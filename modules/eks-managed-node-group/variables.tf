@@ -565,6 +565,7 @@ variable "update_config" {
   type = object({
     max_unavailable            = optional(number)
     max_unavailable_percentage = optional(number)
+    update_strategy            = optional(string)
   })
   default = {
     max_unavailable_percentage = 33

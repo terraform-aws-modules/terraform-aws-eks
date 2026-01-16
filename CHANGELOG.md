@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.14.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.13.0...v21.14.0) (2026-01-13)
+
+### Features
+
+* Add support for EKS managed node group `update_config.update_strategy` ([#3626](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3626)) ([617dba6](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/617dba6267162edcd0bf007e1c5fd23e4b43584f))
+
+## [21.13.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.12.0...v21.13.0) (2026-01-13)
+
+### Features
+
+* Add support for EKS Capabilities ([#3624](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3624)) ([990050b](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/990050b224f92c1470f1fa2014bf5bb3b6b2f021))
+
 ## [21.12.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.11.0...v21.12.0) (2026-01-08)
 
 ### Features

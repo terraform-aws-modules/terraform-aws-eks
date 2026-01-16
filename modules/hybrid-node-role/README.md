@@ -157,3 +157,7 @@ No modules.
 | <a name="output_name"></a> [name](#output\_name) | The name of the node IAM role |
 | <a name="output_unique_id"></a> [unique\_id](#output\_unique\_id) | Stable and unique string identifying the node IAM role |
 <!-- END_TF_DOCS -->
+
+## License
+
+Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/LICENSE) for full details.

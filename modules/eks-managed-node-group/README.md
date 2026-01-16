@@ -190,7 +190,7 @@ module "eks_managed_node_group" {
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map(string)` | `{}` | no |
 | <a name="input_taints"></a> [taints](#input\_taints) | The Kubernetes taints to be applied to the nodes in the node group. Maximum of 50 taints per node group | <pre>map(object({<br/>    key    = string<br/>    value  = optional(string)<br/>    effect = string<br/>  }))</pre> | `null` | no |
 | <a name="input_timeouts"></a> [timeouts](#input\_timeouts) | Create, update, and delete timeout configurations for the node group | <pre>object({<br/>    create = optional(string)<br/>    update = optional(string)<br/>    delete = optional(string)<br/>  })</pre> | `null` | no |
-| <a name="input_update_config"></a> [update\_config](#input\_update\_config) | Configuration block of settings for max unavailable resources during node group updates | <pre>object({<br/>    max_unavailable            = optional(number)<br/>    max_unavailable_percentage = optional(number)<br/>  })</pre> | <pre>{<br/>  "max_unavailable_percentage": 33<br/>}</pre> | no |
+| <a name="input_update_config"></a> [update\_config](#input\_update\_config) | Configuration block of settings for max unavailable resources during node group updates | <pre>object({<br/>    max_unavailable            = optional(number)<br/>    max_unavailable_percentage = optional(number)<br/>    update_strategy            = optional(string)<br/>  })</pre> | <pre>{<br/>  "max_unavailable_percentage": 33<br/>}</pre> | no |
 | <a name="input_update_launch_template_default_version"></a> [update\_launch\_template\_default\_version](#input\_update\_launch\_template\_default\_version) | Whether to update the launch templates default version on each update. Conflicts with `launch_template_default_version` | `bool` | `true` | no |
 | <a name="input_use_custom_launch_template"></a> [use\_custom\_launch\_template](#input\_use\_custom\_launch\_template) | Determines whether to use a custom launch template or not. If set to `false`, EKS will use its own default launch template | `bool` | `true` | no |
 | <a name="input_use_latest_ami_release_version"></a> [use\_latest\_ami\_release\_version](#input\_use\_latest\_ami\_release\_version) | Determines whether to use the latest AMI release version for the given `ami_type` (except for `CUSTOM`). Note: `ami_type` and `kubernetes_version` must be supplied in order to enable this feature | `bool` | `true` | no |
@@ -219,3 +219,7 @@ module "eks_managed_node_group" {
 | <a name="output_security_group_arn"></a> [security\_group\_arn](#output\_security\_group\_arn) | Amazon Resource Name (ARN) of the security group |
 | <a name="output_security_group_id"></a> [security\_group\_id](#output\_security\_group\_id) | ID of the security group |
 <!-- END_TF_DOCS -->
+
+## License
+
+Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/LICENSE) for full details.
