@@ -37,7 +37,6 @@ module "argocd_eks_capability" {
   type         = "ARGOCD"
 
   configuration = {
-    configuration = {
       argo_cd = {
         aws_idc = {
           idc_instance_arn = "arn:aws:sso:::instance/ssoins-1234567890abcdef0"
@@ -51,7 +50,6 @@ module "argocd_eks_capability" {
           }]
         }]
       }
-    }
   }
 
   # IAM Role/Policy
