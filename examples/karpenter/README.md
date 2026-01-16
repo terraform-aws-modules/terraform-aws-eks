@@ -2,6 +2,10 @@
 
 Configuration in this directory creates an AWS EKS cluster with [Karpenter](https://karpenter.sh/) provisioned for managing compute resource scaling. In the example provided, Karpenter is provisioned on top of an EKS Managed Node Group.
 
+## Minimum Karpenter Version
+
+The IAM permissions created by `terraform-aws-eks` only work with Karpenter >= v1.7.0.
+
 ## Usage
 
 To provision the provided configurations you need to execute:
