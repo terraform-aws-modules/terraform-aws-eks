@@ -135,6 +135,15 @@ locals {
       type                          = "ingress"
       source_cluster_security_group = true
     }
+    # cert-manager addon, current EKS default port
+    ingress_cluster_10260_webhook = {
+      description                   = "Cluster API to node 10260/tcp webhook"
+      protocol                      = "tcp"
+      from_port                     = 10260
+      to_port                       = 10260
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }
     # prometheus-adapter
     ingress_cluster_6443_webhook = {
       description                   = "Cluster API to node 6443/tcp webhook"
