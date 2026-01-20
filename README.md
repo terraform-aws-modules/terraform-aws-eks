@@ -24,6 +24,9 @@ Please note that we strive to provide a comprehensive suite of documentation for
 - [AWS EKS Documentation](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
 - [Kubernetes Documentation](https://kubernetes.io/docs/home/)
 
+<!-- markdownlint-disable no-inline-html -->
+<a href="https://aws-experience.com/emea/smb/events/series/get-hands-on-with-amazon-eks?trk=b70b2d1a-56d6-4834-9913-2e70f5c3ae3c&sc_channel=el"><img src="https://raw.githubusercontent.com/terraform-aws-modules/terraform-aws-eks/master/docs/assets/aws-eks-workshop-830.png" alt="Register for an AWS hosted workshop: Click to view the full schedule of free workshops, from core concepts to advanced use cases" width="830" height="138" /></a>
+
 ## Usage
 
 ### EKS Auto Mode
