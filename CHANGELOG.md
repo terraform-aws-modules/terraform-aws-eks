@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.15.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.14.0...v21.15.0) (2026-01-20)
+
+### Features
+
+* Added link to AWS EKS workshops ([#3631](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3631)) ([c2d3b48](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c2d3b488ce9c63fabeaaded3f369b26a0902126a))
+
 ## [21.14.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.13.0...v21.14.0) (2026-01-13)
 
 ### Features
