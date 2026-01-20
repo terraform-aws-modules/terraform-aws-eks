@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.15.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.15.0...v21.15.1) (2026-01-20)
+
+### Bug Fixes
+
+* Move EKS workshop banner up the README ([#3633](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3633)) ([8a83380](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/8a833809b9314a57d93b08597679fd4b2ea2af65))
+
 ## [21.15.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.14.0...v21.15.0) (2026-01-20)
 
 ### Features
