@@ -17,15 +17,17 @@ Terraform module which creates Amazon EKS (Kubernetes) resources
   - [Upgrade to v20.x](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/UPGRADE-20.0.md)
   - [Upgrade to v21.x](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/UPGRADE-21.0.md)
 
+<!-- markdownlint-disable no-inline-html -->
+<p align="center">
+  <a href="https://aws-experience.com/emea/smb/events/series/get-hands-on-with-amazon-eks?trk=b70b2d1a-56d6-4834-9913-2e70f5c3ae3c&sc_channel=el"><img src="https://raw.githubusercontent.com/terraform-aws-modules/terraform-aws-eks/master/docs/assets/aws-eks-workshop-830.png" alt="Register for an AWS hosted workshop: Click to view the full schedule of free workshops, from core concepts to advanced use cases" /></a>
+</p>
+
 ### External Documentation
 
 Please note that we strive to provide a comprehensive suite of documentation for __*configuring and utilizing the module(s)*__ defined here, and that documentation regarding EKS (including EKS managed node group, self managed node group, and Fargate profile) and/or Kubernetes features, usage, etc. are better left up to their respective sources:
 
 - [AWS EKS Documentation](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
 - [Kubernetes Documentation](https://kubernetes.io/docs/home/)
-
-<!-- markdownlint-disable no-inline-html -->
-<a href="https://aws-experience.com/emea/smb/events/series/get-hands-on-with-amazon-eks?trk=b70b2d1a-56d6-4834-9913-2e70f5c3ae3c&sc_channel=el"><img src="https://raw.githubusercontent.com/terraform-aws-modules/terraform-aws-eks/master/docs/assets/aws-eks-workshop-830.png" alt="Register for an AWS hosted workshop: Click to view the full schedule of free workshops, from core concepts to advanced use cases" width="830" height="138" /></a>
 
 ## Usage
 
