@@ -1,12 +1,28 @@
-data "aws_region" "current" {}
-data "aws_partition" "current" {}
-data "aws_caller_identity" "current" {}
+data "aws_region" "current" {
+  count = var.create ? 1 : 0
+
+  region = var.region
+}
+
+data "aws_partition" "current" {
+  count = var.create ? 1 : 0
+}
+
+data "aws_caller_identity" "current" {
+  count = var.create ? 1 : 0
+}
+
+data "aws_service_principal" "ec2" {
+  count = var.create ? 1 : 0
+
+  service_name = "ec2"
+}
 
 locals {
-  account_id = data.aws_caller_identity.current.account_id
-  dns_suffix = data.aws_partition.current.dns_suffix
-  partition  = data.aws_partition.current.partition
-  region     = data.aws_region.current.name
+  account_id  = try(data.aws_caller_identity.current[0].account_id, "")
+  ec2_sp_name = try(data.aws_service_principal.ec2[0].name, "")
+  partition   = try(data.aws_partition.current[0].partition, "")
+  region      = try(data.aws_region.current[0].region, "")
 }
 
 ################################################################################
@@ -14,54 +30,26 @@ locals {
 ################################################################################
 
 locals {
-  create_iam_role        = var.create && var.create_iam_role
-  irsa_oidc_provider_url = replace(var.irsa_oidc_provider_arn, "/^(.*provider/)/", "")
+  create_iam_role = var.create && var.create_iam_role
 }
 
 data "aws_iam_policy_document" "controller_assume_role" {
   count = local.create_iam_role ? 1 : 0
 
+  override_policy_documents = var.iam_role_override_assume_policy_documents
+  source_policy_documents   = var.iam_role_source_assume_policy_documents
+
   # Pod Identity
-  dynamic "statement" {
-    for_each = var.enable_pod_identity ? [1] : []
+  statement {
+    sid = "PodIdentity"
+    actions = [
+      "sts:AssumeRole",
+      "sts:TagSession",
+    ]
 
-    content {
-      actions = [
-        "sts:AssumeRole",
-        "sts:TagSession",
-      ]
-
-      principals {
-        type        = "Service"
-        identifiers = ["pods.eks.amazonaws.com"]
-      }
-    }
-  }
-
-  # IAM Roles for Service Accounts (IRSA)
-  dynamic "statement" {
-    for_each = var.enable_irsa ? [1] : []
-
-    content {
-      actions = ["sts:AssumeRoleWithWebIdentity"]
-
-      principals {
-        type        = "Federated"
-        identifiers = [var.irsa_oidc_provider_arn]
-      }
-
-      condition {
-        test     = var.irsa_assume_role_condition_test
-        variable = "${local.irsa_oidc_provider_url}:sub"
-        values   = [for sa in var.irsa_namespace_service_accounts : "system:serviceaccount:${sa}"]
-      }
-
-      # https://aws.amazon.com/premiumsupport/knowledge-center/eks-troubleshoot-oidc-and-irsa/?nc1=h_ls
-      condition {
-        test     = var.irsa_assume_role_condition_test
-        variable = "${local.irsa_oidc_provider_url}:aud"
-        values   = ["sts.amazonaws.com"]
-      }
+    principals {
+      type        = "Service"
+      identifiers = ["pods.eks.amazonaws.com"]
     }
   }
 }
@@ -82,14 +70,17 @@ resource "aws_iam_role" "controller" {
   tags = merge(var.tags, var.iam_role_tags)
 }
 
-data "aws_iam_policy_document" "controller" {
-  count = local.create_iam_role ? 1 : 0
+resource "aws_iam_role_policy" "controller" {
+  count = local.create_iam_role && var.enable_inline_policy ? 1 : 0
 
-  source_policy_documents = var.enable_v1_permissions ? [data.aws_iam_policy_document.v1[0].json] : [data.aws_iam_policy_document.v033[0].json]
+  name        = var.iam_policy_use_name_prefix ? null : var.iam_policy_name
+  name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}-" : null
+  role        = aws_iam_role.controller[0].name
+  policy      = data.aws_iam_policy_document.controller[0].json
 }
 
 resource "aws_iam_policy" "controller" {
-  count = local.create_iam_role ? 1 : 0
+  count = local.create_iam_role && !var.enable_inline_policy ? 1 : 0
 
   name        = var.iam_policy_use_name_prefix ? null : var.iam_policy_name
   name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}-" : null
@@ -101,7 +92,7 @@ resource "aws_iam_policy" "controller" {
 }
 
 resource "aws_iam_role_policy_attachment" "controller" {
-  count = local.create_iam_role ? 1 : 0
+  count = local.create_iam_role && !var.enable_inline_policy ? 1 : 0
 
   role       = aws_iam_role.controller[0].name
   policy_arn = aws_iam_policy.controller[0].arn
@@ -119,7 +110,9 @@ resource "aws_iam_role_policy_attachment" "controller_additional" {
 ################################################################################
 
 resource "aws_eks_pod_identity_association" "karpenter" {
-  count = local.create_iam_role && var.enable_pod_identity && var.create_pod_identity_association ? 1 : 0
+  count = local.create_iam_role && var.create_pod_identity_association ? 1 : 0
+
+  region = var.region
 
   cluster_name    = var.cluster_name
   namespace       = var.namespace
@@ -141,6 +134,8 @@ locals {
 
 resource "aws_sqs_queue" "this" {
   count = local.enable_spot_termination ? 1 : 0
+
+  region = var.region
 
   name                              = local.queue_name
   message_retention_seconds         = 300
@@ -167,6 +162,7 @@ data "aws_iam_policy_document" "queue" {
       ]
     }
   }
+
   statement {
     sid    = "DenyHTTP"
     effect = "Deny"
@@ -175,7 +171,7 @@ data "aws_iam_policy_document" "queue" {
     ]
     resources = [aws_sqs_queue.this[0].arn]
     condition {
-      test     = "StringEquals"
+      test     = "Bool"
       variable = "aws:SecureTransport"
       values = [
         "false"
@@ -188,10 +184,53 @@ data "aws_iam_policy_document" "queue" {
       ]
     }
   }
+
+  dynamic "statement" {
+    for_each = var.queue_policy_statements != null ? var.queue_policy_statements : {}
+
+    content {
+      sid           = try(coalesce(statement.value.sid, statement.key))
+      actions       = statement.value.actions
+      not_actions   = statement.value.not_actions
+      effect        = statement.value.effect
+      resources     = statement.value.resources
+      not_resources = statement.value.not_resources
+
+      dynamic "principals" {
+        for_each = statement.value.principals != null ? statement.value.principals : []
+
+        content {
+          type        = principals.value.type
+          identifiers = principals.value.identifiers
+        }
+      }
+
+      dynamic "not_principals" {
+        for_each = statement.value.not_principals != null ? statement.value.not_principals : []
+
+        content {
+          type        = not_principals.value.type
+          identifiers = not_principals.value.identifiers
+        }
+      }
+
+      dynamic "condition" {
+        for_each = statement.value.condition != null ? statement.value.condition : []
+
+        content {
+          test     = condition.value.test
+          values   = condition.value.values
+          variable = condition.value.variable
+        }
+      }
+    }
+  }
 }
 
 resource "aws_sqs_queue_policy" "this" {
   count = local.enable_spot_termination ? 1 : 0
+
+  region = var.region
 
   queue_url = aws_sqs_queue.this[0].url
   policy    = data.aws_iam_policy_document.queue[0].json
@@ -241,6 +280,8 @@ locals {
 resource "aws_cloudwatch_event_rule" "this" {
   for_each = { for k, v in local.events : k => v if local.enable_spot_termination }
 
+  region = var.region
+
   name_prefix   = "${var.rule_name_prefix}${each.value.name}-"
   description   = each.value.description
   event_pattern = jsonencode(each.value.event_pattern)
@@ -253,6 +294,8 @@ resource "aws_cloudwatch_event_rule" "this" {
 
 resource "aws_cloudwatch_event_target" "this" {
   for_each = { for k, v in local.events : k => v if local.enable_spot_termination }
+
+  region = var.region
 
   rule      = aws_cloudwatch_event_rule.this[each.key].name
   target_id = "KarpenterInterruptionQueueTarget"
@@ -274,7 +317,7 @@ locals {
     AmazonEKS_CNI_Policy = "${local.node_iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
   } : k => v if var.node_iam_role_attach_cni_policy && var.cluster_ip_family == "ipv4" }
   ipv6_cni_policy = { for k, v in {
-    AmazonEKS_CNI_IPv6_Policy = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/AmazonEKS_CNI_IPv6_Policy"
+    AmazonEKS_CNI_IPv6_Policy = "arn:${local.partition}:iam::${local.account_id}:policy/AmazonEKS_CNI_IPv6_Policy"
   } : k => v if var.node_iam_role_attach_cni_policy && var.cluster_ip_family == "ipv6" }
 }
 
@@ -287,7 +330,7 @@ data "aws_iam_policy_document" "node_assume_role" {
 
     principals {
       type        = "Service"
-      identifiers = ["ec2.${local.dns_suffix}"]
+      identifiers = [local.ec2_sp_name]
     }
   }
 }
@@ -313,7 +356,7 @@ resource "aws_iam_role_policy_attachment" "node" {
   for_each = { for k, v in merge(
     {
       AmazonEKSWorkerNodePolicy          = "${local.node_iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy"
-      AmazonEC2ContainerRegistryReadOnly = "${local.node_iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly"
+      AmazonEC2ContainerRegistryPullOnly = "${local.node_iam_role_policy_prefix}/AmazonEC2ContainerRegistryPullOnly"
     },
     local.ipv4_cni_policy,
     local.ipv6_cni_policy
@@ -336,6 +379,8 @@ resource "aws_iam_role_policy_attachment" "node_additional" {
 
 resource "aws_eks_access_entry" "node" {
   count = var.create && var.create_access_entry ? 1 : 0
+
+  region = var.region
 
   cluster_name  = var.cluster_name
   principal_arn = var.create_node_iam_role ? aws_iam_role.node[0].arn : var.node_iam_role_arn

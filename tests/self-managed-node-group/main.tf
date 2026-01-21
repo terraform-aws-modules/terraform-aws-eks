@@ -13,9 +13,9 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  name            = "ex-${replace(basename(path.cwd), "_", "-")}"
-  cluster_version = "1.33"
-  region          = "eu-west-1"
+  name               = "ex-${replace(basename(path.cwd), "_", "-")}"
+  kubernetes_version = "1.33"
+  region             = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
@@ -34,28 +34,26 @@ locals {
 module "eks" {
   source = "../.."
 
-  cluster_name                   = local.name
-  cluster_version                = local.cluster_version
-  cluster_endpoint_public_access = true
+  name                   = local.name
+  kubernetes_version     = local.kubernetes_version
+  endpoint_public_access = true
 
   enable_cluster_creator_admin_permissions = true
 
-  # Enable EFA support by adding necessary security group rules
-  # to the shared node security group
-  enable_efa_support = true
-
-  cluster_addons = {
+  addons = {
     coredns = {
       most_recent = true
     }
     eks-pod-identity-agent = {
-      most_recent = true
+      before_compute = true
+      most_recent    = true
     }
     kube-proxy = {
       most_recent = true
     }
     vpc-cni = {
-      most_recent = true
+      before_compute = true
+      most_recent    = true
       pod_identity_association = [{
         role_arn        = module.aws_vpc_cni_ipv4_pod_identity.iam_role_arn
         service_account = "aws-node"
@@ -69,25 +67,23 @@ module "eks" {
 
   # External encryption key
   create_kms_key = false
-  cluster_encryption_config = {
+  encryption_config = {
     resources        = ["secrets"]
     provider_key_arn = module.kms.key_arn
   }
 
-  self_managed_node_group_defaults = {
-    ami_type = "AL2023_x86_64_STANDARD"
-    ami_id   = data.aws_ami.eks_default.image_id
-
-    # enable discovery of autoscaling groups by cluster-autoscaler
-    autoscaling_group_tags = {
-      "k8s.io/cluster-autoscaler/enabled" : true,
-      "k8s.io/cluster-autoscaler/${local.name}" : "owned",
-    }
-  }
-
   self_managed_node_groups = {
     # Default node group - as provisioned by the module defaults
-    default_node_group = {}
+    default_node_group = {
+      ami_type = "AL2023_x86_64_STANDARD"
+      ami_id   = data.aws_ami.eks_default.image_id
+
+      # enable discovery of autoscaling groups by cluster-autoscaler
+      autoscaling_group_tags = {
+        "k8s.io/cluster-autoscaler/enabled" : true,
+        "k8s.io/cluster-autoscaler/${local.name}" : "owned",
+      }
+    }
 
     # Bottlerocket node group
     bottlerocket = {
@@ -153,20 +149,94 @@ module "eks" {
           spot_allocation_strategy                 = "capacity-optimized"
         }
 
-        override = [
-          {
-            instance_type     = "m5.large"
-            weighted_capacity = "1"
-          },
-          {
-            instance_type     = "m6i.large"
-            weighted_capacity = "2"
-          },
-        ]
+        launch_template = {
+          override = [
+            {
+              instance_type     = "m5.large"
+              weighted_capacity = "1"
+            },
+            {
+              instance_type     = "m6i.large"
+              weighted_capacity = "2"
+            },
+          ]
+        }
       }
     }
 
-    # Complete
+    instance_attributes = {
+      name = "instance-attributes"
+
+      min_size     = 1
+      max_size     = 2
+      desired_size = 1
+
+      cloudinit_pre_nodeadm = [{
+        content      = <<-EOT
+          ---
+          apiVersion: node.eks.aws/v1alpha1
+          kind: NodeConfig
+          spec:
+            kubelet:
+              config:
+                shutdownGracePeriod: 30s
+        EOT
+        content_type = "application/node.eks.aws"
+      }]
+
+      instance_type = null
+
+      # launch template configuration
+      instance_requirements = {
+        cpu_manufacturers                           = ["intel"]
+        instance_generations                        = ["current", "previous"]
+        spot_max_price_percentage_over_lowest_price = 100
+
+        memory_mib = {
+          min = 8192
+        }
+
+        vcpu_count = {
+          min = 1
+        }
+
+        allowed_instance_types = ["t*", "m*"]
+      }
+
+      use_mixed_instances_policy = true
+      mixed_instances_policy = {
+        instances_distribution = {
+          on_demand_base_capacity                  = 0
+          on_demand_percentage_above_base_capacity = 0
+          on_demand_allocation_strategy            = "lowest-price"
+          spot_allocation_strategy                 = "price-capacity-optimized"
+        }
+
+        # ASG configuration
+        launch_template = {
+          override = [
+            {
+              instance_requirements = {
+                cpu_manufacturers                           = ["intel"]
+                instance_generations                        = ["current", "previous"]
+                spot_max_price_percentage_over_lowest_price = 100
+
+                memory_mib = {
+                  min = 8192
+                }
+
+                vcpu_count = {
+                  min = 1
+                }
+
+                allowed_instance_types = ["t*", "m*"]
+              }
+            }
+          ]
+        }
+      }
+    }
+
     complete = {
       name            = "complete-self-mng"
       use_name_prefix = false
@@ -214,77 +284,10 @@ module "eks" {
         }
       }
 
-      instance_attributes = {
-        name = "instance-attributes"
-
-        min_size     = 1
-        max_size     = 2
-        desired_size = 1
-
-        bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-
-        cloudinit_pre_nodeadm = [{
-          content      = <<-EOT
-          ---
-          apiVersion: node.eks.aws/v1alpha1
-          kind: NodeConfig
-          spec:
-            kubelet:
-              config:
-                shutdownGracePeriod: 30s
-                featureGates:
-                  DisableKubeletCloudCredentialProviders: true
-        EOT
-          content_type = "application/node.eks.aws"
-        }]
-
-        instance_type = null
-
-        # launch template configuration
-        instance_requirements = {
-          cpu_manufacturers                           = ["intel"]
-          instance_generations                        = ["current", "previous"]
-          spot_max_price_percentage_over_lowest_price = 100
-
-          vcpu_count = {
-            min = 1
-          }
-
-          allowed_instance_types = ["t*", "m*"]
-        }
-
-        use_mixed_instances_policy = true
-        mixed_instances_policy = {
-          instances_distribution = {
-            on_demand_base_capacity                  = 0
-            on_demand_percentage_above_base_capacity = 0
-            on_demand_allocation_strategy            = "lowest-price"
-            spot_allocation_strategy                 = "price-capacity-optimized"
-          }
-
-          # ASG configuration
-          override = [
-            {
-              instance_requirements = {
-                cpu_manufacturers                           = ["intel"]
-                instance_generations                        = ["current", "previous"]
-                spot_max_price_percentage_over_lowest_price = 100
-
-                vcpu_count = {
-                  min = 1
-                }
-
-                allowed_instance_types = ["t*", "m*"]
-              }
-            }
-          ]
-        }
-      }
-
       metadata_options = {
         http_endpoint               = "enabled"
         http_tokens                 = "required"
-        http_put_response_hop_limit = 2
+        http_put_response_hop_limit = 1
         instance_metadata_tags      = "disabled"
       }
 
@@ -306,14 +309,15 @@ module "eks" {
     }
 
     efa = {
-      # Disabling automatic creation due to instance type/quota availability
-      # Can be enabled when appropriate for testing/validation
-      create = false
-
       # The EKS AL2023 NVIDIA AMI provides all of the necessary components
       # for accelerated workloads w/ EFA
       ami_type       = "AL2023_x86_64_NVIDIA"
-      instance_types = ["p5e.48xlarge"]
+      instance_types = ["p4d.24xlarge"]
+
+      # Setting to zero so all resources are created *EXCEPT the EC2 instances
+      min_size     = 0
+      max_size     = 1
+      desired_size = 0
 
       # Mount instance store volumes in RAID-0 for kubelet and containerd
       # https://github.com/awslabs/amazon-eks-ami/blob/master/doc/USER_GUIDE.md#raid-0-for-kubelet-and-containerd-raid0
@@ -334,15 +338,11 @@ module "eks" {
 
       # This will:
       # 1. Create a placement group to place the instances close to one another
-      # 2. Ignore subnets that reside in AZs that do not support the instance type
+      # 2. Create and attach the necessary security group rules (and security group)
       # 3. Expose all of the available EFA interfaces on the launch template
       enable_efa_support = true
       enable_efa_only    = true
-      efa_indices        = [0, 4, 8, 12]
-
-      min_size     = 2
-      max_size     = 2
-      desired_size = 2
+      efa_indices        = [0]
 
       labels = {
         "vpc.amazonaws.com/efa.present" = "true"
@@ -378,7 +378,7 @@ module "disabled_self_managed_node_group" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
   name = local.name
   cidr = local.vpc_cidr
@@ -420,7 +420,7 @@ data "aws_ami" "eks_default" {
 
   filter {
     name   = "name"
-    values = ["amazon-eks-node-al2023-x86_64-standard-${local.cluster_version}-v*"]
+    values = ["amazon-eks-node-al2023-x86_64-standard-${local.kubernetes_version}-v*"]
   }
 }
 
@@ -430,7 +430,7 @@ data "aws_ami" "eks_default_bottlerocket" {
 
   filter {
     name   = "name"
-    values = ["bottlerocket-aws-k8s-${local.cluster_version}-x86_64-*"]
+    values = ["bottlerocket-aws-k8s-${local.kubernetes_version}-x86_64-*"]
   }
 }
 
@@ -446,7 +446,7 @@ module "key_pair" {
 
 module "ebs_kms_key" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 2.0"
+  version = "~> 4.0"
 
   description = "Customer managed key to encrypt EKS managed node group volumes"
 
@@ -470,7 +470,7 @@ module "ebs_kms_key" {
 
 module "kms" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 2.1"
+  version = "~> 4.0"
 
   aliases               = ["eks/${local.name}"]
   description           = "${local.name} cluster encryption key"

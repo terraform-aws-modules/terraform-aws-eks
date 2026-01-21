@@ -1,15 +1,3 @@
-eks-admin-cluster-role-binding.yaml
-eks-admin-service-account.yaml
-config-map-aws-auth*.yaml
-kubeconfig_*
-.idea
-
-#################################################################
-# Default .gitignore content for all terraform-aws-modules below
-#################################################################
-
-.DS_Store
-
 # Local .terraform directories
 **/.terraform/*
 
@@ -19,7 +7,6 @@ kubeconfig_*
 # .tfstate files
 *.tfstate
 *.tfstate.*
-*.tfplan
 
 # Crash log files
 crash.log
@@ -40,3 +27,13 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Lambda build artifacts
+builds/
+__pycache__/
+*.zip
+.tox
+
+# Local editors/macos files
+.DS_Store
+.idea

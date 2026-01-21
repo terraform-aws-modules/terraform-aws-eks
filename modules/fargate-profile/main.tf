@@ -1,18 +1,32 @@
-data "aws_partition" "current" {}
-data "aws_caller_identity" "current" {}
-data "aws_region" "current" {}
+data "aws_region" "current" {
+  count = var.create ? 1 : 0
+
+  region = var.region
+}
+data "aws_partition" "current" {
+  count = var.create && var.partition == "" ? 1 : 0
+}
+data "aws_caller_identity" "current" {
+  count = var.create && var.account_id == "" ? 1 : 0
+}
+
+locals {
+  account_id = try(data.aws_caller_identity.current[0].account_id, var.account_id)
+  partition  = try(data.aws_partition.current[0].partition, var.partition)
+  region     = try(data.aws_region.current[0].region, "")
+}
 
 locals {
   create_iam_role = var.create && var.create_iam_role
 
   iam_role_name          = coalesce(var.iam_role_name, var.name, "fargate-profile")
-  iam_role_policy_prefix = "arn:${data.aws_partition.current.partition}:iam::aws:policy"
+  iam_role_policy_prefix = "arn:${local.partition}:iam::aws:policy"
 
   ipv4_cni_policy = { for k, v in {
     AmazonEKS_CNI_Policy = "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
   } : k => v if var.iam_role_attach_cni_policy && var.cluster_ip_family == "ipv4" }
   ipv6_cni_policy = { for k, v in {
-    AmazonEKS_CNI_IPv6_Policy = "arn:${data.aws_partition.current.partition}:iam::${data.aws_caller_identity.current.account_id}:policy/AmazonEKS_CNI_IPv6_Policy"
+    AmazonEKS_CNI_IPv6_Policy = "arn:${local.partition}:iam::${local.account_id}:policy/AmazonEKS_CNI_IPv6_Policy"
   } : k => v if var.iam_role_attach_cni_policy && var.cluster_ip_family == "ipv6" }
 }
 
@@ -37,7 +51,7 @@ data "aws_iam_policy_document" "assume_role_policy" {
       variable = "aws:SourceArn"
 
       values = [
-        "arn:${data.aws_partition.current.partition}:eks:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:fargateprofile/${var.cluster_name}/*",
+        "arn:${local.partition}:eks:${local.region}:${local.account_id}:fargateprofile/${var.cluster_name}/*",
       ]
     }
   }
@@ -83,25 +97,25 @@ resource "aws_iam_role_policy_attachment" "additional" {
 ################################################################################
 
 locals {
-  create_iam_role_policy = local.create_iam_role && var.create_iam_role_policy && length(var.iam_role_policy_statements) > 0
+  create_iam_role_policy = local.create_iam_role && var.create_iam_role_policy && var.iam_role_policy_statements != null
 }
 
 data "aws_iam_policy_document" "role" {
   count = local.create_iam_role_policy ? 1 : 0
 
   dynamic "statement" {
-    for_each = var.iam_role_policy_statements
+    for_each = var.iam_role_policy_statements != null ? var.iam_role_policy_statements : []
 
     content {
-      sid           = try(statement.value.sid, null)
-      actions       = try(statement.value.actions, null)
-      not_actions   = try(statement.value.not_actions, null)
-      effect        = try(statement.value.effect, null)
-      resources     = try(statement.value.resources, null)
-      not_resources = try(statement.value.not_resources, null)
+      sid           = statement.value.sid
+      actions       = statement.value.actions
+      not_actions   = statement.value.not_actions
+      effect        = statement.value.effect
+      resources     = statement.value.resources
+      not_resources = statement.value.not_resources
 
       dynamic "principals" {
-        for_each = try(statement.value.principals, [])
+        for_each = statement.value.principals != null ? statement.value.principals : []
 
         content {
           type        = principals.value.type
@@ -110,7 +124,7 @@ data "aws_iam_policy_document" "role" {
       }
 
       dynamic "not_principals" {
-        for_each = try(statement.value.not_principals, [])
+        for_each = statement.value.not_principals != null ? statement.value.not_principals : []
 
         content {
           type        = not_principals.value.type
@@ -119,7 +133,7 @@ data "aws_iam_policy_document" "role" {
       }
 
       dynamic "condition" {
-        for_each = try(statement.value.conditions, [])
+        for_each = statement.value.condition != null ? statement.value.condition : []
 
         content {
           test     = condition.value.test
@@ -147,25 +161,28 @@ resource "aws_iam_role_policy" "this" {
 resource "aws_eks_fargate_profile" "this" {
   count = var.create ? 1 : 0
 
+  region = var.region
+
   cluster_name           = var.cluster_name
   fargate_profile_name   = var.name
   pod_execution_role_arn = var.create_iam_role ? aws_iam_role.this[0].arn : var.iam_role_arn
   subnet_ids             = var.subnet_ids
 
   dynamic "selector" {
-    for_each = var.selectors
+    for_each = var.selectors != null ? var.selectors : []
 
     content {
       namespace = selector.value.namespace
-      labels    = lookup(selector.value, "labels", {})
+      labels    = selector.value.labels
     }
   }
 
   dynamic "timeouts" {
-    for_each = [var.timeouts]
+    for_each = var.timeouts != null ? [var.timeouts] : []
+
     content {
-      create = lookup(var.timeouts, "create", null)
-      delete = lookup(var.timeouts, "delete", null)
+      create = var.timeouts.create
+      delete = var.timeouts.delete
     }
   }
 

@@ -3,11 +3,11 @@ provider "aws" {
 }
 
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     host                   = module.eks.cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
 
-    exec {
+    exec = {
       api_version = "client.authentication.k8s.io/v1beta1"
       command     = "aws"
       # This requires the awscli to be installed locally where Terraform is executed
@@ -20,7 +20,7 @@ locals {
   name   = "ex-${basename(path.cwd)}"
   region = "us-west-2"
 
-  cluster_version = "1.33"
+  kubernetes_version = "1.33"
 
   tags = {
     Test       = local.name
@@ -36,20 +36,20 @@ locals {
 module "eks" {
   source = "../.."
 
-  cluster_name    = local.name
-  cluster_version = local.cluster_version
+  name               = local.name
+  kubernetes_version = local.kubernetes_version
 
-  cluster_endpoint_public_access           = true
+  endpoint_public_access                   = true
   enable_cluster_creator_admin_permissions = true
 
-  cluster_addons = {
+  addons = {
     coredns                = {}
     eks-pod-identity-agent = {}
     kube-proxy             = {}
   }
 
   create_node_security_group = false
-  cluster_security_group_additional_rules = {
+  security_group_additional_rules = {
     hybrid-all = {
       cidr_blocks = [local.remote_network_cidr]
       description = "Allow all traffic from remote node/pod network"
@@ -60,7 +60,7 @@ module "eks" {
     }
   }
 
-  cluster_compute_config = {
+  compute_config = {
     enabled    = true
     node_pools = ["system"]
   }
@@ -75,7 +75,7 @@ module "eks" {
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
-  cluster_remote_network_config = {
+  remote_network_config = {
     remote_node_networks = {
       cidrs = [local.remote_node_cidr]
     }
@@ -106,7 +106,7 @@ data "aws_availability_zones" "available" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
   name = local.name
   cidr = local.vpc_cidr

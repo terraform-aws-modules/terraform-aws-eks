@@ -25,9 +25,9 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.2 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.95, < 6.0.0 |
-| <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 2.7, < 3.0.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.28 |
+| <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 3.0 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | >= 3.4 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.5 |
 | <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 4.0 |
@@ -36,9 +36,9 @@ Note that this example may create resources which cost money. Run `terraform des
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.95, < 6.0.0 |
-| <a name="provider_aws.remote"></a> [aws.remote](#provider\_aws.remote) | >= 5.95, < 6.0.0 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.7, < 3.0.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.28 |
+| <a name="provider_aws.remote"></a> [aws.remote](#provider\_aws.remote) | >= 6.28 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 3.0 |
 | <a name="provider_http"></a> [http](#provider\_http) | >= 3.4 |
 | <a name="provider_local"></a> [local](#provider\_local) | >= 2.5 |
 
@@ -49,8 +49,8 @@ Note that this example may create resources which cost money. Run `terraform des
 | <a name="module_eks"></a> [eks](#module\_eks) | ../.. | n/a |
 | <a name="module_eks_hybrid_node_role"></a> [eks\_hybrid\_node\_role](#module\_eks\_hybrid\_node\_role) | ../../modules/hybrid-node-role | n/a |
 | <a name="module_key_pair"></a> [key\_pair](#module\_key\_pair) | terraform-aws-modules/key-pair/aws | ~> 2.0 |
-| <a name="module_remote_node_vpc"></a> [remote\_node\_vpc](#module\_remote\_node\_vpc) | terraform-aws-modules/vpc/aws | ~> 5.0 |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 5.0 |
+| <a name="module_remote_node_vpc"></a> [remote\_node\_vpc](#module\_remote\_node\_vpc) | terraform-aws-modules/vpc/aws | ~> 6.0 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 6.0 |
 
 ## Resources
 

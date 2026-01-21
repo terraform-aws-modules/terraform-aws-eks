@@ -16,6 +16,12 @@ variable "cluster_name" {
   default     = ""
 }
 
+variable "region" {
+  description = "Region where the resource(s) will be managed. Defaults to the Region set in the provider configuration"
+  type        = string
+  default     = null
+}
+
 ################################################################################
 # Karpenter controller IAM Role
 ################################################################################
@@ -24,6 +30,12 @@ variable "create_iam_role" {
   description = "Determines whether an IAM role is created"
   type        = bool
   default     = true
+}
+
+variable "enable_inline_policy" {
+  description = "Determines whether the controller policy is created as a standard IAM policy or inline IAM policy. This can be enabled when the error `LimitExceeded: Cannot exceed quota for PolicySize: 6144` is received since standard IAM policies have a limit of 6,144 characters versus an inline role policy's limit of 10,240 ([Reference](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html))"
+  type        = bool
+  default     = false
 }
 
 variable "iam_role_name" {
@@ -64,7 +76,7 @@ variable "iam_role_permissions_boundary_arn" {
 
 variable "iam_role_tags" {
   description = "A map of additional tags to add the the IAM role"
-  type        = map(any)
+  type        = map(string)
   default     = {}
 }
 
@@ -92,10 +104,42 @@ variable "iam_policy_description" {
   default     = "Karpenter controller IAM policy"
 }
 
+variable "iam_role_override_assume_policy_documents" {
+  description = "A list of IAM policy documents to override the default assume role policy document for the Karpenter controller IAM role"
+  type        = list(string)
+  default     = []
+}
+
+variable "iam_role_source_assume_policy_documents" {
+  description = "A list of IAM policy documents to use as a source for the assume role policy document for the Karpenter controller IAM role"
+  type        = list(string)
+  default     = []
+}
+
 variable "iam_policy_statements" {
   description = "A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed"
-  type        = any
-  default     = []
+  type = list(object({ # TODO - change to `map(object({...}))` in next major version
+    sid           = optional(string)
+    actions       = optional(list(string))
+    not_actions   = optional(list(string))
+    effect        = optional(string)
+    resources     = optional(list(string))
+    not_resources = optional(list(string))
+    principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    not_principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    condition = optional(list(object({
+      test     = string
+      values   = list(string)
+      variable = string
+    })))
+  }))
+  default = null
 }
 
 variable "iam_role_policies" {
@@ -110,55 +154,14 @@ variable "ami_id_ssm_parameter_arns" {
   default     = []
 }
 
-variable "enable_pod_identity" {
-  description = "Determines whether to enable support for EKS pod identity"
-  type        = bool
-  default     = true
-}
-
-# TODO - make v1 permssions the default policy at next breaking change
-variable "enable_v1_permissions" {
-  description = "Determines whether to enable permissions suitable for v1+ (`true`) or for v0.33.x-v0.37.x (`false`)"
-  type        = bool
-  default     = false
-}
-
-################################################################################
-# IAM Role for Service Account (IRSA)
-################################################################################
-
-variable "enable_irsa" {
-  description = "Determines whether to enable support for IAM role for service accounts"
-  type        = bool
-  default     = false
-}
-
-variable "irsa_oidc_provider_arn" {
-  description = "OIDC provider arn used in trust policy for IAM role for service accounts"
-  type        = string
-  default     = ""
-}
-
-variable "irsa_namespace_service_accounts" {
-  description = "List of `namespace:serviceaccount`pairs to use in trust policy for IAM role for service accounts"
-  type        = list(string)
-  default     = ["karpenter:karpenter"]
-}
-
-variable "irsa_assume_role_condition_test" {
-  description = "Name of the [IAM condition operator](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition_operators.html) to evaluate when assuming the role"
-  type        = string
-  default     = "StringEquals"
-}
-
 ################################################################################
 # Pod Identity Association
 ################################################################################
-# TODO - Change default to `true` at next breaking change
+
 variable "create_pod_identity_association" {
   description = "Determines whether to create pod identity association"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "namespace" {
@@ -207,6 +210,32 @@ variable "queue_kms_data_key_reuse_period_seconds" {
   default     = null
 }
 
+variable "queue_policy_statements" {
+  description = "A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific SQS queue policy permissions as needed"
+  type = map(object({
+    sid           = optional(string)
+    actions       = optional(list(string))
+    not_actions   = optional(list(string))
+    effect        = optional(string)
+    resources     = optional(list(string))
+    not_resources = optional(list(string))
+    principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    not_principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    condition = optional(list(object({
+      test     = string
+      values   = list(string)
+      variable = string
+    })))
+  }))
+  default = null
+}
+
 ################################################################################
 # Node IAM Role
 ################################################################################
@@ -224,7 +253,7 @@ variable "cluster_ip_family" {
 }
 
 variable "node_iam_role_arn" {
-  description = "Existing IAM role ARN for the IAM instance profile. Required if `create_iam_role` is set to `false`"
+  description = "Existing IAM role ARN for the IAM instance profile. Required if `create_node_iam_role` is set to `false`"
   type        = string
   default     = null
 }

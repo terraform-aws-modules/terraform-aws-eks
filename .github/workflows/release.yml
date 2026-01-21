@@ -20,18 +20,26 @@ jobs:
     if: github.repository_owner == 'terraform-aws-modules'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Release
-        uses: cycjimmy/semantic-release-action@v4
+      - name: Set correct Node.js version
+        uses: actions/setup-node@v6
         with:
-          semantic_version: 23.0.2
-          extra_plugins: |
-            @semantic-release/changelog@6.0.3
-            @semantic-release/git@10.0.1
-            conventional-changelog-conventionalcommits@7.0.2
+          node-version: 24
+
+      - name: Install dependencies
+        run: |
+          npm install \
+            @semantic-release/changelog@6.0.3 \
+            @semantic-release/git@10.0.1 \
+            conventional-changelog-conventionalcommits@9.1.0
+
+      - name: Release
+        uses: cycjimmy/semantic-release-action@v5
+        with:
+          semantic_version: 25.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_TOKEN }}

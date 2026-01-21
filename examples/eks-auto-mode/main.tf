@@ -11,9 +11,9 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  name            = "ex-${basename(path.cwd)}"
-  cluster_version = "1.33"
-  region          = "us-west-2"
+  name               = "ex-${basename(path.cwd)}"
+  kubernetes_version = "1.33"
+  region             = "us-west-2"
 
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
@@ -32,15 +32,36 @@ locals {
 module "eks" {
   source = "../.."
 
-  cluster_name                   = local.name
-  cluster_version                = local.cluster_version
-  cluster_endpoint_public_access = true
+  name                   = local.name
+  kubernetes_version     = local.kubernetes_version
+  endpoint_public_access = true
 
   enable_cluster_creator_admin_permissions = true
 
-  cluster_compute_config = {
+  compute_config = {
     enabled    = true
     node_pools = ["general-purpose"]
+  }
+
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
+
+  tags = local.tags
+}
+
+module "eks_auto_custom_node_pools" {
+  source = "../.."
+
+  name                   = "${local.name}-custom"
+  kubernetes_version     = local.kubernetes_version
+  endpoint_public_access = true
+
+  enable_cluster_creator_admin_permissions = true
+
+  # Create just the IAM resources for EKS Auto Mode for use with custom node pools
+  create_auto_mode_iam_resources = true
+  compute_config = {
+    enabled = true
   }
 
   vpc_id     = module.vpc.vpc_id
@@ -61,7 +82,7 @@ module "disabled_eks" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
   name = local.name
   cidr = local.vpc_cidr

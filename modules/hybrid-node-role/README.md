@@ -74,14 +74,14 @@ module "eks_hybrid_node_role" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.2 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.95, < 6.0.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.28 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.95, < 6.0.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.28 |
 
 ## Modules
 
@@ -115,7 +115,7 @@ No modules.
 | <a name="input_enable_ira"></a> [enable\_ira](#input\_enable\_ira) | Enables IAM Roles Anywhere based IAM permissions on the node | `bool` | `false` | no |
 | <a name="input_enable_pod_identity"></a> [enable\_pod\_identity](#input\_enable\_pod\_identity) | Enables EKS Pod Identity based IAM permissions on the node | `bool` | `true` | no |
 | <a name="input_intermediate_policy_name"></a> [intermediate\_policy\_name](#input\_intermediate\_policy\_name) | Name of the IAM policy | `string` | `null` | no |
-| <a name="input_intermediate_policy_statements"></a> [intermediate\_policy\_statements](#input\_intermediate\_policy\_statements) | A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed | `any` | `[]` | no |
+| <a name="input_intermediate_policy_statements"></a> [intermediate\_policy\_statements](#input\_intermediate\_policy\_statements) | A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed | <pre>list(object({<br/>    sid           = optional(string)<br/>    actions       = optional(list(string))<br/>    not_actions   = optional(list(string))<br/>    effect        = optional(string)<br/>    resources     = optional(list(string))<br/>    not_resources = optional(list(string))<br/>    principals = optional(list(object({<br/>      type        = string<br/>      identifiers = list(string)<br/>    })))<br/>    not_principals = optional(list(object({<br/>      type        = string<br/>      identifiers = list(string)<br/>    })))<br/>    condition = optional(list(object({<br/>      test     = string<br/>      values   = list(string)<br/>      variable = string<br/>    })))<br/>  }))</pre> | `null` | no |
 | <a name="input_intermediate_policy_use_name_prefix"></a> [intermediate\_policy\_use\_name\_prefix](#input\_intermediate\_policy\_use\_name\_prefix) | Determines whether the name of the IAM policy (`intermediate_policy_name`) is used as a prefix | `bool` | `true` | no |
 | <a name="input_intermediate_role_description"></a> [intermediate\_role\_description](#input\_intermediate\_role\_description) | IAM role description | `string` | `"EKS Hybrid Node IAM Roles Anywhere intermediate IAM role"` | no |
 | <a name="input_intermediate_role_name"></a> [intermediate\_role\_name](#input\_intermediate\_role\_name) | Name of the IAM role | `string` | `null` | no |
@@ -129,7 +129,7 @@ No modules.
 | <a name="input_ira_profile_session_policy"></a> [ira\_profile\_session\_policy](#input\_ira\_profile\_session\_policy) | A session policy that applies to the trust boundary of the vended session credentials | `string` | `null` | no |
 | <a name="input_ira_trust_anchor_acm_pca_arn"></a> [ira\_trust\_anchor\_acm\_pca\_arn](#input\_ira\_trust\_anchor\_acm\_pca\_arn) | The ARN of the ACM PCA that issued the trust anchor certificate | `string` | `null` | no |
 | <a name="input_ira_trust_anchor_name"></a> [ira\_trust\_anchor\_name](#input\_ira\_trust\_anchor\_name) | Name of the Roles Anywhere trust anchor | `string` | `null` | no |
-| <a name="input_ira_trust_anchor_notification_settings"></a> [ira\_trust\_anchor\_notification\_settings](#input\_ira\_trust\_anchor\_notification\_settings) | Notification settings for the trust anchor | `any` | `[]` | no |
+| <a name="input_ira_trust_anchor_notification_settings"></a> [ira\_trust\_anchor\_notification\_settings](#input\_ira\_trust\_anchor\_notification\_settings) | Notification settings for the trust anchor | <pre>list(object({<br/>    channel   = optional(string)<br/>    enabled   = optional(bool)<br/>    event     = optional(string)<br/>    threshold = optional(number)<br/>  }))</pre> | `null` | no |
 | <a name="input_ira_trust_anchor_source_type"></a> [ira\_trust\_anchor\_source\_type](#input\_ira\_trust\_anchor\_source\_type) | The source type of the trust anchor | `string` | `null` | no |
 | <a name="input_ira_trust_anchor_x509_certificate_data"></a> [ira\_trust\_anchor\_x509\_certificate\_data](#input\_ira\_trust\_anchor\_x509\_certificate\_data) | The X.509 certificate data of the trust anchor | `string` | `null` | no |
 | <a name="input_max_session_duration"></a> [max\_session\_duration](#input\_max\_session\_duration) | Maximum API session duration in seconds between 3600 and 43200 | `number` | `null` | no |
@@ -140,9 +140,9 @@ No modules.
 | <a name="input_policy_description"></a> [policy\_description](#input\_policy\_description) | IAM policy description | `string` | `"EKS Hybrid Node IAM role policy"` | no |
 | <a name="input_policy_name"></a> [policy\_name](#input\_policy\_name) | Name of the IAM policy | `string` | `"EKSHybridNode"` | no |
 | <a name="input_policy_path"></a> [policy\_path](#input\_policy\_path) | Path of the IAM policy | `string` | `"/"` | no |
-| <a name="input_policy_statements"></a> [policy\_statements](#input\_policy\_statements) | A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed | `any` | `[]` | no |
+| <a name="input_policy_statements"></a> [policy\_statements](#input\_policy\_statements) | A list of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed | <pre>list(object({<br/>    sid           = optional(string)<br/>    actions       = optional(list(string))<br/>    not_actions   = optional(list(string))<br/>    effect        = optional(string)<br/>    resources     = optional(list(string))<br/>    not_resources = optional(list(string))<br/>    principals = optional(list(object({<br/>      type        = string<br/>      identifiers = list(string)<br/>    })))<br/>    not_principals = optional(list(object({<br/>      type        = string<br/>      identifiers = list(string)<br/>    })))<br/>    condition = optional(list(object({<br/>      test     = string<br/>      values   = list(string)<br/>      variable = string<br/>    })))<br/>  }))</pre> | `null` | no |
 | <a name="input_policy_use_name_prefix"></a> [policy\_use\_name\_prefix](#input\_policy\_use\_name\_prefix) | Determines whether the name of the IAM policy (`policy_name`) is used as a prefix | `bool` | `true` | no |
-| <a name="input_tags"></a> [tags](#input\_tags) | A map of additional tags to add the the IAM role | `map(any)` | `{}` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | A map of additional tags to add the the IAM role | `map(string)` | `{}` | no |
 | <a name="input_trust_anchor_arns"></a> [trust\_anchor\_arns](#input\_trust\_anchor\_arns) | List of IAM Roles Anywhere trust anchor ARNs. Required if `enable_ira` is set to `true` | `list(string)` | `[]` | no |
 | <a name="input_use_name_prefix"></a> [use\_name\_prefix](#input\_use\_name\_prefix) | Determines whether the name of the IAM role (`name`) is used as a prefix | `bool` | `true` | no |
 
@@ -157,3 +157,7 @@ No modules.
 | <a name="output_name"></a> [name](#output\_name) | The name of the node IAM role |
 | <a name="output_unique_id"></a> [unique\_id](#output\_unique\_id) | Stable and unique string identifying the node IAM role |
 <!-- END_TF_DOCS -->
+
+## License
+
+Apache 2 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/LICENSE) for full details.

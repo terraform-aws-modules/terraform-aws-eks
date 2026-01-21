@@ -3,7 +3,7 @@ data "aws_partition" "current" {
 }
 
 locals {
-  partition = try(data.aws_partition.current[0].partition, "aws")
+  partition = try(data.aws_partition.current[0].partition, "")
 }
 
 ################################################################################
@@ -93,17 +93,44 @@ resource "aws_iam_role" "this" {
 data "aws_iam_policy_document" "this" {
   count = var.create ? 1 : 0
 
-  statement {
-    actions = [
-      "ssm:DeregisterManagedInstance",
-      "ssm:DescribeInstanceInformation",
-    ]
+  dynamic "statement" {
+    for_each = var.enable_ira ? [] : [1]
 
-    resources = ["*"]
+    content {
+      sid       = "AllowDeregisterOwnInstance"
+      actions   = ["ssm:DeregisterManagedInstance"]
+      resources = ["arn:${local.partition}:ssm:*:*:managed-instance/*"]
+
+      condition {
+        test     = "ArnLike"
+        variable = "ssm:SourceInstanceARN"
+        values   = ["arn:${local.partition}:ssm:*:*:managed-instance/*"]
+      }
+    }
+  }
+
+  dynamic "statement" {
+    for_each = var.enable_ira ? [] : [1]
+
+    content {
+      sid       = "AllowDescribeInstances"
+      actions   = ["ssm:DescribeInstanceInformation"]
+      resources = ["*"]
+
+      condition {
+        test     = "ArnLike"
+        variable = "ssm:SourceInstanceARN"
+        values   = ["arn:${local.partition}:ssm:*:*:managed-instance/*"]
+      }
+    }
   }
 
   statement {
-    actions   = ["eks:DescribeCluster"]
+    sid = "DescribeEKSCluster"
+    actions = [
+      "eks:DescribeCluster",
+      "eks:ListAccessEntries",
+    ]
     resources = var.cluster_arns
   }
 
@@ -117,18 +144,18 @@ data "aws_iam_policy_document" "this" {
   }
 
   dynamic "statement" {
-    for_each = var.policy_statements
+    for_each = var.policy_statements != null ? var.policy_statements : []
 
     content {
-      sid           = try(statement.value.sid, null)
-      actions       = try(statement.value.actions, null)
-      not_actions   = try(statement.value.not_actions, null)
-      effect        = try(statement.value.effect, null)
-      resources     = try(statement.value.resources, null)
-      not_resources = try(statement.value.not_resources, null)
+      sid           = statement.value.sid
+      actions       = statement.value.actions
+      not_actions   = statement.value.not_actions
+      effect        = statement.value.effect
+      resources     = statement.value.resources
+      not_resources = statement.value.not_resources
 
       dynamic "principals" {
-        for_each = try(statement.value.principals, [])
+        for_each = statement.value.principals != null ? statement.value.principals : []
 
         content {
           type        = principals.value.type
@@ -137,7 +164,7 @@ data "aws_iam_policy_document" "this" {
       }
 
       dynamic "not_principals" {
-        for_each = try(statement.value.not_principals, [])
+        for_each = statement.value.not_principals != null ? statement.value.not_principals : []
 
         content {
           type        = not_principals.value.type
@@ -146,7 +173,7 @@ data "aws_iam_policy_document" "this" {
       }
 
       dynamic "condition" {
-        for_each = try(statement.value.conditions, [])
+        for_each = statement.value.condition != null ? statement.value.condition : []
 
         content {
           test     = condition.value.test
@@ -215,7 +242,7 @@ resource "aws_rolesanywhere_trust_anchor" "this" {
   name = try(coalesce(var.ira_trust_anchor_name, var.name), null)
 
   dynamic "notification_settings" {
-    for_each = var.ira_trust_anchor_notification_settings
+    for_each = var.ira_trust_anchor_notification_settings != null ? var.ira_trust_anchor_notification_settings : []
 
     content {
       channel   = try(notification_settings.value.channel, null)
@@ -297,18 +324,18 @@ data "aws_iam_policy_document" "intermediate" {
   }
 
   dynamic "statement" {
-    for_each = var.intermediate_policy_statements
+    for_each = var.intermediate_policy_statements != null ? var.intermediate_policy_statements : []
 
     content {
-      sid           = try(statement.value.sid, null)
-      actions       = try(statement.value.actions, null)
-      not_actions   = try(statement.value.not_actions, null)
-      effect        = try(statement.value.effect, null)
-      resources     = try(statement.value.resources, null)
-      not_resources = try(statement.value.not_resources, null)
+      sid           = statement.value.sid
+      actions       = statement.value.actions
+      not_actions   = statement.value.not_actions
+      effect        = statement.value.effect
+      resources     = statement.value.resources
+      not_resources = statement.value.not_resources
 
       dynamic "principals" {
-        for_each = try(statement.value.principals, [])
+        for_each = statement.value.principals != null ? statement.value.principals : []
 
         content {
           type        = principals.value.type
@@ -317,7 +344,7 @@ data "aws_iam_policy_document" "intermediate" {
       }
 
       dynamic "not_principals" {
-        for_each = try(statement.value.not_principals, [])
+        for_each = statement.value.not_principals != null ? statement.value.not_principals : []
 
         content {
           type        = not_principals.value.type
@@ -326,7 +353,7 @@ data "aws_iam_policy_document" "intermediate" {
       }
 
       dynamic "condition" {
-        for_each = try(statement.value.conditions, [])
+        for_each = statement.value.condition != null ? statement.value.condition : []
 
         content {
           test     = condition.value.test

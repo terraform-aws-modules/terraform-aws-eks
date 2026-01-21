@@ -1,16 +1,20 @@
 module "eks_bottlerocket" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 20.0"
+  version = "~> 21.0"
 
-  cluster_name    = "${local.name}-bottlerocket"
-  cluster_version = "1.33"
+  name               = "${local.name}-bottlerocket"
+  kubernetes_version = "1.33"
 
   # EKS Addons
-  cluster_addons = {
-    coredns                = {}
-    eks-pod-identity-agent = {}
-    kube-proxy             = {}
-    vpc-cni                = {}
+  addons = {
+    coredns = {}
+    eks-pod-identity-agent = {
+      before_compute = true
+    }
+    kube-proxy = {}
+    vpc-cni = {
+      before_compute = true
+    }
   }
 
   vpc_id     = module.vpc.vpc_id

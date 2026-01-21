@@ -62,15 +62,6 @@ output "node_group_taints" {
 }
 
 ################################################################################
-# Autoscaling Group Schedule
-################################################################################
-
-output "autoscaling_group_schedule_arns" {
-  description = "ARNs of autoscaling group schedules"
-  value       = { for k, v in aws_autoscaling_schedule.this : k => v.arn }
-}
-
-################################################################################
 # IAM Role
 ################################################################################
 
@@ -90,10 +81,15 @@ output "iam_role_unique_id" {
 }
 
 ################################################################################
-# Additional
+# Security Group
 ################################################################################
 
-output "platform" {
-  description = "[DEPRECATED - Will be removed in `v21.0`] Identifies the OS platform as `bottlerocket`, `linux` (AL2), `al2023`, or `windows`"
-  value       = module.user_data.platform
+output "security_group_arn" {
+  description = "Amazon Resource Name (ARN) of the security group"
+  value       = try(aws_security_group.this[0].arn, null)
+}
+
+output "security_group_id" {
+  description = "ID of the security group"
+  value       = try(aws_security_group.this[0].id, null)
 }
