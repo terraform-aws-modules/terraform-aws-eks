@@ -324,11 +324,7 @@ resource "aws_eks_access_policy_association" "this" {
   cluster_name = aws_eks_cluster.this[0].id
 
   policy_arn    = each.value.association_policy_arn
-  principal_arn = each.value.principal_arn
-
-  depends_on = [
-    aws_eks_access_entry.this,
-  ]
+  principal_arn = aws_eks_access_entry.this[each.value.entry_key].principal_arn
 }
 
 ################################################################################
