@@ -31,6 +31,24 @@ locals {
 
 locals {
   create_iam_role = var.create && var.create_iam_role
+
+  # Split controller policies to avoid exceeding the 6,144 character IAM policy size limit
+  # See: https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3512
+  # See: https://github.com/aws/karpenter-provider-aws/pull/8690
+  controller_policies = local.create_iam_role ? merge(
+    {
+      NodeLifecycle     = data.aws_iam_policy_document.controller_node_lifecycle[0].json
+      IAMIntegration    = data.aws_iam_policy_document.controller_iam_integration[0].json
+      EKSIntegration    = data.aws_iam_policy_document.controller_eks_integration[0].json
+      ResourceDiscovery = data.aws_iam_policy_document.controller_resource_discovery[0].json
+    },
+    local.enable_spot_termination ? {
+      Interruption = data.aws_iam_policy_document.controller_interruption[0].json
+    } : {},
+    var.iam_policy_statements != null ? {
+      Additional = data.aws_iam_policy_document.controller_additional[0].json
+    } : {}
+  ) : {}
 }
 
 data "aws_iam_policy_document" "controller_assume_role" {
@@ -71,31 +89,31 @@ resource "aws_iam_role" "controller" {
 }
 
 resource "aws_iam_role_policy" "controller" {
-  count = local.create_iam_role && var.enable_inline_policy ? 1 : 0
+  for_each = var.enable_inline_policy ? local.controller_policies : {}
 
-  name        = var.iam_policy_use_name_prefix ? null : var.iam_policy_name
-  name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}-" : null
+  name        = var.iam_policy_use_name_prefix ? null : "${var.iam_policy_name}${each.key}"
+  name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}${each.key}-" : null
   role        = aws_iam_role.controller[0].name
-  policy      = data.aws_iam_policy_document.controller[0].json
+  policy      = each.value
 }
 
 resource "aws_iam_policy" "controller" {
-  count = local.create_iam_role && !var.enable_inline_policy ? 1 : 0
+  for_each = !var.enable_inline_policy ? local.controller_policies : {}
 
-  name        = var.iam_policy_use_name_prefix ? null : var.iam_policy_name
-  name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}-" : null
+  name        = var.iam_policy_use_name_prefix ? null : "${var.iam_policy_name}${each.key}"
+  name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}${each.key}-" : null
   path        = var.iam_policy_path
-  description = var.iam_policy_description
-  policy      = data.aws_iam_policy_document.controller[0].json
+  description = "${var.iam_policy_description} - ${each.key}"
+  policy      = each.value
 
   tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "controller" {
-  count = local.create_iam_role && !var.enable_inline_policy ? 1 : 0
+  for_each = !var.enable_inline_policy ? local.controller_policies : {}
 
   role       = aws_iam_role.controller[0].name
-  policy_arn = aws_iam_policy.controller[0].arn
+  policy_arn = aws_iam_policy.controller[each.key].arn
 }
 
 resource "aws_iam_role_policy_attachment" "controller_additional" {

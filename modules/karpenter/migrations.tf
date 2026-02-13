@@ -75,3 +75,21 @@ moved {
   from = aws_iam_role_policy_attachment.node["arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"]
   to   = aws_iam_role_policy_attachment.node["AmazonEKS_CNI_Policy"]
 }
+
+# Controller IAM managed policy - the old single policy migrates to NodeLifecycle
+# since it contains the largest set of statements
+moved {
+  from = aws_iam_policy.controller[0]
+  to   = aws_iam_policy.controller["NodeLifecycle"]
+}
+
+moved {
+  from = aws_iam_role_policy_attachment.controller[0]
+  to   = aws_iam_role_policy_attachment.controller["NodeLifecycle"]
+}
+
+# Controller IAM inline policy
+moved {
+  from = aws_iam_role_policy.controller[0]
+  to   = aws_iam_role_policy.controller["NodeLifecycle"]
+}

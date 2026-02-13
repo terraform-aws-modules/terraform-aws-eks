@@ -1,4 +1,8 @@
-data "aws_iam_policy_document" "controller" {
+################################################################################
+# Node Lifecycle Policy
+################################################################################
+
+data "aws_iam_policy_document" "controller_node_lifecycle" {
   count = local.create_iam_role ? 1 : 0
 
   statement {
@@ -176,55 +180,14 @@ data "aws_iam_policy_document" "controller" {
       values   = ["*"]
     }
   }
+}
 
-  statement {
-    sid       = "AllowRegionalReadActions"
-    resources = ["*"]
-    actions = [
-      "ec2:DescribeCapacityReservations",
-      "ec2:DescribeAvailabilityZones",
-      "ec2:DescribeImages",
-      "ec2:DescribeInstances",
-      "ec2:DescribeInstanceTypeOfferings",
-      "ec2:DescribeInstanceTypes",
-      "ec2:DescribeLaunchTemplates",
-      "ec2:DescribeSecurityGroups",
-      "ec2:DescribeSpotPriceHistory",
-      "ec2:DescribeSubnets"
-    ]
+################################################################################
+# IAM Integration Policy
+################################################################################
 
-    condition {
-      test     = "StringEquals"
-      variable = "aws:RequestedRegion"
-      values   = [local.region]
-    }
-  }
-
-  statement {
-    sid       = "AllowSSMReadActions"
-    resources = coalescelist(var.ami_id_ssm_parameter_arns, ["arn:${local.partition}:ssm:${local.region}::parameter/aws/service/*"])
-    actions   = ["ssm:GetParameter"]
-  }
-
-  statement {
-    sid       = "AllowPricingReadActions"
-    resources = ["*"]
-    actions   = ["pricing:GetProducts"]
-  }
-
-  dynamic "statement" {
-    for_each = local.enable_spot_termination ? [1] : []
-
-    content {
-      sid       = "AllowInterruptionQueueActions"
-      resources = [try(aws_sqs_queue.this[0].arn, null)]
-      actions = [
-        "sqs:DeleteMessage",
-        "sqs:GetQueueUrl",
-        "sqs:ReceiveMessage"
-      ]
-    }
-  }
+data "aws_iam_policy_document" "controller_iam_integration" {
+  count = local.create_iam_role ? 1 : 0
 
   statement {
     sid       = "AllowPassingInstanceRole"
@@ -343,6 +306,63 @@ data "aws_iam_policy_document" "controller" {
       values   = ["*"]
     }
   }
+}
+
+################################################################################
+# EKS Integration Policy
+################################################################################
+
+data "aws_iam_policy_document" "controller_eks_integration" {
+  count = local.create_iam_role ? 1 : 0
+
+  statement {
+    sid       = "AllowAPIServerEndpointDiscovery"
+    resources = ["arn:${local.partition}:eks:${local.region}:${local.account_id}:cluster/${var.cluster_name}"]
+    actions   = ["eks:DescribeCluster"]
+  }
+}
+
+################################################################################
+# Resource Discovery Policy
+################################################################################
+
+data "aws_iam_policy_document" "controller_resource_discovery" {
+  count = local.create_iam_role ? 1 : 0
+
+  statement {
+    sid       = "AllowRegionalReadActions"
+    resources = ["*"]
+    actions = [
+      "ec2:DescribeCapacityReservations",
+      "ec2:DescribeAvailabilityZones",
+      "ec2:DescribeImages",
+      "ec2:DescribeInstances",
+      "ec2:DescribeInstanceTypeOfferings",
+      "ec2:DescribeInstanceTypes",
+      "ec2:DescribeLaunchTemplates",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DescribeSpotPriceHistory",
+      "ec2:DescribeSubnets"
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestedRegion"
+      values   = [local.region]
+    }
+  }
+
+  statement {
+    sid       = "AllowSSMReadActions"
+    resources = coalescelist(var.ami_id_ssm_parameter_arns, ["arn:${local.partition}:ssm:${local.region}::parameter/aws/service/*"])
+    actions   = ["ssm:GetParameter"]
+  }
+
+  statement {
+    sid       = "AllowPricingReadActions"
+    resources = ["*"]
+    actions   = ["pricing:GetProducts"]
+  }
 
   statement {
     sid       = "AllowInstanceProfileReadActions"
@@ -355,12 +375,32 @@ data "aws_iam_policy_document" "controller" {
     resources = ["*"]
     actions   = ["iam:ListInstanceProfiles"]
   }
+}
+
+################################################################################
+# Interruption Policy
+################################################################################
+
+data "aws_iam_policy_document" "controller_interruption" {
+  count = local.create_iam_role && local.enable_spot_termination ? 1 : 0
 
   statement {
-    sid       = "AllowAPIServerEndpointDiscovery"
-    resources = ["arn:${local.partition}:eks:${local.region}:${local.account_id}:cluster/${var.cluster_name}"]
-    actions   = ["eks:DescribeCluster"]
+    sid       = "AllowInterruptionQueueActions"
+    resources = [aws_sqs_queue.this[0].arn]
+    actions = [
+      "sqs:DeleteMessage",
+      "sqs:GetQueueUrl",
+      "sqs:ReceiveMessage"
+    ]
   }
+}
+
+################################################################################
+# Additional Custom Policy Statements
+################################################################################
+
+data "aws_iam_policy_document" "controller_additional" {
+  count = local.create_iam_role && var.iam_policy_statements != null ? 1 : 0
 
   dynamic "statement" {
     for_each = var.iam_policy_statements != null ? var.iam_policy_statements : []
