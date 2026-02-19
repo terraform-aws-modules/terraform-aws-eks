@@ -220,6 +220,11 @@ output "cluster_addons" {
   value       = merge(aws_eks_addon.this, aws_eks_addon.before_compute)
 }
 
+output "cluster_addon_vpc_cni" {
+  description = "Attribute map for VPC-CNI EKS cluster addon"
+  value       = try(aws_eks_addon.before_compute["vpc-cni"], null)
+}
+
 ################################################################################
 # EKS Identity Provider
 ################################################################################
