@@ -23,6 +23,7 @@ locals {
     AL2_x86_64                 = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2/recommended/image_id"
     AL2_x86_64_GPU             = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2-gpu/recommended/image_id"
     AL2_ARM_64                 = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2-arm64/recommended/image_id"
+    CUSTOM                     = "NONE"
     BOTTLEROCKET_ARM_64        = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}/arm64/latest/image_id"
     BOTTLEROCKET_x86_64        = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}/x86_64/latest/image_id"
     BOTTLEROCKET_ARM_64_FIPS   = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-fips/arm64/latest/image_id"

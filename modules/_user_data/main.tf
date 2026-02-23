@@ -15,7 +15,7 @@ resource "null_resource" "validate_cluster_service_cidr" {
 
 locals {
   is_al2    = startswith(var.ami_type, "AL2_")
-  is_al2023 = startswith(var.ami_type, "AL2023_")
+  is_al2023 = startswith(var.ami_type, "AL2023_") || var.ami_type == "CUSTOM"
 
   # Converts AMI type into user data template path
   ami_type_to_user_data_path = {
@@ -43,7 +43,7 @@ locals {
     WINDOWS_CORE_2025_x86_64 = "${path.module}/../../templates/windows_user_data.tpl"
     WINDOWS_FULL_2025_x86_64 = "${path.module}/../../templates/windows_user_data.tpl"
 
-    CUSTOM = var.user_data_template_path
+    CUSTOM = "${path.module}/../../templates/al2023_user_data.tpl"
   }
   user_data_path = coalesce(var.user_data_template_path, local.ami_type_to_user_data_path[var.ami_type])
 

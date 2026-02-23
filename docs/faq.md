@@ -3,7 +3,7 @@
 - [Setting `disk_size` or `remote_access` does not make any changes](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#Settings-disk_size-or-remote_access-does-not-make-any-changes)
 - [I received an error: `expect exactly one securityGroup tagged with kubernetes.io/cluster/<NAME> ...`](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#i-received-an-error-expect-exactly-one-securitygroup-tagged-with-kubernetesioclustername-)
 - [Why are nodes not being registered?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#why-are-nodes-not-being-registered)
-- [Why are there no changes when a node group's `desired_size` is modified?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#why-are-there-no-changes-when-a-node-groups-desired_size-is-modified)
+- [Why `ignore_changes` is removed from the Managed Node Group lifecycle?](https://github.com/pinterest/terraform-aws-eks/blob/pinterest-release-20.20.0/docs/faq.md#why-ignore-changes-is-removed-from-the-managed-node-group-lifecycle)
 - [How do I access compute resource attributes?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#how-do-i-access-compute-resource-attributes)
 - [What add-ons are available?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#what-add-ons-are-available)
 - [What configuration values are available for an add-on?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#what-configuration-values-are-available-for-an-add-on)
@@ -76,11 +76,11 @@ If you require a public endpoint, setting up both (public and private) and restr
 
 4. Nodes need to be able to connect to other AWS services to function (download container images, make API calls to assume roles, etc.). If for some reason you cannot enable public internet access for nodes you can add VPC endpoints to the relevant services: EC2 API, ECR API, ECR DKR and S3.
 
-### Why are there no changes when a node group's `desired_size` is modified?
+### Why `ignore_changes` is removed from the Managed Node Group lifecycle?
 
-The module is configured to ignore this value. Unfortunately, Terraform does not support variables within the `lifecycle` block. The setting is ignored to allow autoscaling via controllers such as cluster autoscaler or Karpenter to work properly and without interference by Terraform. Changing the desired count must be handled outside of Terraform once the node group is created.
+It was preventing us from changing the `desired_size` for a Managed Node Group from Terraform. Since we don't use autoscaling via controllers such as cluster autoscaler or Karpenter, this change is acceptable.
 
-:info: See [this](https://github.com/bryantbiggs/eks-desired-size-hack) for a workaround to this limitation.
+Reference to the original docs regarding this change: [Why are there no changes when a node group's desired_size is modified?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/v20.20.0/docs/faq.md#why-are-there-no-changes-when-a-node-groups-desired_size-is-modified)
 
 ### How do I access compute resource attributes?
 
