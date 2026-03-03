@@ -21,6 +21,7 @@ data "aws_service_principal" "ec2" {
 locals {
   account_id  = try(data.aws_caller_identity.current[0].account_id, "")
   ec2_sp_name = try(data.aws_service_principal.ec2[0].name, "")
+  dns_suffix  = data.aws_partition.current[0].dns_suffix
   partition   = try(data.aws_partition.current[0].partition, "")
   region      = try(data.aws_region.current[0].region, "")
 }
