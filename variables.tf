@@ -1011,9 +1011,10 @@ variable "self_managed_node_groups" {
       }))
     }))
     cpu_options = optional(object({
-      amd_sev_snp      = optional(string)
-      core_count       = optional(number)
-      threads_per_core = optional(number)
+      amd_sev_snp           = optional(string)
+      core_count            = optional(number)
+      nested_virtualization = optional(string)
+      threads_per_core      = optional(number)
     }))
     credit_specification = optional(object({
       cpu_credits = optional(string)
@@ -1342,9 +1343,10 @@ variable "eks_managed_node_groups" {
       }))
     }))
     cpu_options = optional(object({
-      amd_sev_snp      = optional(string)
-      core_count       = optional(number)
-      threads_per_core = optional(number)
+      amd_sev_snp           = optional(string)
+      core_count            = optional(number)
+      nested_virtualization = optional(string)
+      threads_per_core      = optional(number)
     }))
     credit_specification = optional(object({
       cpu_credits = optional(string)

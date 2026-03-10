@@ -250,11 +250,12 @@ variable "capacity_reservation_specification" {
 }
 
 variable "cpu_options" {
-  description = "The CPU options for the instance"
+  description = "The CPU options for the instance."
   type = object({
-    amd_sev_snp      = optional(string)
-    core_count       = optional(number)
-    threads_per_core = optional(number)
+    amd_sev_snp           = optional(string)
+    core_count            = optional(number)
+    nested_virtualization = optional(string)
+    threads_per_core      = optional(number)
   })
   default = null
 }
