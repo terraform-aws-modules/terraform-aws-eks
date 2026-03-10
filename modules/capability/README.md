@@ -95,14 +95,14 @@ module "kro_eks_capability" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.28 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.33 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.28 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.33 |
 | <a name="provider_time"></a> [time](#provider\_time) | >= 0.9 |
 
 ## Modules
@@ -128,14 +128,14 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The name of the EKS cluster | `string` | `""` | no |
-| <a name="input_configuration"></a> [configuration](#input\_configuration) | Configuration for the capability | <pre>object({<br/>    argo_cd = optional(object({<br/>      aws_idc = object({<br/>        idc_instance_arn = string<br/>        idc_region       = optional(string)<br/>      })<br/>      namespace = optional(string)<br/>      network_access = optional(object({<br/>        vpce_ids = optional(list(string))<br/>      }))<br/>      rbac_role_mapping = optional(list(object({<br/>        identity = list(object({<br/>          id   = string<br/>          type = string<br/>        }))<br/>        role = string<br/>      })))<br/>    }))<br/>  })</pre> | `null` | no |
+| <a name="input_configuration"></a> [configuration](#input\_configuration) | Configuration for the capability | <pre>object({<br>    argo_cd = optional(object({<br>      aws_idc = object({<br>        idc_instance_arn = string<br>        idc_region       = optional(string)<br>      })<br>      namespace = optional(string)<br>      network_access = optional(object({<br>        vpce_ids = optional(list(string))<br>      }))<br>      rbac_role_mapping = optional(list(object({<br>        identity = list(object({<br>          id   = string<br>          type = string<br>        }))<br>        role = string<br>      })))<br>    }))<br>  })</pre> | `null` | no |
 | <a name="input_create"></a> [create](#input\_create) | Controls if resources should be created (affects nearly all resources) | `bool` | `true` | no |
 | <a name="input_create_iam_role"></a> [create\_iam\_role](#input\_create\_iam\_role) | Determines whether an IAM role is created | `bool` | `true` | no |
 | <a name="input_delete_propagation_policy"></a> [delete\_propagation\_policy](#input\_delete\_propagation\_policy) | The propagation policy to use when deleting the capability. Valid values: `RETAIN` | `string` | `"RETAIN"` | no |
 | <a name="input_iam_policy_description"></a> [iam\_policy\_description](#input\_iam\_policy\_description) | IAM policy description | `string` | `null` | no |
 | <a name="input_iam_policy_name"></a> [iam\_policy\_name](#input\_iam\_policy\_name) | Name of the IAM policy | `string` | `null` | no |
 | <a name="input_iam_policy_path"></a> [iam\_policy\_path](#input\_iam\_policy\_path) | Path of the IAM policy | `string` | `null` | no |
-| <a name="input_iam_policy_statements"></a> [iam\_policy\_statements](#input\_iam\_policy\_statements) | A map of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed | <pre>map(object({<br/>    sid           = optional(string)<br/>    actions       = optional(list(string))<br/>    not_actions   = optional(list(string))<br/>    effect        = optional(string)<br/>    resources     = optional(list(string))<br/>    not_resources = optional(list(string))<br/>    principals = optional(list(object({<br/>      type        = string<br/>      identifiers = list(string)<br/>    })))<br/>    not_principals = optional(list(object({<br/>      type        = string<br/>      identifiers = list(string)<br/>    })))<br/>    condition = optional(list(object({<br/>      test     = string<br/>      values   = list(string)<br/>      variable = string<br/>    })))<br/>  }))</pre> | `null` | no |
+| <a name="input_iam_policy_statements"></a> [iam\_policy\_statements](#input\_iam\_policy\_statements) | A map of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) - used for adding specific IAM permissions as needed | <pre>map(object({<br>    sid           = optional(string)<br>    actions       = optional(list(string))<br>    not_actions   = optional(list(string))<br>    effect        = optional(string)<br>    resources     = optional(list(string))<br>    not_resources = optional(list(string))<br>    principals = optional(list(object({<br>      type        = string<br>      identifiers = list(string)<br>    })))<br>    not_principals = optional(list(object({<br>      type        = string<br>      identifiers = list(string)<br>    })))<br>    condition = optional(list(object({<br>      test     = string<br>      values   = list(string)<br>      variable = string<br>    })))<br>  }))</pre> | `null` | no |
 | <a name="input_iam_policy_use_name_prefix"></a> [iam\_policy\_use\_name\_prefix](#input\_iam\_policy\_use\_name\_prefix) | Determines whether the name of the IAM policy (`iam_policy_name`) is used as a prefix | `bool` | `true` | no |
 | <a name="input_iam_role_arn"></a> [iam\_role\_arn](#input\_iam\_role\_arn) | The ARN of the IAM role that provides permissions for the capability | `string` | `null` | no |
 | <a name="input_iam_role_description"></a> [iam\_role\_description](#input\_iam\_role\_description) | IAM role description | `string` | `null` | no |
@@ -151,7 +151,7 @@ No modules.
 | <a name="input_name"></a> [name](#input\_name) | The name of the capability to add to the cluster | `string` | `""` | no |
 | <a name="input_region"></a> [region](#input\_region) | Region where the resource(s) will be managed. Defaults to the Region set in the provider configuration | `string` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map(string)` | `{}` | no |
-| <a name="input_timeouts"></a> [timeouts](#input\_timeouts) | Create, update, and delete timeout configurations for the capability | <pre>object({<br/>    create = optional(string)<br/>    update = optional(string)<br/>    delete = optional(string)<br/>  })</pre> | `null` | no |
+| <a name="input_timeouts"></a> [timeouts](#input\_timeouts) | Create, update, and delete timeout configurations for the capability | <pre>object({<br>    create = optional(string)<br>    update = optional(string)<br>    delete = optional(string)<br>  })</pre> | `null` | no |
 | <a name="input_type"></a> [type](#input\_type) | Type of the capability. Valid values: `ACK`, `KRO`, `ARGOCD` | `string` | `""` | no |
 | <a name="input_wait_duration"></a> [wait\_duration](#input\_wait\_duration) | Duration to wait between creating the IAM role/policy and creating the capability | `string` | `"20s"` | no |
 

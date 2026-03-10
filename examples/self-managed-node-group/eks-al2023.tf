@@ -23,7 +23,11 @@ module "eks_al2023" {
   self_managed_node_groups = {
     example = {
       ami_type      = "AL2023_x86_64_STANDARD"
-      instance_type = "m6i.large"
+      instance_type = "m8i.large"
+
+      cpu_options = {
+        nested_virtualization = "enabled"
+      }
 
       min_size = 2
       max_size = 5

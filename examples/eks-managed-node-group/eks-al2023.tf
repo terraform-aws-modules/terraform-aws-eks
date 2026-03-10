@@ -26,6 +26,13 @@ module "eks_al2023" {
       instance_types = ["m6i.large"]
       ami_type       = "AL2023_x86_64_STANDARD"
 
+      # Custom launch template required to set cpu_options (e.g. nested_virtualization)
+      create_launch_template     = true
+      use_custom_launch_template = true
+      cpu_options = {
+        nested_virtualization = "enabled" # "enabled" | "disabled"; omit for EC2 default (disabled)
+      }
+
       min_size = 2
       max_size = 5
       # This value is ignored after the initial creation
