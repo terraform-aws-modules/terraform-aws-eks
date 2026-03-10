@@ -250,7 +250,7 @@ variable "capacity_reservation_specification" {
 }
 
 variable "cpu_options" {
-  description = "The CPU options for the instance."
+  description = "The CPU options for the instance"
   type = object({
     amd_sev_snp           = optional(string)
     core_count            = optional(number)
