@@ -190,7 +190,7 @@ resource "aws_launch_template" "this" {
     content {
       amd_sev_snp           = cpu_options.value.amd_sev_snp
       core_count            = cpu_options.value.core_count
-      nested_virtualization = try(cpu_options.value.nested_virtualization, null)
+      nested_virtualization = cpu_options.value.nested_virtualization
       threads_per_core      = cpu_options.value.threads_per_core
     }
   }
