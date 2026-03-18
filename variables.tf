@@ -73,7 +73,7 @@ variable "compute_config" {
 }
 
 variable "control_plane_scaling_config" {
-  description = "Configuration block for the EKS Provisioned Control Plane scaling tier. Valid values for tier are `standard`, `tier-xl`, `tier-2xl`, and `tier-4xl`"
+  description = "Configuration block for the EKS Provisioned Control Plane scaling tier. Valid values for tier are `standard`, `tier-xl`, `tier-2xl`, `tier-4xl` and `tier-8xl`"
   type = object({
     tier = string
   })
