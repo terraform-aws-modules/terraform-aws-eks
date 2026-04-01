@@ -921,8 +921,9 @@ resource "aws_iam_role" "eks_auto" {
 # Policies attached ref https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html
 resource "aws_iam_role_policy_attachment" "eks_auto" {
   for_each = { for k, v in {
-    AmazonEKSWorkerNodeMinimalPolicy   = "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodeMinimalPolicy",
-    AmazonEC2ContainerRegistryPullOnly = "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryPullOnly",
+    AmazonEKSWorkerNodeMinimalPolicy             = "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodeMinimalPolicy",
+    AmazonEC2ContainerRegistryPullOnly           = "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryPullOnly",
+    AmazonElasticContainerRegistryPublicReadOnly = "${local.iam_role_policy_prefix}/AmazonElasticContainerRegistryPublicReadOnly",
   } : k => v if local.create_node_iam_role }
 
   policy_arn = each.value
