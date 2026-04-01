@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.16.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.15.1...v21.16.0) (2026-04-01)
+
+### Features
+
+* Add ECR Public permissions to EKS Auto Mode node IAM role ([#3665](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3665)) ([c07c26c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/c07c26c18598182785ec36df2b30d05fa7a016b4))
+
 ## [21.15.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.15.0...v21.15.1) (2026-01-20)
 
 ### Bug Fixes
