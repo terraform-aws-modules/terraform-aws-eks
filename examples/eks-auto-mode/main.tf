@@ -12,7 +12,7 @@ data "aws_availability_zones" "available" {
 
 locals {
   name               = "ex-${basename(path.cwd)}"
-  kubernetes_version = "1.33"
+  kubernetes_version = "1.35"
   region             = "us-west-2"
 
   vpc_cidr = "10.0.0.0/16"

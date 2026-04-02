@@ -20,7 +20,7 @@ locals {
   name   = "ex-${basename(path.cwd)}"
   region = "us-west-2"
 
-  kubernetes_version = "1.33"
+  kubernetes_version = "1.35"
 
   tags = {
     Test       = local.name

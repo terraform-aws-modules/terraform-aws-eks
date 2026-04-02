@@ -3,7 +3,7 @@ module "eks_al2023" {
   version = "~> 21.0"
 
   name               = "${local.name}-al2023"
-  kubernetes_version = "1.33"
+  kubernetes_version = "1.35"
 
   # EKS Addons
   addons = {

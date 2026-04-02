@@ -1,24 +1,57 @@
 # Frequently Asked Questions
 
-- [Setting `disk_size` or `remote_access` does not make any changes](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#Settings-disk_size-or-remote_access-does-not-make-any-changes)
-- [I received an error: `expect exactly one securityGroup tagged with kubernetes.io/cluster/<NAME> ...`](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#i-received-an-error-expect-exactly-one-securitygroup-tagged-with-kubernetesioclustername-)
-- [Why are nodes not being registered?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#why-are-nodes-not-being-registered)
-- [Why are there no changes when a node group's `desired_size` is modified?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#why-are-there-no-changes-when-a-node-groups-desired_size-is-modified)
-- [How do I access compute resource attributes?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#how-do-i-access-compute-resource-attributes)
-- [What add-ons are available?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#what-add-ons-are-available)
-- [What configuration values are available for an add-on?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#what-configuration-values-are-available-for-an-add-on)
+## Compute
 
 ### Setting `disk_size` or `remote_access` does not make any changes
 
-`disk_size`, and `remote_access` can only be set when using the EKS managed node group default launch template. This module defaults to providing a custom launch template to allow for custom security groups, tag propagation, etc. If you wish to forgo the custom launch template route, you can set `use_custom_launch_template = false` and then you can set `disk_size` and `remote_access`.
+`disk_size` and `remote_access` can only be set when using the EKS managed node group default launch template. This module defaults to a custom launch template to allow for custom security groups, tag propagation, and more. Set `use_custom_launch_template = false` to use the default launch template and enable these options. See [EKS Managed Node Groups](compute/eks-managed-node-groups.md).
+
+### Why are there no changes when a node group's `desired_size` is modified?
+
+The module ignores `desired_size` after initial creation to allow autoscalers (cluster autoscaler, Karpenter) to manage node counts without Terraform interference. Use a workaround such as [this one](https://github.com/bryantbiggs/eks-desired-size-hack) to update the value outside of Terraform. See [EKS Managed Node Groups](compute/eks-managed-node-groups.md).
+
+### How do I access compute resource attributes?
+
+Examples of accessing the attributes of the compute resource(s) created by the root module are shown below. These assume your module call is named `eks` as in `module "eks" { ... }`:
+
+- EKS Managed Node Group attributes
+
+```hcl
+eks_managed_role_arns = [
+  for group in module.eks.eks_managed_node_groups :
+  group.iam_role_arn
+]
+```
+
+- Self-Managed Node Group attributes
+
+```hcl
+self_managed_role_arns = [
+  for group in module.eks.self_managed_node_groups :
+  group.iam_role_arn
+]
+```
+
+- Fargate Profile attributes
+
+```hcl
+fargate_profile_pod_execution_role_arns = [
+  for profile in module.eks.fargate_profiles :
+  profile.fargate_profile_pod_execution_role_arn
+]
+```
+
+## Networking
 
 ### I received an error: `expect exactly one securityGroup tagged with kubernetes.io/cluster/<CLUSTER_NAME> ...`
 
-⚠️ `<CLUSTER_NAME>` would be the name of your cluster
+> **Warning:** `<CLUSTER_NAME>` would be the name of your cluster
 
-By default, EKS creates a cluster primary security group that is created outside of the module and the EKS service adds the tag `{ "kubernetes.io/cluster/<CLUSTER_NAME>" = "owned" }`. This on its own does not cause any conflicts for addons such as the AWS Load Balancer Controller until users decide to attach both the cluster primary security group and the shared node security group created by the module (by setting `attach_cluster_primary_security_group = true`). The issue is not with having multiple security groups in your account with this tag key:value combination, but having multiple security groups with this tag key:value combination attached to nodes in the same cluster. There are a few ways to resolve this depending on your use case/intentions:
+This error occurs when nodes have multiple security groups with the `kubernetes.io/cluster/<CLUSTER_NAME>=owned` tag attached simultaneously. EKS creates a cluster primary security group with this tag; the module creates a shared node security group with the same tag. Attaching both to nodes via `attach_cluster_primary_security_group = true` triggers the conflict.
 
-1. If you want to use the cluster primary security group, you can disable the creation of the shared node security group with:
+Resolve it one of two ways:
+
+1. Use the cluster primary security group and disable the module's shared node security group:
 
 ```hcl
   create_node_security_group = false # default is true
@@ -36,280 +69,66 @@ By default, EKS creates a cluster primary security group that is created outside
   }
 ```
 
-2. By not attaching the cluster primary security group. The cluster primary security group has quite broad access and the module has instead provided a security group with the minimum amount of access to launch an empty EKS cluster successfully and users are encouraged to open up access when necessary to support their workload.
+2. Don't attach the cluster primary security group (the default). The module's shared node security group provides the minimum required access for node communication.
 
-```hcl
-  eks_managed_node_group = {
-    example = {
-      attach_cluster_primary_security_group = true # default is false
-    }
-  }
-  # Or for self-managed
-  self_managed_node_group = {
-    example = {
-      attach_cluster_primary_security_group = true # default is false
-    }
-  }
-```
-
-In theory, if you are attaching the cluster primary security group, you shouldn't need to use the shared node security group created by the module. However, this is left up to users to decide for their requirements and use case.
-
-If you choose to use [Custom Networking](https://docs.aws.amazon.com/eks/latest/userguide/cni-custom-network.html), make sure to only attach the security groups matching your choice above in your ENIConfig resources. This will ensure you avoid redundant tags.
+If you use [Custom Networking](https://docs.aws.amazon.com/eks/latest/userguide/cni-custom-network.html), attach only the security groups matching your choice above in your ENIConfig resources. See [Security Groups](networking/security-groups.md).
 
 ### Why are nodes not being registered?
 
-Nodes not being able to register with the EKS control plane is generally due to networking mis-configurations.
+Node registration failures are almost always networking misconfigurations. See [Network Connectivity](networking/network-connectivity.md) for full details. Key checks:
 
-1. At least one of the cluster endpoints (public or private) must be enabled.
+1. At least one cluster endpoint (public or private) must be enabled. If using a public endpoint, restrict access via `cluster_endpoint_public_access_cidrs` and ensure nodes can reach it.
 
-If you require a public endpoint, setting up both (public and private) and restricting the public endpoint via setting `cluster_endpoint_public_access_cidrs` is recommended. More info regarding communication with an endpoint is available [here](https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html).
+2. Nodes need outbound internet access to reach the EKS endpoint — via NAT gateway for private subnets, or public IPs for public subnets.
 
-2. Nodes need to be able to contact the EKS cluster endpoint. By default, the module only creates a public endpoint. To access the endpoint, the nodes need outgoing internet access:
+3. The private endpoint can be enabled with `cluster_endpoint_private_access = true`. Ensure VPC DNS resolution and hostnames are enabled.
 
-- Nodes in private subnets: via a NAT gateway or instance along with the appropriate routing rules
-- Nodes in public subnets: ensure that nodes are launched with public IPs (enable through either the module here or your subnet setting defaults)
+4. If nodes cannot reach the public internet, add VPC endpoints for EC2, ECR API, ECR DKR, and S3.
 
-**Important: If you apply only the public endpoint and configure the `cluster_endpoint_public_access_cidrs` to restrict access, know that EKS nodes will also use the public endpoint and you must allow access to the endpoint. If not, then your nodes will fail to work correctly.**
-
-3. The private endpoint can also be enabled by setting `cluster_endpoint_private_access = true`. Ensure that VPC DNS resolution and hostnames are also enabled for your VPC when the private endpoint is enabled.
-
-4. Nodes need to be able to connect to other AWS services to function (download container images, make API calls to assume roles, etc.). If for some reason you cannot enable public internet access for nodes you can add VPC endpoints to the relevant services: EC2 API, ECR API, ECR DKR and S3.
-
-### Why are there no changes when a node group's `desired_size` is modified?
-
-The module is configured to ignore this value. Unfortunately, Terraform does not support variables within the `lifecycle` block. The setting is ignored to allow autoscaling via controllers such as cluster autoscaler or Karpenter to work properly and without interference by Terraform. Changing the desired count must be handled outside of Terraform once the node group is created.
-
-:info: See [this](https://github.com/bryantbiggs/eks-desired-size-hack) for a workaround to this limitation.
-
-### How do I access compute resource attributes?
-
-Examples of accessing the attributes of the compute resource(s) created by the root module are shown below. Note - the assumption is that your cluster module definition is named `eks` as in `module "eks" { ... }`:
-
-- EKS Managed Node Group attributes
-
-```hcl
-eks_managed_role_arns = [for group in module.eks_managed_node_group : group.iam_role_arn]
-```
-
-- Self Managed Node Group attributes
-
-```hcl
-self_managed_role_arns = [for group in module.self_managed_node_group : group.iam_role_arn]
-```
-
-- Fargate Profile attributes
-
-```hcl
-fargate_profile_pod_execution_role_arns = [for group in module.fargate_profile : group.fargate_profile_pod_execution_role_arn]
-```
+## Add-ons
 
 ### What add-ons are available?
 
-The available EKS add-ons can be [found here](https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html). You can also retrieve the available addons from the API using:
+The available add-ons are listed in the [AWS EKS documentation](https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html). You can also query them directly:
 
 ```sh
 aws eks describe-addon-versions --query 'addons[*].addonName'
 ```
 
+See [Cluster Add-ons](cluster/addons.md).
+
 ### What configuration values are available for an add-on?
 
-> [!NOTE]
-> The available configuration values will vary between add-on versions,
-> typically more configuration values will be added in later versions as functionality is enabled by EKS.
-
-You can retrieve the configuration value schema for a given addon using the following command:
+Configuration values vary between add-on versions. Retrieve the schema for a specific version with:
 
 ```sh
-aws eks describe-addon-configuration --addon-name <value> --addon-version <value> --query 'configurationSchema' --output text | jq
+aws eks describe-addon-configuration \
+  --addon-name <value> \
+  --addon-version <value> \
+  --query 'configurationSchema' \
+  --output text | jq
 ```
 
 For example:
 
 ```sh
-aws eks describe-addon-configuration --addon-name coredns --addon-version v1.11.1-eksbuild.8 --query 'configurationSchema' --output text | jq
+aws eks describe-addon-configuration \
+  --addon-name coredns \
+  --addon-version v1.11.1-eksbuild.8 \
+  --query 'configurationSchema' \
+  --output text | jq
 ```
 
-Returns (at the time of writing):
+See [Cluster Add-ons](cluster/addons.md).
 
-```json
-{
-  "$ref": "#/definitions/Coredns",
-  "$schema": "http://json-schema.org/draft-06/schema#",
-  "definitions": {
-    "Coredns": {
-      "additionalProperties": false,
-      "properties": {
-        "affinity": {
-          "default": {
-            "affinity": {
-              "nodeAffinity": {
-                "requiredDuringSchedulingIgnoredDuringExecution": {
-                  "nodeSelectorTerms": [
-                    {
-                      "matchExpressions": [
-                        {
-                          "key": "kubernetes.io/os",
-                          "operator": "In",
-                          "values": [
-                            "linux"
-                          ]
-                        },
-                        {
-                          "key": "kubernetes.io/arch",
-                          "operator": "In",
-                          "values": [
-                            "amd64",
-                            "arm64"
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              },
-              "podAntiAffinity": {
-                "preferredDuringSchedulingIgnoredDuringExecution": [
-                  {
-                    "podAffinityTerm": {
-                      "labelSelector": {
-                        "matchExpressions": [
-                          {
-                            "key": "k8s-app",
-                            "operator": "In",
-                            "values": [
-                              "kube-dns"
-                            ]
-                          }
-                        ]
-                      },
-                      "topologyKey": "kubernetes.io/hostname"
-                    },
-                    "weight": 100
-                  }
-                ]
-              }
-            }
-          },
-          "description": "Affinity of the coredns pods",
-          "type": [
-            "object",
-            "null"
-          ]
-        },
-        "computeType": {
-          "type": "string"
-        },
-        "corefile": {
-          "description": "Entire corefile contents to use with installation",
-          "type": "string"
-        },
-        "nodeSelector": {
-          "additionalProperties": {
-            "type": "string"
-          },
-          "type": "object"
-        },
-        "podAnnotations": {
-          "properties": {},
-          "title": "The podAnnotations Schema",
-          "type": "object"
-        },
-        "podDisruptionBudget": {
-          "description": "podDisruptionBudget configurations",
-          "enabled": {
-            "default": true,
-            "description": "the option to enable managed PDB",
-            "type": "boolean"
-          },
-          "maxUnavailable": {
-            "anyOf": [
-              {
-                "pattern": ".*%$",
-                "type": "string"
-              },
-              {
-                "type": "integer"
-              }
-            ],
-            "default": 1,
-            "description": "minAvailable value for managed PDB, can be either string or integer; if it's string, should end with %"
-          },
-          "minAvailable": {
-            "anyOf": [
-              {
-                "pattern": ".*%$",
-                "type": "string"
-              },
-              {
-                "type": "integer"
-              }
-            ],
-            "description": "maxUnavailable value for managed PDB, can be either string or integer; if it's string, should end with %"
-          },
-          "type": "object"
-        },
-        "podLabels": {
-          "properties": {},
-          "title": "The podLabels Schema",
-          "type": "object"
-        },
-        "replicaCount": {
-          "type": "integer"
-        },
-        "resources": {
-          "$ref": "#/definitions/Resources"
-        },
-        "tolerations": {
-          "default": [
-            {
-              "key": "CriticalAddonsOnly",
-              "operator": "Exists"
-            },
-            {
-              "effect": "NoSchedule",
-              "key": "node-role.kubernetes.io/control-plane"
-            }
-          ],
-          "description": "Tolerations of the coredns pod",
-          "items": {
-            "type": "object"
-          },
-          "type": "array"
-        },
-        "topologySpreadConstraints": {
-          "description": "The coredns pod topology spread constraints",
-          "type": "array"
-        }
-      },
-      "title": "Coredns",
-      "type": "object"
-    },
-    "Limits": {
-      "additionalProperties": false,
-      "properties": {
-        "cpu": {
-          "type": "string"
-        },
-        "memory": {
-          "type": "string"
-        }
-      },
-      "title": "Limits",
-      "type": "object"
-    },
-    "Resources": {
-      "additionalProperties": false,
-      "properties": {
-        "limits": {
-          "$ref": "#/definitions/Limits"
-        },
-        "requests": {
-          "$ref": "#/definitions/Limits"
-        }
-      },
-      "title": "Resources",
-      "type": "object"
-    }
-  }
-}
-```
+## Tagging
+
+### Why aren't my tags appearing on all resources?
+
+The `tags` variable propagates to resources the module creates directly (EKS cluster, IAM roles, security groups, CloudWatch log group). It does NOT automatically propagate to:
+
+- EKS managed node group EC2 instances: Tags are propagated via the launch template, but the ASG itself may not inherit all tags. Use `tag_propagation_policy = "ALWAYS"` on the node group to ensure tags propagate to the Auto Scaling Group and its instances.
+- Auto Mode provisioned nodes: Module-level `tags` do not flow to EC2 instances launched by Auto Mode node pools. Configure tags in your custom `NodeClass` Kubernetes manifest instead.
+- ENIs created by the VPC CNI: Network interfaces created by the VPC CNI at runtime are not tagged by the module.
+
+If you need tags on all resources for cost allocation or compliance, configure tagging at each layer.

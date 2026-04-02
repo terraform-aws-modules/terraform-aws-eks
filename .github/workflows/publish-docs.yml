@@ -8,34 +8,36 @@ on:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  build:
+  deploy:
     name: Deploy docs
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout main
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - uses: actions/configure-pages@v5
+
+      - name: Checkout
+        uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: 3.x
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install mkdocs-material==9.5.26 \
-            mkdocs-include-markdown-plugin==6.2.0 \
-            mkdocs-awesome-pages-plugin==2.9.2
+      - name: Install zensical
+        run: pip install zensical
 
-      - name: git config
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+      - name: Build docs
+        run: zensical build --clean
 
-      - run: mkdocs gh-deploy --force
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+      - uses: actions/deploy-pages@v4
+        id: deployment

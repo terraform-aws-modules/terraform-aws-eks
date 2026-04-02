@@ -1,0 +1,96 @@
+[project]
+site_name = "Terraform AWS EKS"
+site_url = "https://terraform-aws-modules.github.io/terraform-aws-eks/"
+repo_url = "https://github.com/terraform-aws-modules/terraform-aws-eks"
+repo_name = "terraform-aws-eks"
+
+[project.theme]
+logo = "assets/terraform-aws.png"
+favicon = "assets/logo.png"
+features = [
+  "navigation.instant",
+  "navigation.instant.prefetch",
+  "navigation.tabs",
+  "navigation.tabs.sticky",
+  "navigation.sections",
+  "navigation.expand",
+  "search.suggest",
+  "search.highlight",
+  "content.code.copy",
+]
+
+[[project.theme.palette]]
+scheme = "default"
+primary = "indigo"
+accent = "purple"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+scheme = "slate"
+primary = "indigo"
+accent = "purple"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to light mode"
+
+[project.theme.font]
+text = "Ember"
+
+[project.theme.icon]
+repo = "fontawesome/brands/github"
+
+[project.markdown_extensions.pymdownx.critic]
+[project.markdown_extensions.pymdownx.snippets]
+[project.markdown_extensions.pymdownx.highlight]
+[project.markdown_extensions.pymdownx.superfences]
+[project.markdown_extensions.pymdownx.tabbed]
+[project.markdown_extensions.admonition]
+[project.markdown_extensions.toc]
+  permalink = true
+
+[[project.nav]]
+"Getting Started" = [
+  { "Overview" = "index.md" },
+  { "Getting Started" = "getting-started.md" },
+  { "Examples" = "examples.md" },
+  { "FAQ" = "faq.md" },
+]
+
+[[project.nav]]
+"Cluster" = [
+  { "Overview" = "cluster/index.md" },
+  { "Auto Mode" = "cluster/auto-mode.md" },
+  { "Provisioned Control Plane" = "cluster/provisioned-control-plane.md" },
+  { "Add-ons" = "cluster/addons.md" },
+  { "Access Entries" = "cluster/access-entries.md" },
+]
+
+[[project.nav]]
+"Compute" = [
+  { "EKS Managed Node Groups" = "compute/eks-managed-node-groups.md" },
+  { "Self-Managed Node Groups" = "compute/self-managed-node-groups.md" },
+  { "Fargate" = "compute/fargate.md" },
+  { "Karpenter" = "compute/karpenter.md" },
+  { "Hybrid Nodes" = "compute/hybrid-nodes.md" },
+]
+
+[[project.nav]]
+"Networking" = [
+  { "Network Connectivity" = "networking/network-connectivity.md" },
+  { "Security Groups" = "networking/security-groups.md" },
+  { "Elastic Fabric Adapter (EFA)" = "networking/efa.md" },
+]
+
+[[project.nav]]
+"Advanced" = [
+  { "User Data & Bootstrapping" = "advanced/user-data.md" },
+]
+
+[[project.nav]]
+"Migration Guides" = [
+  { "v20.x to v21.x — Variable Renames, Auto Mode" = "upgrade/UPGRADE-21.0.md" },
+  { "v19.x to v20.x — Access Entries, aws-auth Removal" = "upgrade/UPGRADE-20.0.md" },
+  { "v18.x to v19.x — Module Refactor, State Moves" = "upgrade/UPGRADE-19.0.md" },
+  { "v17.x to v18.x — Full Rewrite" = "upgrade/UPGRADE-18.0.md" },
+  { "v16.x to v17.x — Managed Node Groups" = "upgrade/UPGRADE-17.0.md" },
+]

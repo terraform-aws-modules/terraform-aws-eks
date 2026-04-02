@@ -3,7 +3,7 @@ module "eks_bottlerocket" {
   version = "~> 21.0"
 
   name               = "${local.name}-bottlerocket"
-  kubernetes_version = "1.33"
+  kubernetes_version = "1.35"
 
   # EKS Addons
   addons = {
