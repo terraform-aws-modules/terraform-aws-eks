@@ -82,15 +82,6 @@ output "autoscaling_group_vpc_zone_identifier" {
 }
 
 ################################################################################
-# autoscaling group schedule
-################################################################################
-
-output "autoscaling_group_schedule_arns" {
-  description = "ARNs of autoscaling group schedules"
-  value       = { for k, v in aws_autoscaling_schedule.this : k => v.arn }
-}
-
-################################################################################
 # IAM Role
 ################################################################################
 
@@ -129,13 +120,17 @@ output "iam_instance_profile_unique" {
 }
 
 ################################################################################
-# Additional
+# Access Entry
 ################################################################################
 
-output "platform" {
-  description = "Identifies if the OS platform is `bottlerocket`, `linux`, or `windows` based"
-  value       = var.platform
+output "access_entry_arn" {
+  description = "Amazon Resource Name (ARN) of the Access Entry"
+  value       = try(aws_eks_access_entry.this[0].access_entry_arn, null)
 }
+
+################################################################################
+# Additional
+################################################################################
 
 output "image_id" {
   description = "ID of the image"
@@ -145,4 +140,18 @@ output "image_id" {
 output "user_data" {
   description = "Base64 encoded user data"
   value       = try(module.user_data.user_data, null)
+}
+
+################################################################################
+# Security Group
+################################################################################
+
+output "security_group_arn" {
+  description = "Amazon Resource Name (ARN) of the security group"
+  value       = try(aws_security_group.this[0].arn, null)
+}
+
+output "security_group_id" {
+  description = "ID of the security group"
+  value       = try(aws_security_group.this[0].id, null)
 }

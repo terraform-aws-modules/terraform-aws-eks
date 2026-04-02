@@ -58,7 +58,7 @@ Please consult the `examples` directory for reference example configurations. If
 ### Variable and output changes
 
 1. Removed variables:
- 
+
    - `node_security_group_ntp_ipv4_cidr_block` - default security group settings have an egress rule for ALL to `0.0.0.0/0`/`::/0`
    - `node_security_group_ntp_ipv6_cidr_block` - default security group settings have an egress rule for ALL to `0.0.0.0/0`/`::/0`
    - Self-managed node groups:
@@ -364,8 +364,12 @@ EKS managed node groups on `v18.x` by default create a security group that does 
 
   # OIDC Identity provider
   cluster_identity_providers = {
-    sts = {
-      client_id = "sts.amazonaws.com"
+    cognito = {
+      client_id      = "702vqsrjicklgb7c5b7b50i1gc"
+      issuer_url     = "https://cognito-idp.us-west-2.amazonaws.com/us-west-2_re1u6bpRA"
+      username_claim = "email"
+      groups_claim   = "cognito:groups"
+      groups_prefix  = "gid:"
     }
   }
 

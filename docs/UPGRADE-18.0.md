@@ -13,6 +13,14 @@ cluster_security_group_name        = $CLUSTER_NAME
 cluster_security_group_description = "EKS cluster security group."
 ```
 
+This configuration assumes that [`create_iam_role`](https://github.com/terraform-aws-modules/terraform-aws-eks#input_create_iam_role) is set to `true`, which is the default value.
+
+As the location of the Terraform state of the IAM role has been changed from 17.x to 18.x, you'll also have to move the state before running `terraform apply` by calling:
+
+```
+terraform state mv 'module.eks.aws_iam_role.cluster[0]' 'module.eks.aws_iam_role.this[0]'
+```
+
 See more information [here](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1744#issuecomment-1027359982)
 
 ## List of backwards incompatible changes
@@ -40,7 +48,7 @@ See more information [here](https://github.com/terraform-aws-modules/terraform-a
     - Additional changes for the `self-managed-node-group` sub-module over the previous `node_groups` variable include:
       - The underlying autoscaling group and launch template have been updated to more closely match that of the [`terraform-aws-autoscaling`](https://github.com/terraform-aws-modules/terraform-aws-autoscaling) module and the features it offers
       - The previous iteration used a count over a list of node group definitions which was prone to disruptive updates; this is now replaced with a map/for_each to align with that of the EKS managed node group and Fargate profile behaviors/style
-- The user data configuration supported across the module has been completely revamped. A new `_user_data` internal sub-module has been created to consolidate all user data configuration in one location which provides better support for testability (via the [`examples/user_data`](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/user_data) example). The new sub-module supports nearly all possible combinations including the ability to allow users to provide their own user data template which will be rendered by the module. See the `examples/user_data` example project for the full plethora of example configuration possibilities and more details on the logic of the design can be found in the [`modules/_user_data`](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/_user_data_) directory.
+- The user data configuration supported across the module has been completely revamped. A new `_user_data` internal sub-module has been created to consolidate all user data configuration in one location which provides better support for testability (via the [`tests/user-data`](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/tests/user-data) example). The new sub-module supports nearly all possible combinations including the ability to allow users to provide their own user data template which will be rendered by the module. See the `tests/user-data` example project for the full plethora of example configuration possibilities and more details on the logic of the design can be found in the [`modules/_user_data`](https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/modules/_user_data_) directory.
 - Resource name changes may cause issues with existing resources. For example, security groups and IAM roles cannot be renamed, they must be recreated. Recreation of these resources may also trigger a recreation of the cluster. To use the legacy (< 18.x) resource naming convention, set `prefix_separator` to "".
 - Security group usage has been overhauled to provide only the bare minimum network connectivity required to launch a bare bones cluster. See the [security group documentation section](https://github.com/terraform-aws-modules/terraform-aws-eks#security-groups) for more details. Users upgrading to v18.x will want to review the rules they have in place today versus the rules provisioned by the v18.x module and ensure to make any necessary adjustments for their specific workload.
 

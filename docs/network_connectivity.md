@@ -27,7 +27,7 @@ See the example snippet below which adds additional security group rules to the 
 ```hcl
   ...
   # Extend cluster security group rules
-  cluster_security_group_additional_rules = {
+  security_group_additional_rules = {
     egress_nodes_ephemeral_ports_tcp = {
       description                = "To node 1025-65535"
       protocol                   = "tcp"

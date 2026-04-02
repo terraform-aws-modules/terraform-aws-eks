@@ -1,22 +1,24 @@
 terraform {
-  required_version = ">= 1.0"
+  required_version = ">= 1.5.7"
 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 4.47"
+      version = ">= 6.28"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = ">= 3.0"
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = ">= 2.10"
+      version = ">= 4.0"
     }
     time = {
       source  = "hashicorp/time"
       version = ">= 0.9"
     }
+  }
+
+  provider_meta "aws" {
+    user_agent = [
+      "github.com/terraform-aws-modules/terraform-aws-eks"
+    ]
   }
 }

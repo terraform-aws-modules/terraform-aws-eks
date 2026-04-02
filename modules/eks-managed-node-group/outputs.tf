@@ -48,7 +48,7 @@ output "node_group_autoscaling_group_names" {
 
 output "node_group_status" {
   description = "Status of the EKS Node Group"
-  value       = try(aws_eks_node_group.this[0].arn, null)
+  value       = try(aws_eks_node_group.this[0].status, null)
 }
 
 output "node_group_labels" {
@@ -78,4 +78,18 @@ output "iam_role_arn" {
 output "iam_role_unique_id" {
   description = "Stable and unique string identifying the IAM role"
   value       = try(aws_iam_role.this[0].unique_id, null)
+}
+
+################################################################################
+# Security Group
+################################################################################
+
+output "security_group_arn" {
+  description = "Amazon Resource Name (ARN) of the security group"
+  value       = try(aws_security_group.this[0].arn, null)
+}
+
+output "security_group_id" {
+  description = "ID of the security group"
+  value       = try(aws_security_group.this[0].id, null)
 }
