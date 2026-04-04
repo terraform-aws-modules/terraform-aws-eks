@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.17.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.16.1...v21.17.0) (2026-04-04)
+
+### Features
+
+* Add support for Windows 2025 AMIs ([#3669](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3669)) ([80db8c2](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/80db8c272f9aaa1bc479707826d8381877edf04f)), closes [#3664](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3664)
+
 ## [21.16.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.16.0...v21.16.1) (2026-04-02)
 
 ### Bug Fixes
