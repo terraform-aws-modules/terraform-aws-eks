@@ -40,6 +40,8 @@ locals {
     WINDOWS_FULL_2019_x86_64 = "${path.module}/../../templates/windows_user_data.tpl"
     WINDOWS_CORE_2022_x86_64 = "${path.module}/../../templates/windows_user_data.tpl"
     WINDOWS_FULL_2022_x86_64 = "${path.module}/../../templates/windows_user_data.tpl"
+    WINDOWS_CORE_2025_x86_64 = "${path.module}/../../templates/windows_user_data.tpl"
+    WINDOWS_FULL_2025_x86_64 = "${path.module}/../../templates/windows_user_data.tpl"
 
     CUSTOM = var.user_data_template_path
   }
