@@ -328,7 +328,7 @@ resource "aws_launch_template" "this" {
     content {
       affinity                = try(placement.value.affinity, null)
       availability_zone       = try(placement.value.availability_zone, null)
-      group_name              = try(aws_placement_group.this[0].name, placement.value.group_name)
+      group_name              = try(placement.value.group_name, aws_placement_group.this[0].name, null)
       host_id                 = try(placement.value.host_id, null)
       host_resource_group_arn = try(placement.value.host_resource_group_arn, null)
       partition_number        = try(placement.value.partition_number, null)
@@ -698,7 +698,7 @@ resource "aws_iam_role_policy" "this" {
 ################################################################################
 
 locals {
-  create_placement_group = var.create && (local.enable_efa_support || var.create_placement_group)
+  create_placement_group = var.create && (local.enable_efa_support || var.create_placement_group) && try(var.placement.group_name, null) == null
 }
 
 resource "aws_placement_group" "this" {
