@@ -460,7 +460,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
   count = local.create_oidc_provider ? 1 : 0
 
   client_id_list  = distinct(compact(concat(["sts.amazonaws.com"], var.openid_connect_audiences)))
-  thumbprint_list = concat(local.oidc_root_ca_thumbprint, var.custom_oidc_thumbprints)
+  thumbprint_list = length(local.oidc_root_ca_thumbprint) > 0 || length(var.custom_oidc_thumbprints) > 0 ? concat(local.oidc_root_ca_thumbprint, var.custom_oidc_thumbprints) : null
   url             = aws_eks_cluster.this[0].identity[0].oidc[0].issuer
 
   tags = merge(
