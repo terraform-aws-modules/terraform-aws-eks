@@ -483,6 +483,7 @@ resource "aws_eks_node_group" "this" {
 
     content {
       id      = local.launch_template_id
+      name    = local.launch_template_id == null ? local.launch_template_name : null
       version = local.launch_template_version
     }
   }
