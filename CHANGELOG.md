@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.17.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.17.0...v21.17.1) (2026-04-06)
+
+### Bug Fixes
+
+* Avoid attempting to retrieve the AMI ID from SSM parameter if a custom AMI ID is provided ([#3660](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3660)) ([26ead74](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/26ead74f6a2bf9fe50d30d8f09e9cbfd3a185ba4))
+
 ## [21.17.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.16.1...v21.17.0) (2026-04-04)
 
 ### Features
