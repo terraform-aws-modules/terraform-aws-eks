@@ -359,6 +359,12 @@ variable "cloudwatch_log_group_tags" {
   default     = {}
 }
 
+variable "cloudwatch_log_group_skip_destroy" {
+  description = "Set to true if you do not wish the log group (and any logs it may contain) to be deleted at destroy time, and instead just remove the log group from the Terraform state"
+  type        = bool
+  default     = null
+}
+
 ################################################################################
 # Cluster Security Group
 ################################################################################
