@@ -9,6 +9,7 @@ data "aws_iam_policy_document" "controller" {
       "arn:${local.partition}:ec2:${local.region}:*:security-group/*",
       "arn:${local.partition}:ec2:${local.region}:*:subnet/*",
       "arn:${local.partition}:ec2:${local.region}:*:capacity-reservation/*",
+      "arn:${local.partition}:ec2:${local.region}:*:placement-group/*"
     ]
 
     actions = [
@@ -190,7 +191,8 @@ data "aws_iam_policy_document" "controller" {
       "ec2:DescribeLaunchTemplates",
       "ec2:DescribeSecurityGroups",
       "ec2:DescribeSpotPriceHistory",
-      "ec2:DescribeSubnets"
+      "ec2:DescribeSubnets",
+      "ec2:DescribePlacementGroups"
     ]
 
     condition {
