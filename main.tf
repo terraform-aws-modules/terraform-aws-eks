@@ -849,6 +849,29 @@ resource "aws_eks_addon" "before_compute" {
 }
 
 ################################################################################
+# Pod Identity Association
+################################################################################
+
+resource "aws_eks_pod_identity_association" "this" {
+  for_each = local.create ? var.pod_identity_associations : {}
+
+  region = var.region
+
+  cluster_name    = aws_eks_cluster.this[0].id
+  namespace       = each.value.namespace
+  service_account = each.value.service_account
+  role_arn        = each.value.role_arn
+
+  disable_session_tags = each.value.disable_session_tags
+  target_role_arn      = each.value.target_role_arn
+
+  tags = merge(
+    var.tags,
+    each.value.tags,
+  )
+}
+
+################################################################################
 # EKS Identity Provider
 # Note - this is different from IRSA
 ################################################################################

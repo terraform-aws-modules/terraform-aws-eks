@@ -672,6 +672,23 @@ variable "addons_timeouts" {
 }
 
 ################################################################################
+# Pod Identity Association
+################################################################################
+
+variable "pod_identity_associations" {
+  description = "Map of EKS Pod Identity associations to create; map key is used as a friendly identifier"
+  type = map(object({
+    namespace            = string
+    service_account      = string
+    role_arn             = string
+    disable_session_tags = optional(bool)
+    target_role_arn      = optional(string)
+    tags                 = optional(map(string), {})
+  }))
+  default = {}
+}
+
+################################################################################
 # EKS Identity Provider
 ################################################################################
 

@@ -54,10 +54,14 @@ module "eks" {
     vpc-cni = {
       before_compute = true
       most_recent    = true
-      pod_identity_association = [{
-        role_arn        = module.aws_vpc_cni_ipv4_pod_identity.iam_role_arn
-        service_account = "aws-node"
-      }]
+    }
+  }
+
+  pod_identity_associations = {
+    vpc_cni = {
+      namespace       = "kube-system"
+      service_account = "aws-node"
+      role_arn        = module.aws_vpc_cni_ipv4_pod_identity.iam_role_arn
     }
   }
 

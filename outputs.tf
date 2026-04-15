@@ -221,6 +221,15 @@ output "cluster_addons" {
 }
 
 ################################################################################
+# Pod Identity Association
+################################################################################
+
+output "pod_identity_associations" {
+  description = "Map of Pod Identity associations created and their attributes"
+  value       = aws_eks_pod_identity_association.this
+}
+
+################################################################################
 # EKS Identity Provider
 ################################################################################
 
