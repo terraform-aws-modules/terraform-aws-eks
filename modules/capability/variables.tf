@@ -60,12 +60,21 @@ variable "delete_propagation_policy" {
   description = "The propagation policy to use when deleting the capability. Valid values: `RETAIN`"
   type        = string
   default     = "RETAIN"
+  validation {
+    condition     = var.propagation_policy == "RETAIN"
+    error_message = "valid value is RETAIN."
+  }
 }
 
 variable "type" {
   description = "Type of the capability. Valid values: `ACK`, `KRO`, `ARGOCD`"
   type        = string
   default     = ""
+
+  validation {
+    condition     = contains(["ACK", "KRO", "ARGOCD"], var.type)
+    error_message = "valid values are ACK, KRO, ARGOCD."
+  }
 }
 
 variable "timeouts" {

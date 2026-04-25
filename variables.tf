@@ -60,6 +60,11 @@ variable "authentication_mode" {
   description = "The authentication mode for the cluster. Valid values are `CONFIG_MAP`, `API` or `API_AND_CONFIG_MAP`"
   type        = string
   default     = "API_AND_CONFIG_MAP"
+
+  validation {
+    condition     = contains(["CONFIG_MAP", "API", "API_AND_CONFIG_MAP"], var.authentication_mode)
+    error_message = "valid values are CONFIG_MAP, API, or API_AND_CONFIG_MAP."
+  }
 }
 
 variable "compute_config" {
@@ -78,6 +83,13 @@ variable "control_plane_scaling_config" {
     tier = string
   })
   default = null
+
+  validation {
+    condition = var.control_plane_scaling_config == null || contains([
+      "standard", "tier-xl", "tier-2xl", "tier-4xl", "tier-8xl"
+    ], var.control_plane_scaling_config.tier)
+    error_message = "valid values for tier are standard, tier-xl, tier-2xl, tier-4xl, tier-8xl."
+  }
 }
 
 variable "upgrade_policy" {
@@ -149,6 +161,11 @@ variable "ip_family" {
   description = "The IP family used to assign Kubernetes pod and service addresses. Valid values are `ipv4` (default) and `ipv6`. You can only specify an IP family when you create a cluster, changing this value will force a new cluster to be created"
   type        = string
   default     = "ipv4"
+  
+  validation {
+    condition     = contains(["ipv4", "ipv6"], var.ip_family)
+    error_message = "valid values are ipv4 or ipv6."
+  }
 }
 
 variable "service_ipv4_cidr" {

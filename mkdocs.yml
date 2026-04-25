@@ -12,7 +12,7 @@ theme:
     text: ember
   palette:
     primary: deep purple
-    accent: indgo
+    accent: indigo
   icon:
     repo: fontawesome/brands/github
     admonition:

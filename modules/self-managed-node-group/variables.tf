@@ -584,6 +584,13 @@ variable "desired_size_type" {
   description = "The unit of measurement for the value specified for `desired_size`. Supported for attribute-based instance type selection only. Valid values: `units`, `vcpu`, `memory-mib`"
   type        = string
   default     = null
+
+  validation {
+    condition = var.desired_size_type == null || contains([
+      "units", "vcpu", "memory-mib"
+    ], var.desired_size_type)
+    error_message = "valid values are units, vcpu, memory-mib."
+  }
 }
 
 variable "ignore_failed_scaling_activities" {

@@ -34,7 +34,7 @@ Please note that we strive to provide a comprehensive suite of documentation for
 ### EKS Auto Mode
 
 > [!CAUTION]
-> Due to the current EKS Auto Mode API, to disable EKS Auto Mode you will have to explicity set:
+> Due to the current EKS Auto Mode API, to disable EKS Auto Mode you will have to explicitly set:
 >
 >```hcl
 >compute_config = {

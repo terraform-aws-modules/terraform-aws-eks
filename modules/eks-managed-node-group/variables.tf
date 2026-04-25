@@ -503,6 +503,11 @@ variable "capacity_type" {
   type        = string
   default     = "ON_DEMAND"
   nullable    = false
+
+  validation {
+    condition     = contains(["ON_DEMAND", "SPOT"], var.capacity_type)
+    error_message = "valid values are ON_DEMAND or SPOT."
+  }
 }
 
 variable "disk_size" {
