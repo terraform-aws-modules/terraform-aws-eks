@@ -215,14 +215,10 @@ data "aws_iam_policy_document" "controller" {
     actions   = ["pricing:GetProducts"]
   }
 
-  dynamic "statement" {
-    for_each = var.enable_zonal_shift ? [1] : []
-
-    content {
-      sid       = "AllowZonalShiftReadActions"
-      resources = ["arn:${local.partition}:eks:${local.region}:${local.account_id}:cluster/${var.cluster_name}"]
-      actions   = ["arc-zonal-shift:GetManagedResource"]
-    }
+  statement {
+    sid       = "AllowZonalShiftReadActions"
+    resources = ["arn:${local.partition}:eks:${local.region}:${local.account_id}:cluster/${var.cluster_name}"]
+    actions   = ["arc-zonal-shift:GetManagedResource"]
   }
 
   dynamic "statement" {

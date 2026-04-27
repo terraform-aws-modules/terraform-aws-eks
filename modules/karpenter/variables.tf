@@ -186,12 +186,6 @@ variable "enable_spot_termination" {
   default     = true
 }
 
-variable "enable_zonal_shift" {
-  description = "Determines whether to enable support for ARC Zonal Shift"
-  type        = bool
-  default     = false
-}
-
 variable "queue_name" {
   description = "Name of the SQS queue"
   type        = string

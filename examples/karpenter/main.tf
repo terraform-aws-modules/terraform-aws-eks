@@ -116,7 +116,6 @@ module "karpenter" {
   node_iam_role_use_name_prefix   = false
   node_iam_role_name              = local.name
   create_pod_identity_association = true
-  enable_zonal_shift              = true
 
   # Used to attach additional IAM policies to the Karpenter node IAM role
   node_iam_role_additional_policies = {
