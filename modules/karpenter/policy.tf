@@ -190,6 +190,7 @@ data "aws_iam_policy_document" "controller" {
       "ec2:DescribeInstanceTypes",
       "ec2:DescribeLaunchTemplates",
       "ec2:DescribeSecurityGroups",
+      "ec2:DescribeInstanceStatus",
       "ec2:DescribeSpotPriceHistory",
       "ec2:DescribeSubnets",
       "ec2:DescribePlacementGroups"
@@ -212,6 +213,12 @@ data "aws_iam_policy_document" "controller" {
     sid       = "AllowPricingReadActions"
     resources = ["*"]
     actions   = ["pricing:GetProducts"]
+  }
+
+  statement {
+    sid       = "AllowZonalShiftReadActions"
+    resources = ["arn:${local.partition}:eks:${local.region}:${local.account_id}:cluster/${var.cluster_name}"]
+    actions   = ["arc-zonal-shift:GetManagedResource"]
   }
 
   dynamic "statement" {
