@@ -920,10 +920,16 @@ resource "aws_iam_role" "eks_auto" {
 
 # Policies attached ref https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html
 resource "aws_iam_role_policy_attachment" "eks_auto" {
-  for_each = { for k, v in {
-    AmazonEKSWorkerNodeMinimalPolicy   = "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodeMinimalPolicy",
-    AmazonEC2ContainerRegistryPullOnly = "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryPullOnly",
-  } : k => v if local.create_node_iam_role }
+  for_each = { for k, v in merge(
+    {
+      AmazonEKSWorkerNodeMinimalPolicy   = "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodeMinimalPolicy",
+      AmazonEC2ContainerRegistryPullOnly = "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryPullOnly",
+    },
+    # ECR Public is only available in the commercial partition
+    local.partition == "aws" ? {
+      AmazonElasticContainerRegistryPublicReadOnly = "${local.iam_role_policy_prefix}/AmazonElasticContainerRegistryPublicReadOnly",
+    } : {}
+  ) : k => v if local.create_node_iam_role }
 
   policy_arn = each.value
   role       = aws_iam_role.eks_auto[0].name
