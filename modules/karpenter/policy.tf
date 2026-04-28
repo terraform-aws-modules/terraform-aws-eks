@@ -217,8 +217,13 @@ data "aws_iam_policy_document" "controller" {
 
   statement {
     sid       = "AllowZonalShiftReadActions"
-    resources = ["arn:${local.partition}:eks:${local.region}:${local.account_id}:cluster/${var.cluster_name}"]
+    resources = ["*"]
     actions   = ["arc-zonal-shift:GetManagedResource"]
+    condition {
+      test     = "StringEquals"
+      variable = "arc-zonal-shift:ResourceIdentifier"
+      values   = ["arn:${local.partition}:eks:${local.region}:${local.account_id}:cluster/${var.cluster_name}"]
+    }
   }
 
   dynamic "statement" {
