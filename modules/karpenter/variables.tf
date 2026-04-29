@@ -306,6 +306,12 @@ variable "node_iam_role_additional_policies" {
   default     = {}
 }
 
+variable "node_iam_role_source_account_condition" {
+  description = "Whether to add an `aws:SourceAccount` condition to the node IAM role's trust policy, scoped to the current account"
+  type        = bool
+  default     = false
+}
+
 variable "node_iam_role_tags" {
   description = "A map of additional tags to add to the IAM role created"
   type        = map(string)
