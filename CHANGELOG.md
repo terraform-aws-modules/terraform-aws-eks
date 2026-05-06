@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.19.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.19.0...v21.19.1) (2026-05-06)
+
+### Bug Fixes
+
+* Update karpenter zonal-shift policy ([#3693](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3693)) ([5ba1ed3](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/5ba1ed33d62cb7f8b634d9b849519d5730731cc8))
+
 ## [21.19.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.18.0...v21.19.0) (2026-04-27)
 
 ### Features
