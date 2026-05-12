@@ -1,0 +1,58 @@
+kubeProxyReplacement: true
+k8sServicePort: "443"
+agentNotReadyTaintKey: "node.cilium.io/agent-not-ready"
+
+ipam:
+  mode: eni
+
+cni:
+  install: true
+  exclusive: true
+  binPath: /opt/cni/bin
+  confPath: /etc/cni/net.d
+
+priorityClassName: system-node-critical
+
+nodeInit:
+  enabled: true
+  bootstrapFile: "/tmp/cilium-bootstrap-time"
+
+operator:
+  replicas: 1
+  awsEnablePrefixDelegation: true
+  createCiliumNodeResource: true
+  releaseExcessENIIPs: true
+  prometheus:
+    enabled: true
+
+prometheus:
+  enabled: true
+
+routingMode: native
+enableL7Proxy: true
+
+eni:
+  enabled: true
+  awsEnablePrefixDelegation: true
+
+loadBalancer:
+  algorithm: maglev
+  mode: snat
+
+hubble:
+  enabled: true
+  ringbufferSize: 32768
+  ui:
+    enabled: true
+  relay:
+    enabled: true
+  metrics:
+    enableOpenMetrics: true
+    enabled:
+      - dns
+      - drop
+      - tcp
+      - port-distribution
+      - icmp
+      - "flow:labelsContext=source_namespace,source_workload,destination_namespace,destination_workload;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
+      - "httpV2:exemplars=true;labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction;sourceContext=workload-name|reserved-identity;destinationContext=workload-name|reserved-identity"
