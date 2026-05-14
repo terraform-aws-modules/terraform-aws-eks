@@ -497,6 +497,12 @@ variable "node_security_group_tags" {
   default     = {}
 }
 
+variable "node_security_group_set_cluster_tag" {
+  description = "Determines whether the `kubernetes.io/cluster/<name>` tag is applied to the node security group. The EKS-managed cluster primary security group already carries this tag; duplicating it on the node security group can cause the AWS Load Balancer Controller to refuse to manage backend SG rules in IP target mode (resulting in Target.Timeout health checks)."
+  type        = bool
+  default     = true
+}
+
 ################################################################################
 # IRSA
 ################################################################################

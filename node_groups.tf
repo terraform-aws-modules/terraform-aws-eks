@@ -186,11 +186,11 @@ resource "aws_security_group" "node" {
 
   tags = merge(
     var.tags,
-    {
-      "Name"                              = local.node_sg_name
+    { "Name" = local.node_sg_name },
+    var.node_security_group_set_cluster_tag ? {
       "kubernetes.io/cluster/${var.name}" = "owned"
-    },
-    var.node_security_group_tags
+    } : {},
+    var.node_security_group_tags,
   )
 
   lifecycle {
