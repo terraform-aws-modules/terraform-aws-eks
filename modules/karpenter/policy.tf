@@ -1,4 +1,22 @@
-data "aws_iam_policy_document" "controller" {
+locals {
+  controller_policies = local.create_iam_role ? merge(
+    {
+      EKSIntegration    = data.aws_iam_policy_document.controller_eks_integration[0].json
+      IAMIntegration    = data.aws_iam_policy_document.controller_iam_integration[0].json
+      NodeLifecycle     = data.aws_iam_policy_document.controller_node_lifecycle[0].json
+      ResourceDiscovery = data.aws_iam_policy_document.controller_resource_discovery[0].json
+      ZonalShift        = data.aws_iam_policy_document.controller_zonal_shift[0].json
+    },
+    local.enable_spot_termination ? {
+      Interruption = data.aws_iam_policy_document.controller_interruption[0].json
+    } : {},
+    var.iam_policy_statements != null ? {
+      Additional = data.aws_iam_policy_document.controller_additional[0].json
+    } : {},
+  ) : {}
+}
+
+data "aws_iam_policy_document" "controller_node_lifecycle" {
   count = local.create_iam_role ? 1 : 0
 
   statement {
@@ -51,7 +69,6 @@ data "aws_iam_policy_document" "controller" {
       "arn:${local.partition}:ec2:${local.region}:*:network-interface/*",
       "arn:${local.partition}:ec2:${local.region}:*:launch-template/*",
       "arn:${local.partition}:ec2:${local.region}:*:spot-instances-request/*",
-      "arn:${local.partition}:ec2:${local.region}:*:capacity-reservation/*"
     ]
     actions = [
       "ec2:RunInstances",
@@ -177,23 +194,26 @@ data "aws_iam_policy_document" "controller" {
       values   = ["*"]
     }
   }
+}
+
+data "aws_iam_policy_document" "controller_resource_discovery" {
+  count = local.create_iam_role ? 1 : 0
 
   statement {
     sid       = "AllowRegionalReadActions"
     resources = ["*"]
     actions = [
       "ec2:DescribeCapacityReservations",
-      "ec2:DescribeAvailabilityZones",
       "ec2:DescribeImages",
       "ec2:DescribeInstances",
+      "ec2:DescribeInstanceStatus",
       "ec2:DescribeInstanceTypeOfferings",
       "ec2:DescribeInstanceTypes",
       "ec2:DescribeLaunchTemplates",
+      "ec2:DescribePlacementGroups",
       "ec2:DescribeSecurityGroups",
-      "ec2:DescribeInstanceStatus",
       "ec2:DescribeSpotPriceHistory",
       "ec2:DescribeSubnets",
-      "ec2:DescribePlacementGroups"
     ]
 
     condition {
@@ -216,6 +236,22 @@ data "aws_iam_policy_document" "controller" {
   }
 
   statement {
+    sid       = "AllowUnscopedInstanceProfileListAction"
+    resources = ["*"]
+    actions   = ["iam:ListInstanceProfiles"]
+  }
+
+  statement {
+    sid       = "AllowInstanceProfileReadActions"
+    resources = ["arn:${local.partition}:iam::${local.account_id}:instance-profile/*"]
+    actions   = ["iam:GetInstanceProfile"]
+  }
+}
+
+data "aws_iam_policy_document" "controller_zonal_shift" {
+  count = local.create_iam_role ? 1 : 0
+
+  statement {
     sid       = "AllowZonalShiftReadActions"
     resources = ["*"]
     actions   = ["arc-zonal-shift:GetManagedResource"]
@@ -225,20 +261,24 @@ data "aws_iam_policy_document" "controller" {
       values   = ["arn:${local.partition}:eks:${local.region}:${local.account_id}:cluster/${var.cluster_name}"]
     }
   }
+}
 
-  dynamic "statement" {
-    for_each = local.enable_spot_termination ? [1] : []
+data "aws_iam_policy_document" "controller_interruption" {
+  count = local.create_iam_role && local.enable_spot_termination ? 1 : 0
 
-    content {
-      sid       = "AllowInterruptionQueueActions"
-      resources = [try(aws_sqs_queue.this[0].arn, null)]
-      actions = [
-        "sqs:DeleteMessage",
-        "sqs:GetQueueUrl",
-        "sqs:ReceiveMessage"
-      ]
-    }
+  statement {
+    sid       = "AllowInterruptionQueueActions"
+    resources = [try(aws_sqs_queue.this[0].arn, null)]
+    actions = [
+      "sqs:DeleteMessage",
+      "sqs:GetQueueUrl",
+      "sqs:ReceiveMessage"
+    ]
   }
+}
+
+data "aws_iam_policy_document" "controller_iam_integration" {
+  count = local.create_iam_role ? 1 : 0
 
   statement {
     sid       = "AllowPassingInstanceRole"
@@ -357,24 +397,20 @@ data "aws_iam_policy_document" "controller" {
       values   = ["*"]
     }
   }
+}
 
-  statement {
-    sid       = "AllowInstanceProfileReadActions"
-    resources = ["arn:${local.partition}:iam::${local.account_id}:instance-profile/*"]
-    actions   = ["iam:GetInstanceProfile"]
-  }
-
-  statement {
-    sid       = "AllowUnscopedInstanceProfileListAction"
-    resources = ["*"]
-    actions   = ["iam:ListInstanceProfiles"]
-  }
+data "aws_iam_policy_document" "controller_eks_integration" {
+  count = local.create_iam_role ? 1 : 0
 
   statement {
     sid       = "AllowAPIServerEndpointDiscovery"
     resources = ["arn:${local.partition}:eks:${local.region}:${local.account_id}:cluster/${var.cluster_name}"]
     actions   = ["eks:DescribeCluster"]
   }
+}
+
+data "aws_iam_policy_document" "controller_additional" {
+  count = local.create_iam_role && var.iam_policy_statements != null ? 1 : 0
 
   dynamic "statement" {
     for_each = var.iam_policy_statements != null ? var.iam_policy_statements : []

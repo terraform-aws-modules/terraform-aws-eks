@@ -71,31 +71,31 @@ resource "aws_iam_role" "controller" {
 }
 
 resource "aws_iam_role_policy" "controller" {
-  count = local.create_iam_role && var.enable_inline_policy ? 1 : 0
+  for_each = local.create_iam_role && var.enable_inline_policy ? local.controller_policies : {}
 
-  name        = var.iam_policy_use_name_prefix ? null : var.iam_policy_name
-  name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}-" : null
+  name        = var.iam_policy_use_name_prefix ? null : "${var.iam_policy_name}${each.key}"
+  name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}${each.key}-" : null
   role        = aws_iam_role.controller[0].name
-  policy      = data.aws_iam_policy_document.controller[0].json
+  policy      = each.value
 }
 
 resource "aws_iam_policy" "controller" {
-  count = local.create_iam_role && !var.enable_inline_policy ? 1 : 0
+  for_each = local.create_iam_role && !var.enable_inline_policy ? local.controller_policies : {}
 
-  name        = var.iam_policy_use_name_prefix ? null : var.iam_policy_name
-  name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}-" : null
+  name        = var.iam_policy_use_name_prefix ? null : "${var.iam_policy_name}${each.key}"
+  name_prefix = var.iam_policy_use_name_prefix ? "${var.iam_policy_name}${each.key}-" : null
   path        = var.iam_policy_path
   description = var.iam_policy_description
-  policy      = data.aws_iam_policy_document.controller[0].json
+  policy      = each.value
 
   tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "controller" {
-  count = local.create_iam_role && !var.enable_inline_policy ? 1 : 0
+  for_each = aws_iam_policy.controller
 
   role       = aws_iam_role.controller[0].name
-  policy_arn = aws_iam_policy.controller[0].arn
+  policy_arn = each.value.arn
 }
 
 resource "aws_iam_role_policy_attachment" "controller_additional" {
