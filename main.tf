@@ -446,13 +446,15 @@ locals {
   create_oidc_provider = local.create && var.enable_irsa && !local.create_outposts_local_cluster
 
   oidc_root_ca_thumbprint = local.create_oidc_provider && var.include_oidc_root_ca_thumbprint ? [data.tls_certificate.this[0].certificates[0].sha1_fingerprint] : []
+
+  dualstack_oidc_issuer_url = try(replace(replace(aws_eks_cluster.this[0].identity[0].oidc[0].issuer, "https://oidc.eks.", "https://oidc-eks."), ".amazonaws.com/", ".api.aws/"), null)
 }
 
 data "tls_certificate" "this" {
   # Not available on outposts
   count = local.create_oidc_provider && var.include_oidc_root_ca_thumbprint ? 1 : 0
 
-  url = aws_eks_cluster.this[0].identity[0].oidc[0].issuer
+  url = local.dualstack_oidc_issuer_url
 }
 
 resource "aws_iam_openid_connect_provider" "oidc_provider" {
@@ -461,7 +463,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 
   client_id_list  = distinct(compact(concat(["sts.amazonaws.com"], var.openid_connect_audiences)))
   thumbprint_list = concat(local.oidc_root_ca_thumbprint, var.custom_oidc_thumbprints)
-  url             = aws_eks_cluster.this[0].identity[0].oidc[0].issuer
+  url             = local.dualstack_oidc_issuer_url
 
   tags = merge(
     { Name = "${var.name}-eks-irsa" },
