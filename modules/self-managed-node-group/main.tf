@@ -443,6 +443,14 @@ resource "aws_launch_template" "this" {
     }
   }
 
+  dynamic "network_performance_options" {
+    for_each = var.network_performance_options != null ? [var.network_performance_options] : []
+
+    content {
+      bandwidth_weighting = network_performance_options.value.bandwidth_weighting
+    }
+  }
+
   dynamic "placement" {
     for_each = var.placement != null || local.create_placement_group ? [var.placement] : []
 

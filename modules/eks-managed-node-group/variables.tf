@@ -259,6 +259,14 @@ variable "cpu_options" {
   default = null
 }
 
+variable "network_performance_options" {
+  description = "The network performance options for the instance"
+  type = object({
+    bandwidth_weighting = optional(string)
+  })
+  default = null
+}
+
 variable "credit_specification" {
   description = "Customize the credit specification of the instance"
   type = object({
