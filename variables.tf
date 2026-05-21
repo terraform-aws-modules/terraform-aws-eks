@@ -643,6 +643,9 @@ variable "addons" {
     most_recent          = optional(bool, true)
     addon_version        = optional(string)
     configuration_values = optional(string)
+    namespace_config = optional(object({
+      namespace = string
+    }))
     pod_identity_association = optional(list(object({
       role_arn        = string
       service_account = string
