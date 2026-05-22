@@ -507,6 +507,12 @@ variable "enable_irsa" {
   default     = true
 }
 
+variable "use_dualstack_oidc_issuer_endpoint" {
+  description = "Determines whether to use the dual-stack compatible OIDC issuer endpoint to fetch thumbprint for OIDC provider. Defaults to `false`"
+  type        = bool
+  default     = false
+}
+
 variable "openid_connect_audiences" {
   description = "List of OpenID Connect audience client IDs to add to the IRSA provider"
   type        = list(string)
