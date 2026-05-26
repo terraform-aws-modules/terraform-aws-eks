@@ -1134,6 +1134,15 @@ variable "self_managed_node_groups" {
       security_groups      = optional(list(string))
       subnet_id            = optional(string)
     })))
+    secondary_interfaces = optional(list(object({
+      delete_on_termination    = optional(bool)
+      device_index             = optional(number)
+      interface_type           = optional(string)
+      network_card_index       = optional(number)
+      private_ip_address_count = optional(number)
+      private_ip_addresses     = optional(list(string))
+      secondary_subnet_id      = optional(string)
+    })))
     network_performance_options = optional(object({
       bandwidth_weighting = optional(string)
     }))
@@ -1425,6 +1434,15 @@ variable "eks_managed_node_groups" {
       private_ip_address   = optional(string)
       security_groups      = optional(list(string), [])
       subnet_id            = optional(string)
+    })))
+    secondary_interfaces = optional(list(object({
+      delete_on_termination    = optional(bool)
+      device_index             = optional(number)
+      interface_type           = optional(string)
+      network_card_index       = optional(number)
+      private_ip_address_count = optional(number)
+      private_ip_addresses     = optional(list(string))
+      secondary_subnet_id      = optional(string)
     })))
     network_performance_options = optional(object({
       bandwidth_weighting = optional(string)

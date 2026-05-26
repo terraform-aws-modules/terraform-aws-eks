@@ -324,6 +324,21 @@ variable "network_interfaces" {
   nullable = false
 }
 
+variable "secondary_interfaces" {
+  description = "Customize secondary network interfaces to be attached at instance boot time"
+  type = list(object({
+    delete_on_termination    = optional(bool)
+    device_index             = optional(number)
+    interface_type           = optional(string)
+    network_card_index       = optional(number)
+    private_ip_address_count = optional(number)
+    private_ip_addresses     = optional(list(string))
+    secondary_subnet_id      = optional(string)
+  }))
+  default  = []
+  nullable = false
+}
+
 variable "placement" {
   description = "The placement of the instance"
   type = object({

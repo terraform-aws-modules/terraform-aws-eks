@@ -478,6 +478,20 @@ resource "aws_launch_template" "this" {
 
   ram_disk_id = var.ram_disk_id
 
+  dynamic "secondary_interfaces" {
+    for_each = var.secondary_interfaces
+
+    content {
+      delete_on_termination    = secondary_interfaces.value.delete_on_termination
+      device_index             = secondary_interfaces.value.device_index
+      interface_type           = secondary_interfaces.value.interface_type
+      network_card_index       = secondary_interfaces.value.network_card_index
+      private_ip_address_count = secondary_interfaces.value.private_ip_address_count
+      private_ip_addresses     = secondary_interfaces.value.private_ip_addresses
+      secondary_subnet_id      = secondary_interfaces.value.secondary_subnet_id
+    }
+  }
+
   dynamic "tag_specifications" {
     for_each = toset(var.tag_specifications)
 
