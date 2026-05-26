@@ -523,6 +523,7 @@ resource "aws_autoscaling_group" "this" {
   availability_zones        = var.availability_zones
   capacity_rebalance        = var.capacity_rebalance
   context                   = var.context
+  default_cooldown          = var.default_cooldown
   default_instance_warmup   = var.default_instance_warmup
   desired_capacity          = var.desired_size
   desired_capacity_type     = var.desired_size_type
@@ -759,11 +760,12 @@ resource "aws_autoscaling_group" "this" {
     }
   }
 
-  name                  = var.use_name_prefix ? null : var.name
-  name_prefix           = var.use_name_prefix ? "${var.name}-" : null
-  placement_group       = var.placement_group
-  protect_from_scale_in = var.protect_from_scale_in
-  suspended_processes   = var.suspended_processes
+  name                    = var.use_name_prefix ? null : var.name
+  name_prefix             = var.use_name_prefix ? "${var.name}-" : null
+  placement_group         = var.placement_group
+  protect_from_scale_in   = var.protect_from_scale_in
+  service_linked_role_arn = var.service_linked_role_arn
+  suspended_processes     = var.suspended_processes
 
   dynamic "tag" {
     for_each = merge(
@@ -792,8 +794,9 @@ resource "aws_autoscaling_group" "this" {
     }
   }
 
-  termination_policies = var.termination_policies
-  vpc_zone_identifier  = var.subnet_ids
+  termination_policies      = var.termination_policies
+  vpc_zone_identifier       = var.subnet_ids
+  wait_for_capacity_timeout = var.wait_for_capacity_timeout
 
   dynamic "timeouts" {
     for_each = var.timeouts != null ? [var.timeouts] : []

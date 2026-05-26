@@ -682,6 +682,24 @@ variable "metrics_granularity" {
   default     = null
 }
 
+variable "default_cooldown" {
+  description = "The amount of time, in seconds, after a scaling activity completes before another scaling activity can start"
+  type        = number
+  default     = null
+}
+
+variable "service_linked_role_arn" {
+  description = "The ARN of the service-linked role that the ASG will use to call other AWS services"
+  type        = string
+  default     = null
+}
+
+variable "wait_for_capacity_timeout" {
+  description = "A maximum duration that Terraform should wait for ASG instances to be healthy before timing out. (See also Waiting for Capacity below.) Setting this to '0' causes Terraform to skip all Capacity Waiting behavior"
+  type        = string
+  default     = null
+}
+
 variable "initial_lifecycle_hooks" {
   description = "One or more Lifecycle Hooks to attach to the Auto Scaling Group before instances are launched. The syntax is exactly the same as the separate `aws_autoscaling_lifecycle_hook` resource, without the `autoscaling_group_name` attribute. Please note that this will only work when creating a new Auto Scaling Group. For all other use-cases, please use `aws_autoscaling_lifecycle_hook` resource"
   type = list(object({

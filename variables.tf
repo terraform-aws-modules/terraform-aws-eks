@@ -840,6 +840,9 @@ variable "self_managed_node_groups" {
     max_instance_lifetime            = optional(number)
     enabled_metrics                  = optional(list(string))
     metrics_granularity              = optional(string)
+    default_cooldown                 = optional(number)
+    service_linked_role_arn          = optional(string)
+    wait_for_capacity_timeout        = optional(string)
     initial_lifecycle_hooks = optional(list(object({
       default_result          = optional(string)
       heartbeat_timeout       = optional(number)

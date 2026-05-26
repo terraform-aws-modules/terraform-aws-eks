@@ -446,6 +446,10 @@ module "self_managed_node_group" {
   enabled_metrics     = each.value.enabled_metrics
   metrics_granularity = each.value.metrics_granularity
 
+  default_cooldown          = each.value.default_cooldown
+  service_linked_role_arn   = each.value.service_linked_role_arn
+  wait_for_capacity_timeout = each.value.wait_for_capacity_timeout
+
   initial_lifecycle_hooks     = each.value.initial_lifecycle_hooks
   instance_maintenance_policy = each.value.instance_maintenance_policy
   instance_refresh            = each.value.instance_refresh
