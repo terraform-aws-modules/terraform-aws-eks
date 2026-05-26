@@ -438,10 +438,11 @@ module "self_managed_node_group" {
 
   ignore_failed_scaling_activities = each.value.ignore_failed_scaling_activities
 
-  force_delete          = each.value.force_delete
-  termination_policies  = each.value.termination_policies
-  suspended_processes   = each.value.suspended_processes
-  max_instance_lifetime = each.value.max_instance_lifetime
+  force_delete           = each.value.force_delete
+  force_delete_warm_pool = each.value.force_delete_warm_pool
+  termination_policies   = each.value.termination_policies
+  suspended_processes    = each.value.suspended_processes
+  max_instance_lifetime  = each.value.max_instance_lifetime
 
   enabled_metrics     = each.value.enabled_metrics
   metrics_granularity = each.value.metrics_granularity
@@ -451,6 +452,7 @@ module "self_managed_node_group" {
   instance_refresh            = each.value.instance_refresh
   use_mixed_instances_policy  = each.value.use_mixed_instances_policy
   mixed_instances_policy      = each.value.mixed_instances_policy
+  warm_pool                   = each.value.warm_pool
 
   timeouts               = each.value.timeouts
   autoscaling_group_tags = each.value.autoscaling_group_tags

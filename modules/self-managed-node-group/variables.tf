@@ -649,6 +649,12 @@ variable "force_delete" {
   default     = null
 }
 
+variable "force_delete_warm_pool" {
+  description = "Allows deleting the Auto Scaling Group without waiting for all instances in the warm pool to terminate"
+  type        = bool
+  default     = null
+}
+
 variable "termination_policies" {
   description = "A list of policies to decide how the instances in the Auto Scaling Group should be terminated. The allowed values are `OldestInstance`, `NewestInstance`, `OldestLaunchConfiguration`, `ClosestToNextInstanceHour`, `OldestLaunchTemplate`, `AllocationStrategy`, `Default`"
   type        = list(string)
@@ -816,6 +822,19 @@ variable "mixed_instances_policy" {
         weighted_capacity = optional(string)
       })))
     })
+  })
+  default = null
+}
+
+variable "warm_pool" {
+  description = "If this block is configured, add a Warm Pool to the specified Auto Scaling group"
+  type = object({
+    instance_reuse_policy = optional(object({
+      reuse_on_scale_in = optional(bool)
+    }))
+    max_group_prepared_capacity = optional(number)
+    min_size                    = optional(number)
+    pool_state                  = optional(string)
   })
   default = null
 }

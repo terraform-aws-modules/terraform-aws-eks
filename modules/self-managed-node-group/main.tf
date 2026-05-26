@@ -528,6 +528,7 @@ resource "aws_autoscaling_group" "this" {
   desired_capacity_type     = var.desired_size_type
   enabled_metrics           = var.enabled_metrics
   force_delete              = var.force_delete
+  force_delete_warm_pool    = var.force_delete_warm_pool
   health_check_grace_period = var.health_check_grace_period
   health_check_type         = var.health_check_type
 
@@ -794,6 +795,24 @@ resource "aws_autoscaling_group" "this" {
 
   termination_policies = var.termination_policies
   vpc_zone_identifier  = var.subnet_ids
+
+  dynamic "warm_pool" {
+    for_each = var.warm_pool != null ? [var.warm_pool] : []
+
+    content {
+      dynamic "instance_reuse_policy" {
+        for_each = warm_pool.value.instance_reuse_policy != null ? [warm_pool.value.instance_reuse_policy] : []
+
+        content {
+          reuse_on_scale_in = instance_reuse_policy.value.reuse_on_scale_in
+        }
+      }
+
+      max_group_prepared_capacity = warm_pool.value.max_group_prepared_capacity
+      min_size                    = warm_pool.value.min_size
+      pool_state                  = warm_pool.value.pool_state
+    }
+  }
 
   dynamic "timeouts" {
     for_each = var.timeouts != null ? [var.timeouts] : []
