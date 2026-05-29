@@ -777,6 +777,14 @@ resource "aws_eks_addon" "this" {
   addon_version        = coalesce(each.value.addon_version, data.aws_eks_addon_version.this[each.key].version)
   configuration_values = each.value.configuration_values
 
+  dynamic "namespace_config" {
+    for_each = each.value.namespace_config != null ? [each.value.namespace_config] : []
+
+    content {
+      namespace = namespace_config.value.namespace
+    }
+  }
+
   dynamic "pod_identity_association" {
     for_each = each.value.pod_identity_association != null ? each.value.pod_identity_association : []
 
@@ -821,6 +829,14 @@ resource "aws_eks_addon" "before_compute" {
 
   addon_version        = coalesce(each.value.addon_version, data.aws_eks_addon_version.this[each.key].version)
   configuration_values = each.value.configuration_values
+
+  dynamic "namespace_config" {
+    for_each = each.value.namespace_config != null ? [each.value.namespace_config] : []
+
+    content {
+      namespace = namespace_config.value.namespace
+    }
+  }
 
   dynamic "pod_identity_association" {
     for_each = each.value.pod_identity_association != null ? each.value.pod_identity_association : []

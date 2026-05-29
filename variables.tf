@@ -643,6 +643,9 @@ variable "addons" {
     most_recent          = optional(bool, true)
     addon_version        = optional(string)
     configuration_values = optional(string)
+    namespace_config = optional(object({
+      namespace = string
+    }))
     pod_identity_association = optional(list(object({
       role_arn        = string
       service_account = string
@@ -1132,6 +1135,9 @@ variable "self_managed_node_groups" {
       security_groups      = optional(list(string))
       subnet_id            = optional(string)
     })))
+    network_performance_options = optional(object({
+      bandwidth_weighting = optional(string)
+    }))
     placement = optional(object({
       affinity                = optional(string)
       availability_zone       = optional(string)
@@ -1422,6 +1428,9 @@ variable "eks_managed_node_groups" {
       security_groups      = optional(list(string), [])
       subnet_id            = optional(string)
     })))
+    network_performance_options = optional(object({
+      bandwidth_weighting = optional(string)
+    }))
     maintenance_options = optional(object({
       auto_recovery = optional(string)
     }))

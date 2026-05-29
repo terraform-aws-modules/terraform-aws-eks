@@ -42,7 +42,7 @@ output "queue_url" {
 
 output "event_rules" {
   description = "Map of the event rules created and their attributes"
-  value       = aws_cloudwatch_event_rule.this
+  value       = { for k, v in aws_cloudwatch_event_rule.this : k => { arn = v.arn, id = v.id } }
 }
 
 ################################################################################

@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.22.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.21.0...v21.22.0) (2026-05-25)
+
+### Features
+
+* Remove `is_enabled` deprecation warning from Karpenter `event_rules` output ([#3707](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3707)) ([4bd70c7](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/4bd70c70a15ddb76a5b6bfde7fb0dabfaea706de))
+
+## [21.21.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.20.0...v21.21.0) (2026-05-25)
+
+### Features
+
+* Add support for EKS addon `namespace_config` ([#3716](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3716)) ([8828bd9](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/8828bd9f045933923d6c0e65a98ce58e21c54042))
+
 ## [21.20.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.19.1...v21.20.0) (2026-05-06)
 
 ### Features
