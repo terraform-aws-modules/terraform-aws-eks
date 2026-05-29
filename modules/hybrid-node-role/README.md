@@ -73,14 +73,14 @@ module "eks_hybrid_node_role" {
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.42 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.42 |
 
 ## Modules
@@ -90,7 +90,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_iam_policy.intermediate](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_policy.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_role.intermediate](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
@@ -108,7 +108,7 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_cluster_arns"></a> [cluster\_arns](#input\_cluster\_arns) | List of EKS cluster ARNs to allow the node to describe | `list(string)` | <pre>[<br/>  "*"<br/>]</pre> | no |
 | <a name="input_create"></a> [create](#input\_create) | Controls if resources should be created (affects nearly all resources) | `bool` | `true` | no |
 | <a name="input_description"></a> [description](#input\_description) | IAM role description | `string` | `"EKS Hybrid Node IAM role"` | no |
@@ -149,7 +149,7 @@ No modules.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_arn"></a> [arn](#output\_arn) | The Amazon Resource Name (ARN) specifying the node IAM role |
 | <a name="output_intermediate_role_arn"></a> [intermediate\_role\_arn](#output\_intermediate\_role\_arn) | The Amazon Resource Name (ARN) specifying the node IAM role |
 | <a name="output_intermediate_role_name"></a> [intermediate\_role\_name](#output\_intermediate\_role\_name) | The name of the node IAM role |

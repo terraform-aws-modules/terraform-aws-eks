@@ -16,20 +16,20 @@ Note that this example may create resources which cost money. Run `terraform des
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.42 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.42 |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_ack_eks_capability"></a> [ack\_eks\_capability](#module\_ack\_eks\_capability) | ../../modules/capability | n/a |
 | <a name="module_argocd_eks_capability"></a> [argocd\_eks\_capability](#module\_argocd\_eks\_capability) | ../../modules/capability | n/a |
 | <a name="module_disabled_eks_capability"></a> [disabled\_eks\_capability](#module\_disabled\_eks\_capability) | ../../modules/capability | n/a |
@@ -40,7 +40,7 @@ Note that this example may create resources which cost money. Run `terraform des
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 | [aws_identitystore_group.aws_administrator](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/identitystore_group) | data source |
 | [aws_ssoadmin_instances.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ssoadmin_instances) | data source |
@@ -52,7 +52,7 @@ No inputs.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_ack_argocd_server_url"></a> [ack\_argocd\_server\_url](#output\_ack\_argocd\_server\_url) | URL of the Argo CD server |
 | <a name="output_ack_arn"></a> [ack\_arn](#output\_ack\_arn) | The ARN of the EKS Capability |
 | <a name="output_ack_iam_role_arn"></a> [ack\_iam\_role\_arn](#output\_ack\_iam\_role\_arn) | The Amazon Resource Name (ARN) specifying the IAM role |

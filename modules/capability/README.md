@@ -93,7 +93,7 @@ module "kro_eks_capability" {
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.42 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9 |
@@ -101,7 +101,7 @@ module "kro_eks_capability" {
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.42 |
 | <a name="provider_time"></a> [time](#provider\_time) | >= 0.9 |
 
@@ -112,7 +112,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_eks_capability.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_capability) | resource |
 | [aws_iam_policy.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_role.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
@@ -126,7 +126,7 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The name of the EKS cluster | `string` | `""` | no |
 | <a name="input_configuration"></a> [configuration](#input\_configuration) | Configuration for the capability | <pre>object({<br/>    argo_cd = optional(object({<br/>      aws_idc = object({<br/>        idc_instance_arn = string<br/>        idc_region       = optional(string)<br/>      })<br/>      namespace = optional(string)<br/>      network_access = optional(object({<br/>        vpce_ids = optional(list(string))<br/>      }))<br/>      rbac_role_mapping = optional(list(object({<br/>        identity = list(object({<br/>          id   = string<br/>          type = string<br/>        }))<br/>        role = string<br/>      })))<br/>    }))<br/>  })</pre> | `null` | no |
 | <a name="input_create"></a> [create](#input\_create) | Controls if resources should be created (affects nearly all resources) | `bool` | `true` | no |
@@ -158,7 +158,7 @@ No modules.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_argocd_server_url"></a> [argocd\_server\_url](#output\_argocd\_server\_url) | URL of the Argo CD server |
 | <a name="output_arn"></a> [arn](#output\_arn) | The ARN of the EKS Capability |
 | <a name="output_iam_role_arn"></a> [iam\_role\_arn](#output\_iam\_role\_arn) | The Amazon Resource Name (ARN) specifying the IAM role |
