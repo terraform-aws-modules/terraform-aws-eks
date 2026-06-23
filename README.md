@@ -578,6 +578,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | <a name="output_cloudwatch_log_group_arn"></a> [cloudwatch\_log\_group\_arn](#output\_cloudwatch\_log\_group\_arn) | Arn of cloudwatch log group created |
 | <a name="output_cloudwatch_log_group_name"></a> [cloudwatch\_log\_group\_name](#output\_cloudwatch\_log\_group\_name) | Name of cloudwatch log group created |
 | <a name="output_cluster_addons"></a> [cluster\_addons](#output\_cluster\_addons) | Map of attribute maps for all EKS cluster addons enabled |
+| <a name="output_cluster_addons_before_compute"></a> [cluster\_addons\_before\_compute](#output\_cluster\_addons\_before\_compute) | Map of attribute maps for all EKS cluster addons created before the data plane compute resources (e.g. vpc-cni) |
 | <a name="output_cluster_arn"></a> [cluster\_arn](#output\_cluster\_arn) | The Amazon Resource Name (ARN) of the cluster |
 | <a name="output_cluster_certificate_authority_data"></a> [cluster\_certificate\_authority\_data](#output\_cluster\_certificate\_authority\_data) | Base64 encoded certificate data required to communicate with the cluster |
 | <a name="output_cluster_control_plane_scaling_tier"></a> [cluster\_control\_plane\_scaling\_tier](#output\_cluster\_control\_plane\_scaling\_tier) | The EKS Provisioned Control Plane scaling tier for the cluster |

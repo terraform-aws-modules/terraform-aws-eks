@@ -220,6 +220,11 @@ output "cluster_addons" {
   value       = merge(aws_eks_addon.this, aws_eks_addon.before_compute)
 }
 
+output "cluster_addons_before_compute" {
+  description = "Map of attribute maps for all EKS cluster addons created before the data plane compute resources (e.g. vpc-cni)"
+  value       = aws_eks_addon.before_compute
+}
+
 ################################################################################
 # EKS Identity Provider
 ################################################################################
