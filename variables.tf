@@ -127,6 +127,12 @@ variable "subnet_ids" {
   default     = []
 }
 
+variable "control_plane_egress_mode" {
+  description = "Egress mode for the EKS control plane. Valid values are `AWS_MANAGED` and `CUSTOMER_ROUTED`"
+  type        = string
+  default     = null
+}
+
 variable "endpoint_private_access" {
   description = "Indicates whether or not the Amazon EKS private API server endpoint is enabled"
   type        = bool
