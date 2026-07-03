@@ -760,6 +760,22 @@ resource "aws_autoscaling_group" "this" {
     }
   }
 
+  dynamic "capacity_reservation_specification" {
+    for_each = var.asg_capacity_reservation_specification != null ? [var.asg_capacity_reservation_specification] : []
+
+    content {
+      capacity_reservation_preference = capacity_reservation_specification.value.capacity_reservation_preference
+
+      dynamic "capacity_reservation_target" {
+        for_each = capacity_reservation_specification.value.capacity_reservation_target != null ? [capacity_reservation_specification.value.capacity_reservation_target] : []
+        content {
+          capacity_reservation_ids                 = capacity_reservation_target.value.capacity_reservation_ids
+          capacity_reservation_resource_group_arns = capacity_reservation_target.value.capacity_reservation_resource_group_arns
+        }
+      }
+    }
+  }
+
   name                  = var.use_name_prefix ? null : var.name
   name_prefix           = var.use_name_prefix ? "${var.name}-" : null
   placement_group       = var.placement_group
