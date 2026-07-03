@@ -47,6 +47,15 @@ module "eks_al2023" {
           EOT
         }
       ]
+
+      # This is not required - demonstrates how to request capacity reservations for the ASG
+      # https://docs.aws.amazon.com/autoscaling/ec2/userguide/use-ec2-capacity-reservations.html
+      asg_capacity_reservation_specification = {
+        capacity_reservation_preference = "capacity-reservations-first"
+        capacity_reservation_target = {
+          capacity_reservation_ids = ["cr-0a1b2c3d4e5f6g7h8"]
+        }
+      }
     }
   }
 
