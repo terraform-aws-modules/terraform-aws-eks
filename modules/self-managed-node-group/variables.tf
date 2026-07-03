@@ -236,7 +236,7 @@ variable "asg_capacity_reservation_specification" {
 variable "availability_zone_distribution" {
   description = "Zone distribution strategy for the Auto Scaling group."
   type = object({
-    capacity_reservation_strategy = optional(string)
+    capacity_distribution_strategy = optional(string)
   })
   default = null
 }
