@@ -16,20 +16,20 @@ $ terraform apply --auto-approve
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.4 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_local"></a> [local](#provider\_local) | >= 2.4 |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_eks_mng_al2023_additional"></a> [eks\_mng\_al2023\_additional](#module\_eks\_mng\_al2023\_additional) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_al2023_custom_ami"></a> [eks\_mng\_al2023\_custom\_ami](#module\_eks\_mng\_al2023\_custom\_ami) | ../../modules/_user_data | n/a |
 | <a name="module_eks_mng_al2023_custom_template"></a> [eks\_mng\_al2023\_custom\_template](#module\_eks\_mng\_al2023\_custom\_template) | ../../modules/_user_data | n/a |
@@ -65,7 +65,7 @@ $ terraform apply --auto-approve
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [local_file.eks_mng_al2023_additional](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.eks_mng_al2023_custom_ami](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.eks_mng_al2023_custom_template](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
