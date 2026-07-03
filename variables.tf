@@ -836,6 +836,7 @@ variable "self_managed_node_groups" {
     protect_from_scale_in            = optional(bool)
     context                          = optional(string)
     create_placement_group           = optional(bool)
+    enable_efa_placement_group       = optional(bool, true)
     placement_group                  = optional(string)
     health_check_type                = optional(string)
     health_check_grace_period        = optional(number)
@@ -1391,6 +1392,7 @@ variable "eks_managed_node_groups" {
     enable_efa_only        = optional(bool)
     efa_indices            = optional(list(string))
     create_placement_group = optional(bool)
+    enable_efa_placement_group = optional(bool, true)
     placement = optional(object({
       affinity                = optional(string)
       availability_zone       = optional(string)
