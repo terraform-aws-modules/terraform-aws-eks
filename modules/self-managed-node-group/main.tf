@@ -776,6 +776,15 @@ resource "aws_autoscaling_group" "this" {
     }
   }
 
+
+  dynamic "availability_zone_distribution" {
+    for_each = var.availability_zone_distribution != null ? [var.availability_zone_distribution] : []
+
+    content {
+      capacity_distribution_strategy = availability_zone_distribution.value.capacity_distribution_strategy
+      }
+  }
+
   name                  = var.use_name_prefix ? null : var.name
   name_prefix           = var.use_name_prefix ? "${var.name}-" : null
   placement_group       = var.placement_group

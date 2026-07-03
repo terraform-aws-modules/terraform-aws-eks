@@ -233,6 +233,15 @@ variable "asg_capacity_reservation_specification" {
   default = null
 }
 
+variable "availability_zone_distribution" {
+  description = "Zone distribution strategy for the Auto Scaling group."
+  type = object({
+    capacity_reservation_strategy = optional(string)
+  })
+  default = null
+}
+
+
 variable "cpu_options" {
   description = "The CPU options for the instance"
   type = object({
