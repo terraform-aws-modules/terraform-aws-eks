@@ -56,6 +56,12 @@ module "eks_al2023" {
           capacity_reservation_ids = ["cr-0a1b2c3d4e5f6g7h8"]
         }
       }
+
+      # This is not required - demonstrates how to request the ASG to place machines within AZs
+      # https://docs.aws.amazon.com/autoscaling/ec2/userguide/use-ec2-capacity-reservations.html
+      availability_zone_distribution = {
+        capacity_distribution_strategy = "balanced-only"
+      }
     }
   }
 
