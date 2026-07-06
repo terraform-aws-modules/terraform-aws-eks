@@ -782,7 +782,7 @@ resource "aws_autoscaling_group" "this" {
 
     content {
       capacity_distribution_strategy = availability_zone_distribution.value.capacity_distribution_strategy
-      }
+    }
   }
 
   name                  = var.use_name_prefix ? null : var.name
