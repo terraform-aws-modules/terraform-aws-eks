@@ -13,10 +13,10 @@ resource "time_sleep" "this" {
   create_duration = var.dataplane_wait_duration
 
   triggers = {
-    name               = aws_eks_cluster.this[0].id
-    endpoint           = aws_eks_cluster.this[0].endpoint
-    kubernetes_version = aws_eks_cluster.this[0].version
-    service_cidr       = var.ip_family == "ipv6" ? try(local.kubernetes_network_config.service_ipv6_cidr, "") : try(local.kubernetes_network_config.service_ipv4_cidr, "")
+    name                       = aws_eks_cluster.this[0].id
+    endpoint                   = aws_eks_cluster.this[0].endpoint
+    kubernetes_version         = aws_eks_cluster.this[0].version
+    service_cidr               = var.ip_family == "ipv6" ? try(local.kubernetes_network_config.service_ipv6_cidr, "") : try(local.kubernetes_network_config.service_ipv4_cidr, "")
 
     certificate_authority_data = aws_eks_cluster.this[0].certificate_authority[0].data
   }
@@ -37,7 +37,9 @@ data "aws_iam_policy_document" "cni_ipv6_policy" {
       "ec2:DescribeInstances",
       "ec2:DescribeTags",
       "ec2:DescribeNetworkInterfaces",
-      "ec2:DescribeInstanceTypes"
+      "ec2:DescribeInstanceTypes",
+      "ec2:DescribeSubnets",
+      "ec2:DescribeSecurityGroups"
     ]
     resources = ["*"]
   }
@@ -187,7 +189,7 @@ resource "aws_security_group" "node" {
   tags = merge(
     var.tags,
     {
-      "Name"                              = local.node_sg_name
+      "Name"                                      = local.node_sg_name
       "kubernetes.io/cluster/${var.name}" = "owned"
     },
     var.node_security_group_tags
@@ -354,7 +356,7 @@ module "eks_managed_node_group" {
   metadata_options                   = each.value.metadata_options
   enable_monitoring                  = each.value.enable_monitoring
   enable_efa_support                 = each.value.enable_efa_support
-  enable_efa_only                    = each.value.enable_efa_only
+  enable_efa_only                   = each.value.enable_efa_only
   efa_indices                        = each.value.efa_indices
   create_placement_group             = each.value.create_placement_group
   placement                          = each.value.placement
@@ -481,11 +483,11 @@ module "self_managed_node_group" {
   launch_template_tags                   = each.value.launch_template_tags
   tag_specifications                     = each.value.tag_specifications
 
-  ebs_optimized      = each.value.ebs_optimized
-  ami_id             = each.value.ami_id
-  kubernetes_version = each.value.kubernetes_version != null ? each.value.kubernetes_version : time_sleep.this[0].triggers["kubernetes_version"]
-  instance_type      = each.value.instance_type
-  key_name           = each.value.key_name
+  ebs_optimized           = each.value.ebs_optimized
+  ami_id                  = each.value.ami_id
+  kubernetes_version      = each.value.kubernetes_version != null ? each.value.kubernetes_version : time_sleep.this[0].triggers["kubernetes_version"]
+  instance_type           = each.value.instance_type
+  key_name                = each.value.key_name
 
   disable_api_termination              = each.value.disable_api_termination
   instance_initiated_shutdown_behavior = each.value.instance_initiated_shutdown_behavior
@@ -503,7 +505,7 @@ module "self_managed_node_group" {
   metadata_options                   = each.value.metadata_options
   enable_monitoring                  = each.value.enable_monitoring
   enable_efa_support                 = each.value.enable_efa_support
-  enable_efa_only                    = each.value.enable_efa_only
+  enable_efa_only                   = each.value.enable_efa_only
   efa_indices                        = each.value.efa_indices
   network_interfaces                 = each.value.network_interfaces
   network_performance_options        = each.value.network_performance_options
