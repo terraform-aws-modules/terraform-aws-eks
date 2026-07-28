@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.24.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.23.0...v21.24.0) (2026-06-24)
+
+### Features
+
+* Support cluster `control_plane_egress_mode` ([#3728](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3728)) ([64558a4](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/64558a4b94c29137ece7230b7294f5aaf1379b38)), closes [#3727](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3727)
+
 ## [21.23.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.22.0...v21.23.0) (2026-05-29)
 
 ### Features
