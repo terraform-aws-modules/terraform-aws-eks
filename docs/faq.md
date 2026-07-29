@@ -41,13 +41,13 @@ By default, EKS creates a cluster primary security group that is created outside
 ```hcl
   eks_managed_node_groups = {
     example = {
-      attach_cluster_primary_security_group = true # default is false
+      attach_cluster_primary_security_group = false # default is false
     }
   }
   # Or for self-managed
   self_managed_node_groups = {
     example = {
-      attach_cluster_primary_security_group = true # default is false
+      attach_cluster_primary_security_group = false # default is false
     }
   }
 ```
