@@ -20,26 +20,31 @@ jobs:
     if: github.repository_owner == 'terraform-aws-modules'
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
           fetch-depth: 0
 
       - name: Set correct Node.js version
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24
 
       - name: Install dependencies
+        # conventional-changelog-conventionalcommits is held at 9.x on purpose.
+        # v10 replaced its handlebars templates with render functions, which need
+        # conventional-changelog-writer v9. semantic-release 25 still resolves
+        # writer v8, so v10 renders empty release notes without erroring.
+        # See https://github.com/semantic-release/release-notes-generator/issues/992
         run: |
           npm install \
-            @semantic-release/changelog@6.0.3 \
-            @semantic-release/git@10.0.1 \
-            conventional-changelog-conventionalcommits@9.1.0
+            @semantic-release/changelog@7.0.0 \
+            @semantic-release/git@11.0.1 \
+            conventional-changelog-conventionalcommits@9.3.1
 
       - name: Release
-        uses: cycjimmy/semantic-release-action@v5
+        uses: cycjimmy/semantic-release-action@v6.0.0
         with:
-          semantic_version: 25.0.0
+          semantic_version: 25.0.8
         env:
           GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_TOKEN }}
