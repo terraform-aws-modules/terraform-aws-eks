@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.24.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.24.0...v21.24.1) (2026-07-31)
+
+### Bug Fixes
+
+* Correct Windows SSM parameter paths ([#3737](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3737)) ([173e227](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/173e2273c66ad6d15bb91b06d09a77b5f4cb23f3))
+
 ## [21.24.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.23.0...v21.24.0) (2026-06-24)
 
 ### Features
