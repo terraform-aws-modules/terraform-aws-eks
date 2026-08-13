@@ -83,6 +83,24 @@ module "eks" {
     enabled = true
   }
 
+  kube_scheduler_config = {
+    node_resources_fit = {
+      scoring_strategy = {
+        type = "MostAllocated"
+        resources = [
+          {
+            name   = "cpu"
+            weight = 1
+          },
+          {
+            name   = "memory"
+            weight = 1
+          },
+        ]
+      }
+    }
+  }
+
   vpc_id                   = module.vpc.vpc_id
   subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.intra_subnets

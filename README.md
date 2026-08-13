@@ -400,7 +400,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.52 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.59 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9 |
 | <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 4.0 |
 
@@ -408,7 +408,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.52 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.59 |
 | <a name="provider_time"></a> [time](#provider\_time) | >= 0.9 |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | >= 4.0 |
 
@@ -531,6 +531,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | <a name="input_kms_key_service_users"></a> [kms\_key\_service\_users](#input\_kms\_key\_service\_users) | A list of IAM ARNs for [key service users](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-service-integration) | `list(string)` | `[]` | no |
 | <a name="input_kms_key_source_policy_documents"></a> [kms\_key\_source\_policy\_documents](#input\_kms\_key\_source\_policy\_documents) | List of IAM policy documents that are merged together into the exported document. Statements must have unique `sid`s | `list(string)` | `[]` | no |
 | <a name="input_kms_key_users"></a> [kms\_key\_users](#input\_kms\_key\_users) | A list of IAM ARNs for [key users](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-default-allow-users) | `list(string)` | `[]` | no |
+| <a name="input_kube_scheduler_config"></a> [kube\_scheduler\_config](#input\_kube\_scheduler\_config) | Configuration block for the cluster `kube-scheduler` configuration. Valid values for `scoring_strategy.type` are `LeastAllocated` (default) and `MostAllocated`; resource `weight` must be between `1` and `100` | <pre>object({<br/>    node_resources_fit = optional(object({<br/>      scoring_strategy = optional(object({<br/>        type = optional(string)<br/>        resources = optional(list(object({<br/>          name   = string<br/>          weight = optional(number)<br/>        })))<br/>      }))<br/>    }))<br/>  })</pre> | `null` | no |
 | <a name="input_kubernetes_version"></a> [kubernetes\_version](#input\_kubernetes\_version) | Kubernetes `<major>.<minor>` version to use for the EKS cluster (i.e.: `1.33`) | `string` | `null` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name of the EKS cluster | `string` | `""` | no |
 | <a name="input_node_iam_role_additional_policies"></a> [node\_iam\_role\_additional\_policies](#input\_node\_iam\_role\_additional\_policies) | Additional policies to be added to the EKS Auto node IAM role | `map(string)` | `{}` | no |

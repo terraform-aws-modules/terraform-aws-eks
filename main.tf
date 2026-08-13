@@ -103,6 +103,35 @@ resource "aws_eks_cluster" "this" {
     }
   }
 
+  dynamic "kube_scheduler_config" {
+    for_each = var.kube_scheduler_config != null ? [var.kube_scheduler_config] : []
+
+    content {
+      dynamic "node_resources_fit" {
+        for_each = kube_scheduler_config.value.node_resources_fit != null ? [kube_scheduler_config.value.node_resources_fit] : []
+
+        content {
+          dynamic "scoring_strategy" {
+            for_each = node_resources_fit.value.scoring_strategy != null ? [node_resources_fit.value.scoring_strategy] : []
+
+            content {
+              type = scoring_strategy.value.type
+
+              dynamic "resource" {
+                for_each = scoring_strategy.value.resources != null ? scoring_strategy.value.resources : []
+
+                content {
+                  name   = resource.value.name
+                  weight = resource.value.weight
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   dynamic "outpost_config" {
     for_each = local.create_outposts_local_cluster ? [var.outpost_config] : []
 

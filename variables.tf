@@ -109,6 +109,22 @@ variable "zonal_shift_config" {
   default = null
 }
 
+variable "kube_scheduler_config" {
+  description = "Configuration block for the cluster scheduler configuration. Valid values for `scoring_strategy.type` are `LeastAllocated` and `MostAllocated`. Resource `weight` must be between `1` and `100`"
+  type = object({
+    node_resources_fit = optional(object({
+      scoring_strategy = optional(object({
+        type = optional(string)
+        resources = optional(list(object({
+          name   = string
+          weight = optional(number)
+        })))
+      }))
+    }))
+  })
+  default = null
+}
+
 variable "additional_security_group_ids" {
   description = "List of additional, externally created security group IDs to attach to the cluster control plane"
   type        = list(string)
