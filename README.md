@@ -398,7 +398,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 ## Requirements
 
 | Name | Version |
-| ---- | ------- |
+|------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.59 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9 |
@@ -407,7 +407,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 ## Providers
 
 | Name | Version |
-| ---- | ------- |
+|------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.59 |
 | <a name="provider_time"></a> [time](#provider\_time) | >= 0.9 |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | >= 4.0 |
@@ -415,7 +415,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 ## Modules
 
 | Name | Source | Version |
-| ---- | ------ | ------- |
+|------|--------|---------|
 | <a name="module_eks_managed_node_group"></a> [eks\_managed\_node\_group](#module\_eks\_managed\_node\_group) | ./modules/eks-managed-node-group | n/a |
 | <a name="module_fargate_profile"></a> [fargate\_profile](#module\_fargate\_profile) | ./modules/fargate-profile | n/a |
 | <a name="module_kms"></a> [kms](#module\_kms) | terraform-aws-modules/kms/aws | 4.0.0 |
@@ -424,7 +424,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 ## Resources
 
 | Name | Type |
-| ---- | ---- |
+|------|------|
 | [aws_cloudwatch_log_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
 | [aws_ec2_tag.cluster_primary_security_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ec2_tag) | resource |
 | [aws_eks_access_entry.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_access_entry) | resource |
@@ -463,7 +463,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-| ---- | ----------- | ---- | ------- | :------: |
+|------|-------------|------|---------|:--------:|
 | <a name="input_access_entries"></a> [access\_entries](#input\_access\_entries) | Map of access entries to add to the cluster | <pre>map(object({<br/>    # Access entry<br/>    kubernetes_groups = optional(list(string))<br/>    principal_arn     = string<br/>    type              = optional(string, "STANDARD")<br/>    user_name         = optional(string)<br/>    tags              = optional(map(string), {})<br/>    # Access policy association<br/>    policy_associations = optional(map(object({<br/>      policy_arn = string<br/>      access_scope = object({<br/>        namespaces = optional(list(string))<br/>        type       = string<br/>      })<br/>    })), {})<br/>  }))</pre> | `{}` | no |
 | <a name="input_additional_security_group_ids"></a> [additional\_security\_group\_ids](#input\_additional\_security\_group\_ids) | List of additional, externally created security group IDs to attach to the cluster control plane | `list(string)` | `[]` | no |
 | <a name="input_addons"></a> [addons](#input\_addons) | Map of cluster addon configurations to enable for the cluster. Addon name can be the map keys or set with `name` | <pre>map(object({<br/>    name                 = optional(string) # will fall back to map key<br/>    before_compute       = optional(bool, false)<br/>    most_recent          = optional(bool, true)<br/>    addon_version        = optional(string)<br/>    configuration_values = optional(string)<br/>    namespace_config = optional(object({<br/>      namespace = string<br/>    }))<br/>    pod_identity_association = optional(list(object({<br/>      role_arn        = string<br/>      service_account = string<br/>    })))<br/>    preserve                    = optional(bool, true)<br/>    resolve_conflicts_on_create = optional(string, "NONE")<br/>    resolve_conflicts_on_update = optional(string, "OVERWRITE")<br/>    service_account_role_arn    = optional(string)<br/>    timeouts = optional(object({<br/>      create = optional(string)<br/>      update = optional(string)<br/>      delete = optional(string)<br/>    }), {})<br/>    tags = optional(map(string), {})<br/>  }))</pre> | `null` | no |
@@ -531,6 +531,8 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | <a name="input_kms_key_service_users"></a> [kms\_key\_service\_users](#input\_kms\_key\_service\_users) | A list of IAM ARNs for [key service users](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-service-integration) | `list(string)` | `[]` | no |
 | <a name="input_kms_key_source_policy_documents"></a> [kms\_key\_source\_policy\_documents](#input\_kms\_key\_source\_policy\_documents) | List of IAM policy documents that are merged together into the exported document. Statements must have unique `sid`s | `list(string)` | `[]` | no |
 | <a name="input_kms_key_users"></a> [kms\_key\_users](#input\_kms\_key\_users) | A list of IAM ARNs for [key users](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-default-allow-users) | `list(string)` | `[]` | no |
+| <a name="input_kube_api_server_config"></a> [kube\_api\_server\_config](#input\_kube\_api\_server\_config) | Configuration block for customizing the Kubernetes API server. Allows configuring event TTL and service node port range | <pre>object({<br/>    event_ttl = optional(string)<br/>    service_node_port_range = optional(object({<br/>      min_port = optional(number)<br/>      max_port = optional(number)<br/>    }))<br/>  })</pre> | `null` | no |
+| <a name="input_kube_controller_manager_config"></a> [kube\_controller\_manager\_config](#input\_kube\_controller\_manager\_config) | Configuration block for customizing the Kubernetes controller manager. Allows configuring the HPA sync period (requires Provisioned Control Plane) | <pre>object({<br/>    horizontal_pod_autoscaler_controller_config = optional(object({<br/>      horizontal_pod_autoscaler_sync_period = optional(string)<br/>    }))<br/>  })</pre> | `null` | no |
 | <a name="input_kube_scheduler_config"></a> [kube\_scheduler\_config](#input\_kube\_scheduler\_config) | Configuration block for the cluster scheduler configuration. Valid values for `scoring_strategy.type` are `LeastAllocated` and `MostAllocated`. Resource `weight` must be between `1` and `100` | <pre>object({<br/>    node_resources_fit = optional(object({<br/>      scoring_strategy = optional(object({<br/>        type = optional(string)<br/>        resources = optional(list(object({<br/>          name   = string<br/>          weight = optional(number)<br/>        })))<br/>      }))<br/>    }))<br/>  })</pre> | `null` | no |
 | <a name="input_kubernetes_version"></a> [kubernetes\_version](#input\_kubernetes\_version) | Kubernetes `<major>.<minor>` version to use for the EKS cluster (i.e.: `1.33`) | `string` | `null` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name of the EKS cluster | `string` | `""` | no |
@@ -573,7 +575,7 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 ## Outputs
 
 | Name | Description |
-| ---- | ----------- |
+|------|-------------|
 | <a name="output_access_entries"></a> [access\_entries](#output\_access\_entries) | Map of access entries created and their attributes |
 | <a name="output_access_policy_associations"></a> [access\_policy\_associations](#output\_access\_policy\_associations) | Map of eks cluster access policy associations created and their attributes |
 | <a name="output_cloudwatch_log_group_arn"></a> [cloudwatch\_log\_group\_arn](#output\_cloudwatch\_log\_group\_arn) | Arn of cloudwatch log group created |
@@ -590,6 +592,8 @@ We are grateful to the community for contributing bugfixes and improvements! Ple
 | <a name="output_cluster_id"></a> [cluster\_id](#output\_cluster\_id) | The ID of the EKS cluster. Note: currently a value is returned only for local EKS clusters created on Outposts |
 | <a name="output_cluster_identity_providers"></a> [cluster\_identity\_providers](#output\_cluster\_identity\_providers) | Map of attribute maps for all EKS identity providers enabled |
 | <a name="output_cluster_ip_family"></a> [cluster\_ip\_family](#output\_cluster\_ip\_family) | The IP family used by the cluster (e.g. `ipv4` or `ipv6`) |
+| <a name="output_cluster_kube_api_server_config"></a> [cluster\_kube\_api\_server\_config](#output\_cluster\_kube\_api\_server\_config) | The Kubernetes API server configuration for the cluster |
+| <a name="output_cluster_kube_controller_manager_config"></a> [cluster\_kube\_controller\_manager\_config](#output\_cluster\_kube\_controller\_manager\_config) | The Kubernetes controller manager configuration for the cluster |
 | <a name="output_cluster_name"></a> [cluster\_name](#output\_cluster\_name) | The name of the EKS cluster |
 | <a name="output_cluster_oidc_issuer_url"></a> [cluster\_oidc\_issuer\_url](#output\_cluster\_oidc\_issuer\_url) | The URL on the EKS cluster for the OpenID Connect identity provider |
 | <a name="output_cluster_platform_version"></a> [cluster\_platform\_version](#output\_cluster\_platform\_version) | Platform version for the cluster |
