@@ -699,7 +699,7 @@ data "aws_iam_policy_document" "custom" {
       }
 
       condition {
-        test     = "StringEquals"
+        test     = "StringLike"
         variable = "aws:RequestTag/eks:kubernetes-cni-node-name"
         values   = ["*"]
       }
