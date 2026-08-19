@@ -347,6 +347,13 @@ variable "create_placement_group" {
   nullable    = false
 }
 
+variable "enable_efa_placement_group" {
+  description = "Determines whether to automatically create a Cluster Placement Group when EFA is enabled. Set to `false` when using On-Demand Capacity Reservations (ODCRs) or Capacity Blocks that are not configured with a placement group"
+  type        = bool
+  default     = true
+  nullable    = false
+}
+
 variable "private_dns_name_options" {
   description = "The options for the instance hostname. The default values are inherited from the subnet"
   type = object({

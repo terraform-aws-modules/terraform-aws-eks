@@ -964,7 +964,7 @@ resource "aws_iam_role_policy" "this" {
 ################################################################################
 
 locals {
-  create_placement_group = var.create && (local.enable_efa_support || var.create_placement_group)
+  create_placement_group = var.create && ((local.enable_efa_support && var.enable_efa_placement_group) || var.create_placement_group)
 }
 
 resource "aws_placement_group" "this" {
