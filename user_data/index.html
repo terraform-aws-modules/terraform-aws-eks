@@ -410,7 +410,7 @@
 <li>
 <p>Users can use the following variables to facilitate this process:</p>
 <p>For <code>AL2_*</code>, <code>BOTTLEROCKET_*</code>, and <code>WINDOWS_*</code>:
-<div class="language-hcl highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="na">pre_bootstrap_user_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;...&quot;</span>
+<div class="language-hcl highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="na">pre_bootstrap_user_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"..."</span>
 </span></code></pre></div></p>
 <p>For <code>AL2023_*</code>
 <div class="language-hcl highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="na">cloudinit_pre_nodeadm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[{</span>
@@ -421,7 +421,7 @@
 </span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="sh">    spec:</span>
 </span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="sh">      ...</span>
 </span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="dl">  EOT</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">  </span><span class="na">content_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;application/node.eks.aws&quot;</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">  </span><span class="na">content_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"application/node.eks.aws"</span>
 </span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="p">}]</span>
 </span></code></pre></div></p>
 </li>
@@ -431,18 +431,18 @@
 <li>If the AMI used is a derivative of the <a href="https://github.com/awslabs/amazon-eks-ami">AWS EKS Optimized AMI </a>, users can opt in to using a template provided by the module that provides the minimum necessary configuration to bootstrap the node when launched:<ul>
 <li>Users can use the following variables to facilitate this process:
    <div class="language-hcl highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="na">enable_bootstrap_user_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">true</span><span class="c1"> # to opt in to using the module supplied bootstrap user data template</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="na">pre_bootstrap_user_data</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;...&quot;</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="na">bootstrap_extra_args</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;...&quot;</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="na">post_bootstrap_user_data</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;...&quot;</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="na">pre_bootstrap_user_data</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s2">"..."</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="na">bootstrap_extra_args</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s2">"..."</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="na">post_bootstrap_user_data</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">"..."</span>
 </span></code></pre></div></li>
 </ul>
 </li>
 <li>If the AMI is <strong>NOT</strong> an AWS EKS Optimized AMI derivative, or if users wish to have more control over the user data that is supplied to the node when launched, users have the ability to supply their own user data template that will be rendered instead of the module supplied template. Note - only the variables that are supplied to the <code>templatefile()</code> for the respective AMI type are available for use in the supplied template, otherwise users will need to pre-render/pre-populate the template before supplying the final template to the module for rendering as user data.<ul>
 <li>Users can use the following variables to facilitate this process:
-   <div class="language-hcl highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="na">user_data_template_path</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;./your/user_data.sh&quot;</span><span class="c1"> # user supplied bootstrap user data template</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="na">pre_bootstrap_user_data</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;...&quot;</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="na">bootstrap_extra_args</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;...&quot;</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="na">post_bootstrap_user_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;...&quot;</span>
+   <div class="language-hcl highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="na">user_data_template_path</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">"./your/user_data.sh"</span><span class="c1"> # user supplied bootstrap user data template</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="na">pre_bootstrap_user_data</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">"..."</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="na">bootstrap_extra_args</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">"..."</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="na">post_bootstrap_user_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"..."</span>
 </span></code></pre></div></li>
 </ul>
 </li>
@@ -465,16 +465,16 @@
 <li>If the AMI used is a derivative of the <a href="https://github.com/awslabs/amazon-eks-ami">AWS EKS Optimized AMI </a>, users can opt in to using a template provided by the module that provides the minimum necessary configuration to bootstrap the node when launched:</li>
 <li>Users can use the following variables to facilitate this process:
     <div class="language-hcl highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="na">enable_bootstrap_user_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">true</span><span class="c1"> # to opt in to using the module supplied bootstrap user data template</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="na">pre_bootstrap_user_data</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;...&quot;</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="na">bootstrap_extra_args</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;...&quot;</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="na">post_bootstrap_user_data</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;...&quot;</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="na">pre_bootstrap_user_data</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s2">"..."</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="na">bootstrap_extra_args</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s2">"..."</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="na">post_bootstrap_user_data</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">"..."</span>
 </span></code></pre></div></li>
 <li>If the AMI is <strong>NOT</strong> an AWS EKS Optimized AMI derivative, or if users wish to have more control over the user data that is supplied to the node when launched, users have the ability to supply their own user data template that will be rendered instead of the module supplied template. Note - only the variables that are supplied to the <code>templatefile()</code> for the respective AMI type are available for use in the supplied template, otherwise users will need to pre-render/pre-populate the template before supplying the final template to the module for rendering as user data.<ul>
 <li>Users can use the following variables to facilitate this process:
-  <div class="language-hcl highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="na">user_data_template_path</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;./your/user_data.sh&quot;</span><span class="c1"> # user supplied bootstrap user data template</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="na">pre_bootstrap_user_data</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;...&quot;</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="na">bootstrap_extra_args</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;...&quot;</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="na">post_bootstrap_user_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;...&quot;</span>
+  <div class="language-hcl highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="na">user_data_template_path</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">"./your/user_data.sh"</span><span class="c1"> # user supplied bootstrap user data template</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="na">pre_bootstrap_user_data</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">"..."</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="na">bootstrap_extra_args</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">"..."</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="na">post_bootstrap_user_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"..."</span>
 </span></code></pre></div></li>
 </ul>
 </li>
