@@ -2,10 +2,14 @@
 
 Configuration in this directory creates Amazon EKS clusters with EKS Managed Node Groups demonstrating different configurations:
 
-- `eks-al2023.tf` demonstrates an EKS cluster using EKS managed node group that utilizes the EKS Amazon Linux 2023 optimized AMI
+- `eks-al2023.tf` demonstrates an EKS cluster using EKS managed node group that utilizes the EKS Amazon Linux 2023 optimized AMI with a warm pool
 - `eks-bottlerocket.tf` demonstrates an EKS cluster using EKS managed node group that utilizes the Bottlerocket EKS optimized AMI
 
 See the [AWS documentation](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) for additional details on Amazon EKS managed node groups.
+
+Set `warm_pool_config = {}` to enable a warm pool with default settings, or set it to `null` (the module default) to disable it. The AL2023 example configures a stopped warm pool and reuses instances on scale-in.
+
+Warm pools require EKS optimized AMIs; custom AMIs are not supported. Bottlerocket does not support the `HIBERNATED` pool state or `reuse_on_scale_in`. Review the [AWS warm pool prerequisites and limitations](https://docs.aws.amazon.com/eks/latest/userguide/warm-pools-managed-node-groups.html) before enabling this feature.
 
 The different cluster configuration examples provided are separated per file and independent of the other cluster configurations.
 

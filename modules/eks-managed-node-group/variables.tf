@@ -600,6 +600,17 @@ variable "node_repair_config" {
   default = null
 }
 
+variable "warm_pool_config" {
+  description = "Configuration of the managed node group's warm pool. Set to `{}` to enable with defaults, or `null` to disable"
+  type = object({
+    max_group_prepared_capacity = optional(number)
+    min_size                    = optional(number)
+    pool_state                  = optional(string)
+    reuse_on_scale_in           = optional(bool)
+  })
+  default = null
+}
+
 variable "timeouts" {
   description = "Create, update, and delete timeout configurations for the node group"
   type = object({

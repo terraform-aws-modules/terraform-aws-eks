@@ -25,12 +25,21 @@ module "eks_al2023" {
       # Starting on 1.30, AL2023 is the default AMI type for EKS managed node groups
       instance_types = ["m6i.large"]
       ami_type       = "AL2023_x86_64_STANDARD"
+      capacity_type  = "ON_DEMAND"
 
       min_size = 2
       max_size = 5
       # This value is ignored after the initial creation
       # https://github.com/bryantbiggs/eks-desired-size-hack
       desired_size = 2
+
+      # Optional: keep an initialized instance ready for scale-out
+      warm_pool_config = {
+        max_group_prepared_capacity = 3
+        min_size                    = 1
+        pool_state                  = "STOPPED"
+        reuse_on_scale_in           = true
+      }
 
       # This is not required - demonstrates how to pass additional configuration to nodeadm
       # Ref https://awslabs.github.io/amazon-eks-ami/nodeadm/doc/api/
