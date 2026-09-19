@@ -198,6 +198,7 @@ module "eks_managed_node_group" {
 | <a name="input_use_name_prefix"></a> [use\_name\_prefix](#input\_use\_name\_prefix) | Determines whether to use `name` as is or create a unique name beginning with the `name` as the prefix | `bool` | `true` | no |
 | <a name="input_user_data_template_path"></a> [user\_data\_template\_path](#input\_user\_data\_template\_path) | Path to a local, custom user data template file to use when rendering user data | `string` | `null` | no |
 | <a name="input_vpc_security_group_ids"></a> [vpc\_security\_group\_ids](#input\_vpc\_security\_group\_ids) | A list of security group IDs to associate | `list(string)` | `[]` | no |
+| <a name="input_warm_pool_config"></a> [warm\_pool\_config](#input\_warm\_pool\_config) | Configuration of the managed node group's warm pool. Set to `{}` to enable with defaults, or `null` to disable | <pre>object({<br/>    max_group_prepared_capacity = optional(number)<br/>    min_size                    = optional(number)<br/>    pool_state                  = optional(string)<br/>    reuse_on_scale_in           = optional(bool)<br/>  })</pre> | `null` | no |
 
 ## Outputs
 

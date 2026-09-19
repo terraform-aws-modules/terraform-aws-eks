@@ -310,6 +310,7 @@ module "eks_managed_node_group" {
   remote_access        = each.value.remote_access
   taints               = each.value.taints
   update_config        = each.value.update_config
+  warm_pool_config     = each.value.warm_pool_config
   timeouts             = each.value.timeouts
 
   # User data

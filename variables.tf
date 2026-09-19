@@ -1307,6 +1307,12 @@ variable "eks_managed_node_groups" {
       max_unavailable_percentage = optional(number)
       update_strategy            = optional(string)
     }))
+    warm_pool_config = optional(object({
+      max_group_prepared_capacity = optional(number)
+      min_size                    = optional(number)
+      pool_state                  = optional(string)
+      reuse_on_scale_in           = optional(bool)
+    }))
     timeouts = optional(object({
       create = optional(string)
       update = optional(string)
