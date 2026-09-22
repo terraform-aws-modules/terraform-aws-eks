@@ -641,6 +641,13 @@ variable "dataplane_wait_duration" {
   default     = "30s"
 }
 
+# TODO: Make AmazonEKSBlockStoragePolicyV2 the default and remove this variable at the next breaking release.
+variable "enable_auto_mode_block_storage_policy_v2" {
+  description = "Determines whether to use the v2 AmazonEKSBlockStoragePolicy instead of the legacy v1 policy for the EKS Auto Mode cluster IAM role. Defaults to false (uses v1)."
+  type        = bool
+  default     = false
+}
+
 variable "enable_auto_mode_custom_tags" {
   description = "Determines whether to enable permissions for custom tags resources created by EKS Auto Mode"
   type        = bool
