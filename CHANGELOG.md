@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.25.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.25.2...v21.25.3) (2026-09-22)
+
+### Bug Fixes
+
+* Add missing IAM permissions to IPv6 CNI policy ([#3747](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3747)) ([21aadbb](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/21aadbb7813efc89505da3f9cab60e55984a7f76)), closes [#3733](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3733)
+
+## [21.25.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.25.1...v21.25.2) (2026-09-22)
+
+### Bug Fixes
+
+* Honor self-managed launch template network bandwidth requirements ([#3749](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3749)) ([08b0fe0](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/08b0fe03ec2ca1643238bb411633fc5e033c31b3))
+
+## [21.25.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.25.0...v21.25.1) (2026-09-18)
+
+### Bug Fixes
+
+* Document known Terraform/OpenTofu limitations in README ([#3748](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3748)) ([afa2028](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/afa20285b83c954927c4196019c8d01f5727ccb0))
+
 ## [21.25.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.24.2...v21.25.0) (2026-08-14)
 
 ### Features
