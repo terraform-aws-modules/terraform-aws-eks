@@ -5,11 +5,11 @@ data "aws_region" "current" {
 }
 
 data "aws_partition" "current" {
-  count = var.create ? 1 : 0
+  count = var.create && var.partition == "" ? 1 : 0
 }
 
 data "aws_caller_identity" "current" {
-  count = var.create ? 1 : 0
+  count = var.create && var.account_id == "" ? 1 : 0
 }
 
 data "aws_service_principal" "ec2" {
@@ -19,9 +19,9 @@ data "aws_service_principal" "ec2" {
 }
 
 locals {
-  account_id  = try(data.aws_caller_identity.current[0].account_id, "")
+  account_id  = try(data.aws_caller_identity.current[0].account_id, var.account_id)
   ec2_sp_name = try(data.aws_service_principal.ec2[0].name, "")
-  partition   = try(data.aws_partition.current[0].partition, "")
+  partition   = try(data.aws_partition.current[0].partition, var.partition)
   region      = try(data.aws_region.current[0].region, "")
 }
 

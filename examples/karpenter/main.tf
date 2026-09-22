@@ -16,6 +16,9 @@ provider "helm" {
   }
 }
 
+data "aws_partition" "current" {}
+data "aws_caller_identity" "current" {}
+
 data "aws_availability_zones" "available" {
   # Exclude local zones
   filter {
@@ -111,6 +114,10 @@ module "karpenter" {
   source = "../../modules/karpenter"
 
   cluster_name = module.eks.cluster_name
+
+  # Pass through values to reduce GET requests from data sources
+  partition  = data.aws_partition.current.partition
+  account_id = data.aws_caller_identity.current.account_id
 
   # Name needs to match role name passed to the EC2NodeClass
   node_iam_role_use_name_prefix   = false
