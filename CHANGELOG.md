@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.25.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.25.1...v21.25.2) (2026-09-22)
+
+### Bug Fixes
+
+* Honor self-managed launch template network bandwidth requirements ([#3749](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3749)) ([08b0fe0](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/08b0fe03ec2ca1643238bb411633fc5e033c31b3))
+
 ## [21.25.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.25.0...v21.25.1) (2026-09-18)
 
 ### Bug Fixes
