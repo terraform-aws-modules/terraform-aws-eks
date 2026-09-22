@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.25.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.25.2...v21.25.3) (2026-09-22)
+
+### Bug Fixes
+
+* Add missing IAM permissions to IPv6 CNI policy ([#3747](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3747)) ([21aadbb](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/21aadbb7813efc89505da3f9cab60e55984a7f76)), closes [#3733](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3733)
+
 ## [21.25.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.25.1...v21.25.2) (2026-09-22)
 
 ### Bug Fixes
