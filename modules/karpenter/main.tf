@@ -51,6 +51,19 @@ data "aws_iam_policy_document" "controller_assume_role" {
       type        = "Service"
       identifiers = ["pods.eks.amazonaws.com"]
     }
+
+    dynamic "condition" {
+      for_each = var.iam_role_source_arn_condition ? [1] : []
+
+      content {
+        test     = "ArnEquals"
+        variable = "aws:SourceArn"
+
+        values = [
+          "arn:${local.partition}:eks:${local.region}:${local.account_id}:cluster/${var.cluster_name}",
+        ]
+      }
+    }
   }
 }
 
