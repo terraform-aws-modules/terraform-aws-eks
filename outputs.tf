@@ -93,6 +93,16 @@ output "cluster_control_plane_scaling_tier" {
   value       = try(aws_eks_cluster.this[0].control_plane_scaling_config[0].tier, null)
 }
 
+output "cluster_kube_controller_manager_config" {
+  description = "The Kubernetes controller manager configuration for the cluster"
+  value       = try(aws_eks_cluster.this[0].kube_controller_manager_config, null)
+}
+
+output "cluster_kube_api_server_config" {
+  description = "The Kubernetes API server configuration for the cluster"
+  value       = try(aws_eks_cluster.this[0].kube_api_server_config, null)
+}
+
 ################################################################################
 # Access Entry
 ################################################################################
