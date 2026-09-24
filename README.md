@@ -379,7 +379,6 @@ module "eks" {
 ```
 
 <!-- BEGIN_KNOWN_LIMITATIONS -->
-
 ## Known limitations (Terraform/OpenTofu, not this module)
 
 A few requests come up again and again and cannot be implemented by this
@@ -391,9 +390,13 @@ has been open since 2018,
 [opentofu/opentofu#1329](https://github.com/opentofu/opentofu/issues/1329) is
 the same request for OpenTofu.
 
-- **EKS node group desired_size changes on every plan** - Native options: stop
-  setting `desired_size` and let min/max bound the autoscaler, or fork and add
-  `ignore_changes = [scaling_config[0].desired_size]`.
+- **Changing desired_size on an EKS node group does nothing, and raising
+  min_size fails** - Native options: change the size outside Terraform (EKS
+  console, `aws eks update-nodegroup-config`, or your autoscaler), or run that
+  command from your own configuration, as
+  [eks-desired-size-hack](https://github.com/bryantbiggs/eks-desired-size-hack)
+  shows. [Why the module ignores
+  `desired_size`](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#why-are-there-no-changes-when-a-node-groups-desired_size-is-modified).
 
 [Compliance.tf](https://compliance.tf/?utm_source=github&utm_medium=readme&utm_campaign=known-limitations) serves this module with
 these rules applied at download time, on top of whatever your organization
@@ -402,16 +405,13 @@ does. Drop the `version` argument and pin the release you use by adding
 `&version=` and that release number to the URL. To get started, register a free
 compliance.tf account and configure an access token:
 
-    source = "https://registry.compliance.tf/terraform-aws-modules/eks/aws?add_rules=lifecycle_ignore_scaling_changes"
+    source = "https://registry.compliance.tf/terraform-aws-modules/eks/aws?add_rules=eks_node_group_set_desired_size"
 
 The full workaround for each item above, and the exact diff each rule makes,
-are in the [compliance.tf docs for this module](https://compliance.tf/docs/workarounds/terraform-aws-eks/?utm_source=github&utm_medium=readme&utm_campaign=known-limitations). To preview a
-diff without an account, open this module in the
-[Rules Playground](https://registry.compliance.tf/playground?module=terraform-aws-modules/eks/aws&rules=lifecycle_ignore_scaling_changes).
+are in the [compliance.tf docs for this module](https://compliance.tf/docs/workarounds/terraform-aws-eks/?utm_source=github&utm_medium=readme&utm_campaign=known-limitations).
 
 Disclosure: written by this module's maintainer, who also builds
 [compliance.tf](https://compliance.tf/?utm_source=github&utm_medium=readme&utm_campaign=known-limitations).
-
 <!-- END_KNOWN_LIMITATIONS -->
 
 ## Examples
