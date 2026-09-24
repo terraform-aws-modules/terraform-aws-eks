@@ -210,7 +210,7 @@ variable "block_device_mappings" {
 }
 
 variable "capacity_reservation_specification" {
-  description = "Targeting for EC2 capacity reservations"
+  description = "Targeting for EC2 capacity reservations (at Launch Template level)."
   type = object({
     capacity_reservation_preference = optional(string)
     capacity_reservation_target = optional(object({
@@ -220,6 +220,27 @@ variable "capacity_reservation_specification" {
   })
   default = null
 }
+
+variable "asg_capacity_reservation_specification" {
+  description = "Targeting for EC2 capacity reservations (at AutoScaling Group level)"
+  type = object({
+    capacity_reservation_preference = optional(string)
+    capacity_reservation_target = optional(object({
+      capacity_reservation_ids                 = optional(list(string))
+      capacity_reservation_resource_group_arns = optional(list(string))
+    }))
+  })
+  default = null
+}
+
+variable "availability_zone_distribution" {
+  description = "Zone distribution strategy for the Auto Scaling group."
+  type = object({
+    capacity_distribution_strategy = optional(string)
+  })
+  default = null
+}
+
 
 variable "cpu_options" {
   description = "The CPU options for the instance"
