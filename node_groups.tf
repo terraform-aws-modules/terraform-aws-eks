@@ -18,7 +18,7 @@ resource "time_sleep" "this" {
     kubernetes_version = aws_eks_cluster.this[0].version
     service_cidr       = var.ip_family == "ipv6" ? try(local.kubernetes_network_config.service_ipv6_cidr, "") : try(local.kubernetes_network_config.service_ipv4_cidr, "")
 
-    certificate_authority_data = aws_eks_cluster.this[0].certificate_authority[0].data
+    certificate_authority_data = base64encode(join("", [for ca in aws_eks_cluster.this[0].certificate_authority : base64decode(ca.data)]))
   }
 }
 

@@ -14,7 +14,7 @@ output "cluster_arn" {
 
 output "cluster_certificate_authority_data" {
   description = "Base64 encoded certificate data required to communicate with the cluster"
-  value       = try(aws_eks_cluster.this[0].certificate_authority[0].data, null)
+  value       = try(base64encode(join("", [for ca in aws_eks_cluster.this[0].certificate_authority : base64decode(ca.data)])), null)
 
   depends_on = [
     aws_eks_access_entry.this,
