@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.29.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.28.1...v21.29.0) (2026-10-07)
+
+### Features
+
+* Add opt-in aws:SourceArn condition to Karpenter controller IAM role trust policy ([#3743](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3743)) ([87db059](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/87db059002e33d15801cab2bac6f4c2848792fdf))
+
 ## [21.28.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.28.0...v21.28.1) (2026-10-07)
 
 ### Bug Fixes
