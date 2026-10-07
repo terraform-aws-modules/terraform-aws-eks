@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.26.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.25.3...v21.26.0) (2026-09-23)
+
+### Features
+
+* Support opt in for AmazonEKSBlockStoragePolicy to v2 ([#3746](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3746)) ([e57d7ec](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e57d7ec350ec1383e2f19e4457aeaef7c4475060))
+
 ## [21.25.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.25.2...v21.25.3) (2026-09-22)
 
 ### Bug Fixes
