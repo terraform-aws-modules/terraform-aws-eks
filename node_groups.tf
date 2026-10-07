@@ -360,7 +360,6 @@ module "eks_managed_node_group" {
   enable_efa_only                    = each.value.enable_efa_only
   efa_indices                        = each.value.efa_indices
   create_placement_group             = each.value.create_placement_group
-  enable_efa_placement_group         = each.value.enable_efa_placement_group
   placement                          = each.value.placement
   network_interfaces                 = each.value.network_interfaces
   network_performance_options        = each.value.network_performance_options
@@ -435,11 +434,10 @@ module "self_managed_node_group" {
   protect_from_scale_in   = each.value.protect_from_scale_in
   context                 = each.value.context
 
-  create_placement_group     = each.value.create_placement_group
-  enable_efa_placement_group = each.value.enable_efa_placement_group
-  placement_group            = each.value.placement_group
-  health_check_type          = each.value.health_check_type
-  health_check_grace_period  = each.value.health_check_grace_period
+  create_placement_group    = each.value.create_placement_group
+  placement_group           = each.value.placement_group
+  health_check_type         = each.value.health_check_type
+  health_check_grace_period = each.value.health_check_grace_period
 
   ignore_failed_scaling_activities = each.value.ignore_failed_scaling_activities
 
