@@ -156,6 +156,7 @@ No modules.
 | <a name="input_iam_role_path"></a> [iam\_role\_path](#input\_iam\_role\_path) | Path of the IAM role | `string` | `"/"` | no |
 | <a name="input_iam_role_permissions_boundary_arn"></a> [iam\_role\_permissions\_boundary\_arn](#input\_iam\_role\_permissions\_boundary\_arn) | Permissions boundary ARN to use for the IAM role | `string` | `null` | no |
 | <a name="input_iam_role_policies"></a> [iam\_role\_policies](#input\_iam\_role\_policies) | Policies to attach to the IAM role in `{'static_name' = 'policy_arn'}` format | `map(string)` | `{}` | no |
+| <a name="input_iam_role_source_arn_condition"></a> [iam\_role\_source\_arn\_condition](#input\_iam\_role\_source\_arn\_condition) | Whether to add an `aws:SourceArn` condition to the Karpenter controller IAM role's trust policy, scoped to this cluster | `bool` | `false` | no |
 | <a name="input_iam_role_source_assume_policy_documents"></a> [iam\_role\_source\_assume\_policy\_documents](#input\_iam\_role\_source\_assume\_policy\_documents) | A list of IAM policy documents to use as a source for the assume role policy document for the Karpenter controller IAM role | `list(string)` | `[]` | no |
 | <a name="input_iam_role_tags"></a> [iam\_role\_tags](#input\_iam\_role\_tags) | A map of additional tags to add the the IAM role | `map(string)` | `{}` | no |
 | <a name="input_iam_role_use_name_prefix"></a> [iam\_role\_use\_name\_prefix](#input\_iam\_role\_use\_name\_prefix) | Determines whether the name of the IAM role (`iam_role_name`) is used as a prefix | `bool` | `true` | no |
