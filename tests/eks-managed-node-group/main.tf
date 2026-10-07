@@ -132,7 +132,6 @@ module "eks" {
     al2023_nodeadm = {
       ami_type                       = "AL2023_x86_64_STANDARD"
       use_latest_ami_release_version = true
-      capacity_type                  = "ON_DEMAND"
 
       warm_pool_config = {
         max_group_prepared_capacity = 2

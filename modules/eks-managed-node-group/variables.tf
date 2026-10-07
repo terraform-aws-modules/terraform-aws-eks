@@ -601,7 +601,7 @@ variable "node_repair_config" {
 }
 
 variable "warm_pool_config" {
-  description = "Configuration of the managed node group's warm pool. Set to `{}` to enable with defaults, or `null` to disable"
+  description = "Configuration block with EC2 Auto Scaling warm pool settings. Including this block enables the warm pool; removing it disables and removes the warm pool"
   type = object({
     max_group_prepared_capacity = optional(number)
     min_size                    = optional(number)

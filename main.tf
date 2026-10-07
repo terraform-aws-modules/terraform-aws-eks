@@ -132,6 +132,37 @@ resource "aws_eks_cluster" "this" {
     }
   }
 
+  dynamic "kube_controller_manager_config" {
+    for_each = var.kube_controller_manager_config != null ? [var.kube_controller_manager_config] : []
+
+    content {
+      dynamic "horizontal_pod_autoscaler_controller_config" {
+        for_each = kube_controller_manager_config.value.horizontal_pod_autoscaler_controller_config != null ? [kube_controller_manager_config.value.horizontal_pod_autoscaler_controller_config] : []
+
+        content {
+          horizontal_pod_autoscaler_sync_period = horizontal_pod_autoscaler_controller_config.value.horizontal_pod_autoscaler_sync_period
+        }
+      }
+    }
+  }
+
+  dynamic "kube_api_server_config" {
+    for_each = var.kube_api_server_config != null ? [var.kube_api_server_config] : []
+
+    content {
+      event_ttl = kube_api_server_config.value.event_ttl
+
+      dynamic "service_node_port_range" {
+        for_each = kube_api_server_config.value.service_node_port_range != null ? [kube_api_server_config.value.service_node_port_range] : []
+
+        content {
+          min_port = service_node_port_range.value.min_port
+          max_port = service_node_port_range.value.max_port
+        }
+      }
+    }
+  }
+
   dynamic "outpost_config" {
     for_each = local.create_outposts_local_cluster ? [var.outpost_config] : []
 
@@ -519,7 +550,7 @@ locals {
   eks_auto_mode_iam_role_policies = { for k, v in {
     AmazonEKSClusterPolicy       = "${local.iam_role_policy_prefix}/AmazonEKSClusterPolicy"
     AmazonEKSComputePolicy       = "${local.iam_role_policy_prefix}/AmazonEKSComputePolicy"
-    AmazonEKSBlockStoragePolicy  = "${local.iam_role_policy_prefix}/AmazonEKSBlockStoragePolicy"
+    AmazonEKSBlockStoragePolicy  = var.enable_auto_mode_block_storage_policy_v2 ? "${local.iam_role_policy_prefix}/AmazonEKSBlockStoragePolicyV2" : "${local.iam_role_policy_prefix}/AmazonEKSBlockStoragePolicy"
     AmazonEKSLoadBalancingPolicy = "${local.iam_role_policy_prefix}/AmazonEKSLoadBalancingPolicy"
     AmazonEKSNetworkingPolicy    = "${local.iam_role_policy_prefix}/AmazonEKSNetworkingPolicy"
   } : k => v if !local.create_outposts_local_cluster && local.create_auto_mode_iam_resources }

@@ -310,6 +310,15 @@ resource "aws_launch_template" "this" {
         }
       }
 
+      dynamic "network_bandwidth_gbps" {
+        for_each = instance_requirements.value.network_bandwidth_gbps != null ? [instance_requirements.value.network_bandwidth_gbps] : []
+
+        content {
+          max = network_bandwidth_gbps.value.max
+          min = network_bandwidth_gbps.value.min
+        }
+      }
+
       dynamic "network_interface_count" {
         for_each = instance_requirements.value.network_interface_count != null ? [instance_requirements.value.network_interface_count] : []
 

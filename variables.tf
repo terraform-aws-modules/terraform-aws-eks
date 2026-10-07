@@ -125,6 +125,28 @@ variable "kube_scheduler_config" {
   default = null
 }
 
+variable "kube_controller_manager_config" {
+  description = "Configuration block for customizing the Kubernetes controller manager"
+  type = object({
+    horizontal_pod_autoscaler_controller_config = optional(object({
+      horizontal_pod_autoscaler_sync_period = optional(string)
+    }))
+  })
+  default = null
+}
+
+variable "kube_api_server_config" {
+  description = "Configuration block for customizing the Kubernetes API server"
+  type = object({
+    event_ttl = optional(string)
+    service_node_port_range = optional(object({
+      min_port = optional(number)
+      max_port = optional(number)
+    }))
+  })
+  default = null
+}
+
 variable "additional_security_group_ids" {
   description = "List of additional, externally created security group IDs to attach to the cluster control plane"
   type        = list(string)
@@ -639,6 +661,13 @@ variable "dataplane_wait_duration" {
   description = "Duration to wait after the EKS cluster has become active before creating the dataplane components (EKS managed node group(s), self-managed node group(s), Fargate profile(s))"
   type        = string
   default     = "30s"
+}
+
+# TODO: Make AmazonEKSBlockStoragePolicyV2 the default and remove this variable at the next breaking release.
+variable "enable_auto_mode_block_storage_policy_v2" {
+  description = "Determines whether to use the v2 AmazonEKSBlockStoragePolicy instead of the legacy v1 policy for the EKS Auto Mode cluster IAM role. Defaults to false (uses v1)."
+  type        = bool
+  default     = false
 }
 
 variable "enable_auto_mode_custom_tags" {
