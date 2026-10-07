@@ -35,6 +35,8 @@ data "aws_iam_policy_document" "cni_ipv6_policy" {
     actions = [
       "ec2:AssignIpv6Addresses",
       "ec2:DescribeInstances",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DescribeSubnets",
       "ec2:DescribeTags",
       "ec2:DescribeNetworkInterfaces",
       "ec2:DescribeInstanceTypes"
@@ -310,6 +312,7 @@ module "eks_managed_node_group" {
   remote_access        = each.value.remote_access
   taints               = each.value.taints
   update_config        = each.value.update_config
+  warm_pool_config     = each.value.warm_pool_config
   timeouts             = each.value.timeouts
 
   # User data

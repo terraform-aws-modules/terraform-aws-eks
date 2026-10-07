@@ -133,6 +133,13 @@ module "eks" {
       ami_type                       = "AL2023_x86_64_STANDARD"
       use_latest_ami_release_version = true
 
+      warm_pool_config = {
+        max_group_prepared_capacity = 2
+        min_size                    = 1
+        pool_state                  = "STOPPED"
+        reuse_on_scale_in           = true
+      }
+
       cloudinit_pre_nodeadm = [
         {
           content_type = "application/node.eks.aws"

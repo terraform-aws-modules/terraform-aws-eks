@@ -548,6 +548,17 @@ resource "aws_eks_node_group" "this" {
     }
   }
 
+  dynamic "warm_pool_config" {
+    for_each = var.warm_pool_config != null ? [var.warm_pool_config] : []
+
+    content {
+      max_group_prepared_capacity = warm_pool_config.value.max_group_prepared_capacity
+      min_size                    = warm_pool_config.value.min_size
+      pool_state                  = warm_pool_config.value.pool_state
+      reuse_on_scale_in           = warm_pool_config.value.reuse_on_scale_in
+    }
+  }
+
   dynamic "timeouts" {
     for_each = var.timeouts != null ? [var.timeouts] : []
 
@@ -707,7 +718,7 @@ resource "aws_iam_role_policy" "this" {
 ################################################################################
 
 locals {
-  create_placement_group = var.create && (local.enable_efa_support || var.create_placement_group)
+  create_placement_group = var.create && coalesce(var.create_placement_group, local.enable_efa_support)
 }
 
 resource "aws_placement_group" "this" {

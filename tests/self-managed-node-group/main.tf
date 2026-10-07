@@ -196,6 +196,11 @@ module "eks" {
           min = 8192
         }
 
+        network_bandwidth_gbps = {
+          min = 1
+          max = 10
+        }
+
         vcpu_count = {
           min = 1
         }
