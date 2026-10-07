@@ -414,14 +414,14 @@ variable "placement" {
 }
 
 variable "create_placement_group" {
-  description = "Determines whether a placement group is created & used by the node group"
+  description = "Determines whether a placement group is created & used by the node group. A placement group is always created when `enable_efa_support` is `true` unless `enable_efa_placement_group` is `false`"
   type        = bool
   default     = false
   nullable    = false
 }
 
 variable "enable_efa_placement_group" {
-  description = "Determines whether to automatically create a Cluster Placement Group when EFA is enabled. Set to `false` when using On-Demand Capacity Reservations (ODCRs) or Capacity Blocks that are not configured with a placement group"
+  description = "Determines whether a cluster placement group is created when `enable_efa_support` is `true`. Set to `false` to use EFA without a placement group, or with an existing placement group provided through `placement.group_name`, such as the one a Capacity Reservation was created in"
   type        = bool
   default     = true
   nullable    = false

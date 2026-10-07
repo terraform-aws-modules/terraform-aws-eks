@@ -435,11 +435,11 @@ module "self_managed_node_group" {
   protect_from_scale_in   = each.value.protect_from_scale_in
   context                 = each.value.context
 
-  create_placement_group    = each.value.create_placement_group
-  enable_efa_placement_group = try(each.value.enable_efa_placement_group, true)
-  placement_group           = each.value.placement_group
-  health_check_type         = each.value.health_check_type
-  health_check_grace_period = each.value.health_check_grace_period
+  create_placement_group     = each.value.create_placement_group
+  enable_efa_placement_group = each.value.enable_efa_placement_group
+  placement_group            = each.value.placement_group
+  health_check_type          = each.value.health_check_type
+  health_check_grace_period  = each.value.health_check_grace_period
 
   ignore_failed_scaling_activities = each.value.ignore_failed_scaling_activities
 
