@@ -83,6 +83,24 @@ module "eks" {
     enabled = true
   }
 
+  kube_scheduler_config = {
+    node_resources_fit = {
+      scoring_strategy = {
+        type = "MostAllocated"
+        resources = [
+          {
+            name   = "cpu"
+            weight = 1
+          },
+          {
+            name   = "memory"
+            weight = 1
+          },
+        ]
+      }
+    }
+  }
+
   vpc_id                   = module.vpc.vpc_id
   subnet_ids               = module.vpc.private_subnets
   control_plane_subnet_ids = module.vpc.intra_subnets
@@ -114,6 +132,13 @@ module "eks" {
     al2023_nodeadm = {
       ami_type                       = "AL2023_x86_64_STANDARD"
       use_latest_ami_release_version = true
+
+      warm_pool_config = {
+        max_group_prepared_capacity = 2
+        min_size                    = 1
+        pool_state                  = "STOPPED"
+        reuse_on_scale_in           = true
+      }
 
       cloudinit_pre_nodeadm = [
         {

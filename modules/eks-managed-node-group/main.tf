@@ -418,10 +418,10 @@ locals {
     BOTTLEROCKET_x86_64_FIPS   = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-fips/x86_64/latest/image_version"
     BOTTLEROCKET_ARM_64_NVIDIA = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-nvidia/arm64/latest/image_version"
     BOTTLEROCKET_x86_64_NVIDIA = "/aws/service/bottlerocket/aws-k8s-${local.ssm_kubernetes_version}-nvidia/x86_64/latest/image_version"
-    WINDOWS_CORE_2019_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-EKS_Optimized-${local.ssm_kubernetes_version}"
-    WINDOWS_FULL_2019_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Core-EKS_Optimized-${local.ssm_kubernetes_version}"
-    WINDOWS_CORE_2022_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Full-EKS_Optimized-${local.ssm_kubernetes_version}"
-    WINDOWS_FULL_2022_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Core-EKS_Optimized-${local.ssm_kubernetes_version}"
+    WINDOWS_CORE_2019_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Core-EKS_Optimized-${local.ssm_kubernetes_version}"
+    WINDOWS_FULL_2019_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-EKS_Optimized-${local.ssm_kubernetes_version}"
+    WINDOWS_CORE_2022_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Core-EKS_Optimized-${local.ssm_kubernetes_version}"
+    WINDOWS_FULL_2022_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2022-English-Full-EKS_Optimized-${local.ssm_kubernetes_version}"
     WINDOWS_CORE_2025_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2025-English-Core-EKS_Optimized-${local.ssm_kubernetes_version}"
     WINDOWS_FULL_2025_x86_64   = "/aws/service/ami-windows-latest/Windows_Server-2025-English-Full-EKS_Optimized-${local.ssm_kubernetes_version}"
     AL2023_x86_64_STANDARD     = "/aws/service/eks/optimized-ami/${local.ssm_kubernetes_version}/amazon-linux-2023/x86_64/standard/recommended/release_version"
@@ -545,6 +545,17 @@ resource "aws_eks_node_group" "this" {
           repair_action             = node_repair_config_overrides.value.repair_action
         }
       }
+    }
+  }
+
+  dynamic "warm_pool_config" {
+    for_each = var.warm_pool_config != null ? [var.warm_pool_config] : []
+
+    content {
+      max_group_prepared_capacity = warm_pool_config.value.max_group_prepared_capacity
+      min_size                    = warm_pool_config.value.min_size
+      pool_state                  = warm_pool_config.value.pool_state
+      reuse_on_scale_in           = warm_pool_config.value.reuse_on_scale_in
     }
   }
 

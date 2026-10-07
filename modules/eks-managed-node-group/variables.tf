@@ -607,6 +607,17 @@ variable "node_repair_config" {
   default = null
 }
 
+variable "warm_pool_config" {
+  description = "Configuration block with EC2 Auto Scaling warm pool settings. Including this block enables the warm pool; removing it disables and removes the warm pool"
+  type = object({
+    max_group_prepared_capacity = optional(number)
+    min_size                    = optional(number)
+    pool_state                  = optional(string)
+    reuse_on_scale_in           = optional(bool)
+  })
+  default = null
+}
+
 variable "timeouts" {
   description = "Create, update, and delete timeout configurations for the node group"
   type = object({

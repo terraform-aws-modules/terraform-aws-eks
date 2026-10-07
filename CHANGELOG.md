@@ -2,6 +2,60 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.28.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.27.0...v21.28.0) (2026-10-07)
+
+### Features
+
+* Support EKS managed node group warm pools ([#3750](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3750)) ([d1edb8c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/d1edb8c4fa0e066491386760560d5e3a8eef5259))
+
+## [21.27.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.26.0...v21.27.0) (2026-10-07)
+
+### Features
+
+* Add kube_controller_manager_config and kube_api_server_config support ([#3742](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3742)) ([1b82486](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/1b824869c7bee6615f5cfbb5730ec84467e87a75)), closes [#3741](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3741)
+
+## [21.26.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.25.3...v21.26.0) (2026-09-23)
+
+### Features
+
+* Support opt in for AmazonEKSBlockStoragePolicy to v2 ([#3746](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3746)) ([e57d7ec](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e57d7ec350ec1383e2f19e4457aeaef7c4475060))
+
+## [21.25.3](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.25.2...v21.25.3) (2026-09-22)
+
+### Bug Fixes
+
+* Add missing IAM permissions to IPv6 CNI policy ([#3747](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3747)) ([21aadbb](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/21aadbb7813efc89505da3f9cab60e55984a7f76)), closes [#3733](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3733)
+
+## [21.25.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.25.1...v21.25.2) (2026-09-22)
+
+### Bug Fixes
+
+* Honor self-managed launch template network bandwidth requirements ([#3749](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3749)) ([08b0fe0](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/08b0fe03ec2ca1643238bb411633fc5e033c31b3))
+
+## [21.25.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.25.0...v21.25.1) (2026-09-18)
+
+### Bug Fixes
+
+* Document known Terraform/OpenTofu limitations in README ([#3748](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3748)) ([afa2028](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/afa20285b83c954927c4196019c8d01f5727ccb0))
+
+## [21.25.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.24.2...v21.25.0) (2026-08-14)
+
+### Features
+
+* Support cluster `kube_scheduler_config` ([#3741](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3741)) ([76524a2](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/76524a21b323679f22484ddd98ce0ae90b707464))
+
+## [21.24.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.24.1...v21.24.2) (2026-08-06)
+
+### Bug Fixes
+
+* Update GitHub Actions and pre-commit hook versions ([#3739](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3739)) ([e22260e](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/e22260e7893f8eeaf07dbbe694320421a9768c15))
+
+## [21.24.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.24.0...v21.24.1) (2026-07-31)
+
+### Bug Fixes
+
+* Correct Windows SSM parameter paths ([#3737](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3737)) ([173e227](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/173e2273c66ad6d15bb91b06d09a77b5f4cb23f3))
+
 ## [21.24.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.23.0...v21.24.0) (2026-06-24)
 
 ### Features
