@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.27.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.26.0...v21.27.0) (2026-10-07)
+
+### Features
+
+* Add kube_controller_manager_config and kube_api_server_config support ([#3742](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3742)) ([1b82486](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/1b824869c7bee6615f5cfbb5730ec84467e87a75)), closes [#3741](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3741)
+
 ## [21.26.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.25.3...v21.26.0) (2026-09-23)
 
 ### Features
