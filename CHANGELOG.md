@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.28.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.27.0...v21.28.0) (2026-10-07)
+
+### Features
+
+* Support EKS managed node group warm pools ([#3750](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3750)) ([d1edb8c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/d1edb8c4fa0e066491386760560d5e3a8eef5259))
+
 ## [21.27.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.26.0...v21.27.0) (2026-10-07)
 
 ### Features
