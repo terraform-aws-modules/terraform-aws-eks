@@ -125,6 +125,28 @@ variable "kube_scheduler_config" {
   default = null
 }
 
+variable "kube_controller_manager_config" {
+  description = "Configuration block for customizing the Kubernetes controller manager"
+  type = object({
+    horizontal_pod_autoscaler_controller_config = optional(object({
+      horizontal_pod_autoscaler_sync_period = optional(string)
+    }))
+  })
+  default = null
+}
+
+variable "kube_api_server_config" {
+  description = "Configuration block for customizing the Kubernetes API server"
+  type = object({
+    event_ttl = optional(string)
+    service_node_port_range = optional(object({
+      min_port = optional(number)
+      max_port = optional(number)
+    }))
+  })
+  default = null
+}
+
 variable "additional_security_group_ids" {
   description = "List of additional, externally created security group IDs to attach to the cluster control plane"
   type        = list(string)
