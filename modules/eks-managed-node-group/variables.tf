@@ -414,10 +414,9 @@ variable "placement" {
 }
 
 variable "create_placement_group" {
-  description = "Determines whether a placement group is created & used by the node group"
+  description = "Determines whether a placement group is created & used by the node group. Defaults to `true` when `enable_efa_support` is `true`, otherwise `false`. Set to `false` to use EFA without a placement group, or with an existing placement group provided through `placement.group_name`"
   type        = bool
-  default     = false
-  nullable    = false
+  default     = null
 }
 
 variable "private_dns_name_options" {
