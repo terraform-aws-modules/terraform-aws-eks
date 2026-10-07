@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.28.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.28.0...v21.28.1) (2026-10-07)
+
+### Bug Fixes
+
+* Respect `create_placement_group = false` when EFA is enabled ([#3730](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3730)) ([f8468cf](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/f8468cfe126384ada061f842c2d437d815bdef3e))
+
 ## [21.28.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.27.0...v21.28.0) (2026-10-07)
 
 ### Features
