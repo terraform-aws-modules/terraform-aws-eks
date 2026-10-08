@@ -390,6 +390,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#how-do-i-rotate-the-cluster-certificate-authority-ca" class="md-nav__link">
+    <span class="md-ellipsis">
+      How do I rotate the cluster certificate authority (CA)?
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -417,6 +426,7 @@
 <li><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#how-do-i-access-compute-resource-attributes">How do I access compute resource attributes?</a></li>
 <li><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#what-add-ons-are-available">What add-ons are available?</a></li>
 <li><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#what-configuration-values-are-available-for-an-add-on">What configuration values are available for an add-on?</a></li>
+<li><a href="https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#how-do-i-rotate-the-cluster-certificate-authority-ca">How do I rotate the cluster certificate authority (CA)?</a></li>
 </ul>
 <h3 id="setting-disk_size-or-remote_access-does-not-make-any-changes">Setting <code>disk_size</code> or <code>remote_access</code> does not make any changes<a class="headerlink" href="#setting-disk_size-or-remote_access-does-not-make-any-changes" title="Permanent link">&para;</a></h3>
 <p><code>disk_size</code>, and <code>remote_access</code> can only be set when using the EKS managed node group default launch template. This module defaults to providing a custom launch template to allow for custom security groups, tag propagation, etc. If you wish to forgo the custom launch template route, you can set <code>use_custom_launch_template = false</code> and then you can set <code>disk_size</code> and <code>remote_access</code>.</p>
@@ -699,6 +709,16 @@ typically more configuration values will be added in later versions as functiona
 </span><span id="__span-8-179"><a id="__codelineno-8-179" name="__codelineno-8-179" href="#__codelineno-8-179"></a><span class="w">  </span><span class="p">}</span>
 </span><span id="__span-8-180"><a id="__codelineno-8-180" name="__codelineno-8-180" href="#__codelineno-8-180"></a><span class="p">}</span>
 </span></code></pre></div>
+<h3 id="how-do-i-rotate-the-cluster-certificate-authority-ca">How do I rotate the cluster certificate authority (CA)?<a class="headerlink" href="#how-do-i-rotate-the-cluster-certificate-authority-ca" title="Permanent link">&para;</a></h3>
+<p>The CA itself is rotated outside of Terraform, using the AWS CLI, console, or CloudFormation, as described in the <a href="https://docs.aws.amazon.com/eks/latest/userguide/certificate-authority-rotation.html">EKS CA rotation documentation</a>. This module's part is getting the new CA onto nodes it manages before the successor CA is activated.</p>
+<p>While both CAs are trusted, EKS returns them as a single PEM bundle in <code>certificateAuthority.data</code>. The module passes that value through unchanged, both in the <code>cluster_certificate_authority_data</code> output and in the user data it renders, so no configuration change is needed. After the successor CA is appended:</p>
+<ol>
+<li>Run <code>terraform apply</code>. Self-managed node groups, and EKS managed node groups with <code>enable_bootstrap_user_data = true</code> (needed for custom AMIs), get a new launch template version carrying the bundle. The output changes to the bundle as well, so update anything that consumes it.</li>
+<li>With the module defaults, the same apply rolls those nodes: EKS managed node groups move to the new launch template version, and self-managed node groups start a rolling instance refresh. If you pinned <code>launch_template_version</code>, set <code>update_launch_template_default_version = false</code>, or disabled <code>instance_refresh</code>, roll the nodes yourself.</li>
+<li>EKS managed node groups using an EKS-provided AMI do not carry the CA in the module's user data, so Terraform shows no change for them. Start a node group version update instead, as the EKS documentation describes.</li>
+<li>Karpenter nodes are replaced through drift when the CA bundle changes, as long as drift is enabled. EKS Auto Mode and Fargate are updated by AWS.</li>
+</ol>
+<p>Only activate the successor CA once every node and client trusts it. Both CAs together are about 2.8 KB, so check that custom user data stays under the 16 KB EC2 limit.</p>
 
 
 
