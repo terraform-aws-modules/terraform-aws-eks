@@ -7,6 +7,7 @@
 - [How do I access compute resource attributes?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#how-do-i-access-compute-resource-attributes)
 - [What add-ons are available?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#what-add-ons-are-available)
 - [What configuration values are available for an add-on?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#what-configuration-values-are-available-for-an-add-on)
+- [How do I rotate the cluster certificate authority (CA)?](https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/faq.md#how-do-i-rotate-the-cluster-certificate-authority-ca)
 
 ### Setting `disk_size` or `remote_access` does not make any changes
 
@@ -313,3 +314,16 @@ Returns (at the time of writing):
   }
 }
 ```
+
+### How do I rotate the cluster certificate authority (CA)?
+
+The CA itself is rotated outside of Terraform, using the AWS CLI, console, or CloudFormation, as described in the [EKS CA rotation documentation](https://docs.aws.amazon.com/eks/latest/userguide/certificate-authority-rotation.html). This module's part is getting the new CA onto nodes it manages before the successor CA is activated.
+
+While both CAs are trusted, EKS returns them as a single PEM bundle in `certificateAuthority.data`. The module passes that value through unchanged, both in the `cluster_certificate_authority_data` output and in the user data it renders, so no configuration change is needed. After the successor CA is appended:
+
+1. Run `terraform apply`. Self-managed node groups, and EKS managed node groups with `enable_bootstrap_user_data = true` (needed for custom AMIs), get a new launch template version carrying the bundle. The output changes to the bundle as well, so update anything that consumes it.
+2. With the module defaults, the same apply rolls those nodes: EKS managed node groups move to the new launch template version, and self-managed node groups start a rolling instance refresh. If you pinned `launch_template_version`, set `update_launch_template_default_version = false`, or disabled `instance_refresh`, roll the nodes yourself.
+3. EKS managed node groups using an EKS-provided AMI do not carry the CA in the module's user data, so Terraform shows no change for them. Start a node group version update instead, as the EKS documentation describes.
+4. Karpenter nodes are replaced through drift when the CA bundle changes, as long as drift is enabled. EKS Auto Mode and Fargate are updated by AWS.
+
+Only activate the successor CA once every node and client trusts it. Both CAs together are about 2.8 KB, so check that custom user data stays under the 16 KB EC2 limit.
