@@ -337,6 +337,7 @@ resource "aws_launch_template" "this" {
     content {
       affinity                = try(placement.value.affinity, null)
       availability_zone       = try(placement.value.availability_zone, null)
+      group_id                = local.create_placement_group ? null : try(placement.value.group_id, null)
       group_name              = try(aws_placement_group.this[0].name, placement.value.group_name)
       host_id                 = try(placement.value.host_id, null)
       host_resource_group_arn = try(placement.value.host_resource_group_arn, null)

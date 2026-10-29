@@ -1192,6 +1192,7 @@ variable "self_managed_node_groups" {
     placement = optional(object({
       affinity                = optional(string)
       availability_zone       = optional(string)
+      group_id                = optional(string)
       group_name              = optional(string)
       host_id                 = optional(string)
       host_resource_group_arn = optional(string)
@@ -1445,6 +1446,7 @@ variable "eks_managed_node_groups" {
     placement = optional(object({
       affinity                = optional(string)
       availability_zone       = optional(string)
+      group_id                = optional(string)
       group_name              = optional(string)
       host_id                 = optional(string)
       host_resource_group_arn = optional(string)
