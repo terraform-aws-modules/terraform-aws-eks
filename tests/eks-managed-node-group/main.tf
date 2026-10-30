@@ -354,7 +354,7 @@ module "eks" {
       desired_size = 0
 
       # Mount instance store volumes in RAID-0 for kubelet and containerd
-      # https://github.com/awslabs/amazon-eks-ami/blob/master/doc/USER_GUIDE.md#raid-0-for-kubelet-and-containerd-raid0
+      # https://awslabs.github.io/amazon-eks-ami/nodeadm/doc/api/#localstorageoptions
       cloudinit_pre_nodeadm = [
         {
           content_type = "application/node.eks.aws"
