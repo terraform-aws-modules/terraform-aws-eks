@@ -1532,7 +1532,6 @@ variable "eks_managed_node_groups" {
     # Security group
     vpc_security_group_ids                = optional(list(string), [])
     attach_cluster_primary_security_group = optional(bool, false)
-    cluster_primary_security_group_id     = optional(string)
     create_security_group                 = optional(bool)
     security_group_name                   = optional(string)
     security_group_use_name_prefix        = optional(bool)
