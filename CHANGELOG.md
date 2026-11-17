@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.30.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.30.0...v21.30.1) (2026-11-17)
+
+### Bug Fixes
+
+* Add Bottlerocket NVIDIA FIPS AMI types to user data and SSM parameter maps ([#3766](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3766)) ([5fe3b4c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/5fe3b4ccc8ee29fb6dcb812dfcd7d7c9ceb9c0f8))
+
 ## [21.30.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.29.0...v21.30.0) (2026-11-17)
 
 ### Features
