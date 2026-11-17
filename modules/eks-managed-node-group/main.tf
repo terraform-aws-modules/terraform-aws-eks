@@ -405,7 +405,7 @@ data "aws_eks_cluster_versions" "this" {
 locals {
   # Just to ensure templating doesn't fail when values are not provided
   ssm_kubernetes_version = var.kubernetes_version != null ? var.kubernetes_version : try(data.aws_eks_cluster_versions.this[0].cluster_versions[0].cluster_version, "UNSPECIFIED")
-  ssm_ami_type           = var.ami_type != null ? var.ami_type : ""
+  ssm_ami_type           = var.ami_type
 
   # Map the AMI type to the respective SSM param path
   ssm_ami_type_to_ssm_param = {

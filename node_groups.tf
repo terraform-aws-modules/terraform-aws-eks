@@ -8,7 +8,7 @@ locals {
 # This was primarily added to give addons that need to be configured BEFORE data plane compute resources
 # enough time to create and configure themselves before the data plane compute resources are created.
 resource "time_sleep" "this" {
-  count = var.create ? 1 : 0
+  count = local.create ? 1 : 0
 
   create_duration = var.dataplane_wait_duration
 
@@ -28,7 +28,7 @@ resource "time_sleep" "this" {
 ################################################################################
 
 data "aws_iam_policy_document" "cni_ipv6_policy" {
-  count = var.create && var.create_cni_ipv6_iam_policy ? 1 : 0
+  count = local.create && var.create_cni_ipv6_iam_policy ? 1 : 0
 
   statement {
     sid = "AssignDescribe"
@@ -53,7 +53,7 @@ data "aws_iam_policy_document" "cni_ipv6_policy" {
 
 # Note - we are keeping this to a minimum in hopes that its soon replaced with an AWS managed policy like `AmazonEKS_CNI_Policy`
 resource "aws_iam_policy" "cni_ipv6_policy" {
-  count = var.create && var.create_cni_ipv6_iam_policy ? 1 : 0
+  count = local.create && var.create_cni_ipv6_iam_policy ? 1 : 0
 
   # Will cause conflicts if trying to create on multiple clusters but necessary to reference by exact name in sub-modules
   name        = "AmazonEKS_CNI_IPv6_Policy"
@@ -71,7 +71,7 @@ resource "aws_iam_policy" "cni_ipv6_policy" {
 
 locals {
   node_sg_name   = coalesce(var.node_security_group_name, "${var.name}-node")
-  create_node_sg = var.create && var.create_node_security_group
+  create_node_sg = local.create && var.create_node_security_group
 
   node_security_group_id = local.create_node_sg ? aws_security_group.node[0].id : var.node_security_group_id
 
@@ -229,7 +229,7 @@ resource "aws_security_group_rule" "node" {
 module "fargate_profile" {
   source = "./modules/fargate-profile"
 
-  for_each = var.create && !local.create_outposts_local_cluster && var.fargate_profiles != null ? var.fargate_profiles : {}
+  for_each = local.create && !local.create_outposts_local_cluster && var.fargate_profiles != null ? var.fargate_profiles : {}
 
   create = each.value.create
 
@@ -274,7 +274,7 @@ module "fargate_profile" {
 module "eks_managed_node_group" {
   source = "./modules/eks-managed-node-group"
 
-  for_each = var.create && !local.create_outposts_local_cluster && var.eks_managed_node_groups != null ? var.eks_managed_node_groups : {}
+  for_each = local.create && !local.create_outposts_local_cluster && var.eks_managed_node_groups != null ? var.eks_managed_node_groups : {}
 
   create = each.value.create
 
@@ -404,7 +404,7 @@ module "eks_managed_node_group" {
 module "self_managed_node_group" {
   source = "./modules/self-managed-node-group"
 
-  for_each = var.create && var.self_managed_node_groups != null ? var.self_managed_node_groups : {}
+  for_each = local.create && var.self_managed_node_groups != null ? var.self_managed_node_groups : {}
 
   create = each.value.create
 
