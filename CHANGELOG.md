@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.30.2](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.30.1...v21.30.2) (2026-11-17)
+
+### Bug Fixes
+
+* Guard cluster references with local.create and simplify ami_type null check ([#3758](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3758)) ([95d648c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/95d648ced52702a7702535403654bb05470d0b4c))
+
 ## [21.30.1](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.30.0...v21.30.1) (2026-11-17)
 
 ### Bug Fixes
