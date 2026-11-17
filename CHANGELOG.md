@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [21.30.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.29.0...v21.30.0) (2026-11-17)
+
+### Features
+
+* Support `placement.group_id` on node group launch templates ([#3764](https://github.com/terraform-aws-modules/terraform-aws-eks/issues/3764)) ([620920c](https://github.com/terraform-aws-modules/terraform-aws-eks/commit/620920c8e8d3ad07bb277f1ae33941e3ef7ee91d))
+
 ## [21.29.0](https://github.com/terraform-aws-modules/terraform-aws-eks/compare/v21.28.1...v21.29.0) (2026-10-07)
 
 ### Features

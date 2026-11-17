@@ -403,6 +403,7 @@ variable "placement" {
   type = object({
     affinity                = optional(string)
     availability_zone       = optional(string)
+    group_id                = optional(string)
     group_name              = optional(string)
     host_id                 = optional(string)
     host_resource_group_arn = optional(string)
