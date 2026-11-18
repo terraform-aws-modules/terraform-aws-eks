@@ -8,4 +8,8 @@ spec:
     apiServerEndpoint: ${cluster_endpoint}
     certificateAuthority: ${cluster_auth_base64}
     cidr: ${cluster_service_cidr}
+%{ if cluster_id != "" ~}
+    enableOutpost: true
+    id: ${cluster_id}
+%{ endif ~}
 %{ endif ~}
