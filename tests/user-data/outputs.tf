@@ -145,6 +145,11 @@ resource "local_file" "self_mng_al2023_bootstrap" {
   filename = "${path.module}/rendered/al2023/self-mng-bootstrap.txt"
 }
 
+resource "local_file" "self_mng_al2023_outposts" {
+  content  = base64decode(module.self_mng_al2023_outposts.user_data)
+  filename = "${path.module}/rendered/al2023/self-mng-outposts.txt"
+}
+
 resource "local_file" "self_mng_al2023_custom_template" {
   content  = base64decode(module.self_mng_al2023_custom_template.user_data)
   filename = "${path.module}/rendered/al2023/self-mng-custom-template.txt"

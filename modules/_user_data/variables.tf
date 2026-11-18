@@ -47,6 +47,13 @@ variable "cluster_auth_base64" {
   nullable    = false
 }
 
+variable "cluster_id" {
+  description = "The ID of the EKS cluster. Only set for local EKS clusters on AWS Outposts; when set, AL2023 user data enables nodeadm's Outposts configuration"
+  type        = string
+  default     = ""
+  nullable    = false
+}
+
 variable "cluster_service_cidr" {
   description = "The CIDR block (IPv4 or IPv6) used by the cluster to assign Kubernetes service IP addresses. This is derived from the cluster itself"
   type        = string

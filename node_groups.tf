@@ -462,6 +462,7 @@ module "self_managed_node_group" {
   ami_type                   = each.value.ami_type
   cluster_endpoint           = try(time_sleep.this[0].triggers["endpoint"], "")
   cluster_auth_base64        = try(time_sleep.this[0].triggers["certificate_authority_data"], "")
+  cluster_id                 = try(aws_eks_cluster.this[0].cluster_id, null)
   cluster_service_cidr       = try(time_sleep.this[0].triggers["service_cidr"], "")
   additional_cluster_dns_ips = each.value.additional_cluster_dns_ips
   cluster_ip_family          = var.ip_family

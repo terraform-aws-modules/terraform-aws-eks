@@ -503,6 +503,23 @@ module "self_mng_al2023_bootstrap" {
   }]
 }
 
+module "self_mng_al2023_outposts" {
+  source = "../../modules/_user_data"
+
+  ami_type = "AL2023_x86_64_STANDARD"
+
+  enable_bootstrap_user_data = true
+  is_eks_managed_node_group  = false
+
+  cluster_name         = local.name
+  cluster_endpoint     = local.cluster_endpoint
+  cluster_auth_base64  = local.cluster_auth_base64
+  cluster_service_cidr = local.cluster_service_cidr
+
+  # Only set by EKS for local clusters on AWS Outposts
+  cluster_id = "0123abcd-4567-89ef-0123-456789abcdef"
+}
+
 module "self_mng_al2023_custom_template" {
   source = "../../modules/_user_data"
 

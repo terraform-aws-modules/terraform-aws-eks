@@ -51,6 +51,7 @@ $ terraform apply --auto-approve
 | <a name="module_self_mng_al2023_bootstrap"></a> [self\_mng\_al2023\_bootstrap](#module\_self\_mng\_al2023\_bootstrap) | ../../modules/_user_data | n/a |
 | <a name="module_self_mng_al2023_custom_template"></a> [self\_mng\_al2023\_custom\_template](#module\_self\_mng\_al2023\_custom\_template) | ../../modules/_user_data | n/a |
 | <a name="module_self_mng_al2023_no_op"></a> [self\_mng\_al2023\_no\_op](#module\_self\_mng\_al2023\_no\_op) | ../../modules/_user_data | n/a |
+| <a name="module_self_mng_al2023_outposts"></a> [self\_mng\_al2023\_outposts](#module\_self\_mng\_al2023\_outposts) | ../../modules/_user_data | n/a |
 | <a name="module_self_mng_al2_bootstrap"></a> [self\_mng\_al2\_bootstrap](#module\_self\_mng\_al2\_bootstrap) | ../../modules/_user_data | n/a |
 | <a name="module_self_mng_al2_bootstrap_ipv6"></a> [self\_mng\_al2\_bootstrap\_ipv6](#module\_self\_mng\_al2\_bootstrap\_ipv6) | ../../modules/_user_data | n/a |
 | <a name="module_self_mng_al2_custom_template"></a> [self\_mng\_al2\_custom\_template](#module\_self\_mng\_al2\_custom\_template) | ../../modules/_user_data | n/a |
@@ -86,6 +87,7 @@ $ terraform apply --auto-approve
 | [local_file.self_mng_al2023_bootstrap](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.self_mng_al2023_custom_template](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.self_mng_al2023_no_op](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
+| [local_file.self_mng_al2023_outposts](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.self_mng_al2_bootstrap](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.self_mng_al2_bootstrap_ipv6](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.self_mng_al2_custom_template](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
